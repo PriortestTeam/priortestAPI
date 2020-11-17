@@ -59,8 +59,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //是否开启安全拦截
-        if (Boolean.parseBoolean(enable)) {
+        //是否开启安全拦截,false 关闭
+        if (!Boolean.parseBoolean(enable)) {
             return;
         }
         http.authorizeRequests()

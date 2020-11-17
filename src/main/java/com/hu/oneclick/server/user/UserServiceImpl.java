@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService{
     public Resp<String> register(RegisterUser registerUser) {
         try {
             registerUser.verify();
-            //登录，校验code码
+            //注册，校验code码
             String email = registerUser.getEmail();
             String redisKey = "register_send_email" + email;
             RBucket<String> bucket = redisClient.getBucket(redisKey);
