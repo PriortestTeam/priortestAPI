@@ -9,7 +9,7 @@ Configuration:
       - name: log.level.console
         value: info
       - name: log.path
-        value: D:/logs/oneclick
+        value: /logs/oneclick
 #        value: /logs
       - name: project.name
         value: oneclick
