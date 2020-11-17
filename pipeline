@@ -50,7 +50,7 @@ pipeline {
             steps{
                 dir("${env.WORKSPACE}") {
                     sh """
-                        ssh 172.16.0.4 "cd /home/env/oneclick/api;docker-compose down -v;docker-compose up -d;"
+                        ssh 172.16.0.4 "docker-compose down -v;docker-compose up -d;"
                     """
                 }
             }

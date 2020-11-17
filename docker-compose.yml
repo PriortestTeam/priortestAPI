@@ -1,0 +1,10 @@
+version: '2.0'
+services:
+  shenshou:
+    image: oneclick-openjdk-hotspot
+    container_name: oneclick-api
+    restart: always
+    volumes:
+    - /home/env/oneclick/api/logs:/logs
+    ports:
+      - 8081:8081
