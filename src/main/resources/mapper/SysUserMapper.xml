@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.SysUserDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.SysUser" id="SysUserMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="photo" column="photo" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="registerDate" column="register_date" jdbcType="TIMESTAMP"/>
+        <result property="contactNo" column="contact_no" jdbcType="VARCHAR"/>
+        <result property="company" column="company" jdbcType="VARCHAR"/>
+        <result property="profession" column="profession" jdbcType="VARCHAR"/>
+        <result property="industry" column="industry" jdbcType="VARCHAR"/>
+        <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="activeState" column="active_state" jdbcType="INTEGER"/>
+        <result property="enable" column="enable" jdbcType="INTEGER"/>
+        <result property="timeZone" column="time_zone" jdbcType="VARCHAR"/>
+        <result property="locale" column="locale" jdbcType="VARCHAR"/>
+        <result property="manager" column="manager" jdbcType="INTEGER"/>
+        <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SysUserMap">
+        select
+          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time
+        from oneclick.sys_user
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SysUserMap">
+        select
+          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time
+        from oneclick.sys_user
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="SysUserMap">
+        select
+        id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry,
+        close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time
+        from oneclick.sys_user
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="userName != null and userName != ''">
+                and user_name = #{userName}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="photo != null and photo != ''">
+                and photo = #{photo}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="registerDate != null">
+                and register_date = #{registerDate}
+            </if>
+            <if test="contactNo != null and contactNo != ''">
+                and contact_no = #{contactNo}
+            </if>
+            <if test="company != null and company != ''">
+                and company = #{company}
+            </if>
+            <if test="profession != null and profession != ''">
+                and profession = #{profession}
+            </if>
+            <if test="industry != null and industry != ''">
+                and industry = #{industry}
+            </if>
+            <if test="closeDate != null">
+                and close_date = #{closeDate}
+            </if>
+            <if test="type != null">
+                and `type` = #{type}
+            </if>
+            <if test="activeState != null">
+                and active_state = #{activeState}
+            </if>
+            <if test="enable != null">
+                and enable = #{enable}
+            </if>
+            <if test="timeZone != null and timeZone != ''">
+                and time_zone = #{timeZone}
+            </if>
+            <if test="locale != null and locale != ''">
+                and locale = #{locale}
+            </if>
+            <if test="manager != null">
+                and manager = #{manager}
+            </if>
+            <if test="delFlag != null">
+                and del_flag = #{delFlag}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+    <select id="queryByEmail" resultMap="SysUserMap">
+        select
+          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time
+        from oneclick.sys_user
+        where
+        email = #{email}
+        and del_flag = 0
+        limit 1
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into oneclick.sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                id,
+            </if>
+            <if test="email != null and email != ''">
+                email,
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name,
+            </if>
+            <if test="password != null and password != ''">
+                password,
+            </if>
+            <if test="photo != null and photo != ''">
+                photo,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="registerDate != null">
+                register_date,
+            </if>
+            <if test="contactNo != null and contactNo != ''">
+                contact_no,
+            </if>
+            <if test="company != null and company != ''">
+                company,
+            </if>
+            <if test="profession != null and profession != ''">
+                profession,
+            </if>
+            <if test="industry != null and industry != ''">
+                industry,
+            </if>
+            <if test="closeDate != null">
+                close_date,
+            </if>
+            <if test="type != null">
+                `type`,
+            </if>
+            <if test="activeState != null">
+                active_state,
+            </if>
+            <if test="enable != null">
+                enable,
+            </if>
+            <if test="timeZone != null and timeZone != ''">
+                time_zone,
+            </if>
+            <if test="locale != null and locale != ''">
+                locale,
+            </if>
+            <if test="manager != null">
+                manager,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                #{id},
+            </if>
+            <if test="email != null and email != ''">
+                #{email},
+            </if>
+            <if test="userName != null and userName != ''">
+                #{userName},
+            </if>
+            <if test="password != null and password != ''">
+                #{password},
+            </if>
+            <if test="photo != null and photo != ''">
+                #{photo},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="registerDate != null">
+                #{registerDate},
+            </if>
+            <if test="contactNo != null and contactNo != ''">
+                #{contactNo},
+            </if>
+            <if test="company != null and company != ''">
+                #{company},
+            </if>
+            <if test="profession != null and profession != ''">
+                #{profession},
+            </if>
+            <if test="industry != null and industry != ''">
+                #{industry},
+            </if>
+            <if test="closeDate != null">
+                #{closeDate},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="activeState != null">
+                #{activeState},
+            </if>
+            <if test="enable != null">
+                #{enable},
+            </if>
+            <if test="timeZone != null and timeZone != ''">
+                #{timeZone},
+            </if>
+            <if test="locale != null and locale != ''">
+                #{locale},
+            </if>
+            <if test="manager != null">
+                #{manager},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update oneclick.sys_user
+        <set>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="photo != null and photo != ''">
+                photo = #{photo},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="registerDate != null">
+                register_date = #{registerDate},
+            </if>
+            <if test="contactNo != null and contactNo != ''">
+                contact_no = #{contactNo},
+            </if>
+            <if test="company != null and company != ''">
+                company = #{company},
+            </if>
+            <if test="profession != null and profession != ''">
+                profession = #{profession},
+            </if>
+            <if test="industry != null and industry != ''">
+                industry = #{industry},
+            </if>
+            <if test="closeDate != null">
+                close_date = #{closeDate},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="activeState != null">
+                active_state = #{activeState},
+            </if>
+            <if test="enable != null">
+                enable = #{enable},
+            </if>
+            <if test="timeZone != null and timeZone != ''">
+                time_zone = #{timeZone},
+            </if>
+            <if test="locale != null and locale != ''">
+                locale = #{locale},
+            </if>
+            <if test="manager != null">
+                manager = #{manager},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from oneclick.sys_user where id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,74 @@
+package com.hu.oneclick.model.base;
+
+import com.hu.oneclick.common.enums.SysConstantEnum;
+
+/**
+ * @author qingyang
+ */
+public class Resp<T> {
+
+    private String code;
+    private String msg;
+    private T data;
+
+    public Resp(){}
+
+    public Resp(Builder<T> builder) {
+        this.code = builder.code;
+        this.msg = builder.msg;
+        this.data = builder.data;
+    }
+
+    public static class  Builder<T> {
+        private String code;
+        private String msg;
+        private T data;
+
+        public Builder() {
+        }
+        public Resp<T> buildResult(String code,String msg){
+            this.code = code;
+            this.msg = msg;
+            return new Resp<T>(this);
+        }
+        public Resp<T> buildResult(String code,String msg,T data){
+            this.code = code;
+            this.msg = msg;
+            this.data = data;
+            return new Resp<T>(this);
+        }
+        public Resp<T> buildResult(String msg){
+            this.code = "-1";
+            this.msg = msg;
+            return new Resp<T>(this);
+        }
+        public Resp<T> ok(){
+            this.code= SysConstantEnum.SUCCESS.getCode();
+            this.msg= SysConstantEnum.SUCCESS.getValue();
+            return new Resp<T>(this);
+        }
+        public Resp<T> fail(){
+            this.code= SysConstantEnum.FAILED.getCode();
+            this.msg= SysConstantEnum.FAILED.getValue();
+            return new Resp<T>(this);
+        }
+
+        public Builder<T> setData(T data){
+            this.data=data;
+            return this;
+        }
+    }
+
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public T getData() {
+        return data;
+    }
+}
