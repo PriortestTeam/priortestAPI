@@ -1,4 +1,4 @@
-package com.hu.oneclick.security.flutter;
+package com.hu.oneclick.common.security.flutter;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 

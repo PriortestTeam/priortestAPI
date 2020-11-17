@@ -1,4 +1,4 @@
-package com.hu.oneclick.security.service;
+package com.hu.oneclick.common.security.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;

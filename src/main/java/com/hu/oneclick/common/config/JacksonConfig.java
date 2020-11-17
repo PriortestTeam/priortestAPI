@@ -1,4 +1,4 @@
-package com.hu.oneclick.config;
+package com.hu.oneclick.common.config;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

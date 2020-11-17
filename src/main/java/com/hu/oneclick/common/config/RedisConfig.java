@@ -1,4 +1,4 @@
-package com.hu.oneclick.config;
+package com.hu.oneclick.common.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

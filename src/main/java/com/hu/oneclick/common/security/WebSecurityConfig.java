@@ -1,10 +1,11 @@
-package com.hu.oneclick.security;
+package com.hu.oneclick.common.security;
 
-import com.hu.oneclick.security.flutter.OptionsRequestFilter;
-import com.hu.oneclick.security.handler.*;
-import com.hu.oneclick.security.service.JwtAuthenticationProvider;
-import com.hu.oneclick.security.service.JwtUserServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.hu.oneclick.common.security.flutter.OptionsRequestFilter;
+import com.hu.oneclick.common.security.handler.JsonLoginSuccessHandler;
+import com.hu.oneclick.common.security.handler.JwtRefreshSuccessHandler;
+import com.hu.oneclick.common.security.handler.TokenClearLogoutHandler;
+import com.hu.oneclick.common.security.service.JwtAuthenticationProvider;
+import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +23,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,7 +32,7 @@ import java.util.Collections;
  */
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Value("${onclick.config.interceptor.enable}")

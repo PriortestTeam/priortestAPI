@@ -1,4 +1,4 @@
-package com.hu.oneclick.security;
+package com.hu.oneclick.common.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

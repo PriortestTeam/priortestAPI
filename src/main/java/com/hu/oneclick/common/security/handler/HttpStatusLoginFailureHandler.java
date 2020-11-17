@@ -1,4 +1,4 @@
-package com.hu.oneclick.security.handler;
+package com.hu.oneclick.common.security.handler;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.enums.SysConstantEnum;

@@ -1,8 +1,8 @@
-package com.hu.oneclick.security.flutter;
+package com.hu.oneclick.common.security.flutter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.hu.oneclick.security.JwtAuthenticationToken;
+import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;

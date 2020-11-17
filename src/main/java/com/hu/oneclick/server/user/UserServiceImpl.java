@@ -8,7 +8,7 @@ import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
-import com.hu.oneclick.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;

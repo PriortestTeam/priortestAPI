@@ -1,7 +1,7 @@
-package com.hu.oneclick.security;
+package com.hu.oneclick.common.security;
 
-import com.hu.oneclick.security.flutter.JwtAuthenticationFilter;
-import com.hu.oneclick.security.handler.HttpStatusLoginFailureHandler;
+import com.hu.oneclick.common.security.flutter.JwtAuthenticationFilter;
+import com.hu.oneclick.common.security.handler.HttpStatusLoginFailureHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;

@@ -1,7 +1,7 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.domain.AuthLoginUser;
-import com.hu.oneclick.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
