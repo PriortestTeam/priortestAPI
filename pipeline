@@ -24,7 +24,7 @@ pipeline {
             steps{
                 sh 'git config --global http.sslVerify false'
                 dir ("${env.WORKSPACE}") {
-                    git branch: 'master', credentialsId: 'gitlab2', url: "http://106.13.39.32:1180/zhangqingyang/shenshou.git"
+                    git branch: 'master', credentialsId: 'gitlab2', url: "http://106.13.39.32:1180/oneclick/oneclick-api.git"
                 }
             }
         }
