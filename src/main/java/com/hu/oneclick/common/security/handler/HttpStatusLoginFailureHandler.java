@@ -9,6 +9,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.www.NonceExpiredException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,11 +29,12 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		if (exception instanceof BadCredentialsException) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.LOGIN_FAILED.getValue()).fail());
-		} else if (exception instanceof InsufficientAuthenticationException){
+		} else if (exception instanceof InsufficientAuthenticationException
+				|| exception instanceof  NonceExpiredException) {
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).fail());
-		} else if (exception instanceof UsernameNotFoundException){
+		} else if (exception instanceof UsernameNotFoundException) {
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.USERNAME_ERROR.getValue()).fail());
-		} else {
+	    } else {
 			result = "系统异常。";
 		}
 		response.getWriter().write(result);
