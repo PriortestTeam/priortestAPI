@@ -9,7 +9,7 @@ public enum SysConstantEnum {
     SUCCESS(SysConstantEnum.NUMBER,"调用成功。"),
     SYS_ERROR("-1","系统异常。"),
     PARAM_EMPTY( SysConstantEnum.NUMBER + "001","不能为空。"),
-    PASSWORD_RULES(SysConstantEnum.NUMBER + "001","密码由(-、_数字、小写、大写字母)，最小8位，最大20位字符组成。"),
+    PASSWORD_RULES(SysConstantEnum.NUMBER + "001","密码由(数字、小写、大写字母)，最小8位，最大20位字符组成。"),
     REGISTER_SUCCESS(SysConstantEnum.NUMBER,"注册成功。"),
     REGISTER_FAILED(SysConstantEnum.NUMBER + "011","注册失败。"),
     LOGIN_SUCCESS(SysConstantEnum.NUMBER,"登录成功。"),
@@ -18,7 +18,8 @@ public enum SysConstantEnum {
     AUTH_FAILED(SysConstantEnum.NUMBER + "011","认证失败，请重新登录。"),
     NO_DUPLICATE_REGISTER(SysConstantEnum.NUMBER + "011","不可重复注册。"),
     VERIFY_CODE_ERROR(SysConstantEnum.NUMBER + "012","验证码错误。"),
-    PLEASE_TRY_AGAIN_LATER(SysConstantEnum.NUMBER + "013","请稍后再试。");
+    PLEASE_TRY_AGAIN_LATER(SysConstantEnum.NUMBER + "013","请稍后再试。"),
+    NOT_DETECTED_EMAIL(SysConstantEnum.NUMBER + "014","未检测到邮箱。");
 
 
 

@@ -63,6 +63,13 @@ public interface SysUserDao {
     int update(SysUser sysUser);
 
     /**
+     * 修改数据
+     *
+     * @param sysUser 实例对象
+     * @return 影响行数
+     */
+    int updatePassword(SysUser sysUser);
+    /**
      * 通过主键删除数据
      *
      * @param id 主键

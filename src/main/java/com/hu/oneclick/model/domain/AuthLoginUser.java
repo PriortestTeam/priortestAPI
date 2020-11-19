@@ -26,7 +26,7 @@ public class AuthLoginUser implements UserDetails {
     @NotNull(message = "验证码不能为空")
     private String code;
 
-    private final SysUser sysUser;
+    private SysUser sysUser;
 
 
     public AuthLoginUser(SysUser sysUser) {
@@ -88,5 +88,8 @@ public class AuthLoginUser implements UserDetails {
 
     public SysUser getSysUser() {
         return sysUser;
+    }
+    public void setSysUser(SysUser user) {
+        this.sysUser =  user;
     }
 }

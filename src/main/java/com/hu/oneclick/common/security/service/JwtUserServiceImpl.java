@@ -3,6 +3,9 @@ package com.hu.oneclick.common.security.service;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.domain.AuthLoginUser;
 import com.hu.oneclick.model.domain.SysUser;
@@ -39,9 +42,8 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
 	public AuthLoginUser getUserLoginInfo(String username) {
 		String salt = "123456ef";
-		String key = "login_" + username;
     	//将salt放到password字段返回
-		RBucket<String> bucket = redisClient.getBucket(key);
+		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN  + username);
 		AuthLoginUser authLoginUser = JSONObject.parseObject(bucket.get(), AuthLoginUser.class);
 		if (authLoginUser == null) {
 			throw new InsufficientAuthenticationException("token invalidation");
@@ -51,8 +53,23 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		return authLoginUser;
 	}
 
+	public AuthLoginUser getUserLoginInfo() {
+		DecodedJWT token = ((JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication()).getToken();
+		//Get the userId from token claim.
+		String username = token.getSubject();
+		//将salt放到password字段返回
+		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN  + username);
+		AuthLoginUser authLoginUser = JSONObject.parseObject(bucket.get(), AuthLoginUser.class);
+		if (authLoginUser == null) {
+			throw new InsufficientAuthenticationException("token invalidation");
+		}
+		return authLoginUser;
+	}
+
+
+
 	public String saveUserLoginInfo(AuthLoginUser user) {
-		//正式开发时可以调用该方法实时生成加密的salt,BCrypt.gensalt();
+		//正式开发时可以调用该方法实时生成加密的salt,BCrypt.gensalt
 		String salt = "123456ef";
 		Algorithm algorithm = Algorithm.HMAC256(salt);
 		//设置1小时后过期
@@ -64,8 +81,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
 				.withIssuedAt(new Date())
 				.sign(algorithm);
 		String s = JSONObject.toJSONString(user);
-		String key = "login_" + user.getUsername();
-		RBucket<String> bucket = redisClient.getBucket(key);
+		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + user.getUsername());
 		if (bucket.isExists()){
 			bucket.delete();
 		}
@@ -73,6 +89,21 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		bucket.expire(1, TimeUnit.HOURS);
 		return sign;
 	}
+
+	public void saveUserLoginInfo2(SysUser sysUser) {
+		AuthLoginUser user = getUserLoginInfo();
+		user.setSysUser(sysUser);
+		String s = JSONObject.toJSONString(user);
+		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + sysUser.getEmail());
+		if (bucket.isExists()){
+			bucket.delete();
+		}
+		bucket.set(s);
+		bucket.expire(1, TimeUnit.HOURS);
+	}
+
+
+
 
 	@Override
 	public AuthLoginUser loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -93,8 +124,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
 	}
 
 	public void deleteUserLoginInfo(String username) {
-		String key = "login_" + username;
-		RBucket<String> bucket = redisClient.getBucket(key);
+		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + username);
 		bucket.delete();
 		SecurityContextHolder.clearContext();
 	}
