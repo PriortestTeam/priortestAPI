@@ -121,7 +121,6 @@
         from oneclick.sys_user
         <where>
         1 = 1
-        and `type` = #{type}
         and parent_id = #{parentId}
         </where>
     </select>

@@ -2,6 +2,7 @@ package com.hu.oneclick.common.exception;
 
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.model.base.Resp;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,6 +24,8 @@ public class GlobalExceptionHandler {
            msg = SysConstantEnum.NOT_PERMISSION.getValue();
         }else if (e instanceof BizException){
             return new Resp.Builder<String>().buildResult(((BizException) e).getCode(),e.getMessage());
+        }else if (e instanceof HttpMessageNotReadableException || e instanceof NumberFormatException){
+            msg = SysConstantEnum.PARAMETER_ABNORMAL.getValue();
         }
         return new Resp.Builder<String>().buildResult(msg);
     }

@@ -1,6 +1,7 @@
 package com.hu.oneclick.common.aspect;
 
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -9,7 +10,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Objects;
 
 /**
  * @author qingyang
@@ -21,12 +21,12 @@ public class AspectPage {
 
     @Around("@annotation(com.hu.oneclick.model.annotation.Page)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-        Integer pageNum = Integer.parseInt(request.getParameter("pageNum"));
-        Integer pageSize = Integer.parseInt(request.getParameter("pageSize"));
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String pageNum = request.getParameter("pageNum").trim();
+        String pageSize = request.getParameter("pageSize").trim();
 
-        if (pageNum != null && pageSize != null) {
-            PageHelper.startPage(pageNum, pageSize);
+        if (StringUtils.isNotEmpty(pageNum) && StringUtils.isNotEmpty(pageSize)) {
+            PageHelper.startPage(Integer.parseInt(pageNum), Integer.parseInt(pageSize));
         }
         return joinPoint.proceed();
     }

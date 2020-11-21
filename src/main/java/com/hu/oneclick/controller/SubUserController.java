@@ -28,7 +28,7 @@ public class SubUserController {
 
 
     @Page
-    @PostMapping
+    @PostMapping("querySubUsers")
     public Resp<List<SysUser>> querySubUsers(@RequestBody SysUser sysUser){
         return  subUserService.querySubUsers(sysUser);
     }
