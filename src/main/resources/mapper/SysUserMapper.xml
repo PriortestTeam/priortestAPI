@@ -24,12 +24,13 @@
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="SysUserMap">
         select
-          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time
+          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id
         from oneclick.sys_user
         where id = #{id}
     </select>
@@ -37,7 +38,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="SysUserMap">
         select
-          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time
+          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id
         from oneclick.sys_user
         limit #{offset}, #{limit}
     </select>
@@ -46,7 +47,7 @@
     <select id="queryAll" resultMap="SysUserMap">
         select
         id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry,
-        close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time
+        close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time, parent_id
         from oneclick.sys_user
         <where>
             <if test="id != null">
@@ -103,22 +104,26 @@
             <if test="delFlag != null">
                 and del_flag = #{delFlag}
             </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
-            </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
-            </if>
         </where>
     </select>
     <select id="queryByEmail" resultMap="SysUserMap">
         select
-          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time
+          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time, parent_id
         from oneclick.sys_user
         where
         email = #{email}
         and del_flag = 0
         limit 1
+    </select>
+    <select id="querySubUsers" resultMap="SysUserMap"  parameterType="com.hu.oneclick.model.domain.SysUser">
+        select
+        id, email, user_name, photo, register_date, `type`, enable, time_zone, update_time
+        from oneclick.sys_user
+        <where>
+        1 = 1
+        and `type` = #{type}
+        and parent_id = #{parentId}
+        </where>
     </select>
 
     <!--新增所有列-->
@@ -142,9 +147,6 @@
             </if>
             <if test="status != null">
                 status,
-            </if>
-            <if test="registerDate != null">
-                register_date,
             </if>
             <if test="contactNo != null and contactNo != ''">
                 contact_no,
@@ -182,12 +184,12 @@
             <if test="delFlag != null">
                 del_flag,
             </if>
-            <if test="createTime != null">
-                create_time,
+            <if test="parentId != null and parentId != ''">
+                parent_id,
             </if>
-            <if test="updateTime != null">
-                update_time,
-            </if>
+            register_date,
+            create_time,
+            update_time,
 
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -208,9 +210,6 @@
             </if>
             <if test="status != null">
                 #{status},
-            </if>
-            <if test="registerDate != null">
-                #{registerDate},
             </if>
             <if test="contactNo != null and contactNo != ''">
                 #{contactNo},
@@ -248,12 +247,12 @@
             <if test="delFlag != null">
                 #{delFlag},
             </if>
-            <if test="createTime != null">
-                #{createTime},
+            <if test="parentId != null and parentId != ''">
+                #{parentId},
             </if>
-            <if test="updateTime != null">
-                #{updateTime},
-            </if>
+            NOW(),
+            NOW(),
+            NOW()
         </trim>
     </insert>
 

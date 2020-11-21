@@ -9,6 +9,7 @@ public class Resp<T> {
 
     private String code;
     private String msg;
+    private Integer total;
     private T data;
 
     public Resp(){}
@@ -17,12 +18,15 @@ public class Resp<T> {
         this.code = builder.code;
         this.msg = builder.msg;
         this.data = builder.data;
+        this.total = builder.total;
     }
 
     public static class  Builder<T> {
         private String code;
         private String msg;
+        private Integer total;
         private T data;
+
 
         public Builder() {
         }
@@ -52,7 +56,10 @@ public class Resp<T> {
             this.msg= SysConstantEnum.FAILED.getValue();
             return new Resp<T>(this);
         }
-
+        public Builder<T> total(Integer total){
+            this.total=total;
+            return this;
+        }
         public Builder<T> setData(T data){
             this.data=data;
             return this;
@@ -64,11 +71,31 @@ public class Resp<T> {
         return code;
     }
 
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getMsg() {
         return msg;
     }
 
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public Integer getTotal() {
+        return total;
+    }
+
+    public void setTotal(Integer total) {
+        this.total = total;
+    }
+
     public T getData() {
         return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
     }
 }

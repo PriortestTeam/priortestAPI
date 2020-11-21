@@ -9,6 +9,7 @@ import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -67,10 +68,8 @@ public class UserServiceImpl implements UserService{
             user.setPassword(encodePassword(user.getPassword()));
             //设置默认头像
             user.setPhoto(defaultPhoto);
-            user.setRegisterDate(new Date());
             user.setType(OneConstant.USER_TYPE.ADMIN);
             user.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
-            user.setCreateTime(new Date());
             if (sysUserDao.insert(user) > 0){
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
@@ -177,6 +176,12 @@ public class UserServiceImpl implements UserService{
             logger.error("class: UserServiceImpl#updateUserInfo,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue(),e.getMessage());
         }
+    }
+
+    @Override
+    public Resp<SysUser> queryUserInfo() {
+        AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
+        return new Resp.Builder<SysUser>().setData(userLoginInfo.getSysUser()).ok();
     }
 
     /**

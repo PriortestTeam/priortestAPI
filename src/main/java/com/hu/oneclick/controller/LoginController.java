@@ -1,8 +1,7 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
-import com.hu.oneclick.model.domain.AuthLoginUser;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,10 +22,5 @@ public class LoginController {
     @PostMapping("login")
     public void login(@RequestBody AuthLoginUser user){
         jwtUserServiceImpl.login(user);
-    }
-
-    @GetMapping("getHello")
-    public String getHello(){
-        return jwtUserServiceImpl.getUserLoginInfo().getEmail();
     }
 }

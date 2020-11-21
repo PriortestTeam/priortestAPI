@@ -53,4 +53,11 @@ public interface UserService {
      * @return
      */
     Resp<String> updateUserInfo(SysUser sysUser);
+
+    /**
+     * 查询用户信息
+     * @return
+     */
+    Resp<SysUser> queryUserInfo();
+
 }

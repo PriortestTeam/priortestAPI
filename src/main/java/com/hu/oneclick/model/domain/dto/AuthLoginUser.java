@@ -1,10 +1,12 @@
-package com.hu.oneclick.model.domain;
+package com.hu.oneclick.model.domain.dto;
 
+import com.hu.oneclick.model.domain.SysUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author qingyang
@@ -26,12 +28,12 @@ public class AuthLoginUser implements UserDetails {
     @NotNull(message = "验证码不能为空")
     private String code;
 
+    /**
+     * 子用户权限列表
+     */
+    private List<SysProjectPermissionDto> permissions;
+
     private SysUser sysUser;
-
-
-    public AuthLoginUser(SysUser sysUser) {
-        this.sysUser = sysUser;
-    }
 
 
     @Override
@@ -91,5 +93,13 @@ public class AuthLoginUser implements UserDetails {
     }
     public void setSysUser(SysUser user) {
         this.sysUser =  user;
+    }
+
+    public List<SysProjectPermissionDto> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<SysProjectPermissionDto> permissions) {
+        this.permissions = permissions;
     }
 }

@@ -91,6 +91,7 @@ public class SysUser extends BaseEntity implements Serializable {
 
     private Date updateTime;
 
+    private String parentId;
 
     public String getEmail() {
         return email;
@@ -252,4 +253,11 @@ public class SysUser extends BaseEntity implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
 }

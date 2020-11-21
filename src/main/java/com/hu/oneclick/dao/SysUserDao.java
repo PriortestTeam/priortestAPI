@@ -47,6 +47,13 @@ public interface SysUserDao {
     SysUser queryByEmail(@Param("email") String email);
 
     /**
+     * 查询成员列表
+     * @return
+     */
+    List<SysUser> querySubUsers(SysUser sysUser);
+
+
+    /**
      * 新增数据
      *
      * @param sysUser 实例对象

@@ -1,7 +1,7 @@
 package com.hu.oneclick.common.security.handler;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.hu.oneclick.model.domain.AuthLoginUser;
+import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import org.springframework.security.core.Authentication;

@@ -19,7 +19,8 @@ public enum SysConstantEnum {
     NO_DUPLICATE_REGISTER(SysConstantEnum.NUMBER + "011","不可重复注册。"),
     VERIFY_CODE_ERROR(SysConstantEnum.NUMBER + "012","验证码错误。"),
     PLEASE_TRY_AGAIN_LATER(SysConstantEnum.NUMBER + "013","请稍后再试。"),
-    NOT_DETECTED_EMAIL(SysConstantEnum.NUMBER + "014","未检测到邮箱。");
+    NOT_DETECTED_EMAIL(SysConstantEnum.NUMBER + "014","未检测到邮箱。"),
+    NOT_PERMISSION(SysConstantEnum.NUMBER + "015","无权访问。");
 
 
 

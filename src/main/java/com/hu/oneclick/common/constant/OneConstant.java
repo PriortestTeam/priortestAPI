@@ -4,13 +4,28 @@ package com.hu.oneclick.common.constant;
  * @author qingyang
  */
 public interface OneConstant {
+    /**
+     * 系统平台用户类型
+     */
+    interface PLATEFORM_USER_TYPE{
+        Integer ORDINARY = 0;
+        Integer MANAGER = 1;
+        Integer SUB = 3;
+    }
 
+    /**
+     * 用户类型
+     */
     interface USER_TYPE {
         Integer ADMIN = 1;
         Integer TRAIL_USER = 2;
         Integer TESTERS = 3;
         Integer DEVELOPER = 4;
     }
+
+    /**
+     * 激活状态
+     */
     interface ACTIVE_STATUS {
         //试用中
         Integer TRIAL = 1;
@@ -22,6 +37,9 @@ public interface OneConstant {
         Integer ACTIVE_FAILED = 4;
     }
 
+    /**
+     * redis key 前缀
+     */
     interface REDIS_KEY_PREFIX {
         String LOGIN = "login_";
 
@@ -30,5 +48,42 @@ public interface OneConstant {
         String RESET_PASSWORD = "reset_password_send_email";
     }
 
+
+    /**
+     * 权限标识
+     */
+    interface PERMISSION {
+        String ONE_FEATURE = "Feature";
+        String ONE_SETTINGS = "Settings";
+        String ONE_SPRINT = "Sprint";
+        String ONE_SIGN_OFF = "Sign Off";
+        String ONE_REQUIREMENT = "Requirement";
+        String ONE_ISSUE = "Issue";
+        String ONE_TEST_CYCLE = "TestCycle";
+        String ONE_TEST_CASE = "TestCase";
+        String ONE_DASHBOARD = "Dashboard";
+        String ADD = "Add";
+        String VIEW = "View";
+        String DELETE = "Delete";
+        String EDIT = "Edit";
+        String BATCH_EDIT = "Batch Edit";
+        String BATCH_DELETE = "Batch Delete";
+        String VIEW_HISTORY = "View History";
+        String IMPORT_TCS = "Import Tcs";
+        String EXPORT_TCS = "Export Tcs";
+        String CREATE_A_TES_CYCLE = "Create a Tes Cycle";
+        String PUT_INTO_TEST_CYCLE = "Put into Test Cycle";
+        String ADD_TEST_CASE = "Add Test Case";
+        String RUN = "Run";
+        String REMOVE_TESTCASE = "Remove TestCase";
+        String STATUS_UPDATE = "Status Update";
+        String ACCOUNT = "Account";
+        String PERMISSION = "Permission";
+        String PROJECT = "Project";
+        String INTEGRATION = "Integration";
+        String CUSTOM_FIELD = "Custom Field";
+        String ISSUE_WORKFLOW = "Issue workflow";
+        String MY_ACCOUNT = "My account";
+    }
 
 }
