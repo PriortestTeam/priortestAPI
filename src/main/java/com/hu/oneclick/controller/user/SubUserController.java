@@ -1,8 +1,9 @@
-package com.hu.oneclick.controller;
+package com.hu.oneclick.controller.user;
 
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.server.user.SubUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +30,13 @@ public class SubUserController {
 
     @Page
     @PostMapping("querySubUsers")
-    public Resp<List<SysUser>> querySubUsers(@RequestBody SysUser sysUser){
+    public Resp<List<SysUser>> querySubUsers(@RequestBody SubUserDto sysUser){
         return  subUserService.querySubUsers(sysUser);
+    }
+
+    @PostMapping("createSubUser")
+    public Resp<String> createSubUser(@RequestBody SubUserDto sysUser){
+        return  subUserService.createSubUser(sysUser);
     }
 
 }

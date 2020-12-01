@@ -21,7 +21,6 @@ public interface UserService {
     /**
      * 修改密码
      * @param args
-     * @param sysUser
      * @return
      */
     Resp<String> modifyPassword(Map<String, String> args);

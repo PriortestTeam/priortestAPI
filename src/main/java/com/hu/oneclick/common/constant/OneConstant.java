@@ -4,6 +4,16 @@ package com.hu.oneclick.common.constant;
  * @author qingyang
  */
 public interface OneConstant {
+
+    /**
+     * 公共参数
+     */
+    interface COMMON{
+        //成员用户分隔符
+        String SUB_USER_SEPARATOR = "#*&";
+    }
+
+
     /**
      * 系统平台用户类型
      */
@@ -14,13 +24,12 @@ public interface OneConstant {
     }
 
     /**
+     *
      * 用户类型
      */
     interface USER_TYPE {
         Integer ADMIN = 1;
-        Integer TRAIL_USER = 2;
-        Integer TESTERS = 3;
-        Integer DEVELOPER = 4;
+        Integer SUB_USER = 2;
     }
 
     /**

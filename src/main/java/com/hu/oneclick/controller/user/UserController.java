@@ -1,4 +1,4 @@
-package com.hu.oneclick.controller;
+package com.hu.oneclick.controller.user;
 
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.model.base.Resp;
