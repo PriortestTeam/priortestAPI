@@ -95,4 +95,14 @@ public interface OneConstant {
         String MY_ACCOUNT = "My account";
     }
 
+    /**
+     * 自定义字段类型
+     */
+    interface CUSTOM_FIELD_TYPE{
+        String RADIO = "radio";
+        String TEXT = "text";
+        String DROP_DOWN = "DropDown";
+        String CHECK_BOX = "CheckBox";
+    }
+
 }

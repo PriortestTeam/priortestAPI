@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @author qingyang
  */
 @RestController
-
 @RequestMapping("project")
 public class ProjectTestController {
 

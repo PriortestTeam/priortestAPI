@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.FieldDropDownDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.FieldDropDown" id="FieldDropDownMap">
+        <result property="customFieldId" column="custom_field_id" jdbcType="INTEGER"/>
+        <result property="defaultValue" column="default_value" jdbcType="VARCHAR"/>
+        <result property="dropDownList" column="drop_down_list" jdbcType="OTHER"/>
+        <result property="length" column="length" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="FieldDropDownMap">
+        select
+          custom_field_id, default_value, drop_down_list, `length`
+        from oneclick.field_drop_down
+        where  = #{}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="FieldDropDownMap">
+        select
+          custom_field_id, default_value, drop_down_list, `length`
+        from oneclick.field_drop_down
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="FieldDropDownMap">
+        select
+        custom_field_id, default_value, drop_down_list, `length`
+        from oneclick.field_drop_down
+        <where>
+            <if test="customFieldId != null and customFieldId != ''">
+                and custom_field_id = #{customFieldId}
+            </if>
+            <if test="defaultValue != null and defaultValue != ''">
+                and default_value = #{defaultValue}
+            </if>
+            <if test="dropDownList != null">
+                and drop_down_list = #{dropDownList}
+            </if>
+            <if test="length != null">
+                and `length` = #{length}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="" useGeneratedKeys="true">
+        insert into oneclick.field_drop_down
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customFieldId != null and customFieldId != ''">
+                custom_field_id,
+            </if>
+            <if test="defaultValue != null and defaultValue != ''">
+                default_value,
+            </if>
+            <if test="dropDownList != null">
+                drop_down_list,
+            </if>
+            <if test="length != null">
+                `length`,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customFieldId != null and customFieldId != ''">
+                #{customFieldId},
+            </if>
+            <if test="defaultValue != null and defaultValue != ''">
+                #{defaultValue},
+            </if>
+            <if test="dropDownList != null">
+                #{dropDownList},
+            </if>
+            <if test="length != null">
+                #{length},
+            </if>
+        </trim>
+    </insert>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update oneclick.field_drop_down
+        <set>
+            <if test="customFieldId != null and customFieldId != ''">
+                custom_field_id = #{customFieldId},
+            </if>
+            <if test="defaultValue != null and defaultValue != ''">
+                default_value = #{defaultValue},
+            </if>
+            <if test="dropDownList != null">
+                drop_down_list = #{dropDownList},
+            </if>
+            <if test="length != null">
+                `length` = #{length},
+            </if>
+        </set>
+        where = #{}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from oneclick.field_drop_down where custom_field_id = #{customFieldId}
+    </delete>
+
+</mapper>

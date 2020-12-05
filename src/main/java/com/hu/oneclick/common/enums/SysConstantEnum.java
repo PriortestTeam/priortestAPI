@@ -6,7 +6,14 @@ package com.hu.oneclick.common.enums;
 public enum SysConstantEnum {
 
     FAILED("-1","调用失败。"),
+    ADD_FAILED("-1","新增失败。"),
+    UPDATE_FAILED("-1","更新失败。"),
+    DELETE_FAILED("-1","删除失败。"),
     SUCCESS(SysConstantEnum.NUMBER,"调用成功。"),
+    ADD_SUCCESS(SysConstantEnum.NUMBER,"新增成功。"),
+    UPDATE_SUCCESS(SysConstantEnum.NUMBER,"更新成功。"),
+    DELETE_SUCCESS(SysConstantEnum.NUMBER,"删除成功。"),
+
     SYS_ERROR("-1","系统异常。"),
     PARAM_EMPTY( SysConstantEnum.NUMBER + "001","不能为空。"),
     PASSWORD_RULES(SysConstantEnum.NUMBER + "001","密码由(数字、小写、大写字母)，最小8位，最大20位字符组成。"),
