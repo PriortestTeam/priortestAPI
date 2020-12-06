@@ -1,14 +1,21 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.FieldRadio;
-import com.hu.oneclick.model.domain.FieldRichText;
-import com.hu.oneclick.model.domain.FieldText;
+import com.hu.oneclick.model.domain.*;
+
+import java.util.List;
 
 /**
  * @author qingyang
  */
 public interface CustomFieldService {
+
+    //custom begin
+
+    Resp<List<CustomField>> queryCustomList(CustomField customField);
+
+    //custom end
+
 
     //radio begin
 
@@ -37,4 +44,17 @@ public interface CustomFieldService {
     Resp<String> updateCustomRichText(FieldRichText fieldRichText);
 
     //text end
+
+    //drop down begin
+
+    Resp<FieldDropDown> queryFieldDropDownById(String customFieldId);
+
+    Resp<String> addCustomDropDown(FieldDropDown fieldDropDown);
+
+    Resp<String> updateCustomDropDown(FieldDropDown fieldDropDown);
+
+    Resp<String> deleteCustomDropDown(String customFieldId);
+
+
+    //drop down end
 }

@@ -36,12 +36,8 @@
         id, user_id,  `type`, scope, mandatory, create_time, update_time, field_name, project_id
         from oneclick.custom_field
         <where>
-            <if test="id != null">
-                and id = #{id}
-            </if>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
+            project_id = #{projectId}
+            and user_id = #{userId}
             <if test="type != null and type != ''">
                 and  `type` = #{type}
             </if>
@@ -61,6 +57,7 @@
                 and field_name = #{fieldName}
             </if>
         </where>
+        order by update_time desc
     </select>
 
     <!--新增所有列-->

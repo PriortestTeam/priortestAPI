@@ -25,9 +25,8 @@ public class AspectPage {
         String pageNum = request.getParameter("pageNum").trim();
         String pageSize = request.getParameter("pageSize").trim();
 
-        if (StringUtils.isNotEmpty(pageNum) && StringUtils.isNotEmpty(pageSize)) {
-            PageHelper.startPage(Integer.parseInt(pageNum), Integer.parseInt(pageSize));
-        }
+        PageHelper.startPage(StringUtils.isNotEmpty(pageNum) ? Integer.parseInt(pageNum) : 1,
+                StringUtils.isNotEmpty(pageSize) ? Integer.parseInt(pageSize) : 10);
         return joinPoint.proceed();
     }
 

@@ -1,11 +1,12 @@
 package com.hu.oneclick.controller;
 
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.FieldRadio;
-import com.hu.oneclick.model.domain.FieldRichText;
-import com.hu.oneclick.model.domain.FieldText;
+import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.server.service.CustomFieldService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author qingyang
@@ -19,6 +20,16 @@ public class CustomFieldController {
     public CustomFieldController(CustomFieldService customFieldService) {
         this.customFieldService = customFieldService;
     }
+
+    //custom begin
+
+    @Page
+    @PostMapping("queryCustomList")
+    public Resp<List<CustomField>> queryCustomList(@RequestBody CustomField customField){
+        return customFieldService.queryCustomList(customField);
+    }
+
+    //custom end
 
     //radio begin
 
@@ -84,5 +95,27 @@ public class CustomFieldController {
 
     //rich text end
 
+    //drop down begin
 
+    @GetMapping("queryFieldDropDownById/{customFieldId}")
+    public Resp<FieldDropDown> queryFieldDropDownById(@PathVariable String customFieldId){
+        return customFieldService.queryFieldDropDownById(customFieldId);
+    }
+
+    @PostMapping("addCustomDropDown")
+    public Resp<String> addCustomDropDown(@RequestBody FieldDropDown fieldDropDown){
+        return customFieldService.addCustomDropDown(fieldDropDown);
+    }
+
+    @PostMapping("updateCustomDropDown")
+    public Resp<String> updateCustomDropDown(@RequestBody FieldDropDown fieldDropDown){
+        return customFieldService.updateCustomDropDown(fieldDropDown);
+    }
+
+    @DeleteMapping("deleteCustomDropDown/{customFieldId}")
+    public Resp<String> deleteCustomDropDown(@PathVariable String customFieldId){
+        return customFieldService.deleteCustomDropDown(customFieldId);
+    }
+
+    //drop down end
 }

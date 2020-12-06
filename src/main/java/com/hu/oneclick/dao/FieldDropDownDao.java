@@ -1,6 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.domain.FieldDropDown;
+import com.hu.oneclick.model.domain.FieldText;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -61,6 +62,7 @@ public interface FieldDropDownDao {
      * @param 主键
      * @return 影响行数
      */
-    int deleteById(@Param("id") String id);
+    int deleteById(@Param("customFieldId") String customFieldId);
 
+    FieldDropDown queryFieldTextById(@Param("customFieldId") String customFieldId,@Param("masterId") String masterId);
 }

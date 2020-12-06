@@ -14,7 +14,7 @@
         select
           custom_field_id, default_value, drop_down_list, `length`
         from oneclick.field_drop_down
-        where  = #{}
+        where custom_field_id = #{customFieldId}
     </select>
 
     <!--查询指定行数据-->
@@ -44,6 +44,25 @@
                 and `length` = #{length}
             </if>
         </where>
+    </select>
+    <select id="queryFieldTextById" resultType="com.hu.oneclick.model.domain.FieldDropDown">
+         select
+            cf.id as id,
+               cf.type as type,
+               cf.create_time as createTime,
+               cf.update_time as updateTime,
+               cf.user_id as userId,
+               cf.field_name as fieldName,
+               cf.scope as scope,
+               cf.mandatory as mandatory,
+               dd.default_value as defaultValue,
+               dd.drop_down_list as dropDownList,
+               dd.`length` as `length`
+        from field_drop_down dd
+        join custom_field cf on dd.custom_field_id = cf.id
+        where
+        cf.id = #{customFieldId}
+        and cf.user_id = #{masterId}
     </select>
 
     <!--新增所有列-->
@@ -98,7 +117,7 @@
                 `length` = #{length},
             </if>
         </set>
-        where = #{}
+        where custom_field_id = #{customFieldId}
     </update>
 
     <!--通过主键删除-->
