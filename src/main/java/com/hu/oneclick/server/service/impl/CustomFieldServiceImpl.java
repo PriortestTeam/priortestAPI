@@ -1,6 +1,5 @@
 package com.hu.oneclick.server.service.impl;
 
-import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.CustomFieldDao;
@@ -8,6 +7,7 @@ import com.hu.oneclick.dao.FieldDropDownDao;
 import com.hu.oneclick.dao.FieldRadioDao;
 import com.hu.oneclick.dao.FieldTextDao;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.server.service.CustomFieldService;
 import org.slf4j.Logger;
@@ -63,10 +63,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         try {
             fieldRadio.subVerify();
             fieldRadio.setUserId(jwtUserServiceImpl.getMasterId());
-            if (customFieldDao.insert(fieldRadio) > 0 && fieldRadioDao.insert(fieldRadio) > 0){
-                return new Resp.Builder<String>().setData(SysConstantEnum.ADD_SUCCESS.getValue()).ok();
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.ADD_FAILED.getValue()).fail();
+            return Result.addResult((customFieldDao.insert(fieldRadio) > 0
+                    && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#addCustomRadio,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -78,10 +76,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> updateCustomRadio(FieldRadio fieldRadio) {
         try {
             fieldRadio.setUserId(jwtUserServiceImpl.getMasterId());
-            if (customFieldDao.update(fieldRadio) > 0 && fieldRadioDao.update(fieldRadio) > 0){
-                return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_FAILED.getValue()).fail();
+            return Result.updateResult((customFieldDao.update(fieldRadio) > 0
+                    && fieldRadioDao.update(fieldRadio) > 0)  ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#updateCustomRadio,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -93,10 +89,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> deleteCustomRadio(String id) {
         try {
             String userId = jwtUserServiceImpl.getMasterId();
-            if (customFieldDao.deleteById(id,userId) > 0 && fieldRadioDao.deleteById(id) > 0){
-                return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_SUCCESS.getValue()).ok();
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_FAILED.getValue()).fail();
+            return Result.deleteResult((customFieldDao.deleteById(id,userId) > 0
+                    && fieldRadioDao.deleteById(id) > 0)  ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#deleteCustomRadio,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -119,10 +113,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     private Resp<String> addCustomText2(FieldText fieldText){
         try {
             fieldText.setUserId(jwtUserServiceImpl.getMasterId());
-            if (customFieldDao.insert(fieldText) > 0 && fieldTextDao.insert(fieldText) > 0){
-                return new Resp.Builder<String>().setData(SysConstantEnum.ADD_SUCCESS.getValue()).ok();
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.ADD_FAILED.getValue()).fail();
+            return Result.addResult((customFieldDao.insert(fieldText) > 0
+                    && fieldTextDao.insert(fieldText) > 0) ? 1:0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#addCustomText2,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -139,10 +131,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     private Resp<String> updateCustomText2(FieldText fieldText) {
         try {
             fieldText.setUserId(jwtUserServiceImpl.getMasterId());
-            if (customFieldDao.update(fieldText) > 0 && fieldTextDao.update(fieldText) > 0){
-                return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_FAILED.getValue()).fail();
+            return Result.updateResult((customFieldDao.update(fieldText) > 0
+                    && fieldTextDao.update(fieldText) > 0) ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#updateCustomText2,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -154,10 +144,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> deleteCustomText(String id) {
         try {
             String userId = jwtUserServiceImpl.getMasterId();
-            if (customFieldDao.deleteById(id,userId) > 0 && fieldTextDao.deleteById(id) > 0){
-                return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_SUCCESS.getValue()).ok();
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_FAILED.getValue()).fail();
+            return Result.deleteResult((customFieldDao.deleteById(id,userId) > 0
+                    && fieldTextDao.deleteById(id) > 0) ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#deleteCustomText,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -192,10 +180,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> addCustomDropDown(FieldDropDown fieldDropDown) {
         try {
             fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
-            if (customFieldDao.insert(fieldDropDown) > 0 && fieldDropDownDao.insert(fieldDropDown) > 0){
-                return new Resp.Builder<String>().setData(SysConstantEnum.ADD_SUCCESS.getValue()).ok();
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.ADD_FAILED.getValue()).fail();
+            return Result.addResult( (customFieldDao.insert(fieldDropDown) > 0
+                    && fieldDropDownDao.insert(fieldDropDown) > 0) ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#addCustomDropDown,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -207,10 +193,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> updateCustomDropDown(FieldDropDown fieldDropDown) {
         try {
             fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
-            if (customFieldDao.update(fieldDropDown) > 0 && fieldDropDownDao.update(fieldDropDown) > 0){
-                return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_FAILED.getValue()).fail();
+            return Result.updateResult((customFieldDao.update(fieldDropDown) > 0
+                    && fieldDropDownDao.update(fieldDropDown) > 0) ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#updateCustomDropDown,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -222,10 +206,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> deleteCustomDropDown(String customFieldId) {
         try {
             String userId = jwtUserServiceImpl.getMasterId();
-            if (customFieldDao.deleteById(customFieldId,userId) > 0 && fieldDropDownDao.deleteById(customFieldId) > 0){
-                return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_SUCCESS.getValue()).ok();
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_FAILED.getValue()).fail();
+            return Result.deleteResult((customFieldDao.deleteById(customFieldId,userId) > 0
+                    && fieldDropDownDao.deleteById(customFieldId) > 0) ? 1 :0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#deleteCustomDropDown,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());

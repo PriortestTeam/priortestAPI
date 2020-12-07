@@ -85,6 +85,10 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		return sysUser.getParentId();
 	}
 
+	public String getId(){
+		return getUserLoginInfo().getSysUser().getId();
+	}
+
 
 	public String saveUserLoginInfo(AuthLoginUser user) {
 		//正式开发时可以调用该方法实时生成加密的salt,BCrypt.gensalt
