@@ -5,7 +5,7 @@
     <resultMap type="com.hu.oneclick.model.domain.FieldDropDown" id="FieldDropDownMap">
         <result property="customFieldId" column="custom_field_id" jdbcType="INTEGER"/>
         <result property="defaultValue" column="default_value" jdbcType="VARCHAR"/>
-        <result property="dropDownList" column="drop_down_list" jdbcType="OTHER"/>
+        <result property="dropDownList" column="drop_down_list" jdbcType="VARCHAR"/>
         <result property="length" column="length" jdbcType="INTEGER"/>
     </resultMap>
 

@@ -21,9 +21,9 @@ public class ProjectController {
     }
 
 
-    @GetMapping("queryDoesExistById/{id}")
-    public Resp<String> queryDoesExistById(@PathVariable String id) {
-        return projectService.queryDoesExistById(id);
+    @GetMapping("queryDoesExistById")
+    public Resp<String> queryDoesExistById(@RequestParam String title) {
+        return projectService.queryDoesExistById(title);
     }
 
     @GetMapping("queryById/{id}")

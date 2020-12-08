@@ -96,6 +96,13 @@
             </if>
         </where>
     </select>
+    <select id="queryByTitle" resultType="java.lang.Integer">
+         select
+            count(1)
+        from project
+        user_id = #{masterId}
+        and title = #{title}
+    </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="" useGeneratedKeys="true">
@@ -125,7 +132,7 @@
             <if test="attachmentId != null and attachmentId != ''">
                 attachment_id,
             </if>
-                create_time
+                create_time,
                 update_time
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">

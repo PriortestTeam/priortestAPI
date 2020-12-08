@@ -12,7 +12,7 @@ public interface ProjectService {
 
     Resp<Project> queryById(String id);
 
-    Resp<String> queryDoesExistById(String id);
+    Resp<String> queryDoesExistById(String title);
 
     Resp<List<Project>> queryForProjects(Project project);
 

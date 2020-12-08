@@ -20,7 +20,8 @@ public class FieldDropDown extends CustomField implements Serializable {
     /**
      * 数组格式，每一个值按照 逗号分隔
      */
-    private List<String> dropDownList;
+    private String dropDownList;
+    private String dropDowns;
     /**
      * 数组长度
      */
@@ -32,7 +33,13 @@ public class FieldDropDown extends CustomField implements Serializable {
 
     }
 
+    public String getCustomFieldId() {
+        return customFieldId;
+    }
 
+    public void setCustomFieldId(String customFieldId) {
+        this.customFieldId = customFieldId;
+    }
 
     public String getDefaultValue() {
         return defaultValue;
@@ -42,20 +49,20 @@ public class FieldDropDown extends CustomField implements Serializable {
         this.defaultValue = defaultValue;
     }
 
-    public String getCustomFieldId() {
-        return customFieldId;
-    }
-
-    public void setCustomFieldId(String customFieldId) {
-        this.customFieldId = customFieldId;
-    }
-
-    public List<String> getDropDownList() {
+    public String getDropDownList() {
         return dropDownList;
     }
 
-    public void setDropDownList(List<String> dropDownList) {
+    public void setDropDownList(String dropDownList) {
         this.dropDownList = dropDownList;
+    }
+
+    public String getDropDowns() {
+        return dropDowns;
+    }
+
+    public void setDropDowns(String dropDowns) {
+        this.dropDowns = dropDowns;
     }
 
     public Integer getLength() {
@@ -65,5 +72,4 @@ public class FieldDropDown extends CustomField implements Serializable {
     public void setLength(Integer length) {
         this.length = length;
     }
-
 }

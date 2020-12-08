@@ -53,7 +53,7 @@ public class PermissionService {
         Integer manage = userLoginInfo.getSysUser().getManager();
         //后台管理员和平台注册用户具有所有权限
         if (manage.equals(OneConstant.PLATEFORM_USER_TYPE.ORDINARY) || manage.equals(OneConstant.PLATEFORM_USER_TYPE.MANAGER)){
-            throw new BizException(SysConstantEnum.NOT_PERMISSION.getCode(),SysConstantEnum.NOT_PERMISSION.getValue());
+            return;
         }
         List<SysProjectPermissionDto> permissions = userLoginInfo.getPermissions();
         if (permissions == null || permissions.size() <= 0){
