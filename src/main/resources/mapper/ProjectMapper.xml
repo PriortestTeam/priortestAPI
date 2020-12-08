@@ -10,50 +10,32 @@
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="planReleaseDate" column="plan_release_date" jdbcType="TIMESTAMP"/>
-        <result property="attachmentId" column="attachment_id" jdbcType="VARCHAR"/>
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
 
     </resultMap>
 
-    <!--查询单个-->
-    <resultMap type="com.hu.oneclick.model.domain.dto.ProjectDto" id="queryByIdMap">
-        <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
-        <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="reportToName" column="report_to_name" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
-        <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="planReleaseDate" column="plan_release_date" jdbcType="TIMESTAMP"/>
-        <result property="attachmentId" column="attachment_id" jdbcType="VARCHAR"/>
-        <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
-        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-        <result property="filePath" column="file_path" jdbcType="VARCHAR"/>
-    </resultMap>
-    <select id="queryById" resultMap="queryByIdMap">
-        select p.id,
-               p.user_id,
-               p.title,
-               p.report_to_name,
-               p.status,
-               p.description,
-               p.plan_release_date,
-               p.attachment_id,
-               p.del_flag,
-               p.create_time,
-               p.update_time,
-               a.file_path
-        from project p
-        left join attachment a on p.attachment_id = a.id
-        where p.id = #{id}
+    <select id="queryById" resultMap="ProjectMap">
+        select id,
+               user_id,
+               title,
+               report_to_name,
+               status,
+               description,
+               plan_release_date,
+               attachment_id,
+               del_flag,
+               create_time,
+               update_time
+        from project
+        where id = #{id}
     </select>
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProjectMap">
         select
-          id, user_id, title, report_to_name, status, description, plan_release_date,attachment_id, del_flag, create_time, update_time
+          id, user_id, title, report_to_name, status, description, plan_release_date, del_flag, create_time, update_time
         from oneclick.project
         limit #{offset}, #{limit}
     </select>
@@ -61,7 +43,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ProjectMap">
         select
-        id, user_id, title, report_to_name, status, description, plan_release_date,attachment_id , del_flag, create_time, update_time
+        id, user_id, title, report_to_name, status, description, plan_release_date , del_flag, create_time, update_time
         from oneclick.project
         <where>
             <if test="id != null and id != ''">
@@ -129,9 +111,6 @@
             <if test="planReleaseDate != null">
                 plan_release_date,
             </if>
-            <if test="attachmentId != null and attachmentId != ''">
-                attachment_id,
-            </if>
                 create_time,
                 update_time
         </trim>
@@ -156,9 +135,6 @@
             </if>
             <if test="planReleaseDate != null">
                 #{planReleaseDate},
-            </if>
-            <if test="attachmentId != null and attachmentId != ''">
-                #{attachmentId},
             </if>
             NOW(),
             NOW()
@@ -190,9 +166,6 @@
             </if>
             <if test="planReleaseDate != null">
                 plan_release_date = #{planReleaseDate},
-            </if>
-            <if test="attachmentId != null and attachmentId != ''">
-                attachment_id = #{attachmentId},
             </if>
             update_time = NOW()
         </set>
