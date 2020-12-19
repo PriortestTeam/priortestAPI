@@ -13,11 +13,11 @@ import java.util.List;
  * @author qingyang
  */
 @Service("ps")
-public class PermissionService {
+public class SysPermissionService {
 
     private final JwtUserServiceImpl jwtUserServiceImpl;
 
-    public PermissionService(JwtUserServiceImpl jwtUserServiceImpl) {
+    public SysPermissionService(JwtUserServiceImpl jwtUserServiceImpl) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
     }
 

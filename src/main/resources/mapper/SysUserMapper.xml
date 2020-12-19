@@ -115,14 +115,46 @@
         and del_flag = 0
         limit 1
     </select>
-    <select id="querySubUsers" resultMap="SysUserMap"  parameterType="com.hu.oneclick.model.domain.SysUser">
-        select
-        id, email, user_name, photo, register_date, `type`, enable, time_zone, update_time
-        from oneclick.sys_user
+    <select id="querySubUsers" resultType="com.hu.oneclick.model.domain.dto.SubUserDto"  parameterType="com.hu.oneclick.model.domain.dto.SubUserDto">
+        select u.id as id,
+        u.email as email,
+        u.user_name as userName,
+        u.photo as photo,
+        u.register_date as registerDate,
+        u.`type` as type,
+        u.enable as enable,
+        u.time_zone as timeZone,
+        u.update_time as updateTime,
+        u.parent_id as parentId,
+        sup.project_id as projectIdStr
+        from sys_user u
+        left join sub_user_project sup on u.id = sup.user_id
         <where>
         1 = 1
-        and parent_id = #{parentId}
+        and u.manager = 3
+        and u.parent_id = #{parentId}
         </where>
+        order by u.register_date desc
+    </select>
+    <select id="querySubUserInfo" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">
+        select u.id as id,
+        u.email as email,
+        u.user_name as userName,
+        u.photo as photo,
+        u.register_date as registerDate,
+        u.`type` as type,
+        u.enable as enable,
+        u.time_zone as timeZone,
+        u.update_time as updateTime,
+        u.parent_id as parentId,
+        sup.project_id as projectIdStr
+        from sys_user u
+        left join sub_user_project sup on u.id = sup.user_id
+        where
+            1 = 1
+            and u.manager = 3
+            and u.id = #{userId}
+            and u.parent_id = #{parentId}
     </select>
 
     <!--新增所有列-->
@@ -312,6 +344,34 @@
            update_time = NOW()
         where
         id = #{id}
+        and del_flag = 0
+    </update>
+    <update id="updateSubUser">
+        update oneclick.sys_user
+        <set>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="photo != null and photo != ''">
+                photo = #{photo},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="contactNo != null and contactNo != ''">
+                contact_no = #{contactNo},
+            </if>
+            <if test="closeDate != null">
+                close_date = #{closeDate},
+            </if>
+            <if test="type != null">
+                `type` = #{type},
+            </if>
+            update_time = NOW()
+        </set>
+        where
+        id = #{id}
+        and parent_id = #{parentId}
         and del_flag = 0
     </update>
 

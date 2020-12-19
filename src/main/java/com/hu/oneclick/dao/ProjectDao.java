@@ -64,4 +64,10 @@ public interface ProjectDao {
     int deleteById(@Param("id") String id);
 
     Integer queryByTitle(@Param("masterId")String masterId,@Param("title") String title);
+
+    /**
+     * 查询所有的项目
+     * @return
+     */
+    List<Project> queryAllProjects(String masterId);
 }

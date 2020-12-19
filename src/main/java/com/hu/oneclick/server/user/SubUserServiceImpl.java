@@ -4,17 +4,23 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.dao.ProjectDao;
+import com.hu.oneclick.dao.SubUserProjectDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,20 +35,52 @@ public class SubUserServiceImpl implements SubUserService{
 
     private final SysUserDao sysUserDao;
 
+    private final SubUserProjectDao subUserProjectDao;
+
+    private final ProjectDao projectDao;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
-    public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao) {
+    public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, SubUserProjectDao subUserProjectDao, ProjectDao projectDao) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.sysUserDao = sysUserDao;
+        this.subUserProjectDao = subUserProjectDao;
+        this.projectDao = projectDao;
     }
 
     @Override
-    public Resp<List<SysUser>> querySubUsers(SubUserDto sysUser) {
-        AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
-        sysUser.setParentId(userLoginInfo.getSysUser().getId());
-        List<SysUser> sysUsers = sysUserDao.querySubUsers(sysUser);
-        return new Resp.Builder<List<SysUser>>().setData(sysUsers).total(sysUsers.size()).ok();
+    public Resp<List<SubUserDto>> querySubUsers(SubUserDto sysUser) {
+        sysUser.setParentId(jwtUserServiceImpl.getMasterId());
+        List<SubUserDto> sysUsers = sysUserDao.querySubUsers(sysUser);
+        List<Project> projects = projectDao.queryAllProjects(jwtUserServiceImpl.getMasterId());
+        if (projects != null && projects.size() > 0){
+            sysUsers.forEach(e -> queryLikeProjectNames(e,projects));
+        }
+        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers.size()).ok();
+    }
+
+    /**
+     * 整合关联的项目
+     * @param subUserDto
+     */
+    private void queryLikeProjectNames(SubUserDto subUserDto, List<Project> projects) {
+        List<String> lists = new ArrayList<>(projects.size());
+        String projectIdStr = subUserDto.getProjectIdStr();
+        if (StringUtils.isEmpty(projectIdStr)){
+            return;
+        }else if (subUserDto.getALL().equals(projectIdStr)){
+            projects.forEach(e-> lists.add(e.getTitle()));
+        }else {
+            //将查询条件转换成list
+            projects.forEach(e->{
+                if (subUserDto.getProjectIdStr().contains(e.getId())){
+                    lists.add(e.getTitle());
+                }
+            });
+        }
+        //将项目名称列表转换成 字符串
+        subUserDto.setProjectsSts(StringUtils.join(lists, "; "));
     }
 
     @Override
@@ -60,7 +98,13 @@ public class SubUserServiceImpl implements SubUserService{
             sysUser.setPhoto(defaultPhoto);
             sysUser.setType(OneConstant.USER_TYPE.SUB_USER);
             sysUser.setParentId(masterUser.getId());
-            if (sysUserDao.insert(sysUser) > 0){
+
+            //设置用户关联的项目
+            SubUserProject subUserProject = new SubUserProject();
+            subUserProject.setUserId(masterUser.getId());
+            subUserProject.setProjectId(sysUser.getProjectIdStr());
+
+            if (sysUserDao.insert(sysUser) > 0 && subUserProjectDao.insert(subUserProject) > 0){
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),
                         SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue());
             }
@@ -68,6 +112,24 @@ public class SubUserServiceImpl implements SubUserService{
                     SysConstantEnum.CREATE_SUB_USER_FAILED.getValue());
         }catch (BizException e){
             logger.error("class: SubUserServiceImpl#createSubUser,error []" + e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> updateSubUser(SubUserDto sysUser) {
+        try {
+            String masterId = jwtUserServiceImpl.getMasterId();
+            sysUser.setParentId(masterId);
+
+            //设置用户关联的项目
+            SubUserProject subUserProject = new SubUserProject();
+            subUserProject.setUserId(masterId);
+            subUserProject.setProjectId(sysUser.getProjectIdStr());
+            return Result.updateResult((sysUserDao.updateSubUser(sysUser) > 0 && subUserProjectDao.update(subUserProject) > 0) ? 1 : 0);
+        }catch (BizException e){
+            logger.error("class: SubUserServiceImpl#updateSubUser,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
     }

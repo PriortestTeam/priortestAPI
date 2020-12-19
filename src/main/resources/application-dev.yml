@@ -45,6 +45,7 @@ mybatis:
   configuration:
     call-setters-on-nulls: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: true
 
 
 logging:

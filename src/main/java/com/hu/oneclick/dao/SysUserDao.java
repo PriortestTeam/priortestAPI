@@ -1,6 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.dto.SubUserDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -50,8 +51,15 @@ public interface SysUserDao {
      * 查询成员列表
      * @return
      */
-    List<SysUser> querySubUsers(SysUser sysUser);
+    List<SubUserDto> querySubUsers(SysUser sysUser);
 
+    /**
+     * 查詢子用户信息
+     * @param userId
+     * @param masterId
+     * @return
+     */
+    SubUserDto querySubUserInfo(@Param("userId") String userId,@Param("masterId") String masterId);
 
     /**
      * 新增数据
@@ -84,5 +92,10 @@ public interface SysUserDao {
      */
     int deleteById(@Param("id") String id);
 
-
+    /**
+     * 修改子用户信息
+     * @param sysUser
+     * @return
+     */
+    int updateSubUser(SubUserDto sysUser);
 }

@@ -16,7 +16,7 @@ public interface SubUserService {
      * @param sysUser
      * @return
      */
-    Resp<List<SysUser>> querySubUsers(SubUserDto sysUser);
+    Resp<List<SubUserDto>> querySubUsers(SubUserDto sysUser);
 
     /**
      * 创建一个成员用户
@@ -24,5 +24,12 @@ public interface SubUserService {
      * @return
      */
     Resp<String> createSubUser(SubUserDto sysUser);
+
+    /**
+     * 修改成员用户
+     * @param sysUser
+     * @return
+     */
+    Resp<String> updateSubUser(SubUserDto sysUser);
 }
 

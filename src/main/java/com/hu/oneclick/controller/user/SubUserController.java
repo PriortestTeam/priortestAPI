@@ -30,13 +30,18 @@ public class SubUserController {
 
     @Page
     @PostMapping("querySubUsers")
-    public Resp<List<SysUser>> querySubUsers(@RequestBody SubUserDto sysUser){
+    public Resp<List<SubUserDto>> querySubUsers(@RequestBody SubUserDto sysUser){
         return  subUserService.querySubUsers(sysUser);
     }
 
     @PostMapping("createSubUser")
     public Resp<String> createSubUser(@RequestBody SubUserDto sysUser){
         return  subUserService.createSubUser(sysUser);
+    }
+
+    @PostMapping("updateSubUser")
+    public Resp<String> updateSubUser(@RequestBody SubUserDto sysUser){
+        return  subUserService.updateSubUser(sysUser);
     }
 
 }

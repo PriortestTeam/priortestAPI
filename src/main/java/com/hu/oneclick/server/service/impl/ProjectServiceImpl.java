@@ -3,7 +3,7 @@ package com.hu.oneclick.server.service.impl;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
-import com.hu.oneclick.common.security.service.PermissionService;
+import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
@@ -24,14 +24,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final static Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
-    private final PermissionService permissionService;
+    private final SysPermissionService sysPermissionService;
 
     private final JwtUserServiceImpl jwtUserService;
 
     private final ProjectDao projectDao;
 
-    public ProjectServiceImpl(PermissionService permissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao) {
-        this.permissionService = permissionService;
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao) {
+        this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
     }
@@ -60,7 +60,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Resp<String> addProject(Project project) {
         try {
-            permissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
+            sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
                     OneConstant.PERMISSION.ADD,project.getId());
             Result.verifyDoesExist(queryByTitle(project.getTitle()));
             project.setUserId(jwtUserService.getMasterId());
@@ -74,7 +74,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Resp<String> updateProject(Project project) {
         try {
-            permissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
+            sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
                     OneConstant.PERMISSION.EDIT,project.getId());
             Result.verifyDoesExist(queryByTitle(project.getTitle()));
             return Result.updateResult(projectDao.update(project));
@@ -87,7 +87,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Resp<String> deleteProject(String projectId) {
         try {
-            permissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
+            sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
                     OneConstant.PERMISSION.DELETE,projectId);
             return Result.deleteResult(projectDao.deleteById(projectId));
         }catch (BizException e){
@@ -106,7 +106,10 @@ public class ProjectServiceImpl implements ProjectService {
         if (StringUtils.isEmpty(title)){
             return null;
         }
-        return projectDao.queryByTitle(jwtUserService.getMasterId(),title);
+        if(projectDao.queryByTitle(jwtUserService.getMasterId(),title) > 0){
+            return 1;
+        }
+        return null;
     }
 
 
