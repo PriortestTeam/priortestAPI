@@ -1,18 +1,23 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.SysProjectPermissionDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
 import com.hu.oneclick.server.service.SettingPermissionService;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,11 +42,14 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
 
     private final SysProjectPermissionDao sysProjectPermissionDao;
 
-    public SettingPermissionServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, ProjectDao projectDao, SysProjectPermissionDao sysProjectPermissionDao) {
+    private final RedissonClient redisClient;
+
+    public SettingPermissionServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, ProjectDao projectDao, SysProjectPermissionDao sysProjectPermissionDao, RedissonClient redisClient) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.sysUserDao = sysUserDao;
         this.projectDao = projectDao;
         this.sysProjectPermissionDao = sysProjectPermissionDao;
+        this.redisClient = redisClient;
     }
 
 
@@ -78,11 +86,27 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
                 return new Resp.Builder<String>().fail();
             }
             //删除子用户关联项目权限表并重新添加
-            return Result.updateResult((sysProjectPermissionDao.deleteBySubUserId(subUserDto.getId()) > 0
-                    && sysProjectPermissionDao.batchInsert(entity.getProjectPermissions()) > 0) ? 1 : 0);
+            if (sysProjectPermissionDao.deleteBySubUserId(subUserDto.getId()) > 0
+                    && sysProjectPermissionDao.batchInsert(entity.getProjectPermissions()) > 0){
+                //删除用户，用户必须重新登录
+                deleteSubUserLoginStatus(subUserDto.getEmail());
+                return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
+            }
+            throw new BizException(SysConstantEnum.UPDATE_SUCCESS.getCode(),SysConstantEnum.UPDATE_SUCCESS.getValue());
         }catch (BizException e){
             logger.error("class: SettingPermissionServiceImpl#updatePermissions,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    /**
+     * 更新用户的缓存（权限列表）信息
+     */
+    private void deleteSubUserLoginStatus(String username){
+        RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN  + username);
+        AuthLoginUser authLoginUser = JSONObject.parseObject(bucket.get(), AuthLoginUser.class);
+        if (authLoginUser != null) {
+            bucket.delete();
         }
     }
 }
