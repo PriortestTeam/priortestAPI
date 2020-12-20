@@ -16,6 +16,7 @@ public enum SysConstantEnum {
 
     SYS_ERROR("-1","系统异常。"),
     PARAM_EMPTY( SysConstantEnum.NUMBER + "001","不能为空。"),
+    LIST_PARAM_EMPTY( SysConstantEnum.NUMBER + "001","数组必须有至少一个值。"),
     PASSWORD_RULES(SysConstantEnum.NUMBER + "001","密码由(数字、小写、大写字母)，最小8位，最大20位字符组成。"),
     REGISTER_SUCCESS(SysConstantEnum.NUMBER,"注册成功。"),
     CREATE_SUB_USER_SUCCESS(SysConstantEnum.NUMBER,"创建成员用户成功。"),

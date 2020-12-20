@@ -16,7 +16,7 @@ public class SysProjectPermission extends BaseEntity implements Serializable {
     /**
      * 关联用户id
      */
-    private String userId;
+    private String subUserId;
     /**
      * 关联的项目id
      */
@@ -30,12 +30,12 @@ public class SysProjectPermission extends BaseEntity implements Serializable {
 
     private Date createTime;
 
-    public String getUserId() {
-        return userId;
+    public String getSubUserId() {
+        return subUserId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setSubUserId(String subUserId) {
+        this.subUserId = subUserId;
     }
 
     public String getProjectId() {

@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SysProjectPermissionDao">
-
+    <!--开启缓存-->
+    <cache-ref namespace="com.hu.oneclick.dao.ProjectDao"/>
     <resultMap type="com.hu.oneclick.model.domain.SysProjectPermission" id="SysProjectPermissionMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="subUserId" column="sub_user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <result property="operationAuthId" column="operation_auth_id" jdbcType="INTEGER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
-    <resultMap type="com.hu.oneclick.model.domain.dto.SysProjectPermissionDto" id="queryByUserIdMap">
+    <resultMap type="com.hu.oneclick.model.domain.dto.SysProjectPermissionDto" id="queryBySubUserIdMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="subUserId" column="sub_user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <result property="operationAuthId" column="operation_auth_id" jdbcType="INTEGER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
@@ -21,10 +22,10 @@
         <result property="markName" column="mark_name" jdbcType="VARCHAR"/>
         <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
     </resultMap>
-    <select id="queryByUserId" resultMap="queryByUserIdMap">
+    <select id="queryBySubUserId" resultMap="queryBySubUserIdMap">
         select
                p.id,
-               p.user_id,
+               p.sub_user_id,
                p.project_id,
                p.update_time,
                p.create_time,
@@ -33,15 +34,16 @@
                a.parent_id
         from sys_project_permission p
         join sys_operation_authority a on p.operation_auth_id = a.id
-        where user_id = #{userId}
+        where sub_user_id = #{subUserId}
     </select>
+
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into oneclick.sys_project_permission
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userId != null">
-                user_id,
+            <if test="subUserId != null">
+                sub_user_id,
             </if>
             <if test="projectId != null">
                 project_id,
@@ -54,8 +56,8 @@
 
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="userId != null">
-                #{userId},
+            <if test="subUserId != null">
+                #{subUserId},
             </if>
             <if test="projectId != null">
                 #{projectId},
@@ -67,14 +69,22 @@
             NOW()
         </trim>
     </insert>
+    <insert id="batchInsert"  keyProperty="id" useGeneratedKeys="true">
+        insert into oneclick.sys_project_permission
+        (id,sub_user_id,project_id,operation_auth_id,create_time,update_time)
+        VALUES
+        <foreach collection="sysProjectPermissions" item="i" separator=",">
+            (#{i.id},#{i.subUserId},#{i.projectId},#{i.operationAuthId},NOW(),NOW())
+        </foreach>
+    </insert>
 
 
     <!--通过主键修改数据-->
     <update id="update">
         update oneclick.sys_project_permission
         <set>
-            <if test="userId != null">
-                user_id = #{userId},
+            <if test="subUserId != null">
+                sub_user_id = #{subUserId},
             </if>
             <if test="projectId != null">
                 project_id = #{projectId},
@@ -88,8 +98,8 @@
     </update>
 
     <!--通过主键删除-->
-    <delete id="deleteById">
-        delete from oneclick.sys_project_permission where id = #{id}
+    <delete id="deleteBySubUserId">
+        delete from sys_project_permission where sub_user_id = #{subUserId}
     </delete>
 
 </mapper>

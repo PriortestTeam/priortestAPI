@@ -20,7 +20,7 @@ public interface SysProjectPermissionDao {
      * @param userId
      * @return
      */
-    List<SysProjectPermissionDto> queryByUserId(String userId);
+    List<SysProjectPermissionDto> queryBySubUserId(String userId);
 
 
     /**
@@ -42,8 +42,15 @@ public interface SysProjectPermissionDao {
     /**
      * 通过主键删除数据
      *
-     * @param id 主键
+     * @param subUserId 主键
      * @return 影响行数
      */
-    int deleteById(@Param("id") String id);
+    int deleteBySubUserId(@Param("subUserId") String subUserId);
+
+    /**
+     * 创建子用户关联项目的权限
+     * @return
+     */
+    int batchInsert(@Param("sysProjectPermissions")List<SysProjectPermission> sysProjectPermissions);
+
 }

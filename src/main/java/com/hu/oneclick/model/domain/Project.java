@@ -56,7 +56,10 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
 
     private Date updateTime;
 
-
+    /**
+     * 项目绑定的权限
+     */
+    private String operationAuthIds;
 
 
     @Override
@@ -148,4 +151,11 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
     }
 
 
+    public String getOperationAuthIds() {
+        return operationAuthIds;
+    }
+
+    public void setOperationAuthIds(String operationAuthIds) {
+        this.operationAuthIds = operationAuthIds;
+    }
 }

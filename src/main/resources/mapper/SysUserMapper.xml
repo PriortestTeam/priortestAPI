@@ -154,7 +154,7 @@
             1 = 1
             and u.manager = 3
             and u.id = #{userId}
-            and u.parent_id = #{parentId}
+            and u.parent_id = #{masterId}
     </select>
 
     <!--新增所有列-->

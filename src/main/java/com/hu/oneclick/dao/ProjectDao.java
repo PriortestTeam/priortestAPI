@@ -70,4 +70,20 @@ public interface ProjectDao {
      * @return
      */
     List<Project> queryAllProjects(String masterId);
+
+
+    /**
+     * 查询所有的项目 and 权限
+     * @return
+     */
+    List<Project> queryAllProjectsAndPermission(@Param("masterId")String masterId);
+
+    /**
+     * 根据project id 列表 查询 and 权限
+     * @param projectIds
+     * @param masterId
+     * @return
+     */
+    List<Project> queryInProjectIdsAndPermission(@Param("projectIds") List<String> projectIds,@Param("subUserId") String subUserId, @Param("masterId") String masterId);
+
 }

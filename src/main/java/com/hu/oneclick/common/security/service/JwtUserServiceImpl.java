@@ -133,7 +133,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		}
 		//子用户需要查询权限列表
 		if (user.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.SUB)){
-			authLoginUser.setPermissions(sysProjectPermissionDao.queryByUserId(user.getId()));
+			authLoginUser.setPermissions(sysProjectPermissionDao.queryBySubUserId(user.getId()));
 		}
 		authLoginUser.setSysUser(user);
 		authLoginUser.setUsername(username);

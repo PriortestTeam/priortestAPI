@@ -7,12 +7,17 @@ import com.hu.oneclick.model.base.VerifyParam;
 import com.hu.oneclick.model.domain.SysUser;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
+
 /**
  * @author qingyang
  */
-public class SubUserDto extends SysUser implements VerifyParam {
+public class SubUserDto extends SysUser implements VerifyParam, Serializable {
 
+    private static final long serialVersionUID = 1993189923318507589L;
     private final String ALL = "ALL";
+
+    private final String DELIMITER = ",";
 
     /**
      * 角色id
@@ -74,5 +79,9 @@ public class SubUserDto extends SysUser implements VerifyParam {
 
     public void setProjectIdStr(String projectIdStr) {
         this.projectIdStr = projectIdStr;
+    }
+
+    public String getDELIMITER() {
+        return DELIMITER;
     }
 }

@@ -8,4 +8,6 @@ import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
  */
 public interface SettingPermissionService {
     Resp<SubUserPermissionDto> getPermissions(String subUserId);
+
+    Resp<String> updatePermissions(SubUserPermissionDto entity);
 }

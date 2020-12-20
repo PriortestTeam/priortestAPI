@@ -4,10 +4,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
 import com.hu.oneclick.server.service.SettingPermissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author qingyang
@@ -23,9 +20,24 @@ public class SettingPermissionController {
         this.settingPermissionService = settingPermissionService;
     }
 
+    /**
+     * 查询子用户的项目权限
+     * @param subUserId
+     * @return
+     */
     @GetMapping("getPermissions/{subUserId}")
     public Resp<SubUserPermissionDto> getPermissions(@PathVariable String subUserId){
         return settingPermissionService.getPermissions(subUserId);
+    }
+
+    /**
+     * 更新用户的项目权限
+     * @param entity
+     * @return
+     */
+    @PostMapping("updatePermissions")
+    public Resp<String> updatePermissions(@RequestBody SubUserPermissionDto entity){
+        return settingPermissionService.updatePermissions(entity);
     }
 
 }
