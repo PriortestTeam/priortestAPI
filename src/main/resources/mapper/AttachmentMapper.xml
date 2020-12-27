@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.AttachmentDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.Attachment" id="AttachmentMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="uuidFileName" column="uuid_file_name" jdbcType="VARCHAR"/>
+        <result property="filePath" column="file_path" jdbcType="VARCHAR"/>
+        <result property="uploadTime" column="upload_time" jdbcType="TIMESTAMP"/>
+        <result property="uploader" column="uploader" jdbcType="VARCHAR"/>
+        <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+        <result property="modifyUser" column="modify_user" jdbcType="VARCHAR"/>
+        <result property="areaType" column="area_type" jdbcType="VARCHAR"/>
+        <result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="AttachmentMap">
+        select
+          id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name
+        from oneclick.attachment
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="AttachmentMap">
+        select
+          id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name
+        from oneclick.attachment
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="AttachmentMap">
+        select
+        id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name
+        from oneclick.attachment
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="uuidFileName != null and uuidFileName != ''">
+                and uuid_file_name = #{uuidFileName}
+            </if>
+            <if test="filePath != null and filePath != ''">
+                and file_path = #{filePath}
+            </if>
+            <if test="uploadTime != null">
+                and upload_time = #{uploadTime}
+            </if>
+            <if test="uploader != null and uploader != ''">
+                and uploader = #{uploader}
+            </if>
+            <if test="modifyTime != null">
+                and modify_time = #{modifyTime}
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                and modify_user = #{modifyUser}
+            </if>
+            <if test="areaType != null and areaType != ''">
+                and area_type = #{areaType}
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and file_name = #{fileName}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into oneclick.attachment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="uuidFileName != null and uuidFileName != ''">
+                uuid_file_name,
+            </if>
+            <if test="filePath != null and filePath != ''">
+                file_path,
+            </if>
+            <if test="uploadTime != null">
+                upload_time,
+            </if>
+            <if test="uploader != null and uploader != ''">
+                uploader,
+            </if>
+            <if test="modifyTime != null">
+                modify_time,
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                modify_user,
+            </if>
+            <if test="areaType != null and areaType != ''">
+                area_type,
+            </if>
+            <if test="fileName != null and fileName != ''">
+                file_name,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="uuidFileName != null and uuidFileName != ''">
+                #{uuidFileName},
+            </if>
+            <if test="filePath != null and filePath != ''">
+                #{filePath},
+            </if>
+            <if test="uploadTime != null">
+                #{uploadTime},
+            </if>
+            <if test="uploader != null and uploader != ''">
+                #{uploader},
+            </if>
+            <if test="modifyTime != null">
+                #{modifyTime},
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                #{modifyUser},
+            </if>
+            <if test="areaType != null and areaType != ''">
+                #{areaType},
+            </if>
+            <if test="fileName != null and fileName != ''">
+                #{fileName},
+            </if>
+        </trim>
+    </insert>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update oneclick.attachment
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="uuidFileName != null and uuidFileName != ''">
+                uuid_file_name = #{uuidFileName},
+            </if>
+            <if test="filePath != null and filePath != ''">
+                file_path = #{filePath},
+            </if>
+            <if test="uploadTime != null">
+                upload_time = #{uploadTime},
+            </if>
+            <if test="uploader != null and uploader != ''">
+                uploader = #{uploader},
+            </if>
+            <if test="modifyTime != null">
+                modify_time = #{modifyTime},
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                modify_user = #{modifyUser},
+            </if>
+            <if test="areaType != null and areaType != ''">
+                area_type = #{areaType},
+            </if>
+            <if test="fileName != null and fileName != ''">
+                file_name = #{fileName},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from oneclick.attachment where id = #{id}
+    </delete>
+
+</mapper>

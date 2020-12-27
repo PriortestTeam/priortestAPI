@@ -42,7 +42,7 @@ public class Resp<T> {
             return new Resp<T>(this);
         }
         public Resp<T> buildResult(String msg){
-            this.code = "-1";
+            this.code = SysConstantEnum.FAILED.getCode();
             this.msg = msg;
             return new Resp<T>(this);
         }

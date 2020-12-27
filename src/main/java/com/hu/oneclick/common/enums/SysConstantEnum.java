@@ -7,6 +7,7 @@ public enum SysConstantEnum {
 
     FAILED("-1","调用失败。"),
     ADD_FAILED("-1","新增失败。"),
+    UPLOAD_FILE_FAILED("-1","上传文件失败。"),
     UPDATE_FAILED("-1","更新失败。"),
     DELETE_FAILED("-1","删除失败。"),
     SUCCESS(SysConstantEnum.NUMBER,"调用成功。"),

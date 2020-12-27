@@ -54,11 +54,3 @@ Configuration:
         AppenderRef:
           - ref: CONSOLE
           - ref: ROLLING_FILE
-
-#    Logger: # 为com.***包配置特殊的Log级别，方便调试，trace会打印SQL具体结果，debug只打印SQL语句
-#      - name: com.tuzhi.shenshou
-#        additivity: false
-#        level: ${log.level.console}
-#        AppenderRef:
-#          - ref: CONSOLE
-#          - ref: ROLLING_FILE
