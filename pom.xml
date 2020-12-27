@@ -129,16 +129,6 @@
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
             <version>6.0.8</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jsr305</artifactId>
-                    <groupId>com.google.code.findbugs</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 

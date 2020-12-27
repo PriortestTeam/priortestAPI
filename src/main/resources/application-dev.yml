@@ -63,3 +63,6 @@ onclick:
   minioConfig:
     bucketName: oneclick
     endpoint: http://106.13.39.32:9000
+    accountKey: minio
+    password: qingyang_minio_ooo
+    source: true

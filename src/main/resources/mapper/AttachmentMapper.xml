@@ -21,6 +21,7 @@
           id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name
         from oneclick.attachment
         where id = #{id}
+        and user_id = #{masterId}
     </select>
 
     <!--查询指定行数据-->
@@ -37,9 +38,6 @@
         id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name
         from oneclick.attachment
         <where>
-            <if test="id != null">
-                and id = #{id}
-            </if>
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
@@ -68,6 +66,7 @@
                 and file_name = #{fileName}
             </if>
         </where>
+        order by modify_date desc , create_time desc
     </select>
 
     <!--新增所有列-->
@@ -178,7 +177,7 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from oneclick.attachment where id = #{id}
+        delete from oneclick.attachment where id = #{id} and user_id = #{masterId}
     </delete>
 
 </mapper>

@@ -4,6 +4,7 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import io.minio.MinioClient;
+import io.minio.errors.MinioException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -132,6 +133,14 @@ public class MinioUtil {
             client.putObject(bucketName, objectName, stream, file.getSize(), null, null, file.getContentType());
         } catch (Exception e) {
             throw new BizException(SysConstantEnum.UPLOAD_FILE_FAILED.getCode(),SysConstantEnum.UPLOAD_FILE_FAILED.getValue() +"{}" + e.getMessage());
+        }
+    }
+
+    public static void rmObject(MinioClient client, String bucketName, String objectName ){
+        try {
+            client.removeObject(bucketName, objectName);
+        } catch (Exception e) {
+            throw new BizException(SysConstantEnum.SYS_ERROR.getCode(),SysConstantEnum.SYS_ERROR.getValue() +"{}" + e.getMessage());
         }
     }
 

@@ -19,7 +19,7 @@ public interface AttachmentDao {
      * @param id 主键
      * @return 实例对象
      */
-    Attachment queryById(@Param("id") String id);
+    Attachment queryById(@Param("masterId") String masterId,@Param("id") String id);
 
     /**
      * 查询指定行数据
@@ -61,6 +61,6 @@ public interface AttachmentDao {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(@Param("id") String id);
+    int deleteById(@Param("id") String id,@Param("masterId") String masterId);
 
 }
