@@ -8,11 +8,15 @@ import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.server.service.ProjectService;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,7 +34,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectDao projectDao;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao) {
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
@@ -92,6 +96,35 @@ public class ProjectServiceImpl implements ProjectService {
             return Result.deleteResult(projectDao.deleteById(projectId));
         }catch (BizException e){
             logger.error("class: ProjectServiceImpl#deleteProject,error []" + e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> checkProject(String projectId) {
+        int flag = 0;
+        try {
+            SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+
+            Project project = projectDao.queryById(projectId);
+
+            if(project != null){
+                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
+                userUseOpenProject.setProjectId(projectId);
+                userUseOpenProject.setUserId(sysUser.getId());
+                userUseOpenProject.setTitle(project.getTitle());
+
+                if (projectDao.deleteUseOpenProject(sysUser.getUserUseOpenProject().getId()) > 0
+                        && projectDao.insertUseOpenProject(userUseOpenProject) > 0){
+                    sysUser.setUserUseOpenProject(userUseOpenProject);
+                    jwtUserService.saveUserLoginInfo2(sysUser);
+                    flag = 1;
+                }
+            }
+            return Result.updateResult(flag);
+        }catch (BizException e){
+            logger.error("class: ProjectServiceImpl#checkProject,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
     }

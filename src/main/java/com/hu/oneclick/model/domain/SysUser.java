@@ -1,6 +1,7 @@
 package com.hu.oneclick.model.domain;
 
 import com.hu.oneclick.model.base.BaseEntity;
+import org.apache.catalina.User;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -92,6 +93,30 @@ public class SysUser extends BaseEntity implements Serializable {
     private Date updateTime;
 
     private String parentId;
+
+    /**
+     * 用户是否有打开的项目，默认 0 没有
+     */
+    private int isUseProject = 0;
+
+    private UserUseOpenProject userUseOpenProject;
+
+
+    public int getIsUseProject() {
+        return isUseProject;
+    }
+
+    public void setIsUseProject(int isUseProject) {
+        this.isUseProject = isUseProject;
+    }
+
+    public UserUseOpenProject getUserUseOpenProject() {
+        return userUseOpenProject;
+    }
+
+    public void setUserUseOpenProject(UserUseOpenProject userUseOpenProject) {
+        this.userUseOpenProject = userUseOpenProject;
+    }
 
     public String getEmail() {
         return email;

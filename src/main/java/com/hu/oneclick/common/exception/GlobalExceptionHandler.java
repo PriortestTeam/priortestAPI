@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public Resp<String> handleException(Exception e, HttpServletRequest request){
-        String msg="系统繁忙";
+        String msg=SysConstantEnum.SYSTEM_BUSY.getValue();
         if(e instanceof ValidException){
             msg= e.getMessage();
         }else if (e instanceof AccessDeniedException){

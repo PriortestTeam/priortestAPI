@@ -1,13 +1,16 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.MinioUtil;
 import com.hu.oneclick.dao.AttachmentDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Attachment;
+import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.server.service.AttachmentService;
 import io.minio.MinioClient;
@@ -25,7 +28,6 @@ import java.util.UUID;
 
 /**
  * @author qingyang
- * TODO 继承权限
  */
 @Service
 public class AttachmentServiceImpl implements AttachmentService {
@@ -38,6 +40,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     private final AttachmentDao attachmentDao;
 
+    private final SysPermissionService sysPermissionService;
+
 
     @Value("${onclick.minioConfig.bucketName}")
     private String bucketName;
@@ -46,10 +50,11 @@ public class AttachmentServiceImpl implements AttachmentService {
     private String endpoint;
 
 
-    public AttachmentServiceImpl(JwtUserServiceImpl jwtUserService, MinioClient minioClient, AttachmentDao attachmentDao) {
+    public AttachmentServiceImpl(JwtUserServiceImpl jwtUserService, MinioClient minioClient, AttachmentDao attachmentDao, SysPermissionService sysPermissionService) {
         this.jwtUserService = jwtUserService;
         this.minioClient = minioClient;
         this.attachmentDao = attachmentDao;
+        this.sysPermissionService = sysPermissionService;
     }
 
     @Override
@@ -65,6 +70,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> addAttachment(MultipartFile file, String type) {
         try {
+            verifyPermission(OneConstant.PERMISSION.ADD);
             AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
             //新增附件信息
             String fileName = uploadFile(file, type);
@@ -96,6 +102,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateAttachment(MultipartFile file, String attachmentId) {
         try {
+            verifyPermission(OneConstant.PERMISSION.EDIT);
             String masterId = jwtUserService.getMasterId();
             Attachment attachment = attachmentDao.queryById(masterId, attachmentId);
             if (attachment == null) {
@@ -126,6 +133,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> deleteAttachment(String attachmentId) {
         try {
+            verifyPermission(OneConstant.PERMISSION.DELETE);
             String masterId = jwtUserService.getMasterId();
             Attachment attachment = attachmentDao.queryById(masterId, attachmentId);
             if (attachment == null) {
@@ -153,6 +161,16 @@ public class AttachmentServiceImpl implements AttachmentService {
         fileName = UUID.randomUUID().toString().replace("-", "") + extName;
         MinioUtil.putObject(minioClient, bucketName, fileName, file.getInputStream(), file);
         return fileName;
+    }
+
+    /**
+     * 验证是否有该项目权限
+     * @param area
+     */
+    private void verifyPermission(String area){
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
+                area, sysUser.getUserUseOpenProject().getProjectId());
     }
 
     /**

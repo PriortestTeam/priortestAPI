@@ -21,4 +21,6 @@ public interface ProjectService {
     Resp<String> updateProject(Project project);
 
     Resp<String> deleteProject(String projectId);
+
+    Resp<String> checkProject(String projectId);
 }

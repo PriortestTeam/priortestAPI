@@ -52,4 +52,15 @@ public class ProjectController {
         return projectService.deleteProject(projectId);
     }
 
+
+    //操作user_use_open_project 表
+
+    /**
+     * 选择项目
+     */
+    @GetMapping("checkProject/{projectId}")
+    public Resp<String> checkProject(@PathVariable String projectId){
+        return projectService.checkProject(projectId);
+    }
+
 }

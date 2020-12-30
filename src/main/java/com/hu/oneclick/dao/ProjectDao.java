@@ -1,6 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.UserUseOpenProject;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -85,5 +86,31 @@ public interface ProjectDao {
      * @return
      */
     List<Project> queryInProjectIdsAndPermission(@Param("projectIds") List<String> projectIds,@Param("subUserId") String subUserId, @Param("masterId") String masterId);
+
+
+
+
+
+
+
+
+
+
+    //用户操作已打开的项目
+
+    /**
+     * 查询用户已打开的项目
+     * @param userId
+     * @param projectId
+     * @return
+     */
+    UserUseOpenProject queryUseOpenProject(@Param("userId") String userId);
+
+
+    int insertUseOpenProject(UserUseOpenProject userUseOpenProject);
+
+
+    int deleteUseOpenProject(@Param("id") String id);
+
 
 }

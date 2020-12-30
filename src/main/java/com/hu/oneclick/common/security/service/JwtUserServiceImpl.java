@@ -5,12 +5,12 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hu.oneclick.common.constant.OneConstant;
-import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
+import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.SysProjectPermissionDao;
 import com.hu.oneclick.dao.SysUserDao;
-import com.hu.oneclick.model.domain.SysProjectPermission;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -23,9 +23,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,9 +38,13 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
 	private final SysProjectPermissionDao sysProjectPermissionDao;
 
+	private final ProjectDao projectDao;
+
+
 	private final RedissonClient redisClient;
 
-	public JwtUserServiceImpl(SysUserDao sysUserDao, RedissonClient redisClient, SysProjectPermissionDao sysProjectPermissionDao) {
+	public JwtUserServiceImpl(SysUserDao sysUserDao, RedissonClient redisClient, SysProjectPermissionDao sysProjectPermissionDao, ProjectDao projectDao) {
+		this.projectDao = projectDao;
 		this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 		this.sysUserDao = sysUserDao;
 		this.redisClient = redisClient;
@@ -135,6 +137,13 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		if (user.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.SUB)){
 			authLoginUser.setPermissions(sysProjectPermissionDao.queryBySubUserId(user.getId()));
 		}
+		//查询用户上一次打开的项目
+		UserUseOpenProject userUseOpenProject = projectDao.queryUseOpenProject(user.getId());
+		if (userUseOpenProject != null){
+			user.setUserUseOpenProject(userUseOpenProject);
+			user.setIsUseProject(1);
+		}
+
 		authLoginUser.setSysUser(user);
 		authLoginUser.setUsername(username);
 		authLoginUser.setPassword(user.getPassword());

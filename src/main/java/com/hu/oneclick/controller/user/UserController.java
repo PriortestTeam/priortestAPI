@@ -62,7 +62,7 @@ public class UserController {
         return userService.updateUserInfo(sysUser);
     }
 
-    @PostMapping("queryUserInfo")
+    @GetMapping("queryUserInfo")
     public Resp<SysUser> queryUserInfo() {
         return userService.queryUserInfo();
     }

@@ -177,6 +177,7 @@
     </insert>
 
 
+
     <!--通过主键修改数据-->
     <update id="update">
         update oneclick.project
@@ -210,6 +211,42 @@
     <!--通过主键删除-->
     <delete id="deleteById">
         delete from oneclick.project where id  = #{id}
+    </delete>
+
+
+
+    <!--用户操作已打开的项目-->
+    <select id="queryUseOpenProject" parameterType="java.lang.String"
+            resultType="com.hu.oneclick.model.domain.UserUseOpenProject">
+        select
+          uuop.id as id,
+          uuop.user_id as userId,
+          uuop.project_id as projectId,
+          p.title as title
+        from user_use_open_project uuop
+        join project p on uuop.project_id = p.id
+        join sys_user su on uuop.user_id = su.id
+        where
+        su.id = #{userId}
+        limit 1
+    </select>
+
+    <insert id="insertUseOpenProject">
+        insert into user_use_open_project
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            user_id,
+            project_id
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            #{userId},
+            #{projectId}
+        </trim>
+    </insert>
+
+    <delete id="deleteUseOpenProject">
+        delete from user_use_open_project where id  = #{id}
     </delete>
 
 </mapper>
