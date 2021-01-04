@@ -45,6 +45,7 @@ mybatis:
   configuration:
     call-setters-on-nulls: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: true
 
 
 logging:
@@ -59,4 +60,9 @@ onclick:
       enable: true
   default:
     photo: https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2511150983,4244929698&fm=26&gp=0.jpg
-
+  minioConfig:
+    bucketName: oneclick
+    endpoint: http://106.13.39.32:9000
+    accountKey: minio
+    password: qingyang_minio_ooo
+    source: true
