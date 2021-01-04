@@ -28,9 +28,9 @@ public enum SysConstantEnum {
     VERIFY_CODE_ERROR(SysConstantEnum.NUMBER + "012","验证码错误。"),
     PLEASE_TRY_AGAIN_LATER(SysConstantEnum.NUMBER + "013","请稍后再试。"),
     NOT_DETECTED_EMAIL(SysConstantEnum.NUMBER + "014","未检测到邮箱。"),
-    NOT_PERMISSION(SysConstantEnum.NUMBER + "015","无权访问。"),
+    NOT_PERMISSION(SysConstantEnum.NUMBER + "015","无权访问"),
     PARAMETER_ABNORMAL(SysConstantEnum.NUMBER + "016","参数异常。"),
-    DATE_EXIST(SysConstantEnum.NUMBER + "017","数据已存在，不可重复添加。"),
+    DATE_EXIST(SysConstantEnum.NUMBER + "017","已存在，不可重复添加。"),
     NOT_PROJECT(SysConstantEnum.NUMBER + "018","请选择一个项目。"),
     SCOPE_ERROR(SysConstantEnum.NUMBER + "019","scope 异常。"),
 

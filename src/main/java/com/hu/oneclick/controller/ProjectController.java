@@ -22,9 +22,9 @@ public class ProjectController {
     }
 
 
-    @GetMapping("queryDoesExistById")
-    public Resp<String> queryDoesExistById(@RequestParam String title) {
-        return projectService.queryDoesExistById(title);
+    @GetMapping("queryDoesExistByTitle")
+    public Resp<String> queryDoesExistByTitle(@RequestParam String title) {
+        return projectService.queryDoesExistByTitle(title);
     }
 
     @GetMapping("queryById/{id}")

@@ -29,9 +29,9 @@ public class Result {
         throw new BizException(SysConstantEnum.DELETE_FAILED.getCode(),SysConstantEnum.DELETE_FAILED.getValue());
     }
 
-    public static void verifyDoesExist(Object o){
+    public static void verifyDoesExist(Object o,String title){
         if (o != null){
-            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),SysConstantEnum.DATE_EXIST.getValue());
+            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),title + SysConstantEnum.DATE_EXIST.getValue());
         }
     }
 

@@ -102,6 +102,7 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
     /**
      * 更新用户的缓存（权限列表）信息
      */
+    @Transactional(rollbackFor = Exception.class)
     private void deleteSubUserLoginStatus(String username){
         RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN  + username);
         AuthLoginUser authLoginUser = JSONObject.parseObject(bucket.get(), AuthLoginUser.class);

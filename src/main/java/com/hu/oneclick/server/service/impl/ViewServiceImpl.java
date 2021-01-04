@@ -11,9 +11,11 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.server.service.ViewService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -43,7 +45,7 @@ public class ViewServiceImpl implements ViewService {
         if (view.getScope() == null){
             return new Resp.Builder<List<View>>().buildResult("scope 不能为空");
         }
-        sysPermissionService.viewPermission(OneConstant.PERMISSION.ADD,convertPermission(view.getScope()));
+        sysPermissionService.viewPermission(null,convertPermission(view.getScope()));
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         view.verifyUserType(sysUser.getManager());
         List<View> views = viewDao.queryAll(view);
@@ -51,6 +53,17 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
+    public Resp<String> queryDoesExistByTitle(String projectId, String title, String scope) {
+        try {
+            Result.verifyDoesExist(queryByTitle(projectId,title,scope),title);
+            return new Resp.Builder<String>().ok();
+        }catch (BizException e){
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> addView(View view) {
         try {
             sysPermissionService.viewPermission(OneConstant.PERMISSION.ADD,convertPermission(view.getScope()));
@@ -68,6 +81,7 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateView(View view) {
         try {
             sysPermissionService.viewPermission(OneConstant.PERMISSION.EDIT,convertPermission(view.getScope()));
@@ -83,6 +97,7 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> deleteView(String id) {
         try {
             View view = viewDao.queryById(id);
@@ -97,6 +112,20 @@ public class ViewServiceImpl implements ViewService {
         }
     }
 
+    /**
+     * 查询项目是否存在
+     * @param title
+     * @return
+     */
+    private Integer queryByTitle(String projectId, String title, String scope){
+        if (StringUtils.isEmpty(title)){
+            return null;
+        }
+        if(viewDao.queryTitleIsExist(jwtUserService.getMasterId(),title,projectId,scope) > 0){
+            return 1;
+        }
+        return null;
+    }
 
     /**
      * 根据用户选定的scope 转换成权限标识符

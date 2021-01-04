@@ -47,9 +47,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Resp<String> queryDoesExistById(String title) {
+    public Resp<String> queryDoesExistByTitle(String title) {
         try {
-            Result.verifyDoesExist(queryByTitle(title));
+            Result.verifyDoesExist(queryByTitle(title),title);
             return new Resp.Builder<String>().ok();
         }catch (BizException e){
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -64,11 +64,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> addProject(Project project) {
         try {
             sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
                     OneConstant.PERMISSION.ADD,project.getId());
-            Result.verifyDoesExist(queryByTitle(project.getTitle()));
+            Result.verifyDoesExist(queryByTitle(project.getTitle()),project.getTitle());
             project.setUserId(jwtUserService.getMasterId());
             return Result.addResult(projectDao.insert(project));
         }catch (BizException e){
@@ -78,11 +79,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateProject(Project project) {
         try {
             sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
                     OneConstant.PERMISSION.EDIT,project.getId());
-            Result.verifyDoesExist(queryByTitle(project.getTitle()));
+            Result.verifyDoesExist(queryByTitle(project.getTitle()),project.getTitle());
             return Result.updateResult(projectDao.update(project));
         }catch (BizException e){
             logger.error("class: ProjectServiceImpl#updateProject,error []" + e.getMessage());
@@ -91,6 +93,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> deleteProject(String projectId) {
         try {
             sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,

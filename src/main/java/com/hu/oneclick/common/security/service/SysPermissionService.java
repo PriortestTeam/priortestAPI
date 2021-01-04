@@ -61,31 +61,38 @@ public class SysPermissionService {
             throw new BizException(SysConstantEnum.NOT_PERMISSION.getCode(),SysConstantEnum.NOT_PERMISSION.getValue());
         }
         //判断用户权限，存在返回true
-        for (SysProjectPermissionDto subPermission : permissions) {
-            if (subPermission.getMarkName().equals(sub) && subPermission.getProjectId().equals(projectId)){
-                for (SysProjectPermissionDto parentPermission : permissions) {
-                    if (subPermission.getParentId().equals(parentPermission.getOperationAuthId())
-                            && parentPermission.getMarkName().equals(parent)){
-                        return;
-                    }
-                }
-            }
-        }
-        throw new BizException(SysConstantEnum.NOT_PERMISSION.getCode(),SysConstantEnum.NOT_PERMISSION.getValue());
+        //父级权限
+        verifyParentPermission(permissions,parent,projectId);
+        //子级权限
+        verifySubPermission(permissions,sub,projectId);
     }
 
     /**
      * 验证是否有父级权限
      */
-    private void verifyParentPermission(String parent, String sub, String projectId){
-
+    private void verifyParentPermission(List<SysProjectPermissionDto> permissions,String parent, String projectId){
+        for (SysProjectPermissionDto permission : permissions) {
+            if (permission.getProjectId().equals(projectId) &&
+                    permission.getMarkName().equals(parent) && "0".equals(permission.getParentId())){
+                return;
+            }
+        }
+        throw new BizException(SysConstantEnum.NOT_PERMISSION.getCode(),SysConstantEnum.NOT_PERMISSION.getValue() + parent + "。");
     }
 
     /**
      * 验证是否有子级权限
      */
-    private void verifySubPermission(){
-
+    private void verifySubPermission(List<SysProjectPermissionDto> permissions,String sub, String projectId){
+        if (sub == null){
+            return;
+        }
+        for (SysProjectPermissionDto permission : permissions) {
+            if (permission.getMarkName().equals(sub) && permission.getProjectId().equals(projectId)){
+                return;
+            }
+        }
+        throw new BizException(SysConstantEnum.NOT_PERMISSION.getCode(),SysConstantEnum.NOT_PERMISSION.getValue() + sub + "。");
     }
 
 
@@ -112,16 +119,16 @@ public class SysPermissionService {
      * @param
      * @param
      */
-    public void viewPermission(String project, String parent){
+    public void viewPermission(String projectSub, String viewParent){
         String projectId = jwtUserServiceImpl.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
         if(projectId == null){
             throw new BizException(SysConstantEnum.NOT_PROJECT.getCode(),SysConstantEnum.NOT_PROJECT.getValue());
         }
         //先验证项目权限
         hasPermission(OneConstant.PERMISSION.PROJECT,
-                project,projectId);
+                projectSub,projectId);
         //验证view 权限
-        hasPermission(parent,
+        hasPermission(viewParent,
                 OneConstant.PERMISSION.VIEW,projectId);
     }
 }

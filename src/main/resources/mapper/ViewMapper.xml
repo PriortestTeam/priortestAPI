@@ -55,6 +55,17 @@
             </if>
         </where>
     </select>
+    <select id="queryTitleIsExist" resultType="java.lang.Integer">
+        select
+            count(1)
+        from view
+        where
+            user_id = #{userId}
+            and project_id = #{projectId}
+            and scope = #{scope}
+            and title = #{title}
+--             and is_private = #{isPrivate}
+    </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">

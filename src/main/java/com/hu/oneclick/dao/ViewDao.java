@@ -64,4 +64,16 @@ public interface ViewDao {
      */
     int deleteById(@Param("masterId") String masterId,@Param("id") String id);
 
+    /**
+     * 查询项目是否存在
+     * @param masterId
+     * @param title
+     * @param projectId
+     * @param scope
+     * @return
+     */
+    int queryTitleIsExist(@Param("masterId") String masterId,
+                              @Param("title") String title,
+                              @Param("projectId") String projectId,
+                              @Param("scope")String scope);
 }
