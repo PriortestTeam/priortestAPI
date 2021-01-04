@@ -3,6 +3,7 @@ package com.hu.oneclick.common.security.service;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
+import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import org.springframework.stereotype.Service;
@@ -71,5 +72,56 @@ public class SysPermissionService {
             }
         }
         throw new BizException(SysConstantEnum.NOT_PERMISSION.getCode(),SysConstantEnum.NOT_PERMISSION.getValue());
+    }
+
+    /**
+     * 验证是否有父级权限
+     */
+    private void verifyParentPermission(String parent, String sub, String projectId){
+
+    }
+
+    /**
+     * 验证是否有子级权限
+     */
+    private void verifySubPermission(){
+
+    }
+
+
+
+
+
+
+
+    /**
+     * 验证项目权限
+     * @param area
+     */
+    public void projectPermission(String area){
+        String projectId = jwtUserServiceImpl.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+        if(projectId == null){
+            throw new BizException(SysConstantEnum.NOT_PROJECT.getCode(),SysConstantEnum.NOT_PROJECT.getValue());
+        }
+        hasPermission(OneConstant.PERMISSION.PROJECT,
+                area,projectId);
+    }
+
+    /**
+     * 验证view 的权限
+     * @param
+     * @param
+     */
+    public void viewPermission(String project, String parent){
+        String projectId = jwtUserServiceImpl.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+        if(projectId == null){
+            throw new BizException(SysConstantEnum.NOT_PROJECT.getCode(),SysConstantEnum.NOT_PROJECT.getValue());
+        }
+        //先验证项目权限
+        hasPermission(OneConstant.PERMISSION.PROJECT,
+                project,projectId);
+        //验证view 权限
+        hasPermission(parent,
+                OneConstant.PERMISSION.VIEW,projectId);
     }
 }

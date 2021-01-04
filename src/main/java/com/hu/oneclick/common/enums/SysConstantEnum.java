@@ -31,6 +31,8 @@ public enum SysConstantEnum {
     NOT_PERMISSION(SysConstantEnum.NUMBER + "015","无权访问。"),
     PARAMETER_ABNORMAL(SysConstantEnum.NUMBER + "016","参数异常。"),
     DATE_EXIST(SysConstantEnum.NUMBER + "017","数据已存在，不可重复添加。"),
+    NOT_PROJECT(SysConstantEnum.NUMBER + "018","请选择一个项目。"),
+    SCOPE_ERROR(SysConstantEnum.NUMBER + "019","scope 异常。"),
 
     //成功
     SUCCESS(SysConstantEnum.NUMBER,"调用成功。"),

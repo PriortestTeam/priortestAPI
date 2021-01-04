@@ -48,9 +48,6 @@
         id, user_id, title, report_to_name, status, description, plan_release_date , del_flag, create_time, update_time
         from oneclick.project
         <where>
-            <if test="id != null and id != ''">
-                and id = #{id}
-            </if>
             <if test="userId != null and userId != ''">
                 and user_id = #{userId}
             </if>

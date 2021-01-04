@@ -80,7 +80,7 @@ public class SysUser extends BaseEntity implements Serializable {
      */
     private String locale;
     /**
-     * 是否是管理员， 默认为 0, 1 是管理员（负责后台系统的登录）
+     * 是否是管理员， 默认为 0, 1 是管理员（负责后台系统的登录）3 子成员
      */
     private Integer manager;
     /**

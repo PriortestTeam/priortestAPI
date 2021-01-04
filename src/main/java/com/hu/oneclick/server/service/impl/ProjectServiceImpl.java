@@ -5,6 +5,7 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.dao.ProjectDao;
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Project;
@@ -57,6 +58,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Resp<List<Project>> queryForProjects(Project project) {
+        project.setUserId(jwtUserService.getMasterId());
         List<Project> projects = projectDao.queryAll(project);
         return new Resp.Builder<List<Project>>().setData(projects).total(projects.size()).ok();
     }

@@ -38,8 +38,6 @@ spring:
     port: 6379
     ssl: false
     password: qingyang_redis
-  messages:
-    basename: classpath:i18n/messages
 
 
 mybatis:

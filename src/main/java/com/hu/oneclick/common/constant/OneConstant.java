@@ -96,6 +96,21 @@ public interface OneConstant {
     }
 
     /**
+     * scope 作用范围，对应 PERMISSION 结构中的父节点
+     */
+    interface SCOPE {
+        String ONE_FEATURE = "Feature";
+        String ONE_SETTINGS = "Settings";
+        String ONE_SPRINT = "Sprint";
+        String ONE_SIGN_OFF = "Sign Off";
+        String ONE_REQUIREMENT = "Requirement";
+        String ONE_ISSUE = "Issue";
+        String ONE_TEST_CYCLE = "TestCycle";
+        String ONE_TEST_CASE = "TestCase";
+        String ONE_DASHBOARD = "Dashboard";
+    }
+
+    /**
      * 自定义字段类型
      */
     interface CUSTOM_FIELD_TYPE{

@@ -1,5 +1,6 @@
 package com.hu.oneclick.dao;
 
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
 import org.apache.ibatis.annotations.Param;
@@ -38,6 +39,7 @@ public interface ProjectDao {
      * @param project 实例对象
      * @return 对象列表
      */
+    @Page
     List<Project> queryAll(Project project);
 
     /**

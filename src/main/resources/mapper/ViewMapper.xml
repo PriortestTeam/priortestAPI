@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.ViewDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.View" id="ViewMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="scope" column="scope" jdbcType="VARCHAR"/>
+        <result property="isPrivate" column="is_private" jdbcType="INTEGER"/>
+        <result property="owner" column="owner" jdbcType="VARCHAR"/>
+        <result property="filter" column="filter" jdbcType="VARCHAR"/>
+        <result property="modifyUser" column="modify_user" jdbcType="VARCHAR"/>
+        <result property="modifyDate" column="modify_date" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ViewMap">
+        select
+          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time
+        from oneclick.view
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ViewMap">
+        select
+          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time
+        from oneclick.view
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ViewMap">
+        select
+        id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time,
+        update_time
+        from oneclick.view
+        <where>
+            user_id = #{userId}
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="scope != null and scope != ''">
+                and scope = #{scope}
+            </if>
+            <if test="isPrivate != null">
+                and is_private = #{isPrivate}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into oneclick.view
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="projectId != null">
+                project_id,
+            </if>
+            <if test="title != null and title != ''">
+                title,
+            </if>
+            <if test="scope != null and scope != ''">
+                scope,
+            </if>
+            <if test="isPrivate != null">
+                is_private,
+            </if>
+            <if test="owner != null and owner != ''">
+                owner,
+            </if>
+            <if test="filter != null and filter != ''">
+                filter,
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                modify_user,
+            </if>
+            <if test="modifyDate != null">
+                modify_date,
+            </if>
+            create_time,
+            update_time
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="projectId != null">
+                #{projectId},
+            </if>
+            <if test="title != null and title != ''">
+                #{title},
+            </if>
+            <if test="scope != null and scope != ''">
+                #{scope},
+            </if>
+            <if test="isPrivate != null">
+                #{isPrivate},
+            </if>
+            <if test="owner != null and owner != ''">
+                #{owner},
+            </if>
+            <if test="filter != null and filter != ''">
+                #{filter},
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                #{modifyUser},
+            </if>
+            <if test="modifyDate != null">
+                #{modifyDate},
+            </if>
+            NOW(),
+            NOW()
+        </trim>
+    </insert>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update oneclick.view
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="isPrivate != null and isPrivate != ''">
+                is_private = #{isPrivate},
+            </if>
+            <if test="filter != null and filter != ''">
+                filter = #{filter},
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                modify_user = #{modifyUser},
+            </if>
+            <if test="modifyDate != null">
+                modify_date = #{modifyDate},
+            </if>
+            update_time = NOW()
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from oneclick.view where user_id = #{masterId} and id = #{id}
+    </delete>
+
+</mapper>
