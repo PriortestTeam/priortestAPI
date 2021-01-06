@@ -1,14 +1,14 @@
 package com.hu.oneclick.controller.user;
 
-import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.SysRole;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
+import com.hu.oneclick.server.service.ProjectService;
+import com.hu.oneclick.server.service.SysRoleService;
 import com.hu.oneclick.server.user.SubUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,15 +22,30 @@ public class SubUserController {
 
     private final SubUserService subUserService;
 
-    public SubUserController(SubUserService subUserService) {
+    private final ProjectService projectService;
+
+    private final SysRoleService sysRoleService;
+
+    public SubUserController(SubUserService subUserService, ProjectService projectService, SysRoleService sysRoleService) {
         this.subUserService = subUserService;
+        this.projectService = projectService;
+        this.sysRoleService = sysRoleService;
     }
 
 
-    @Page
     @PostMapping("querySubUsers")
     public Resp<List<SubUserDto>> querySubUsers(@RequestBody SubUserDto sysUser){
         return  subUserService.querySubUsers(sysUser);
+    }
+
+    @GetMapping("queryForProjectTitles")
+    public Resp<List<Project>> queryForProjectTitles(@RequestParam String title){
+        return  projectService.queryForProjectTitles(title);
+    }
+
+    @GetMapping("queryRoles")
+    public Resp<List<SysRole>> queryRoles(){
+        return  sysRoleService.queryRoles();
     }
 
     @PostMapping("createSubUser")

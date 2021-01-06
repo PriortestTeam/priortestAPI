@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.SysRoleDao">
+
+
+    <!--开启缓存-->
+    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+
+    <resultMap type="com.hu.oneclick.model.domain.SysRole" id="SysRoleMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="roleDesc" column="role_desc" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SysRoleMap">
+        select
+          id, role_name, sort, role_desc
+        from oneclick.sys_role
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SysRoleMap">
+        select
+          id, role_name, sort, role_desc
+        from oneclick.sys_role
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="SysRoleMap">
+        select
+        id, role_name, sort, role_desc
+        from oneclick.sys_role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                and role_name = #{roleName}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort}
+            </if>
+            <if test="roleDesc != null and roleDesc != ''">
+                and role_desc = #{roleDesc}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into oneclick.sys_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName != null and roleName != ''">
+                role_name,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="roleDesc != null and roleDesc != ''">
+                role_desc,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roleName != null and roleName != ''">
+                #{roleName},
+            </if>
+            <if test="sort != null">
+                #{sort},
+            </if>
+            <if test="roleDesc != null and roleDesc != ''">
+                #{roleDesc},
+            </if>
+        </trim>
+    </insert>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update oneclick.sys_role
+        <set>
+            <if test="roleName != null and roleName != ''">
+                role_name = #{roleName},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="roleDesc != null and roleDesc != ''">
+                role_desc = #{roleDesc},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from oneclick.sys_role where id = #{id}
+    </delete>
+
+</mapper>

@@ -89,6 +89,17 @@
         select id,title from project where user_id = #{masterId} order by create_time
     </select>
 
+    <select id="queryForProjectTitles" resultMap="ProjectMap">
+        select id,title from project
+         <where>
+             user_id = #{masterId}
+             <if test="title != null and title != ''">
+                 and title like concat('%',#{title},'%')
+             </if>
+         </where>
+        order by create_time
+    </select>
+
 
     <select id="queryAllProjectsAndPermission" resultMap="ProjectMap">
         select
@@ -227,6 +238,7 @@
         su.id = #{userId}
         limit 1
     </select>
+
 
     <insert id="insertUseOpenProject">
         insert into user_use_open_project

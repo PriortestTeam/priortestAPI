@@ -1,5 +1,6 @@
 package com.hu.oneclick.dao;
 
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import org.apache.ibatis.annotations.Param;
@@ -51,6 +52,7 @@ public interface SysUserDao {
      * 查询成员列表
      * @return
      */
+    @Page
     List<SubUserDto> querySubUsers(SysUser sysUser);
 
     /**

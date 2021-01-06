@@ -64,6 +64,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public Resp<List<Project>> queryForProjectTitles(String title) {
+        List<Project> projects = projectDao.queryForProjectTitles(title);
+        return new Resp.Builder<List<Project>>().setData(projects).total(projects.size()).ok();
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> addProject(Project project) {
         try {

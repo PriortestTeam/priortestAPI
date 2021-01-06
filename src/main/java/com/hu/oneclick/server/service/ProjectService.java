@@ -16,6 +16,8 @@ public interface ProjectService {
 
     Resp<List<Project>> queryForProjects(Project project);
 
+    Resp<List<Project>> queryForProjectTitles(String title);
+
     Resp<String> addProject(Project project);
 
     Resp<String> updateProject(Project project);
