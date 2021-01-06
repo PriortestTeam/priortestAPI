@@ -4,9 +4,11 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
+import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import com.hu.oneclick.server.user.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,6 +69,9 @@ public class UserController {
         return userService.queryUserInfo();
     }
 
-
+    @GetMapping("queryUserPermissions")
+    public Resp<List<SysProjectPermissionDto>> queryUserPermissions() {
+        return userService.queryUserPermissions();
+    }
 
 }

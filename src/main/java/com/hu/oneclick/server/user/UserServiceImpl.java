@@ -11,6 +11,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
+import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -182,6 +184,12 @@ public class UserServiceImpl implements UserService{
     public Resp<SysUser> queryUserInfo() {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
         return new Resp.Builder<SysUser>().setData(userLoginInfo.getSysUser()).ok();
+    }
+
+    @Override
+    public Resp<List<SysProjectPermissionDto>> queryUserPermissions() {
+        AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
+        return new Resp.Builder<List<SysProjectPermissionDto>>().setData(userLoginInfo.getPermissions()).ok();
     }
 
     /**

@@ -3,7 +3,9 @@ package com.hu.oneclick.server.user;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
+import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,5 +60,11 @@ public interface UserService {
      * @return
      */
     Resp<SysUser> queryUserInfo();
+
+    /**
+     * 查询用户权限
+     * @return
+     */
+    Resp<List<SysProjectPermissionDto>> queryUserPermissions();
 
 }

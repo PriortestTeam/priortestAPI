@@ -104,6 +104,10 @@ public class JwtUserServiceImpl implements UserDetailsService {
 				.withExpiresAt(date)
 				.withIssuedAt(new Date())
 				.sign(algorithm);
+		//密码置空
+		SysUser sysUser = user.getSysUser();
+		sysUser.setPassword("");
+		user.setSysUser(sysUser);
 		String s = JSONObject.toJSONString(user);
 		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + user.getUsername());
 		if (bucket.isExists()){
@@ -116,6 +120,8 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
 	public void saveUserLoginInfo2(SysUser sysUser) {
 		AuthLoginUser user = getUserLoginInfo();
+		//密码置空
+		sysUser.setPassword("");
 		user.setSysUser(sysUser);
 		String s = JSONObject.toJSONString(user);
 		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + sysUser.getEmail());
