@@ -77,6 +77,17 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		return authLoginUser;
 	}
 
+	/**
+	 * 验证用户是否存在
+	 * @param username
+	 * @return
+	 */
+	public boolean verifyUserExists(String username){
+		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN  + username);
+		return bucket.get() != null;
+	}
+
+
 	public String getMasterId(){
 		SysUser sysUser = getUserLoginInfo().getSysUser();
 		if(sysUser.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.MANAGER) || sysUser.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.ORDINARY)){
