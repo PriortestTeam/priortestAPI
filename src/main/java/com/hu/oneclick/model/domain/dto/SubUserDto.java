@@ -76,4 +76,12 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
     public String getDELIMITER() {
         return DELIMITER;
     }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
 }
