@@ -2,6 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SysUserDao">
 
+    <!--开启缓存-->
+    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+
     <resultMap type="com.hu.oneclick.model.domain.SysUser" id="SysUserMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="email" column="email" jdbcType="VARCHAR"/>

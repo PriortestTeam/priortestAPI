@@ -5,6 +5,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.SysProjectPermissionDao;
@@ -115,10 +116,6 @@ public class JwtUserServiceImpl implements UserDetailsService {
 				.withExpiresAt(date)
 				.withIssuedAt(new Date())
 				.sign(algorithm);
-		//密码置空
-		SysUser sysUser = user.getSysUser();
-		sysUser.setPassword("");
-		user.setSysUser(sysUser);
 		String s = JSONObject.toJSONString(user);
 		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + user.getUsername());
 		if (bucket.isExists()){
@@ -131,9 +128,6 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
 	public void saveUserLoginInfo2(SysUser sysUser) {
 		AuthLoginUser user = getUserLoginInfo();
-		//密码置空
-		sysUser.setPassword("");
-		user.setSysUser(sysUser);
 		String s = JSONObject.toJSONString(user);
 		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + sysUser.getEmail());
 		if (bucket.isExists()){
@@ -150,8 +144,9 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		if (user == null){
 			return authLoginUser;
 		}
-		//子用户需要查询权限列表
+		//子用户需要查询权限列表,并且需要裁剪邮箱用户名
 		if (user.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.SUB)){
+			user.setEmail(TwoConstant.subUserNameCrop(user.getEmail()));
 			authLoginUser.setPermissions(sysProjectPermissionDao.queryBySubUserId(user.getId()));
 		}
 		//查询用户上一次打开的项目

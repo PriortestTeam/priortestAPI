@@ -183,7 +183,9 @@ public class UserServiceImpl implements UserService{
     @Override
     public Resp<SysUser> queryUserInfo() {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
-        return new Resp.Builder<SysUser>().setData(userLoginInfo.getSysUser()).ok();
+        SysUser sysUser = userLoginInfo.getSysUser();
+        sysUser.setPassword("");
+        return new Resp.Builder<SysUser>().setData(sysUser).ok();
     }
 
     @Override

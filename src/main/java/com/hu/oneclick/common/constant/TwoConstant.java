@@ -33,4 +33,18 @@ public class TwoConstant {
         }
     }
 
+
+    /**
+     * 裁剪子用户邮箱用户名
+     * @param username
+     * @return
+     */
+    public static String subUserNameCrop(String username){
+        if (username.contains(OneConstant.COMMON.SUB_USER_SEPARATOR)){
+            int index = username.indexOf("#*&") + 3;
+            return username.substring(index);
+        }
+        return username;
+    }
+
 }

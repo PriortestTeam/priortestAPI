@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,9 +57,16 @@ public class SubUserServiceImpl implements SubUserService{
         List<SubUserDto> sysUsers = sysUserDao.querySubUsers(sysUser);
         List<Project> projects = projectDao.queryAllProjects(jwtUserServiceImpl.getMasterId());
         if (projects != null && projects.size() > 0){
-            sysUsers.forEach(e -> queryLikeProjectNames(e,projects));
+            sysUsers.forEach(e -> accept(e, projects));
         }
         return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers.size()).ok();
+    }
+
+    private void accept(SubUserDto subUserDto, List<Project> projects) {
+        //用户名裁剪
+        subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail()));
+        //整合关联的项目
+        queryLikeProjectNames(subUserDto,projects);
     }
 
     /**
