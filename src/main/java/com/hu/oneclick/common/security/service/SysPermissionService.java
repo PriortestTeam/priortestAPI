@@ -106,7 +106,8 @@ public class SysPermissionService {
      * @param area
      */
     public void projectPermission(String area){
-        String projectId = jwtUserServiceImpl.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+        SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
         if(projectId == null){
             throw new BizException(SysConstantEnum.NOT_PROJECT.getCode(),SysConstantEnum.NOT_PROJECT.getValue());
         }
@@ -120,7 +121,8 @@ public class SysPermissionService {
      * @param
      */
     public void viewPermission(String projectSub, String viewParent){
-        String projectId = jwtUserServiceImpl.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+        SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
         if(projectId == null){
             throw new BizException(SysConstantEnum.NOT_PROJECT.getCode(),SysConstantEnum.NOT_PROJECT.getValue());
         }

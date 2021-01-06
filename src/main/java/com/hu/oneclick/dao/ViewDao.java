@@ -1,5 +1,6 @@
 package com.hu.oneclick.dao;
 
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.View;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,7 +21,7 @@ public interface ViewDao {
      * @param id 主键
      * @return 实例对象
      */
-    View queryById(@Param("id") String id);
+    View queryById(@Param("id") String id,@Param("masterId") String masterId);
 
     /**
      * 查询指定行数据
@@ -38,6 +39,7 @@ public interface ViewDao {
      * @param view 实例对象
      * @return 对象列表
      */
+    @Page
     List<View> queryAll(View view);
 
     /**

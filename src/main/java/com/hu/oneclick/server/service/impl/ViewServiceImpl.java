@@ -41,6 +41,13 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
+    public Resp<View> queryById(String id) {
+        View view = viewDao.queryById(id, jwtUserService.getMasterId());
+        view.filterConvertOneFilterObj();
+        return new Resp.Builder<View>().setData(view).ok();
+    }
+
+    @Override
     public Resp<List<View>> list(View view) {
         if (view.getScope() == null){
             return new Resp.Builder<List<View>>().buildResult("scope 不能为空");
@@ -48,6 +55,7 @@ public class ViewServiceImpl implements ViewService {
         sysPermissionService.viewPermission(null,convertPermission(view.getScope()));
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         view.verifyUserType(sysUser.getManager());
+        view.setUserId(jwtUserService.getMasterId());
         List<View> views = viewDao.queryAll(view);
         return new Resp.Builder<List<View>>().setData(views).total(views.size()).ok();
     }
@@ -66,8 +74,9 @@ public class ViewServiceImpl implements ViewService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> addView(View view) {
         try {
-            sysPermissionService.viewPermission(OneConstant.PERMISSION.ADD,convertPermission(view.getScope()));
             view.verify();
+            sysPermissionService.viewPermission(OneConstant.PERMISSION.ADD,convertPermission(view.getScope()));
+            Result.verifyDoesExist(queryByTitle(view.getProjectId(),view.getTitle(),view.getScope()),view.getTitle());
             SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
             String projectId = sysUser.getUserUseOpenProject().getProjectId();
             view.setUserId(jwtUserService.getMasterId());
@@ -86,6 +95,10 @@ public class ViewServiceImpl implements ViewService {
         try {
             sysPermissionService.viewPermission(OneConstant.PERMISSION.EDIT,convertPermission(view.getScope()));
             view.verifyOneFilter();
+            //修改视图名称要进行验证
+            if (view.getTitle() != null){
+                Result.verifyDoesExist(queryByTitle(view.getProjectId(),view.getTitle(),view.getScope()),view.getTitle());
+            }
             SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
             view.setModifyUser(sysUser.getUserName());
             view.setModifyDate(new Date());
@@ -100,7 +113,7 @@ public class ViewServiceImpl implements ViewService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> deleteView(String id) {
         try {
-            View view = viewDao.queryById(id);
+            View view = viewDao.queryById(id,jwtUserService.getMasterId());
             if(view == null){
                 return Result.deleteResult(0);
             }

@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 视图表(View)实体类
@@ -48,7 +49,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
      */
     private String filter;
 
-    private OneFilter oneFilter;
+    private List<OneFilter> oneFilters;
 
     /**
      * 修改人
@@ -69,8 +70,6 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
     public void verify() throws BizException {
         if(StringUtils.isEmpty(title)){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"视图名称" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if(StringUtils.isEmpty(scope)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"作用域" + SysConstantEnum.PARAM_EMPTY.getValue());
         }else if(isPrivate == null){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"请选择公开还是私有," + SysConstantEnum.PARAM_EMPTY.getValue());
         }
@@ -82,14 +81,27 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
      * 验证OneFilter 参数格式
      */
     public void verifyOneFilter(){
-        if (oneFilter == null){
+        if(StringUtils.isEmpty(scope)) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "作用域" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+        if (oneFilters == null || oneFilters.size() == 0){
             return;
         }
 
         //验证参数是否异常
-        oneFilter.verify();
+//        oneFilter.verify();
         //转换对象为字符串方便存入数据库
-        this.filter = JSONObject.toJSONString(oneFilter);
+        this.filter = JSONObject.toJSONString(oneFilters);
+    }
+
+    /**
+     * 字符串转换成对象
+     */
+    public void filterConvertOneFilterObj(){
+        if(this.filter == null){
+            return;
+        }
+        this.oneFilters = JSONObject.parseArray(this.filter,OneFilter.class);
     }
 
     /**
@@ -193,11 +205,11 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
         this.updateTime = updateTime;
     }
 
-    public OneFilter getOneFilter() {
-        return oneFilter;
+    public List<OneFilter> getOneFilters() {
+        return oneFilters;
     }
 
-    public void setOneFilter(OneFilter oneFilter) {
-        this.oneFilter = oneFilter;
+    public void setOneFilters(List<OneFilter> oneFilters) {
+        this.oneFilters = oneFilters;
     }
 }

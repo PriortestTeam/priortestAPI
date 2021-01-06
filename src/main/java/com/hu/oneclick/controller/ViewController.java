@@ -22,8 +22,24 @@ public class ViewController {
     }
 
 
+
+    @GetMapping("queryDoesExistByTitle")
+    public Resp<String> queryDoesExistByTitle(@RequestParam("projectId") String projectId,
+                                              @RequestParam("title") String title,
+                                              @RequestParam("scope") String scope){
+        return viewService.queryDoesExistByTitle(projectId,title,scope);
+    }
+
+    @GetMapping("queryById/{id}")
+    public Resp<View> queryById(@PathVariable String id){
+        return viewService.queryById(id);
+    }
+
+
     @PostMapping("queryViews")
-    private Resp<List<View>> queryViews(@RequestBody View view){ return viewService.list(view); }
+    private Resp<List<View>> queryViews(@RequestBody View view){
+        return viewService.list(view);
+    }
 
     @PostMapping("addView")
     private Resp<String> addView(@RequestBody View view){

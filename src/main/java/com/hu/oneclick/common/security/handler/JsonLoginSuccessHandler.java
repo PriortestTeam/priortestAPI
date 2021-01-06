@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -29,9 +31,11 @@ public class JsonLoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         String token = jwtUserServiceImpl.saveUserLoginInfo((AuthLoginUser) authentication.getPrincipal());
-        response.setHeader("Authorization", token);
         response.setContentType("application/json;charset=UTF-8");
-        Resp<String> ok = new Resp.Builder<String>().setData(SysConstantEnum.LOGIN_SUCCESS.getValue()).ok();
+        Map<String,String> result = new HashMap<>(2);
+        result.put("token",token);
+        result.put("msg",SysConstantEnum.LOGIN_SUCCESS.getValue());
+        Resp<Map<String,String>> ok = new Resp.Builder<Map<String,String>>().setData(result).ok();
         String s = JSON.toJSONString(ok);
         response.getWriter().write(s);
     }

@@ -64,7 +64,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             return;
         }
         http.authorizeRequests()
-                .antMatchers("/image/**").permitAll()
                 .antMatchers("/login").anonymous()
                 .antMatchers("/user/register").anonymous()
                 .antMatchers("/user/sendEmailCode").anonymous()
@@ -82,7 +81,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(new OptionsRequestFilter(), CorsFilter.class)
                 .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler)
                 .and()
-                .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler).permissiveRequestUrls("/logout")
+                .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
+                //设置无权限接口
+                .permissiveRequestUrls("/login","/user/register","/user/sendEmailCode")
                 .and()
                 .logout()
                 .logoutUrl("/logout")

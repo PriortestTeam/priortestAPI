@@ -33,135 +33,133 @@ import java.util.List;
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private final RequestMatcher requiresAuthenticationRequestMatcher;
-	private List<RequestMatcher> permissiveRequestMatchers;
-	private AuthenticationManager authenticationManager;
+    private final RequestMatcher requiresAuthenticationRequestMatcher;
+    private List<RequestMatcher> permissiveRequestMatchers;
+    private AuthenticationManager authenticationManager;
 
 
-	private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-	private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
+    private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+    private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
 
-	public JwtAuthenticationFilter() {
-		this.requiresAuthenticationRequestMatcher = new RequestHeaderRequestMatcher("Authorization");
-	}
+    public JwtAuthenticationFilter() {
+        this.requiresAuthenticationRequestMatcher = new RequestHeaderRequestMatcher("Authorization");
+    }
 
-	@Override
-	public void afterPropertiesSet() {
-		Assert.notNull(authenticationManager, "authenticationManager must be specified");
-		Assert.notNull(successHandler, "AuthenticationSuccessHandler must be specified");
-		Assert.notNull(failureHandler, "AuthenticationFailureHandler must be specified");
-	}
+    @Override
+    public void afterPropertiesSet() {
+        Assert.notNull(authenticationManager, "authenticationManager must be specified");
+        Assert.notNull(successHandler, "AuthenticationSuccessHandler must be specified");
+        Assert.notNull(failureHandler, "AuthenticationFailureHandler must be specified");
+    }
 
-	protected String getJwtToken(HttpServletRequest request) {
-		String authInfo = request.getHeader("Authorization");
-		return StringUtils.removeStart(authInfo, "Bearer ");
-	}
+    protected String getJwtToken(HttpServletRequest request) {
+        String authInfo = request.getHeader("Authorization");
+        return StringUtils.removeStart(authInfo, "Bearer ");
+    }
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        Authentication authResult = null;
+        AuthenticationException failed = null;
 		if (!requiresAuthentication(request, response)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		Authentication authResult = null;
-		AuthenticationException failed = null;
-		try {
-			String token = getJwtToken(request);
-			if(StringUtils.isNotBlank(token)) {
-				JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
-			    authResult = this.getAuthenticationManager().authenticate(authToken);
-			} else {
-				failed = new InsufficientAuthenticationException("JWT is Empty");
+			//过滤不用认证的请求
+			if (permissiveRequest(request)) {
+				filterChain.doFilter(request, response);
+				return;
 			}
-		} catch(JWTDecodeException e) {
-			logger.error("JWT format error", e);
-			failed = new InsufficientAuthenticationException("JWT format error", failed);
-		}catch (InternalAuthenticationServiceException e) {
-			logger.error(
-					"An internal error occurred while trying to authenticate the user.",
-					failed);
-			failed = e;
-		}catch (AuthenticationException e) {
-			// Authentication failed
-			failed = e;
+			//否则失败
+			throw new JWTDecodeException("Authorization is null.");
 		}
-		if(authResult != null) {
-		    successfulAuthentication(request, response, filterChain, authResult);
-		} else if(!permissiveRequest(request)){
-			unsuccessfulAuthentication(request, response, failed);
-			return;
-		}
+        try {
+            String token = getJwtToken(request);
+            if (StringUtils.isNotBlank(token)) {
+                JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
+                authResult = this.getAuthenticationManager().authenticate(authToken);
+            } else {
+                failed = new InsufficientAuthenticationException("JWT is Empty");
+            }
+        } catch (JWTDecodeException e) {
+            failed = new InsufficientAuthenticationException("JWT format error", null);
+        } catch (AuthenticationException e) {
+            failed = e;
+        }
+		if (authResult != null) {
+            successfulAuthentication(request, response, filterChain, authResult);
+        } else if (!permissiveRequest(request)) {
+            unsuccessfulAuthentication(request, response, failed);
+            return;
+        }
 
-		filterChain.doFilter(request, response);
-	}
+        filterChain.doFilter(request, response);
+    }
 
-	protected void unsuccessfulAuthentication(HttpServletRequest request,
+    protected void unsuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response, AuthenticationException failed)
-			throws IOException, ServletException {
-		SecurityContextHolder.clearContext();
-		failureHandler.onAuthenticationFailure(request, response, failed);
-	}
+            throws IOException, ServletException {
+        SecurityContextHolder.clearContext();
+        failureHandler.onAuthenticationFailure(request, response, failed);
+    }
 
-	protected void successfulAuthentication(HttpServletRequest request,
+    protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response, FilterChain chain, Authentication authResult)
-			throws IOException, ServletException {
-		SecurityContextHolder.getContext().setAuthentication(authResult);
-		successHandler.onAuthenticationSuccess(request, response, authResult);
-	}
+            throws IOException, ServletException {
+        SecurityContextHolder.getContext().setAuthentication(authResult);
+        successHandler.onAuthenticationSuccess(request, response, authResult);
+    }
 
-	protected AuthenticationManager getAuthenticationManager() {
-		return authenticationManager;
-	}
+    protected AuthenticationManager getAuthenticationManager() {
+        return authenticationManager;
+    }
 
-	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-		this.authenticationManager = authenticationManager;
-	}
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
-	protected boolean requiresAuthentication(HttpServletRequest request,
+    protected boolean requiresAuthentication(HttpServletRequest request,
                                              HttpServletResponse response) {
-		return requiresAuthenticationRequestMatcher.matches(request);
-	}
+        return requiresAuthenticationRequestMatcher.matches(request);
+    }
 
-	protected boolean permissiveRequest(HttpServletRequest request) {
-		if(permissiveRequestMatchers == null) {
-			return false;
-		}
-		for(RequestMatcher permissiveMatcher : permissiveRequestMatchers) {
-			if(permissiveMatcher.matches(request)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    protected boolean permissiveRequest(HttpServletRequest request) {
+        if (permissiveRequestMatchers == null) {
+            return false;
+        }
+        for (RequestMatcher permissiveMatcher : permissiveRequestMatchers) {
+            if (permissiveMatcher.matches(request)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public void setPermissiveUrl(String... urls) {
-		if(permissiveRequestMatchers == null) {
-			permissiveRequestMatchers = new ArrayList<>();
-		}
-		for(String url : urls) {
-			permissiveRequestMatchers .add(new AntPathRequestMatcher(url));
-		}
-	}
+    public void setPermissiveUrl(String... urls) {
+        if (permissiveRequestMatchers == null) {
+            permissiveRequestMatchers = new ArrayList<>();
+        }
+        for (String url : urls) {
+            permissiveRequestMatchers.add(new AntPathRequestMatcher(url));
+        }
+    }
 
-	public void setAuthenticationSuccessHandler(
-			AuthenticationSuccessHandler successHandler) {
-		Assert.notNull(successHandler, "successHandler cannot be null");
-		this.successHandler = successHandler;
-	}
+    public void setAuthenticationSuccessHandler(
+            AuthenticationSuccessHandler successHandler) {
+        Assert.notNull(successHandler, "successHandler cannot be null");
+        this.successHandler = successHandler;
+    }
 
-	public void setAuthenticationFailureHandler(
-			AuthenticationFailureHandler failureHandler) {
-		Assert.notNull(failureHandler, "failureHandler cannot be null");
-		this.failureHandler = failureHandler;
-	}
+    public void setAuthenticationFailureHandler(
+            AuthenticationFailureHandler failureHandler) {
+        Assert.notNull(failureHandler, "failureHandler cannot be null");
+        this.failureHandler = failureHandler;
+    }
 
-	protected AuthenticationSuccessHandler getSuccessHandler() {
-		return successHandler;
-	}
+    protected AuthenticationSuccessHandler getSuccessHandler() {
+        return successHandler;
+    }
 
-	protected AuthenticationFailureHandler getFailureHandler() {
-		return failureHandler;
-	}
+    protected AuthenticationFailureHandler getFailureHandler() {
+        return failureHandler;
+    }
 
 }

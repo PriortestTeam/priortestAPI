@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface ViewService {
 
+    Resp<View> queryById(String id);
+
     Resp<List<View>> list(View view);
 
     Resp<String> queryDoesExistByTitle(String projectId,String title,String scope);
@@ -19,5 +21,4 @@ public interface ViewService {
     Resp<String> updateView(View view);
 
     Resp<String> deleteView(String id);
-
 }

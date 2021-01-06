@@ -22,7 +22,7 @@
         select
           id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time
         from oneclick.view
-        where id = #{id}
+        where id = #{id} and user_id = #{masterId}
     </select>
 
     <!--查询指定行数据-->
@@ -54,11 +54,12 @@
                 and is_private = #{isPrivate}
             </if>
         </where>
+        order by create_time desc
     </select>
     <select id="queryTitleIsExist" resultType="java.lang.Integer">
         select
             count(1)
-        from view
+        from oneclick.view
         where
             user_id = #{userId}
             and project_id = #{projectId}
