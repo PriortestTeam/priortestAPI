@@ -38,9 +38,9 @@ public class SubUserController {
         return  subUserService.querySubUsers(sysUser);
     }
 
-    @GetMapping("queryForProjectTitles")
-    public Resp<List<Project>> queryForProjectTitles(@RequestParam String title){
-        return  projectService.queryForProjectTitles(title);
+    @GetMapping("queryForProjects")
+    public Resp<List<Project>> queryForProjects(){
+        return  projectService.queryForProjects();
     }
 
     @GetMapping("queryRoles")

@@ -89,18 +89,6 @@
         select id,title from project where user_id = #{masterId} order by create_time
     </select>
 
-    <select id="queryForProjectTitles" resultMap="ProjectMap">
-        select id,title from project
-         <where>
-             user_id = #{masterId}
-             <if test="title != null and title != ''">
-                 and title like concat('%',#{title},'%')
-             </if>
-         </where>
-        order by create_time
-    </select>
-
-
     <select id="queryAllProjectsAndPermission" resultMap="ProjectMap">
         select
         p.id,

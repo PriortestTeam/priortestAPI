@@ -64,8 +64,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Resp<List<Project>> queryForProjectTitles(String title) {
-        List<Project> projects = projectDao.queryForProjectTitles(title,jwtUserService.getMasterId());
+    public Resp<List<Project>> queryForProjects() {
+        List<Project> projects = projectDao.queryAllProjects(jwtUserService.getMasterId());
         return new Resp.Builder<List<Project>>().setData(projects).total(projects.size()).ok();
     }
 

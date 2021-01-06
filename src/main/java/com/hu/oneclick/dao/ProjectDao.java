@@ -74,13 +74,6 @@ public interface ProjectDao {
      */
     List<Project> queryAllProjects(String masterId);
 
-    /**
-     * 查询项目名称-下拉框使用
-     * @param title
-     * @return
-     */
-    @Page
-    List<Project> queryForProjectTitles(@Param("title")String title,@Param("masterId")String masterId);
 
 
     /**
