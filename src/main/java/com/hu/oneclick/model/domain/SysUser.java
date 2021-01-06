@@ -94,6 +94,8 @@ public class SysUser extends BaseEntity implements Serializable {
 
     private String parentId;
 
+    private String sysRoleId;
+
     /**
      * 用户是否有打开的项目，默认 0 没有
      */
@@ -284,5 +286,13 @@ public class SysUser extends BaseEntity implements Serializable {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getSysRoleId() {
+        return sysRoleId;
+    }
+
+    public void setSysRoleId(String sysRoleId) {
+        this.sysRoleId = sysRoleId;
     }
 }

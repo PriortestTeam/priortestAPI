@@ -20,7 +20,6 @@ public interface OneConstant {
     interface PLATEFORM_USER_TYPE{
         Integer ORDINARY = 0;
         Integer MANAGER = 1;
-        Integer SUB = 3;
     }
 
     /**

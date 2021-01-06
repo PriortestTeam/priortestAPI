@@ -113,7 +113,8 @@ public class SubUserServiceImpl implements SubUserService{
             subUserProject.setUserId(masterUser.getId());
             subUserProject.setProjectId(sysUser.getProjectIdStr());
 
-            if (sysUserDao.insert(sysUser) > 0 && subUserProjectDao.insert(subUserProject) > 0){
+            if (sysUserDao.insert(sysUser) > 0
+                    && subUserProjectDao.insert(subUserProject) > 0){
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),
                         SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue());
             }

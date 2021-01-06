@@ -145,7 +145,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
 			return authLoginUser;
 		}
 		//子用户需要查询权限列表,并且需要裁剪邮箱用户名
-		if (user.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.SUB)){
+		if (user.getManager().equals(OneConstant.USER_TYPE.SUB_USER)){
 			user.setEmail(TwoConstant.subUserNameCrop(user.getEmail()));
 			authLoginUser.setPermissions(sysProjectPermissionDao.queryBySubUserId(user.getId()));
 		}

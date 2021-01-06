@@ -80,7 +80,7 @@ public interface ProjectDao {
      * @return
      */
     @Page
-    List<Project> queryForProjectTitles(String title);
+    List<Project> queryForProjectTitles(@Param("title")String title,@Param("masterId")String masterId);
 
 
     /**

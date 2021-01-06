@@ -28,12 +28,17 @@
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+        <result property="sysRoleId" column="sys_role_id" jdbcType="INTEGER"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="SysUserMap">
         select
-          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id
+          id, email, user_name,
+           password, photo, status,
+            register_date, contact_no, company,
+             profession, industry, close_date, `type`, active_state,
+             enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id
         from oneclick.sys_user
         where id = #{id}
     </select>
@@ -41,7 +46,11 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="SysUserMap">
         select
-          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id
+           id, email, user_name,
+           password, photo, status,
+            register_date, contact_no, company,
+             profession, industry, close_date, `type`, active_state,
+             enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id
         from oneclick.sys_user
         limit #{offset}, #{limit}
     </select>
@@ -49,8 +58,11 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="SysUserMap">
         select
-        id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry,
-        close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time, parent_id
+        id, email, user_name,
+        password, photo, status,
+        register_date, contact_no, company,
+        profession, industry, close_date, `type`, active_state,
+        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id
         from oneclick.sys_user
         <where>
             <if test="id != null">
@@ -129,12 +141,16 @@
         u.time_zone as timeZone,
         u.update_time as updateTime,
         u.parent_id as parentId,
-        sup.project_id as projectIdStr
+        u.sys_role_id as sysRoleId,
+        sup.project_id as projectIdStr,
+
+        sr.role_name as roleName
         from sys_user u
         left join sub_user_project sup on u.id = sup.user_id
+        left join sys_role sr on u.sys_role_id = sr.id
         <where>
         1 = 1
-        and u.manager = 3
+        and u.type = 2
         and u.parent_id = #{parentId}
         </where>
         order by u.register_date desc
@@ -150,12 +166,16 @@
         u.time_zone as timeZone,
         u.update_time as updateTime,
         u.parent_id as parentId,
-        sup.project_id as projectIdStr
+        u.sys_role_id as sysRoleId,
+        sup.project_id as projectIdStr,
+
+        sr.role_name as roleName
         from sys_user u
         left join sub_user_project sup on u.id = sup.user_id
+        left join sys_role sr on u.sys_role_id = sr.id
         where
             1 = 1
-            and u.manager = 3
+            and u.type = 2
             and u.id = #{userId}
             and u.parent_id = #{masterId}
     </select>
@@ -221,6 +241,9 @@
             <if test="parentId != null and parentId != ''">
                 parent_id,
             </if>
+            <if test="sysRoleId != null and sysRoleId != ''">
+                sys_role_id,
+            </if>
             register_date,
             create_time,
             update_time,
@@ -283,6 +306,9 @@
             </if>
             <if test="parentId != null and parentId != ''">
                 #{parentId},
+            </if>
+            <if test="sysRoleId != null and sysRoleId != ''">
+                #{sysRoleId},
             </if>
             NOW(),
             NOW(),
@@ -369,6 +395,9 @@
             </if>
             <if test="type != null">
                 `type` = #{type},
+            </if>
+            <if test="sysRoleId != null and sysRoleId != ''">
+                sys_role_id = #{sysRoleId},
             </if>
             update_time = NOW()
         </set>

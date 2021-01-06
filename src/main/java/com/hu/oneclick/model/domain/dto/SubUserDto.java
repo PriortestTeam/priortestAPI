@@ -20,9 +20,9 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
     private final String DELIMITER = ",";
 
     /**
-     * 角色id
+     * 角色名
      */
-    private String roleId;
+    private String roleName;
 
     /**
      * 项目ids 字符传
@@ -46,7 +46,7 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"用户名" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (!passwordChecker.check(super.getPassword())){
             throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
-        } else if (!passwordChecker.check(roleId)){
+        } else if (StringUtils.isEmpty(super.getSysRoleId())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"角色" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(projectIdStr)){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目" + SysConstantEnum.PARAM_EMPTY.getValue());
@@ -63,14 +63,6 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
 
     public void setProjectsSts(String projectsSts) {
         this.projectsSts = projectsSts;
-    }
-
-    public String getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(String roleId) {
-        this.roleId = roleId;
     }
 
     public String getProjectIdStr() {

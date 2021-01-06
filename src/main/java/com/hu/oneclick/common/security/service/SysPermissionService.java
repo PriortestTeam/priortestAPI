@@ -41,7 +41,7 @@ public class SysPermissionService {
         if (manager.equals(OneConstant.PLATEFORM_USER_TYPE.MANAGER) || manager.equals(OneConstant.PLATEFORM_USER_TYPE.ORDINARY)){
             return true;
         }
-        return manager.equals(OneConstant.PLATEFORM_USER_TYPE.SUB) && userType.equals(OneConstant.USER_TYPE.ADMIN);
+        return userType.equals(OneConstant.USER_TYPE.ADMIN);
     }
 
 
