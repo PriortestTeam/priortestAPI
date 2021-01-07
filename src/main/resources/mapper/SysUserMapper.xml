@@ -387,6 +387,9 @@
     <update id="updateSubUser">
         update oneclick.sys_user
         <set>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
             <if test="userName != null and userName != ''">
                 user_name = #{userName},
             </if>
@@ -421,4 +424,9 @@
         delete from oneclick.sys_user where id = #{id}
     </delete>
 
+    <delete id="deleteSubUser">
+        delete from sys_user where id = #{id}
+        and manager = 2
+        and parent_id = #{masterId}
+    </delete>
 </mapper>

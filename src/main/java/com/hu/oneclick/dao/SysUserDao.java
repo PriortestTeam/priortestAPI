@@ -101,4 +101,12 @@ public interface SysUserDao {
      * @return
      */
     int updateSubUser(SubUserDto sysUser);
+
+    /**
+     * 删除子用户
+     * @param id
+     * @param masterId
+     * @return
+     */
+    int deleteSubUser(@Param("id") String id, @Param("masterId") String masterId);
 }

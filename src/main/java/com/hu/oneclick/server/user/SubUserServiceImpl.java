@@ -139,12 +139,15 @@ public class SubUserServiceImpl implements SubUserService{
 
             //邮箱不为空代表需要修改
             if (sysUser.getEmail() != null){
-                SysUser user = sysUserDao.queryById(jwtUserServiceImpl.getMasterId());
+                SysUser user = sysUserDao.queryById(masterId);
                 if (user != null && StringUtils.isNotEmpty(user.getIdentifier())){
                     //验证用户是否存在
-                    verifySubEmailExists(user.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail());
+                    String email = user.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
+                    sysUser.setEmail(email);
+                    verifySubEmailExists(email);
+                }else {
+                    throw new BizException(SysConstantEnum.MASTER_ACCOUNT_ERROR.getCode(),SysConstantEnum.MASTER_ACCOUNT_ERROR.getValue());
                 }
-                throw new BizException(SysConstantEnum.MASTER_ACCOUNT_ERROR.getCode(),SysConstantEnum.MASTER_ACCOUNT_ERROR.getValue());
             }
 
             //设置用户关联的项目
@@ -156,6 +159,11 @@ public class SubUserServiceImpl implements SubUserService{
             logger.error("class: SubUserServiceImpl#updateSubUser,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
+    }
+
+    @Override
+    public Resp<String> deleteSubUser(String id) {
+        return Result.deleteResult(sysUserDao.deleteSubUser(id,jwtUserServiceImpl.getMasterId()));
     }
 
     /**

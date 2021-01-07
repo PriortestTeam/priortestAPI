@@ -24,7 +24,7 @@ public class Result {
 
     public static Resp<String> deleteResult(int count){
         if (count > 0){
-            return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_FAILED.getValue()).ok();
+            return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_SUCCESS.getValue()).ok();
         }
         throw new BizException(SysConstantEnum.DELETE_FAILED.getCode(),SysConstantEnum.DELETE_FAILED.getValue());
     }

@@ -31,5 +31,12 @@ public interface SubUserService {
      * @return
      */
     Resp<String> updateSubUser(SubUserDto sysUser);
+
+    /**
+     * 删除子用户
+     * @param id
+     * @return
+     */
+    Resp<String> deleteSubUser(String id);
 }
 

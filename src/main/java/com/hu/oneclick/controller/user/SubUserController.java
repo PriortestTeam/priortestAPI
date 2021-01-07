@@ -58,4 +58,9 @@ public class SubUserController {
         return  subUserService.updateSubUser(sysUser);
     }
 
+    @DeleteMapping("deleteSubUser/{id}")
+    public Resp<String> deleteSubUser(@PathVariable String id){
+        return  subUserService.deleteSubUser(id);
+    }
+
 }
