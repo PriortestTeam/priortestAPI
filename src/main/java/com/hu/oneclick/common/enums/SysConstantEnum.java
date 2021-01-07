@@ -23,6 +23,8 @@ public enum SysConstantEnum {
     CREATE_SUB_USER_FAILED(SysConstantEnum.NUMBER + "011","创建成员用户失败。"),
     LOGIN_FAILED(SysConstantEnum.NUMBER + "011","用户名或密码错误。"),
     USERNAME_ERROR(SysConstantEnum.NUMBER + "011","用户名异常。"),
+    MASTER_ACCOUNT_ERROR(SysConstantEnum.NUMBER + "011","主账号异常。"),
+    SUB_USERNAME_ERROR(SysConstantEnum.NUMBER + "011","您的成员列表已存在该用户。"),
     AUTH_FAILED(SysConstantEnum.NUMBER + "011","认证失败，请重新登录。"),
     NO_DUPLICATE_REGISTER(SysConstantEnum.NUMBER + "011","不可重复注册。"),
     VERIFY_CODE_ERROR(SysConstantEnum.NUMBER + "012","验证码错误。"),

@@ -63,6 +63,7 @@ public interface SysUserDao {
      */
     SubUserDto querySubUserInfo(@Param("userId") String userId,@Param("masterId") String masterId);
 
+
     /**
      * 新增数据
      *

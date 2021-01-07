@@ -101,11 +101,15 @@ public class SubUserServiceImpl implements SubUserService{
             //拼接成员用户邮箱
             String subEmail = sysUser.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
 
+            //验证用户是否存在
+            verifySubEmailExists(subEmail);
+
             sysUser.setEmail(subEmail);
             sysUser.setPassword(encodePassword(sysUser.getPassword()));
             //设置默认头像
             sysUser.setPhoto(defaultPhoto);
             sysUser.setType(OneConstant.USER_TYPE.SUB_USER);
+            sysUser.setManager(OneConstant.PLATEFORM_USER_TYPE.SUB_USER);
             sysUser.setParentId(masterUser.getId());
 
             //设置用户关联的项目
@@ -133,6 +137,16 @@ public class SubUserServiceImpl implements SubUserService{
             String masterId = jwtUserServiceImpl.getMasterId();
             sysUser.setParentId(masterId);
 
+            //邮箱不为空代表需要修改
+            if (sysUser.getEmail() != null){
+                SysUser user = sysUserDao.queryById(jwtUserServiceImpl.getMasterId());
+                if (user != null && StringUtils.isNotEmpty(user.getIdentifier())){
+                    //验证用户是否存在
+                    verifySubEmailExists(user.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail());
+                }
+                throw new BizException(SysConstantEnum.MASTER_ACCOUNT_ERROR.getCode(),SysConstantEnum.MASTER_ACCOUNT_ERROR.getValue());
+            }
+
             //设置用户关联的项目
             SubUserProject subUserProject = new SubUserProject();
             subUserProject.setUserId(masterId);
@@ -141,6 +155,16 @@ public class SubUserServiceImpl implements SubUserService{
         }catch (BizException e){
             logger.error("class: SubUserServiceImpl#updateSubUser,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    /**
+     * 验证用户是否存在
+     * @param email
+     */
+    private void verifySubEmailExists(String email){
+        if (sysUserDao.queryByEmail(email) != null){
+            throw new BizException(SysConstantEnum.SUB_USERNAME_ERROR.getCode(),SysConstantEnum.SUB_USERNAME_ERROR.getValue());
         }
     }
 
