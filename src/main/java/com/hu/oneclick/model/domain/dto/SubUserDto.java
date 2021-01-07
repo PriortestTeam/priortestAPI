@@ -40,7 +40,9 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
         PasswordCheckerUtil passwordChecker = new PasswordCheckerUtil();
         if (StringUtils.isEmpty(super.getEmail())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"邮箱" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (StringUtils.isEmpty(super.getPassword())){
+        } else if (StringUtils.isEmpty(super.getIdentifier())){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"主账号ID" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }  else if (StringUtils.isEmpty(super.getPassword())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"密码" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(super.getUserName())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"用户名" + SysConstantEnum.PARAM_EMPTY.getValue());

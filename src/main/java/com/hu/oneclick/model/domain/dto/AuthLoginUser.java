@@ -29,6 +29,11 @@ public class AuthLoginUser implements UserDetails {
     private String code;
 
     /**
+     * 如果该字段不为空，则表示为子用户登录
+     */
+    private String masterIdentifier;
+
+    /**
      * 子用户权限列表
      */
     private List<SysProjectPermissionDto> permissions;
@@ -101,5 +106,13 @@ public class AuthLoginUser implements UserDetails {
 
     public void setPermissions(List<SysProjectPermissionDto> permissions) {
         this.permissions = permissions;
+    }
+
+    public String getMasterIdentifier() {
+        return masterIdentifier;
+    }
+
+    public void setMasterIdentifier(String masterIdentifier) {
+        this.masterIdentifier = masterIdentifier;
     }
 }

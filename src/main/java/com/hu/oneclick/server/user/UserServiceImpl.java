@@ -6,8 +6,10 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.NumberUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
+import com.hu.oneclick.dao.MasterIdentifierDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.MasterIdentifier;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
@@ -22,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +38,8 @@ public class UserServiceImpl implements UserService{
 
     private final SysUserDao sysUserDao;
 
+    private final MasterIdentifierDao masterIdentifierDao;
+
     private final JwtUserServiceImpl jwtUserServiceImpl;
 
     private final RedissonClient redisClient;
@@ -44,8 +47,9 @@ public class UserServiceImpl implements UserService{
 
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
-    public UserServiceImpl(SysUserDao sysUserDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl) {
+    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl) {
         this.sysUserDao = sysUserDao;
+        this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
         this.jwtUserServiceImpl = jwtUserServiceImpl;
     }
@@ -72,7 +76,14 @@ public class UserServiceImpl implements UserService{
             user.setPhoto(defaultPhoto);
             user.setType(OneConstant.USER_TYPE.ADMIN);
             user.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
-            if (sysUserDao.insert(user) > 0){
+
+            //设置主账号识别号，用于子用户登录
+            MasterIdentifier masterIdentifier = masterIdentifierDao.queryOne();
+            if (masterIdentifier == null){
+                throw new BizException(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue());
+            }
+            user.setIdentifier(masterIdentifier.getId());
+            if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0){
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());

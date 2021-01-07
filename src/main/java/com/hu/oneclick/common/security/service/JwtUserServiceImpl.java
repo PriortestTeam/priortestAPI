@@ -176,13 +176,4 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		bucket.delete();
 		SecurityContextHolder.clearContext();
 	}
-
-	/**
-	 * 登录
-	 * @param user
-	 * @return
-	 */
-	public void login(AuthLoginUser user) {
-		loadUserByUsername(user.getUsername());
-	}
 }

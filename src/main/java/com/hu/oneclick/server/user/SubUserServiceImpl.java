@@ -99,7 +99,7 @@ public class SubUserServiceImpl implements SubUserService{
             sysUser.verify();
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
             //拼接成员用户邮箱
-            String subEmail = masterUser.getId() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
+            String subEmail = sysUser.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
 
             sysUser.setEmail(subEmail);
             sysUser.setPassword(encodePassword(sysUser.getPassword()));

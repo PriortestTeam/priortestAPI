@@ -29,6 +29,7 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
         <result property="sysRoleId" column="sys_role_id" jdbcType="INTEGER"/>
+        <result property="identifier" column="identifier" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
@@ -38,7 +39,7 @@
            password, photo, status,
             register_date, contact_no, company,
              profession, industry, close_date, `type`, active_state,
-             enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id
+             enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier
         from oneclick.sys_user
         where id = #{id}
     </select>
@@ -50,7 +51,7 @@
            password, photo, status,
             register_date, contact_no, company,
              profession, industry, close_date, `type`, active_state,
-             enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id
+             enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier
         from oneclick.sys_user
         limit #{offset}, #{limit}
     </select>
@@ -62,7 +63,7 @@
         password, photo, status,
         register_date, contact_no, company,
         profession, industry, close_date, `type`, active_state,
-        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id
+        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier
         from oneclick.sys_user
         <where>
             <if test="id != null">
@@ -123,7 +124,7 @@
     </select>
     <select id="queryByEmail" resultMap="SysUserMap">
         select
-          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time, parent_id
+          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time, parent_id,identifier
         from oneclick.sys_user
         where
         email = #{email}
@@ -142,6 +143,7 @@
         u.update_time as updateTime,
         u.parent_id as parentId,
         u.sys_role_id as sysRoleId,
+        u.identifier as identifier,
         sup.project_id as projectIdStr,
 
         sr.role_name as roleName
@@ -167,6 +169,7 @@
         u.update_time as updateTime,
         u.parent_id as parentId,
         u.sys_role_id as sysRoleId,
+        u.identifier as identifier,
         sup.project_id as projectIdStr,
 
         sr.role_name as roleName
@@ -244,6 +247,9 @@
             <if test="sysRoleId != null and sysRoleId != ''">
                 sys_role_id,
             </if>
+            <if test="identifier != null and identifier != ''">
+                identifier,
+            </if>
             register_date,
             create_time,
             update_time,
@@ -309,6 +315,9 @@
             </if>
             <if test="sysRoleId != null and sysRoleId != ''">
                 #{sysRoleId},
+            </if>
+            <if test="identifier != null and identifier != ''">
+                #{identifier},
             </if>
             NOW(),
             NOW(),
