@@ -37,23 +37,29 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
 
     @Override
     public void verify() throws BizException {
-        PasswordCheckerUtil passwordChecker = new PasswordCheckerUtil();
         if (StringUtils.isEmpty(super.getEmail())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"邮箱" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(super.getIdentifier())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"主账号ID" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }  else if (StringUtils.isEmpty(super.getPassword())){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"密码" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(super.getUserName())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"用户名" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (!passwordChecker.check(super.getPassword())){
-            throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
         } else if (StringUtils.isEmpty(super.getSysRoleId())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"角色" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(projectIdStr)){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
+        verifyPassword();
     }
+
+    public void verifyPassword(){
+        PasswordCheckerUtil passwordChecker = new PasswordCheckerUtil();
+        if (StringUtils.isEmpty(super.getPassword())){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"密码" + SysConstantEnum.PARAM_EMPTY.getValue());
+        } else if (!passwordChecker.check(super.getPassword())){
+            throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
+        }
+    }
+
 
     public String getALL() {
         return ALL;

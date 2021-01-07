@@ -418,6 +418,18 @@
         and parent_id = #{parentId}
         and del_flag = 0
     </update>
+    <update id="updateSubUserPassword">
+        update oneclick.sys_user
+        <set>
+            password = #{password},
+            update_time = NOW()
+        </set>
+        where
+        id = #{id}
+        and parent_id = #{parentId}
+        and manager = 2
+        and del_flag = 0
+    </update>
 
     <!--通过主键删除-->
     <delete id="deleteById">

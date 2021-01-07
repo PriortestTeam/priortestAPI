@@ -162,6 +162,16 @@ public class SubUserServiceImpl implements SubUserService{
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> updateSubUserPassword(SubUserDto sysUser) {
+        sysUser.verifyPassword();
+        sysUser.setParentId(jwtUserServiceImpl.getMasterId());
+        sysUser.setPassword(encodePassword(sysUser.getPassword()));
+        return Result.updateResult(sysUserDao.updateSubUserPassword(sysUser));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> deleteSubUser(String id) {
         return Result.deleteResult(sysUserDao.deleteSubUser(id,jwtUserServiceImpl.getMasterId()));
     }

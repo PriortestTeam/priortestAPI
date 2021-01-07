@@ -103,10 +103,18 @@ public interface SysUserDao {
     int updateSubUser(SubUserDto sysUser);
 
     /**
+     * 设置子用户密码
+     * @param sysUser
+     * @return
+     */
+    int updateSubUserPassword(SubUserDto sysUser);
+
+    /**
      * 删除子用户
      * @param id
      * @param masterId
      * @return
      */
     int deleteSubUser(@Param("id") String id, @Param("masterId") String masterId);
+
 }

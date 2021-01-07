@@ -58,6 +58,12 @@ public class SubUserController {
         return  subUserService.updateSubUser(sysUser);
     }
 
+    @PostMapping("updateSubUserPassword")
+    public Resp<String> updateSubUserPassword(@RequestBody SubUserDto sysUser){
+        return  subUserService.updateSubUserPassword(sysUser);
+    }
+
+
     @DeleteMapping("deleteSubUser/{id}")
     public Resp<String> deleteSubUser(@PathVariable String id){
         return  subUserService.deleteSubUser(id);

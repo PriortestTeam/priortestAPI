@@ -33,10 +33,19 @@ public interface SubUserService {
     Resp<String> updateSubUser(SubUserDto sysUser);
 
     /**
+     * 设置子用户密码
+     * @param sysUser
+     * @return
+     */
+    Resp<String> updateSubUserPassword(SubUserDto sysUser);
+
+    /**
      * 删除子用户
      * @param id
      * @return
      */
     Resp<String> deleteSubUser(String id);
+
+
 }
 
