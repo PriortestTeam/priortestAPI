@@ -6,6 +6,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
+import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.SysProjectPermissionDao;
@@ -142,7 +144,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		SysUser user = sysUserDao.queryByEmail(username);
 		AuthLoginUser authLoginUser = new AuthLoginUser();
 		if (user == null){
-			return authLoginUser;
+			throw new RuntimeException();
 		}
 		//子用户需要查询权限列表,并且需要裁剪邮箱用户名
 		if (user.getManager().equals(OneConstant.USER_TYPE.SUB_USER)){

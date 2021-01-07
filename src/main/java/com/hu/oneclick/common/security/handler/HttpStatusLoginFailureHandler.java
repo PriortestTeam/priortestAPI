@@ -6,6 +6,7 @@ import com.hu.oneclick.model.base.Resp;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -26,7 +27,7 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		String result = "";
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType("application/json;charset=UTF-8");
-		if (exception instanceof BadCredentialsException) {
+		if (exception instanceof BadCredentialsException || exception instanceof InternalAuthenticationServiceException) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.LOGIN_FAILED.getValue()).fail());
 		} else if (exception instanceof InsufficientAuthenticationException
