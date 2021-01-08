@@ -130,6 +130,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
 	public void saveUserLoginInfo2(SysUser sysUser) {
 		AuthLoginUser user = getUserLoginInfo();
+		user.setSysUser(sysUser);
 		String s = JSONObject.toJSONString(user);
 		RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + sysUser.getEmail());
 		if (bucket.isExists()){
@@ -171,6 +172,10 @@ public class JwtUserServiceImpl implements UserDetailsService {
 	 */
 	public String encryptPassword(String password) {
 		return passwordEncoder.encode(password);
+	}
+
+	public boolean verifyPassword(String password,SysUser sysUser){
+		return passwordEncoder.matches(password,sysUser.getPassword());
 	}
 
 	public void deleteUserLoginInfo(String username) {

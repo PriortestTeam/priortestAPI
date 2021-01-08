@@ -39,11 +39,6 @@ public class UserController {
         return userService.modifyPassword(args);
     }
 
-    @GetMapping("sendModifyPasswordEmailCode")
-    public Resp<String> sendModifyPasswordEmailCode(@RequestParam String email) {
-        return userService.sendEmailCode(email,OneConstant.REDIS_KEY_PREFIX.MODIFY_PASSWORD);
-    }
-
     @PostMapping("resetPassword")
     public Resp<String> resetPassword(@RequestBody Map<String,String> args){
         return userService.resetPassword(args);

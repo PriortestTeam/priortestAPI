@@ -95,18 +95,21 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> modifyPassword(Map<String, String> args) {
         try {
             SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+            String oldPassword = args.get("oldPassword");
             String newPassword = args.get("newPassword");
-            String verificationCode = args.get("verificationCode");
-            String email = args.get("email");
-            verify(newPassword, verificationCode);
+            verify(newPassword, null);
 
-            //验证邮箱
-            verifyEmailCode(OneConstant.REDIS_KEY_PREFIX.RESET_PASSWORD + email, verificationCode);
-            sysUser.setPassword(newPassword);
+            if (!jwtUserServiceImpl.verifyPassword(oldPassword,sysUser)){
+                return new Resp.Builder<String>().buildResult("旧密码输入错误");
+            }
+
+            sysUser.setPassword(encodePassword(newPassword));
             updatePassword(sysUser);
+            jwtUserServiceImpl.saveUserLoginInfo2(sysUser);
             return new Resp.Builder<String>().setData("修改成功").ok();
         }catch (BizException e){
             logger.error("class: UserServiceImpl#modifyPassword,error []" + e.getMessage());
@@ -117,6 +120,7 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> resetPassword(Map<String, String> args) {
         try {
             String newPassword = args.get("newPassword");
@@ -130,7 +134,7 @@ public class UserServiceImpl implements UserService{
             //验证邮箱
             verifyEmailCode(OneConstant.REDIS_KEY_PREFIX.RESET_PASSWORD + email, verificationCode);
 
-            sysUser.setPassword(newPassword);
+            sysUser.setPassword(encodePassword(newPassword));
             updatePassword(sysUser);
             return new Resp.Builder<String>().setData("修改成功").ok();
         }catch (BizException e){
@@ -178,6 +182,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateUserInfo(SysUser sysUser) {
         try {
             if (sysUserDao.update(sysUser) <= 0){
@@ -242,7 +247,6 @@ public class UserServiceImpl implements UserService{
      * @param user
      */
     private void updatePassword(SysUser user){
-        user.setPassword(encodePassword(user.getPassword()));
         int update = sysUserDao.updatePassword(user);
         if (update <= 0){
             throw new BizException(SysConstantEnum.FAILED.getCode(),SysConstantEnum.FAILED.getValue());
