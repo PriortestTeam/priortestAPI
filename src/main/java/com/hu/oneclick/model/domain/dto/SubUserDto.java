@@ -15,9 +15,6 @@ import java.io.Serializable;
 public class SubUserDto extends SysUser implements VerifyParam, Serializable {
 
     private static final long serialVersionUID = 1993189923318507589L;
-    private final String ALL = "ALL";
-
-    private final String DELIMITER = ",";
 
     /**
      * 角色名
@@ -61,8 +58,12 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
     }
 
 
-    public String getALL() {
-        return ALL;
+    public final String getAll() {
+        return "ALL";
+    }
+
+    public final String getDelimiter() {
+        return ",";
     }
 
     public String getProjectsSts() {
@@ -81,9 +82,7 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
         this.projectIdStr = projectIdStr;
     }
 
-    public String getDELIMITER() {
-        return DELIMITER;
-    }
+
 
     public String getRoleName() {
         return roleName;

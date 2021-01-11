@@ -2,14 +2,17 @@ package com.hu.oneclick.server.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.ProjectDao;
+import com.hu.oneclick.dao.SysOperationAuthorityDao;
 import com.hu.oneclick.dao.SysProjectPermissionDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.SysOperationAuthority;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
@@ -24,7 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -42,16 +47,25 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
 
     private final SysProjectPermissionDao sysProjectPermissionDao;
 
+    private final SysOperationAuthorityDao sysOperationAuthorityDao;
+
     private final RedissonClient redisClient;
 
-    public SettingPermissionServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, ProjectDao projectDao, SysProjectPermissionDao sysProjectPermissionDao, RedissonClient redisClient) {
+    public SettingPermissionServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, ProjectDao projectDao, SysProjectPermissionDao sysProjectPermissionDao, SysOperationAuthorityDao sysOperationAuthorityDao, RedissonClient redisClient) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.sysUserDao = sysUserDao;
         this.projectDao = projectDao;
         this.sysProjectPermissionDao = sysProjectPermissionDao;
+        this.sysOperationAuthorityDao = sysOperationAuthorityDao;
         this.redisClient = redisClient;
     }
 
+
+    @Override
+    public Resp<List<SysOperationAuthority>> getSysOperationAuthority() {
+        List<SysOperationAuthority> sysOperationAuthorities = sysOperationAuthorityDao.queryAll();
+        return new Resp.Builder<List<SysOperationAuthority>>().setData(sysOperationAuthorities).total(sysOperationAuthorities.size()).ok();
+    }
 
     @Override
     public Resp<SubUserPermissionDto> getPermissions(String subUserId) {
@@ -60,13 +74,14 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         if (subUserDto == null){
             return new Resp.Builder<SubUserPermissionDto>().fail();
         }
+        subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail()));
         String projectIdStr = subUserDto.getProjectIdStr();
         List<Project> projects = null;
-        if (subUserDto.getALL().equals(projectIdStr)){
+        if (subUserDto.getAll().equals(projectIdStr)){
             //获取全部的项目
             projects = projectDao.queryAllProjectsAndPermission(masterUser.getId());
         }else if(StringUtils.isNotEmpty(projectIdStr)){
-            List<String> ids = Arrays.asList(projectIdStr.split(subUserDto.getDELIMITER()));
+            List<String> ids = Arrays.asList(projectIdStr.split(subUserDto.getDelimiter()));
             projects = projectDao.queryInProjectIdsAndPermission(ids,subUserDto.getId(), masterUser.getId());
         }
         SubUserPermissionDto subUserPermissionDto = new SubUserPermissionDto();
@@ -102,7 +117,6 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
     /**
      * 更新用户的缓存（权限列表）信息
      */
-    @Transactional(rollbackFor = Exception.class)
     private void deleteSubUserLoginStatus(String username){
         RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN  + username);
         AuthLoginUser authLoginUser = JSONObject.parseObject(bucket.get(), AuthLoginUser.class);

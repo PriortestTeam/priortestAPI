@@ -1,10 +1,13 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.SysOperationAuthority;
 import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
 import com.hu.oneclick.server.service.SettingPermissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author qingyang
@@ -29,6 +32,16 @@ public class SettingPermissionController {
     public Resp<SubUserPermissionDto> getPermissions(@PathVariable String subUserId){
         return settingPermissionService.getPermissions(subUserId);
     }
+
+    /**
+     * 获取所有权限列表
+     * @return
+     */
+    @GetMapping("getSysOperationAuthority")
+    public Resp<List<SysOperationAuthority>> getSysOperationAuthority(){
+        return settingPermissionService.getSysOperationAuthority();
+    }
+
 
     /**
      * 更新用户的项目权限

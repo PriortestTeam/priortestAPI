@@ -78,7 +78,7 @@ public class SubUserServiceImpl implements SubUserService{
         String projectIdStr = subUserDto.getProjectIdStr();
         if (StringUtils.isEmpty(projectIdStr)){
             return;
-        }else if (subUserDto.getALL().equals(projectIdStr)){
+        }else if (subUserDto.getAll().equals(projectIdStr)){
             projects.forEach(e-> lists.add(e.getTitle()));
         }else {
             //将查询条件转换成list
