@@ -154,11 +154,17 @@ public class SubUserServiceImpl implements SubUserService{
                 }
             }
 
+            Result.updateResult(sysUserDao.updateSubUser(sysUser));
+
             //设置用户关联的项目
             SubUserProject subUserProject = new SubUserProject();
             subUserProject.setUserId(sysUser.getId());
             subUserProject.setProjectId(sysUser.getProjectIdStr());
-            return Result.updateResult((sysUserDao.updateSubUser(sysUser) > 0 && subUserProjectDao.update(subUserProject) > 0) ? 1 : 0);
+
+            if (StringUtils.isNotEmpty(subUserProject.getProjectId()) && StringUtils.isNotEmpty(subUserProject.getUserId())){
+                Result.updateResult(subUserProjectDao.update(subUserProject));
+            }
+            return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
         }catch (BizException e){
             logger.error("class: SubUserServiceImpl#updateSubUser,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());

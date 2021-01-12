@@ -2,6 +2,7 @@ package com.hu.oneclick.model.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 操作权限(SysOperationAuthority)实体类
@@ -28,11 +29,13 @@ public class SysOperationAuthority implements Serializable {
     /**
      * 父id
      */
-    private Long parentId;
+    private String parentId;
 
     private Date createTime;
 
     private Date updateTime;
+
+    private List<SysOperationAuthority> childList;
 
 
     public String getId() {
@@ -67,11 +70,11 @@ public class SysOperationAuthority implements Serializable {
         this.sort = sort;
     }
 
-    public Long getParentId() {
+    public String getParentId() {
         return parentId;
     }
 
-    public void setParentId(Long parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 
@@ -91,4 +94,11 @@ public class SysOperationAuthority implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public List<SysOperationAuthority> getChildList() {
+        return childList;
+    }
+
+    public void setChildList(List<SysOperationAuthority> childList) {
+        this.childList = childList;
+    }
 }

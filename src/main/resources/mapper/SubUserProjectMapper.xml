@@ -29,10 +29,13 @@
 
     <!--通过主键修改数据-->
     <update id="update">
-        update oneclick.sub_user_project
-        set
-        project_id = #{projectId}
-        where user_id = #{userId}
+        <if test="projectId != null and projectId != ''">
+            update oneclick.sub_user_project
+            <set>
+                project_id = #{projectId}
+            </set>
+            where user_id = #{userId}
+        </if>
     </update>
 
 </mapper>

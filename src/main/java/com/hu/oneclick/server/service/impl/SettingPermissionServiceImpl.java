@@ -26,10 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author qingyang
@@ -63,9 +60,35 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
 
     @Override
     public Resp<List<SysOperationAuthority>> getSysOperationAuthority() {
-        List<SysOperationAuthority> sysOperationAuthorities = sysOperationAuthorityDao.queryAll();
-        return new Resp.Builder<List<SysOperationAuthority>>().setData(sysOperationAuthorities).total(sysOperationAuthorities.size()).ok();
+        String key = "SettingPermissionServiceImpl_getSysOperationAuthority";
+
+        RBucket<List<SysOperationAuthority>> bucket = redisClient.getBucket(key);
+
+        List<SysOperationAuthority> result;
+
+        if (bucket.get() == null){
+            result = new ArrayList<>();
+            List<SysOperationAuthority> sysOperationAuthorities = sysOperationAuthorityDao.queryAll();
+            sysOperationAuthorities.forEach(e -> {
+                if (!"0".equals(e.getParentId())){
+                    return;
+                }
+                List<SysOperationAuthority> childList = new ArrayList<>();
+                sysOperationAuthorities.forEach(j->{
+                    if (e.getId().equals(j.getParentId())){
+                        childList.add(j);
+                    }
+                });
+                e.setChildList(childList);
+                result.add(e);
+            });
+            bucket.set(result);
+        }else {
+            result = bucket.get();
+        }
+        return new Resp.Builder<List<SysOperationAuthority>>().setData(result).total(result.size()).ok();
     }
+
 
     @Override
     public Resp<SubUserPermissionDto> getPermissions(String subUserId) {
