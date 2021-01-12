@@ -36,8 +36,6 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
     public void verify() throws BizException {
         if (StringUtils.isEmpty(super.getEmail())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"邮箱" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (StringUtils.isEmpty(super.getIdentifier())){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"主账号ID" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(super.getUserName())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"用户名" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(super.getSysRoleId())){
@@ -59,7 +57,7 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
 
 
     public final String getAll() {
-        return "ALL";
+        return "0";
     }
 
     public final String getDelimiter() {

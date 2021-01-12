@@ -15,7 +15,7 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="" useGeneratedKeys="true">
-        insert into oneclick.sub_user_project
+        insert into sub_user_project
         <trim prefix="(" suffix=")" suffixOverrides=",">
                 user_id,
                 project_id

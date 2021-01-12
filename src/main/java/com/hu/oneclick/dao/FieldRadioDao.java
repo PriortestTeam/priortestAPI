@@ -58,10 +58,10 @@ public interface FieldRadioDao {
     /**
      * 通过主键删除数据
      *
-     * @param 主键
+     * @param customFieldId
      * @return 影响行数
      */
-    int deleteById(@Param("id") String id);
+    int deleteById(@Param("customFieldId") String customFieldId);
 
     FieldRadio queryFieldRadioById(@Param("customFieldId") String customFieldId,@Param("masterId") String masterId);
 }

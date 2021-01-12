@@ -76,6 +76,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> updateCustomRadio(FieldRadio fieldRadio) {
         try {
             fieldRadio.setUserId(jwtUserServiceImpl.getMasterId());
+            fieldRadio.setCustomFieldId();
             return Result.updateResult((customFieldDao.update(fieldRadio) > 0
                     && fieldRadioDao.update(fieldRadio) > 0)  ? 1 : 0);
         }catch (BaseException e){

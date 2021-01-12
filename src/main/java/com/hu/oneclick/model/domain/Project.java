@@ -56,6 +56,8 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
 
     private Date updateTime;
 
+    private Date closeDate;
+
     /**
      * 项目绑定的权限
      */
@@ -150,6 +152,13 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
         this.updateTime = updateTime;
     }
 
+    public Date getCloseDate() {
+        return closeDate;
+    }
+
+    public void setCloseDate(Date closeDate) {
+        this.closeDate = closeDate;
+    }
 
     public String getOperationAuthIds() {
         return operationAuthIds;

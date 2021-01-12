@@ -19,7 +19,7 @@ public class Result {
         if (count > 0){
             return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
         }
-        throw new BizException(SysConstantEnum.UPDATE_SUCCESS.getCode(),SysConstantEnum.UPDATE_SUCCESS.getValue());
+        throw new BizException(SysConstantEnum.UPDATE_FAILED.getCode(),SysConstantEnum.UPDATE_FAILED.getValue());
     }
 
     public static Resp<String> deleteResult(int count){

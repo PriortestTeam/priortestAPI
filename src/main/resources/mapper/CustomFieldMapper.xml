@@ -64,6 +64,9 @@
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into oneclick.custom_field
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                id,
+            </if>
             <if test="userId != null and userId != ''">
                 user_id,
             </if>
@@ -87,6 +90,9 @@
             update_time
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                #{id},
+            </if>
             <if test="userId != null and userId != ''">
                 #{userId},
             </if>

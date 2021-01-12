@@ -1,6 +1,5 @@
 package com.hu.oneclick.controller;
 
-import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.server.service.CustomFieldService;
@@ -23,7 +22,6 @@ public class CustomFieldController {
 
     //custom begin
 
-    @Page
     @PostMapping("queryCustomList")
     public Resp<List<CustomField>> queryCustomList(@RequestBody CustomField customField){
         return customFieldService.queryCustomList(customField);

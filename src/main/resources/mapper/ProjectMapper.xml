@@ -16,6 +16,7 @@
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="operationAuthIds" column="operation_auth_ids" jdbcType="VARCHAR"/>
+        <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <select id="queryById" resultMap="ProjectMap">
@@ -29,7 +30,8 @@
                attachment_id,
                del_flag,
                create_time,
-               update_time
+               update_time,
+               close_date
         from project
         where id = #{id}
     </select>
@@ -37,7 +39,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProjectMap">
         select
-          id, user_id, title, report_to_name, status, description, plan_release_date, del_flag, create_time, update_time
+          id, user_id, title, report_to_name, status, description, plan_release_date, del_flag, create_time, update_time,close_date
         from oneclick.project
         limit #{offset}, #{limit}
     </select>
@@ -45,7 +47,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ProjectMap">
         select
-        id, user_id, title, report_to_name, status, description, plan_release_date , del_flag, create_time, update_time
+        id, user_id, title, report_to_name, status, description, plan_release_date , del_flag, create_time, update_time,close_date
         from oneclick.project
         <where>
             user_id = #{userId}
@@ -189,6 +191,9 @@
             </if>
             <if test="planReleaseDate != null">
                 plan_release_date = #{planReleaseDate},
+            </if>
+            <if test="closeDate != null and closeDate != ''">
+                close_date = #{closeDate},
             </if>
             update_time = NOW()
         </set>

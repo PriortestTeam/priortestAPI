@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,8 +97,13 @@ public class SubUserServiceImpl implements SubUserService{
         try {
             sysUser.verify();
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+
+            if(StringUtils.isEmpty(masterUser.getIdentifier())){
+                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"主账号ID" + SysConstantEnum.PARAM_EMPTY.getValue());
+            }
+
             //拼接成员用户邮箱
-            String subEmail = sysUser.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
+            String subEmail = masterUser.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
 
             //验证用户是否存在
             verifySubEmailExists(subEmail);
@@ -114,7 +118,7 @@ public class SubUserServiceImpl implements SubUserService{
 
             //设置用户关联的项目
             SubUserProject subUserProject = new SubUserProject();
-            subUserProject.setUserId(masterUser.getId());
+            subUserProject.setUserId(sysUser.getId());
             subUserProject.setProjectId(sysUser.getProjectIdStr());
 
             if (sysUserDao.insert(sysUser) > 0
@@ -152,7 +156,7 @@ public class SubUserServiceImpl implements SubUserService{
 
             //设置用户关联的项目
             SubUserProject subUserProject = new SubUserProject();
-            subUserProject.setUserId(masterId);
+            subUserProject.setUserId(sysUser.getId());
             subUserProject.setProjectId(sysUser.getProjectIdStr());
             return Result.updateResult((sysUserDao.updateSubUser(sysUser) > 0 && subUserProjectDao.update(subUserProject) > 0) ? 1 : 0);
         }catch (BizException e){

@@ -54,8 +54,6 @@ public class CustomField extends BaseEntity  implements VerifyParam, Serializabl
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目ID" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(fieldName)){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"字段名称" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if (StringUtils.isEmpty(type)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"类型" + SysConstantEnum.PARAM_EMPTY.getValue());
         }else if (StringUtils.isEmpty(scope)){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"作用域" + SysConstantEnum.PARAM_EMPTY.getValue());
         }else if (StringUtils.isEmpty(mandatory)){
@@ -63,9 +61,7 @@ public class CustomField extends BaseEntity  implements VerifyParam, Serializabl
         }
     }
 
-    public void subVerify()throws BizException {
-
-    }
+    public void subVerify()throws BizException {}
 
 
     public void setType(){

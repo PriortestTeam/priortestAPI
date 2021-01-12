@@ -1,5 +1,6 @@
 package com.hu.oneclick.dao;
 
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.CustomField;
 import org.apache.ibatis.annotations.Param;
 
@@ -37,6 +38,7 @@ public interface CustomFieldDao {
      * @param customField 实例对象
      * @return 对象列表
      */
+    @Page
     List<CustomField> queryAll(CustomField customField);
 
     /**

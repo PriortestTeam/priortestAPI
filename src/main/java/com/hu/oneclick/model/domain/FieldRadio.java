@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class FieldRadio extends CustomField implements Serializable {
     private static final long serialVersionUID = -46014189887598954L;
 
-    private String customFieldId = super.getId();
+    private String customFieldId;
     /**
      * 0 , 1  单选框  0 未选中，1 选中
      */
@@ -28,6 +28,10 @@ public class FieldRadio extends CustomField implements Serializable {
     @Override
     public void subVerify() throws BizException {
         super.verify();
+
+        this.setType();
+
+        this.setCustomFieldId();
     }
 
     /**
@@ -42,8 +46,8 @@ public class FieldRadio extends CustomField implements Serializable {
         return customFieldId;
     }
 
-    public void setCustomFieldId(String customFieldId) {
-        this.customFieldId = customFieldId;
+    public void setCustomFieldId() {
+        this.customFieldId = super.getId();
     }
 
     public Integer getDefaultValue() {
