@@ -104,9 +104,6 @@
     <update id="update">
         update oneclick.field_text
         <set>
-            <if test="customFieldId != null and customFieldId != ''">
-                custom_field_id = #{customFieldId},
-            </if>
             <if test="defaultValue != null and defaultValue != ''">
                 default_value = #{defaultValue},
             </if>
@@ -117,7 +114,7 @@
                 `length` = #{length},
             </if>
         </set>
-        where = #{customFieldId}
+        where custom_field_id = #{customFieldId}
     </update>
 
     <!--通过主键删除-->

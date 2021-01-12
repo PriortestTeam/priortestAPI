@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
 
@@ -67,6 +68,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                     && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#addCustomRadio,error []" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
     }
@@ -81,6 +83,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                     && fieldRadioDao.update(fieldRadio) > 0)  ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#updateCustomRadio,error []" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
     }
@@ -94,6 +97,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                     && fieldRadioDao.deleteById(id) > 0)  ? 1 : 0);
         }catch (BaseException e){
             logger.error("class: CustomFieldServiceImpl#deleteCustomRadio,error []" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
     }
@@ -117,6 +121,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return Result.addResult((customFieldDao.insert(fieldText) > 0
                     && fieldTextDao.insert(fieldText) > 0) ? 1:0);
         }catch (BaseException e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#addCustomText2,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
@@ -126,6 +131,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateCustomText(FieldText fieldText) {
         fieldText.subVerify();
+        fieldText.setCustomFieldId();
         return updateCustomText2(fieldText);
     }
 
@@ -135,6 +141,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return Result.updateResult((customFieldDao.update(fieldText) > 0
                     && fieldTextDao.update(fieldText) > 0) ? 1 : 0);
         }catch (BaseException e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#updateCustomText2,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
@@ -148,6 +155,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return Result.deleteResult((customFieldDao.deleteById(id,userId) > 0
                     && fieldTextDao.deleteById(id) > 0) ? 1 : 0);
         }catch (BaseException e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#deleteCustomText,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
@@ -165,6 +173,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateCustomRichText(FieldRichText fieldRichText) {
+        fieldRichText.subVerify();
         FieldText fieldText = new FieldText();
         BeanUtils.copyProperties(fieldRichText,fieldText);
         return updateCustomText2(fieldText);
@@ -184,6 +193,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return Result.addResult( (customFieldDao.insert(fieldDropDown) > 0
                     && fieldDropDownDao.insert(fieldDropDown) > 0) ? 1 : 0);
         }catch (BaseException e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#addCustomDropDown,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
@@ -197,6 +207,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return Result.updateResult((customFieldDao.update(fieldDropDown) > 0
                     && fieldDropDownDao.update(fieldDropDown) > 0) ? 1 : 0);
         }catch (BaseException e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#updateCustomDropDown,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
@@ -210,6 +221,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return Result.deleteResult((customFieldDao.deleteById(customFieldId,userId) > 0
                     && fieldDropDownDao.deleteById(customFieldId) > 0) ? 1 :0);
         }catch (BaseException e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#deleteCustomDropDown,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }

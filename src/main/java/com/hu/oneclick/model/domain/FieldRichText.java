@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 
@@ -13,7 +14,7 @@ public class FieldRichText extends CustomField implements Serializable {
 
     private static final long serialVersionUID = 613936107743960355L;
 
-    private String customFieldId = super.getId();
+    private String customFieldId;
 
     private String defaultValue;
 
@@ -28,9 +29,25 @@ public class FieldRichText extends CustomField implements Serializable {
         super.verify();
 
         int strLength = 300;
-        if (defaultValue.length() > strLength || content.length() > strLength){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"文本内容不得超过300个字符。");
+
+        if (length != null && length < strLength){
+            strLength = length;
         }
+
+        if (defaultValue.length() > strLength || content.length() > strLength){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"文本内容不得超过"+strLength+"个字符。");
+        }
+
+        this.setCustomFieldId();
+
+        this.setType();
+
+    }
+
+
+    @Override
+    public void setType() {
+        super.setType(OneConstant.CUSTOM_FIELD_TYPE.TEXT);
     }
 
 
@@ -38,9 +55,15 @@ public class FieldRichText extends CustomField implements Serializable {
         return customFieldId;
     }
 
+
     public void setCustomFieldId(String customFieldId) {
         this.customFieldId = customFieldId;
     }
+
+    public void setCustomFieldId() {
+        this.customFieldId =  super.getId();
+    }
+
 
     public String getDefaultValue() {
         return defaultValue;

@@ -1,5 +1,7 @@
 package com.hu.oneclick.model.domain;
 
+import com.hu.oneclick.common.constant.OneConstant;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -31,14 +33,23 @@ public class FieldDropDown extends CustomField implements Serializable {
     public void subVerify() {
         super.verify();
 
+
+        this.setCustomFieldId();
+
+
     }
+    @Override
+    public void setType() {
+        super.setType(OneConstant.CUSTOM_FIELD_TYPE.DROP_DOWN);
+    }
+
 
     public String getCustomFieldId() {
         return customFieldId;
     }
 
-    public void setCustomFieldId(String customFieldId) {
-        this.customFieldId = customFieldId;
+    public void setCustomFieldId() {
+        this.customFieldId = super.getId();
     }
 
     public String getDefaultValue() {
