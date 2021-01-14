@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (Project)实体类
@@ -63,6 +64,7 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
      */
     private String operationAuthIds;
 
+    List<SysOperationAuthority> sysOperationAuthorities;
 
     @Override
     public void verify() throws BizException {
@@ -166,5 +168,13 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
 
     public void setOperationAuthIds(String operationAuthIds) {
         this.operationAuthIds = operationAuthIds;
+    }
+
+    public List<SysOperationAuthority> getSysOperationAuthorities() {
+        return sysOperationAuthorities;
+    }
+
+    public void setSysOperationAuthorities(List<SysOperationAuthority> sysOperationAuthorities) {
+        this.sysOperationAuthorities = sysOperationAuthorities;
     }
 }

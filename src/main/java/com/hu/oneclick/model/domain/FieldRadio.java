@@ -4,6 +4,8 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.exception.BizException;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 单选框(FieldRadio)实体类
@@ -18,12 +20,7 @@ public class FieldRadio extends CustomField implements Serializable {
     /**
      * 0 , 1  单选框  0 未选中，1 选中
      */
-    private Integer defaultValue;
-    /**
-     * 0 , 1  单选框  0 未选中，1 选中
-     */
-    private Integer value;
-
+    private String defaultValue;
 
     @Override
     public void subVerify() throws BizException {
@@ -50,21 +47,16 @@ public class FieldRadio extends CustomField implements Serializable {
         this.customFieldId = super.getId();
     }
 
-    public Integer getDefaultValue() {
+    public void setCustomFieldId(String customFieldId) {
+        this.customFieldId = customFieldId;
+    }
+
+    public String getDefaultValue() {
         return defaultValue;
     }
 
-    public void setDefaultValue(Integer defaultValue) {
+    public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
-
-    public Integer getValue() {
-        return value;
-    }
-
-    public void setValue(Integer value) {
-        this.value = value;
-    }
-
 
 }

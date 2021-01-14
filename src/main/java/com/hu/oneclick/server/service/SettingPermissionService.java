@@ -12,8 +12,6 @@ import java.util.Map;
  */
 public interface SettingPermissionService {
 
-    Resp<List<SysOperationAuthority>> getSysOperationAuthority();
-
     Resp<SubUserPermissionDto> getPermissions(String subUserId);
 
     Resp<String> updatePermissions(SubUserPermissionDto entity);

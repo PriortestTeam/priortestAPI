@@ -4,14 +4,13 @@
 
     <resultMap type="com.hu.oneclick.model.domain.FieldRadio" id="FieldRadioMap">
         <result property="customFieldId" column="custom_field_id" jdbcType="INTEGER"/>
-        <result property="defaultValue" column="default_value" jdbcType="INTEGER"/>
-        <result property="value" column="value" jdbcType="INTEGER"/>
+        <result property="defaultValue" column="default_value" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="FieldRadioMap">
         select
-          custom_field_id, default_value, `value`
+          custom_field_id, default_value
         from oneclick.field_radio
         where custom_field_id = #{customFieldId}
     </select>
@@ -19,7 +18,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="FieldRadioMap">
         select
-          custom_field_id, default_value, `value`
+          custom_field_id, default_value
         from oneclick.field_radio
         limit #{offset}, #{limit}
     </select>
@@ -27,7 +26,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="FieldRadioMap">
         select
-        custom_field_id, default_value, `value`
+        custom_field_id, default_value
         from oneclick.field_radio
         <where>
             <if test="customFieldId != null and customFieldId != ''">
@@ -51,8 +50,7 @@
                cf.field_name as fieldName,
                cf.scope as scope,
                cf.mandatory as mandatory,
-               r.default_value as defaultValue,
-               r.value as `value`
+               r.default_value as defaultValue
         from field_radio r
         join custom_field cf on r.custom_field_id = cf.id
         where
@@ -70,9 +68,6 @@
             <if test="defaultValue != null">
                 default_value,
             </if>
-            <if test="value != null">
-                `value`,
-            </if>
 
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -81,9 +76,6 @@
             </if>
             <if test="defaultValue != null">
                 #{defaultValue},
-            </if>
-            <if test="value != null">
-                #{value},
             </if>
         </trim>
     </insert>
@@ -95,9 +87,6 @@
         <set>
             <if test="defaultValue != null">
                 default_value = #{defaultValue},
-            </if>
-            <if test="value != null">
-                `value` = #{value},
             </if>
         </set>
         where custom_field_id = #{customFieldId}

@@ -35,6 +35,11 @@ public class SysOperationAuthority implements Serializable {
 
     private Date updateTime;
 
+    /**
+     * 是否选中
+     */
+    private String isSelect = "0";
+
     private List<SysOperationAuthority> childList;
 
 
@@ -100,5 +105,13 @@ public class SysOperationAuthority implements Serializable {
 
     public void setChildList(List<SysOperationAuthority> childList) {
         this.childList = childList;
+    }
+
+    public String getIsSelect() {
+        return isSelect;
+    }
+
+    public void setIsSelect(String isSelect) {
+        this.isSelect = isSelect;
     }
 }

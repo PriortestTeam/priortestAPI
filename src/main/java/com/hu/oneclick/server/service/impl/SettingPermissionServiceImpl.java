@@ -26,7 +26,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author qingyang
@@ -58,8 +60,8 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
     }
 
 
-    @Override
-    public Resp<List<SysOperationAuthority>> getSysOperationAuthority() {
+
+    private List<SysOperationAuthority> getSysOperationAuthority() {
         String key = "SettingPermissionServiceImpl_getSysOperationAuthority";
 
         RBucket<List<SysOperationAuthority>> bucket = redisClient.getBucket(key);
@@ -86,7 +88,7 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         }else {
             result = bucket.get();
         }
-        return new Resp.Builder<List<SysOperationAuthority>>().setData(result).total(result.size()).ok();
+        return result;
     }
 
 
@@ -107,6 +109,28 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
             List<String> ids = Arrays.asList(projectIdStr.split(subUserDto.getDelimiter()));
             projects = projectDao.queryInProjectIdsAndPermission(ids,subUserDto.getId(), masterUser.getId());
         }
+
+
+        //设置权限
+        assert projects != null;
+        projects.forEach(e->{
+            if(e.getOperationAuthIds() == null){
+                return;
+            }
+            //获取权限
+            List<SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
+            //选中的权限id
+            List<String> selects =  Arrays.asList(e.getOperationAuthIds().split(","));
+            sysOperationAuthority.forEach(j -> {
+                selects.forEach(k -> {
+                    if (j.getId().equals(k)){
+                        j.setIsSelect("1");
+                    }
+                });
+            });
+            e.setSysOperationAuthorities(sysOperationAuthority);
+        });
+
         SubUserPermissionDto subUserPermissionDto = new SubUserPermissionDto();
         subUserPermissionDto.setSubUserDto(subUserDto);
         subUserPermissionDto.setProjects(projects);
