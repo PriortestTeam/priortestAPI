@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.CustomFieldDao;
@@ -82,6 +83,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateCustomRadio(FieldRadio fieldRadio) {
         try {
+            fieldRadio.subVerify();
             fieldRadio.setUserId(jwtUserServiceImpl.getMasterId());
             fieldRadio.setCustomFieldId();
             Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(),fieldRadio.getProjectId()),fieldRadio.getFieldName());
@@ -111,7 +113,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     @Override
     public Resp<FieldText> queryFieldTextById(String customFieldId) {
         FieldText fieldText = fieldTextDao.queryFieldTextById(customFieldId, jwtUserServiceImpl.getMasterId());
-        fieldText.setDefaultValues(fieldText.convertToList(fieldText.getDefaultValue()));
+        fieldText.setDefaultValues(TwoConstant.convertToList(fieldText.getDefaultValue()));
         return new Resp.Builder<FieldText>().setData(fieldText).ok();
     }
 
@@ -191,6 +193,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     @Override
     public Resp<FieldDropDown> queryFieldDropDownById(String customFieldId) {
         FieldDropDown fieldDropDown = fieldDropDownDao.queryFieldTextById(customFieldId, jwtUserServiceImpl.getMasterId());
+        fieldDropDown.setDropDowns(TwoConstant.convertToList(fieldDropDown.getDropDownList()));
         return new Resp.Builder<FieldDropDown>().setData(fieldDropDown).ok();
     }
 
@@ -198,6 +201,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> addCustomDropDown(FieldDropDown fieldDropDown) {
         try {
+            fieldDropDown.subVerify();
             fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
             Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(),fieldDropDown.getProjectId()),fieldDropDown.getFieldName());
             return Result.addResult( (customFieldDao.insert(fieldDropDown) > 0
@@ -213,6 +217,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateCustomDropDown(FieldDropDown fieldDropDown) {
         try {
+            fieldDropDown.subVerify();
             fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
             Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(),fieldDropDown.getProjectId()),fieldDropDown.getFieldName());
             return Result.updateResult((customFieldDao.update(fieldDropDown) > 0

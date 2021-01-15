@@ -1,6 +1,7 @@
 package com.hu.oneclick.model.domain;
 
 import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.constant.TwoConstant;
 
 import java.io.Serializable;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 public class FieldDropDown extends CustomField implements Serializable {
     private static final long serialVersionUID = 668370284822611568L;
 
-    private String customFieldId = super.getId();
+    private String customFieldId;
     /**
      * 默认下拉菜单第一项
      */
@@ -23,21 +24,28 @@ public class FieldDropDown extends CustomField implements Serializable {
      * 数组格式，每一个值按照 逗号分隔
      */
     private String dropDownList;
-    private String dropDowns;
+
     /**
-     * 数组长度
+     * 用于判断用户输入的参数
      */
-    private Integer length;
+    private List<String> dropDowns;
+    /**
+     * 数组中字符串长度,默认10
+     */
+    private Integer length = 30;
 
     @Override
     public void subVerify() {
         super.verify();
-
-
         this.setCustomFieldId();
+        this.setType();
 
-
+        if (dropDowns != null){
+            this.dropDownList = TwoConstant.convertToString(dropDowns,length);
+        }
     }
+
+
     @Override
     public void setType() {
         super.setType(OneConstant.CUSTOM_FIELD_TYPE.DROP_DOWN);
@@ -48,8 +56,12 @@ public class FieldDropDown extends CustomField implements Serializable {
         return customFieldId;
     }
 
+    public void setCustomFieldId(String customFieldId) {
+        this.customFieldId = customFieldId;
+    }
+
     public void setCustomFieldId() {
-        this.customFieldId = super.getId();
+        this.customFieldId =  super.getId();
     }
 
     public String getDefaultValue() {
@@ -68,11 +80,11 @@ public class FieldDropDown extends CustomField implements Serializable {
         this.dropDownList = dropDownList;
     }
 
-    public String getDropDowns() {
+    public List<String> getDropDowns() {
         return dropDowns;
     }
 
-    public void setDropDowns(String dropDowns) {
+    public void setDropDowns(List<String> dropDowns) {
         this.dropDowns = dropDowns;
     }
 

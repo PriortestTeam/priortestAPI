@@ -127,9 +127,6 @@
             <if test="userId != null">
                 user_id = #{userId},
             </if>
-            <if test="type != null and type != ''">
-                `type` = #{type},
-            </if>
             <if test="scope != null and scope != ''">
                 scope = #{scope},
             </if>

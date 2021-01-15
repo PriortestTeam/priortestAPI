@@ -2,6 +2,10 @@ package com.hu.oneclick.common.constant;
 
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author qingyang
@@ -45,6 +49,50 @@ public class TwoConstant {
             return username.substring(index);
         }
         return username;
+    }
+
+    /**
+     * list转字符串
+     * @param strings
+     * @return
+     */
+    public static String convertToString(List<String> strings,Integer length){
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0;i < strings.size(); i++){
+            if (StringUtils.isEmpty(strings.get(i))){
+                sb.append(OneConstant.COMMON.REPLACE_EMPTY_CHARACTERS);
+            }else {
+                if (strings.get(i).length() > length) {
+                    throw new BizException(SysConstantEnum.LENGTH_LIMIT_EXCEEDED.getCode(), SysConstantEnum.LENGTH_LIMIT_EXCEEDED.getValue());
+                }
+                sb.append(strings.get(i));
+            }
+
+            if (i == strings.size() - 1){
+                break;
+            }
+            sb.append(OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 字符串转list
+     * @param str
+     * @return
+     */
+    public static List<String> convertToList(String str){
+        if (StringUtils.isEmpty(str)){
+            return null;
+        }
+        List<String> strings = Arrays.asList(str.split(OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER));
+        for (int i = 0; i < strings.size(); i++){
+            if (strings.get(i).equals(OneConstant.COMMON.REPLACE_EMPTY_CHARACTERS)){
+                strings.set(i,"");
+            }
+        }
+        return strings;
     }
 
 }
