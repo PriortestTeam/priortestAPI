@@ -114,20 +114,20 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         //设置权限
         assert projects != null;
         projects.forEach(e->{
-            if(e.getOperationAuthIds() == null){
-                return;
-            }
             //获取权限
             List<SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
-            //选中的权限id
-            List<String> selects =  Arrays.asList(e.getOperationAuthIds().split(","));
-            sysOperationAuthority.forEach(j -> {
-                selects.forEach(k -> {
-                    if (j.getId().equals(k)){
-                        j.setIsSelect("1");
-                    }
+            //没有选中的跳过
+            if(e.getOperationAuthIds() != null){
+                //选中的权限id
+                List<String> selects =  Arrays.asList(e.getOperationAuthIds().split(","));
+                sysOperationAuthority.forEach(j -> {
+                    selects.forEach(k -> {
+                        if (j.getId().equals(k)){
+                            j.setIsSelect("1");
+                        }
+                    });
                 });
-            });
+            }
             e.setSysOperationAuthorities(sysOperationAuthority);
         });
 

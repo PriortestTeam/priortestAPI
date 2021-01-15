@@ -10,6 +10,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.server.service.CustomFieldService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -37,12 +38,15 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
     private final FieldDropDownDao fieldDropDownDao;
 
-    public CustomFieldServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, CustomFieldDao customFieldDao, FieldRadioDao fieldRadioDao, FieldTextDao fieldTextDao, FieldDropDownDao fieldDropDownDao) {
+    private final JwtUserServiceImpl jwtUserService;
+
+    public CustomFieldServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, CustomFieldDao customFieldDao, FieldRadioDao fieldRadioDao, FieldTextDao fieldTextDao, FieldDropDownDao fieldDropDownDao, JwtUserServiceImpl jwtUserService) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.customFieldDao = customFieldDao;
         this.fieldRadioDao = fieldRadioDao;
         this.fieldTextDao = fieldTextDao;
         this.fieldDropDownDao = fieldDropDownDao;
+        this.jwtUserService = jwtUserService;
     }
 
     @Override
@@ -64,6 +68,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         try {
             fieldRadio.subVerify();
             fieldRadio.setUserId(jwtUserServiceImpl.getMasterId());
+            Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(),fieldRadio.getProjectId()),fieldRadio.getFieldName());
             return Result.addResult((customFieldDao.insert(fieldRadio) > 0
                     && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
         }catch (BaseException e){
@@ -79,6 +84,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         try {
             fieldRadio.setUserId(jwtUserServiceImpl.getMasterId());
             fieldRadio.setCustomFieldId();
+            Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(),fieldRadio.getProjectId()),fieldRadio.getFieldName());
             return Result.updateResult((customFieldDao.update(fieldRadio) > 0
                     && fieldRadioDao.update(fieldRadio) > 0)  ? 1 : 0);
         }catch (BaseException e){
@@ -105,6 +111,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     @Override
     public Resp<FieldText> queryFieldTextById(String customFieldId) {
         FieldText fieldText = fieldTextDao.queryFieldTextById(customFieldId, jwtUserServiceImpl.getMasterId());
+        fieldText.setDefaultValues(fieldText.convertToList(fieldText.getDefaultValue()));
         return new Resp.Builder<FieldText>().setData(fieldText).ok();
     }
 
@@ -118,6 +125,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     private Resp<String> addCustomText2(FieldText fieldText){
         try {
             fieldText.setUserId(jwtUserServiceImpl.getMasterId());
+            Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(),fieldText.getProjectId()),fieldText.getFieldName());
             return Result.addResult((customFieldDao.insert(fieldText) > 0
                     && fieldTextDao.insert(fieldText) > 0) ? 1:0);
         }catch (BaseException e){
@@ -138,6 +146,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     private Resp<String> updateCustomText2(FieldText fieldText) {
         try {
             fieldText.setUserId(jwtUserServiceImpl.getMasterId());
+            Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(),fieldText.getProjectId()),fieldText.getFieldName());
             return Result.updateResult((customFieldDao.update(fieldText) > 0
                     && fieldTextDao.update(fieldText) > 0) ? 1 : 0);
         }catch (BaseException e){
@@ -190,6 +199,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> addCustomDropDown(FieldDropDown fieldDropDown) {
         try {
             fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
+            Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(),fieldDropDown.getProjectId()),fieldDropDown.getFieldName());
             return Result.addResult( (customFieldDao.insert(fieldDropDown) > 0
                     && fieldDropDownDao.insert(fieldDropDown) > 0) ? 1 : 0);
         }catch (BaseException e){
@@ -204,6 +214,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> updateCustomDropDown(FieldDropDown fieldDropDown) {
         try {
             fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
+            Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(),fieldDropDown.getProjectId()),fieldDropDown.getFieldName());
             return Result.updateResult((customFieldDao.update(fieldDropDown) > 0
                     && fieldDropDownDao.update(fieldDropDown) > 0) ? 1 : 0);
         }catch (BaseException e){
@@ -226,4 +237,28 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
     }
+
+
+
+
+
+
+
+
+
+    /**
+     * 查询字段在当前项目中是否存在
+     * @param fieldName
+     * @return
+     */
+    private Integer queryByFieldName(String fieldName,String projectId){
+        if (StringUtils.isEmpty(fieldName)){
+            return null;
+        }
+        if(customFieldDao.queryByFieldName(jwtUserService.getMasterId(),fieldName,projectId) > 0){
+            return 1;
+        }
+        return null;
+    }
+
 }

@@ -65,4 +65,12 @@ public interface CustomFieldDao {
      */
     int deleteById(@Param("id") String id,@Param("userId") String userId);
 
+    /**
+     * 查询是否已存在title
+     * @param masterId
+     * @param title
+     * @param projectId
+     * @return
+     */
+    int queryByFieldName(@Param("masterId")String masterId, @Param("fieldName")String fieldName, @Param("projectId")String projectId);
 }

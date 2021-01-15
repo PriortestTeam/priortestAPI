@@ -2,7 +2,10 @@ package com.hu.oneclick.common.exception;
 
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.server.service.impl.CustomFieldServiceImpl;
 import org.mybatis.spring.MyBatisSystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private final static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
     public Resp<String> handleException(Exception e, HttpServletRequest request){
@@ -33,6 +38,7 @@ public class GlobalExceptionHandler {
         }else if (e instanceof HttpMessageNotReadableException || e instanceof NumberFormatException){
             msg = SysConstantEnum.PARAMETER_ABNORMAL.getValue();
         }
+        logger.info("class: GlobalExceptionHandler#handleException error[]"+e.getMessage());
         return new Resp.Builder<String>().buildResult(msg);
     }
 }

@@ -11,6 +11,12 @@ public interface OneConstant {
     interface COMMON{
         //成员用户分隔符
         String SUB_USER_SEPARATOR = "#*&";
+
+        //数组转字符串分隔符
+        String ARRAY_CONVERTER_STRING_DELIMITER = "\\*";
+
+        //代替空字符
+        String REPLACE_EMPTY_CHARACTERS = "{==}";
     }
 
 

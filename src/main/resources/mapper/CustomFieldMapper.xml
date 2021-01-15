@@ -59,6 +59,9 @@
         </where>
         order by update_time desc
     </select>
+    <select id="queryByFieldName" resultType="java.lang.Integer">
+        select count(1) from oneclick.custom_field where user_id = #{masterId} and field_name = #{fieldName} and project_id = #{projectId}
+    </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
