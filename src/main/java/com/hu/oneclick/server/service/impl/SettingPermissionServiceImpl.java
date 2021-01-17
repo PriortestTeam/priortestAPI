@@ -59,7 +59,95 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         this.redisClient = redisClient;
     }
 
+    @Override
+    public Resp<SubUserPermissionDto> getPermissions(String subUserId,String projectId) {
+        if (subUserId == null || projectId == null){
+            return new Resp.Builder<SubUserPermissionDto>().buildResult("参数不能为空.");
+        }
+        SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId());
+        if (subUserDto == null){
+            return new Resp.Builder<SubUserPermissionDto>().buildResult("未查询到该用户.");
+        }
+        subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail()));
+        String projectIdStr = subUserDto.getProjectIdStr();
+        Project project;
+        if (subUserDto.getAll().equals(projectIdStr)){
+            //获取全部的项目
+            project = projectDao.queryProjectAndPermissionByProjectId(masterUser.getId(),projectId);
+        }else if(StringUtils.isNotEmpty(projectIdStr) && projectIdStr.contains(projectId)){
+            project = projectDao.queryProjectAndPermissionByProjectId(masterUser.getId(), masterUser.getId());
+        }else {
+            return new Resp.Builder<SubUserPermissionDto>().buildResult("您无此项目权限。");
+        }
 
+        if (project == null){
+            return new Resp.Builder<SubUserPermissionDto>().buildResult("未查询到该项目。");
+        }
+
+        //设置权限
+        //获取权限
+        List<SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
+        //没有选中的跳过
+        if(project.getOperationAuthIds() != null){
+            //选中的权限id
+            List<String> selects =  Arrays.asList(project.getOperationAuthIds().split(","));
+            sysOperationAuthority.forEach(j -> {
+                selects.forEach(k -> {
+                    if (j.getId().equals(k)){
+                        j.setIsSelect("1");
+                    }
+                });
+            });
+        }
+        project.setSysOperationAuthorities(sysOperationAuthority);
+
+        SubUserPermissionDto subUserPermissionDto = new SubUserPermissionDto();
+        subUserPermissionDto.setSubUserDto(subUserDto);
+        subUserPermissionDto.setProject(project);
+        return new Resp.Builder<SubUserPermissionDto>().setData(subUserPermissionDto).ok();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> updatePermissions(SubUserPermissionDto entity) {
+        entity.verify();
+        try {
+            SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+            SubUserDto subUserDto = sysUserDao.querySubUserInfo(entity.getSubUserDto().getId(),masterUser.getId());
+            if (subUserDto == null){
+                return new Resp.Builder<String>().fail();
+            }
+            //删除子用户关联项目权限表并重新添加
+            if (sysProjectPermissionDao.deleteBySubUserId(subUserDto.getId()) > 0
+                    && sysProjectPermissionDao.batchInsert(entity.getProjectPermissions()) > 0){
+                //删除用户，用户必须重新登录
+                deleteSubUserLoginStatus(subUserDto.getEmail());
+                return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
+            }
+            throw new BizException(SysConstantEnum.UPDATE_SUCCESS.getCode(),SysConstantEnum.UPDATE_SUCCESS.getValue());
+        }catch (BizException e){
+            logger.error("class: SettingPermissionServiceImpl#updatePermissions,error []" + e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    @Override
+    public Resp<List<Project>> getProjects(String subUserId) {
+        List<Project> result = null;
+        SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId());
+        if (subUserDto.getProjectIdStr().equals(subUserDto.getAll())){
+            result = projectDao.queryAllProjects(masterUser.getId());
+        }else if(StringUtils.isNotEmpty(subUserDto.getProjectIdStr())){
+            List<String> ids = Arrays.asList(subUserDto.getProjectIdStr().split(subUserDto.getDelimiter()));
+            if (ids.size() <= 0){
+                return new Resp.Builder<List<Project>>().buildResult("该用户未分配项目。");
+            }
+            result = projectDao.queryInProjectIdsAndPermission(ids,subUserId,masterUser.getId());
+        }
+        return new Resp.Builder<List<Project>>().setData(result).ok();
+    }
 
     private List<SysOperationAuthority> getSysOperationAuthority() {
         String key = "SettingPermissionServiceImpl_getSysOperationAuthority";
@@ -89,76 +177,6 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
             result = bucket.get();
         }
         return result;
-    }
-
-
-    @Override
-    public Resp<SubUserPermissionDto> getPermissions(String subUserId) {
-        SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId());
-        if (subUserDto == null){
-            return new Resp.Builder<SubUserPermissionDto>().fail();
-        }
-        subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail()));
-        String projectIdStr = subUserDto.getProjectIdStr();
-        List<Project> projects = null;
-        if (subUserDto.getAll().equals(projectIdStr)){
-            //获取全部的项目
-            projects = projectDao.queryAllProjectsAndPermission(masterUser.getId());
-        }else if(StringUtils.isNotEmpty(projectIdStr)){
-            List<String> ids = Arrays.asList(projectIdStr.split(subUserDto.getDelimiter()));
-            projects = projectDao.queryInProjectIdsAndPermission(ids,subUserDto.getId(), masterUser.getId());
-        }
-
-
-        //设置权限
-        assert projects != null;
-        projects.forEach(e->{
-            //获取权限
-            List<SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
-            //没有选中的跳过
-            if(e.getOperationAuthIds() != null){
-                //选中的权限id
-                List<String> selects =  Arrays.asList(e.getOperationAuthIds().split(","));
-                sysOperationAuthority.forEach(j -> {
-                    selects.forEach(k -> {
-                        if (j.getId().equals(k)){
-                            j.setIsSelect("1");
-                        }
-                    });
-                });
-            }
-            e.setSysOperationAuthorities(sysOperationAuthority);
-        });
-
-        SubUserPermissionDto subUserPermissionDto = new SubUserPermissionDto();
-        subUserPermissionDto.setSubUserDto(subUserDto);
-        subUserPermissionDto.setProjects(projects);
-        return new Resp.Builder<SubUserPermissionDto>().setData(subUserPermissionDto).ok();
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Resp<String> updatePermissions(SubUserPermissionDto entity) {
-        entity.verify();
-        try {
-            SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-            SubUserDto subUserDto = sysUserDao.querySubUserInfo(entity.getSubUserDto().getId(),masterUser.getId());
-            if (subUserDto == null){
-                return new Resp.Builder<String>().fail();
-            }
-            //删除子用户关联项目权限表并重新添加
-            if (sysProjectPermissionDao.deleteBySubUserId(subUserDto.getId()) > 0
-                    && sysProjectPermissionDao.batchInsert(entity.getProjectPermissions()) > 0){
-                //删除用户，用户必须重新登录
-                deleteSubUserLoginStatus(subUserDto.getEmail());
-                return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
-            }
-            throw new BizException(SysConstantEnum.UPDATE_SUCCESS.getCode(),SysConstantEnum.UPDATE_SUCCESS.getValue());
-        }catch (BizException e){
-            logger.error("class: SettingPermissionServiceImpl#updatePermissions,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
-        }
     }
 
     /**

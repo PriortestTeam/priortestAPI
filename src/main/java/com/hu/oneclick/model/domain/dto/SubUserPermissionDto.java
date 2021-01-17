@@ -25,7 +25,7 @@ public class SubUserPermissionDto implements VerifyParam,Serializable {
     /**
      * 返回使用
      */
-    private List<Project> projects;
+    private Project project;
 
     /**
      * 添加使用
@@ -49,12 +49,12 @@ public class SubUserPermissionDto implements VerifyParam,Serializable {
         this.subUserDto = subUserDto;
     }
 
-    public List<Project> getProjects() {
-        return projects;
+    public Project getProject() {
+        return project;
     }
 
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public List<SysProjectPermission> getProjectPermissions() {

@@ -1,7 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.common.constant.OneConstant;
-import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
@@ -13,6 +12,7 @@ import com.hu.oneclick.model.domain.Attachment;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.server.service.AttachmentService;
 import io.minio.MinioClient;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,18 +57,25 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Resp<Attachment> list(String type) {
+    public Resp<List<Attachment>> list(String type,String linkId) {
+        if (StringUtils.isEmpty(type) || StringUtils.isEmpty(linkId)){
+            return new Resp.Builder<List<Attachment>>().buildResult("参数不能为空！");
+        }
         Attachment attachment = new Attachment();
         attachment.setAreaType(type);
         attachment.setUserId(jwtUserService.getMasterId());
+        attachment.setLinkId(linkId);
         List<Attachment> attachments = attachmentDao.queryAll(attachment);
-        return new Resp.Builder<Attachment>().setData(attachment).total(attachments.size()).ok();
+        return new Resp.Builder<List<Attachment>>().setData(attachments).total(attachments.size()).ok();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> addAttachment(MultipartFile file, String type) {
+    public Resp<String> addAttachment(MultipartFile file, String type,String linkId) {
         try {
+            if (StringUtils.isEmpty(type) || StringUtils.isEmpty(linkId) || file == null){
+                return new Resp.Builder<String>().buildResult("参数不能为空！");
+            }
             sysPermissionService.projectPermission(OneConstant.PERMISSION.ADD);
             AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
             //新增附件信息
@@ -83,11 +90,11 @@ public class AttachmentServiceImpl implements AttachmentService {
             attachment.setUploadTime(date);
             attachment.setUploader(userLoginInfo.getSysUser().getUserName());
             attachment.setUserId(jwtUserService.getMasterId());
+            attachment.setLinkId(linkId);
             attachment.setFilePath(path);
-            if (attachmentDao.insert(attachment) > 0) {
-                return new Resp.Builder<String>().setData(endpoint + "/" + path).ok();
-            }
-            throw new BizException(SysConstantEnum.ADD_FAILED.getCode(), SysConstantEnum.ADD_FAILED.getValue());
+            //添加
+            Result.addResult(attachmentDao.insert(attachment));
+            return new Resp.Builder<String>().setData(endpoint + "/" + path).ok();
         } catch (BizException e) {
             logger.error("class: AttachmentServiceImpl#addAttachment,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
@@ -101,6 +108,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateAttachment(MultipartFile file, String attachmentId) {
         try {
+            if (StringUtils.isEmpty(attachmentId)){
+                return new Resp.Builder<String>().buildResult("参数不能为空！");
+            }
             sysPermissionService.projectPermission(OneConstant.PERMISSION.EDIT);
             String masterId = jwtUserService.getMasterId();
             Attachment attachment = attachmentDao.queryById(masterId, attachmentId);
@@ -118,7 +128,10 @@ public class AttachmentServiceImpl implements AttachmentService {
             attachment.setModifyTime(date);
             attachment.setUploader(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
             attachment.setFilePath(path);
-            return Result.updateResult(attachmentDao.update(attachment));
+            attachment.setUserId(jwtUserService.getMasterId());
+            //更新
+            Result.updateResult(attachmentDao.update(attachment));
+            return new Resp.Builder<String>().setData(endpoint + "/" + path).ok();
         } catch (BizException e) {
             logger.error("class: AttachmentServiceImpl#updateAttachment,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());

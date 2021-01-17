@@ -14,6 +14,7 @@ public interface ViewService {
 
     Resp<List<View>> list(View view);
 
+
     Resp<String> queryDoesExistByTitle(String projectId,String title,String scope);
 
     Resp<String> addView(View view);

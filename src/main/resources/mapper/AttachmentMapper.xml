@@ -13,12 +13,14 @@
         <result property="modifyUser" column="modify_user" jdbcType="VARCHAR"/>
         <result property="areaType" column="area_type" jdbcType="VARCHAR"/>
         <result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+        <result property="linkId" column="link_id" jdbcType="VARCHAR"/>
+
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="AttachmentMap">
         select
-          id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name
+          id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name,link_id
         from oneclick.attachment
         where id = #{id}
         and user_id = #{masterId}
@@ -27,7 +29,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="AttachmentMap">
         select
-          id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name
+          id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name,link_id
         from oneclick.attachment
         limit #{offset}, #{limit}
     </select>
@@ -35,12 +37,10 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="AttachmentMap">
         select
-        id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name
+        id, user_id, uuid_file_name, file_path, upload_time, uploader, modify_time, modify_user, area_type, file_name,link_id
         from oneclick.attachment
         <where>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
+            user_id = #{userId}
             <if test="uuidFileName != null and uuidFileName != ''">
                 and uuid_file_name = #{uuidFileName}
             </if>
@@ -65,8 +65,11 @@
             <if test="fileName != null and fileName != ''">
                 and file_name = #{fileName}
             </if>
+            <if test="linkId != null and linkId != ''">
+                and link_id = #{linkId}
+            </if>
         </where>
-        order by modify_date desc , create_time desc
+        order by modify_time desc
     </select>
 
     <!--新增所有列-->
@@ -103,7 +106,9 @@
             <if test="fileName != null and fileName != ''">
                 file_name,
             </if>
-
+            <if test="linkId != null and linkId != ''">
+                link_id,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -136,6 +141,9 @@
             <if test="fileName != null and fileName != ''">
                 #{fileName},
             </if>
+            <if test="linkId != null and linkId != ''">
+                #{linkId},
+            </if>
         </trim>
     </insert>
 
@@ -165,14 +173,11 @@
             <if test="modifyUser != null and modifyUser != ''">
                 modify_user = #{modifyUser},
             </if>
-            <if test="areaType != null and areaType != ''">
-                area_type = #{areaType},
-            </if>
             <if test="fileName != null and fileName != ''">
                 file_name = #{fileName},
             </if>
         </set>
-        where id = #{id}
+        where id = #{id} and user_id = #{userId}
     </update>
 
     <!--通过主键删除-->

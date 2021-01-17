@@ -51,6 +51,8 @@ public class Attachment extends BaseEntity implements Serializable {
      */
     private String fileName;
 
+    private String linkId;
+
 
     public String getUserId() {
         return userId;
@@ -124,4 +126,11 @@ public class Attachment extends BaseEntity implements Serializable {
         this.fileName = fileName;
     }
 
+    public String getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(String linkId) {
+        this.linkId = linkId;
+    }
 }

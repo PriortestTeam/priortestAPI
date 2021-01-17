@@ -1,8 +1,11 @@
 package com.hu.oneclick.common.security.flutter;
 
+import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
+import com.hu.oneclick.model.base.Resp;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -68,7 +71,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				return;
 			}
 			//否则失败
-			throw new JWTDecodeException("Authorization is null.");
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("Authorization is null.")));
+            return;
 		}
         try {
             String token = getJwtToken(request);

@@ -43,11 +43,6 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
      * 计划上线日期
      */
     private Date planReleaseDate;
-
-    /**
-     * 附件id
-     */
-    private String attachmentId;
     /**
      * 删除标记 0 默认， 1 删除
      */
@@ -73,14 +68,6 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
         }
     }
 
-
-    public String getAttachmentId() {
-        return attachmentId;
-    }
-
-    public void setAttachmentId(String attachmentId) {
-        this.attachmentId = attachmentId;
-    }
 
     public String getUserId() {
         return userId;

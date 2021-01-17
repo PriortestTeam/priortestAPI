@@ -27,7 +27,6 @@
                status,
                description,
                plan_release_date,
-               attachment_id,
                del_flag,
                create_time,
                update_time,
@@ -222,6 +221,20 @@
         su.id = #{userId}
         limit 1
     </select>
+    <select id="queryProjectAndPermissionByProjectId"
+            parameterType="java.lang.String"
+            resultType="com.hu.oneclick.model.domain.Project">
+       select
+        p.id,
+        p.title,
+        group_concat(s.operation_auth_id) as operation_auth_ids
+        from project p
+        left join sys_project_permission s on p.id = s.project_id
+         where p.user_id = #{masterId} and p.id = #{projectId}
+         group by p.id
+        order by p.create_time
+    </select>
+
 
 
     <insert id="insertUseOpenProject">

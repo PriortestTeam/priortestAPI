@@ -3,6 +3,7 @@ package com.hu.oneclick.controller;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.server.service.ProjectService;
+import com.hu.oneclick.server.service.ViewService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,8 +17,11 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    public ProjectController(ProjectService projectService) {
+    private final ViewService viewService;
+
+    public ProjectController(ProjectService projectService, ViewService viewService) {
         this.projectService = projectService;
+        this.viewService = viewService;
     }
 
 
@@ -52,7 +56,6 @@ public class ProjectController {
         return projectService.deleteProject(projectId);
     }
 
-
     //操作user_use_open_project 表
 
     /**
@@ -62,5 +65,4 @@ public class ProjectController {
     public Resp<String> checkProject(@PathVariable String projectId){
         return projectService.checkProject(projectId);
     }
-
 }

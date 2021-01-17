@@ -83,6 +83,12 @@ public interface ProjectDao {
     List<Project> queryAllProjectsAndPermission(@Param("masterId")String masterId);
 
     /**
+     * id查询项目 and 权限
+     * @return
+     */
+    Project queryProjectAndPermissionByProjectId(@Param("masterId")String masterId,
+                                                 @Param("projectId")String projectId);
+    /**
      * 根据project id 列表 查询 and 权限
      * @param projectIds
      * @param masterId
@@ -92,19 +98,12 @@ public interface ProjectDao {
 
 
 
-
-
-
-
-
-
-
     //用户操作已打开的项目
 
     /**
      * 查询用户已打开的项目
      * @param userId
-     * @param projectId
+     * @param userId
      * @return
      */
     UserUseOpenProject queryUseOpenProject(@Param("userId") String userId);
