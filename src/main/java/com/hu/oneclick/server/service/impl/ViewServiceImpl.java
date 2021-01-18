@@ -45,6 +45,7 @@ public class ViewServiceImpl implements ViewService {
     public Resp<View> queryById(String id) {
         View view = viewDao.queryById(id, jwtUserService.getMasterId());
         view.setOneFilters(TwoConstant.convertToList(view.getFilter(), OneFilter.class));
+        view.setFilter("");
         return new Resp.Builder<View>().setData(view).ok();
     }
 
@@ -77,9 +78,13 @@ public class ViewServiceImpl implements ViewService {
         try {
             view.verify();
             sysPermissionService.viewPermission(OneConstant.PERMISSION.ADD,convertPermission(view.getScope()));
-            Result.verifyDoesExist(queryByTitle(view.getProjectId(),view.getTitle(),view.getScope()),view.getTitle());
             SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
             String projectId = sysUser.getUserUseOpenProject().getProjectId();
+            if (StringUtils.isEmpty(projectId)){
+                return new Resp.Builder<String>().buildResult("请选择一个项目");
+            }
+
+            Result.verifyDoesExist(queryByTitle(projectId,view.getTitle(),view.getScope()),view.getTitle());
             view.setUserId(jwtUserService.getMasterId());
             view.setProjectId(projectId);
             view.setOwner(sysUser.getUserName());
@@ -96,11 +101,16 @@ public class ViewServiceImpl implements ViewService {
         try {
             sysPermissionService.viewPermission(OneConstant.PERMISSION.EDIT,convertPermission(view.getScope()));
             view.verifyOneFilter();
+            SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+            String projectId = sysUser.getUserUseOpenProject().getProjectId();
+            if (StringUtils.isEmpty(projectId)){
+                return new Resp.Builder<String>().buildResult("请选择一个项目");
+            }
             //修改视图名称要进行验证
             if (view.getTitle() != null){
-                Result.verifyDoesExist(queryByTitle(view.getProjectId(),view.getTitle(),view.getScope()),view.getTitle());
+                Result.verifyDoesExist(queryByTitle(projectId,view.getTitle(),view.getScope()),view.getTitle());
             }
-            SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+
             view.setModifyUser(sysUser.getUserName());
             view.setModifyDate(new Date());
             return Result.updateResult(viewDao.update(view));
@@ -119,7 +129,7 @@ public class ViewServiceImpl implements ViewService {
                 return Result.deleteResult(0);
             }
             sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE,convertPermission(view.getScope()));
-            return Result.updateResult(viewDao.deleteById(jwtUserService.getMasterId(),id));
+            return Result.deleteResult(viewDao.deleteById(jwtUserService.getMasterId(),id));
         }catch (BizException e){
             logger.error("class: ViewServiceImpl#deleteView,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
