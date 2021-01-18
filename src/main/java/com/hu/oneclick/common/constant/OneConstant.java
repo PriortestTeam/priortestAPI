@@ -105,6 +105,7 @@ public interface OneConstant {
      * scope 作用范围，对应 PERMISSION 结构中的父节点
      */
     interface SCOPE {
+        String ONE_PROJECT = "Project";
         String ONE_FEATURE = "Feature";
         String ONE_SETTINGS = "Settings";
         String ONE_SPRINT = "Sprint";

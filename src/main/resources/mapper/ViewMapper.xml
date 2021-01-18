@@ -64,11 +64,11 @@
             count(1)
         from oneclick.view
         where
-            user_id = #{userId}
+            user_id = #{masterId}
             and project_id = #{projectId}
             and scope = #{scope}
             and title = #{title}
---             and is_private = #{isPrivate}
+            <!-- and is_private = #{isPrivate}-->
     </select>
 
     <!--新增所有列-->

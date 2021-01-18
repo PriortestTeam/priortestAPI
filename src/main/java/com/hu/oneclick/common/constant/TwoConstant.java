@@ -1,7 +1,9 @@
 package com.hu.oneclick.common.constant;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
+import com.hu.oneclick.model.domain.OneFilter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -32,6 +34,8 @@ public class TwoConstant {
                 return OneConstant.SCOPE.ONE_DASHBOARD;
             case OneConstant.SCOPE.ONE_REQUIREMENT:
                 return OneConstant.SCOPE.ONE_REQUIREMENT;
+            case OneConstant.SCOPE.ONE_PROJECT:
+                return OneConstant.SCOPE.ONE_PROJECT;
             default:
                 throw new BizException(SysConstantEnum.SCOPE_ERROR.getCode(),SysConstantEnum.SCOPE_ERROR.getValue());
         }
@@ -93,6 +97,17 @@ public class TwoConstant {
             }
         }
         return strings;
+    }
+
+
+    /**
+     * 字符串转换成对象
+     */
+    public static <T> List<T> convertToList(String source, Class<T> clazz){
+        if(StringUtils.isEmpty(source)){
+            return null;
+        }
+        return JSONObject.parseArray(source, clazz);
     }
 
 }

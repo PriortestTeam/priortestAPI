@@ -89,19 +89,9 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
         }
 
         //验证参数是否异常
-//        oneFilter.verify();
+        this.oneFilters.forEach(OneFilter::verify);
         //转换对象为字符串方便存入数据库
-        this.filter = JSONObject.toJSONString(oneFilters);
-    }
-
-    /**
-     * 字符串转换成对象
-     */
-    public void filterConvertOneFilterObj(){
-        if(this.filter == null){
-            return;
-        }
-        this.oneFilters = JSONObject.parseArray(this.filter,OneFilter.class);
+        this.filter = JSONObject.toJSONString(this.oneFilters);
     }
 
     /**

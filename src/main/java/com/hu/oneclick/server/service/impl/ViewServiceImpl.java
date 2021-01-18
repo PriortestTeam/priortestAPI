@@ -8,6 +8,7 @@ import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.OneFilter;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.server.service.ViewService;
@@ -43,7 +44,7 @@ public class ViewServiceImpl implements ViewService {
     @Override
     public Resp<View> queryById(String id) {
         View view = viewDao.queryById(id, jwtUserService.getMasterId());
-        view.filterConvertOneFilterObj();
+        view.setOneFilters(TwoConstant.convertToList(view.getFilter(), OneFilter.class));
         return new Resp.Builder<View>().setData(view).ok();
     }
 
