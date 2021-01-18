@@ -72,11 +72,11 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail()));
         String projectIdStr = subUserDto.getProjectIdStr();
         Project project;
-        if (subUserDto.getAll().equals(projectIdStr)){
-            //获取全部的项目
+
+        boolean flag = subUserDto.getAll().equals(projectIdStr)
+                || (StringUtils.isNotEmpty(projectIdStr) && projectIdStr.contains(projectId));
+        if (flag){
             project = projectDao.queryProjectAndPermissionByProjectId(masterUser.getId(),projectId);
-        }else if(StringUtils.isNotEmpty(projectIdStr) && projectIdStr.contains(projectId)){
-            project = projectDao.queryProjectAndPermissionByProjectId(masterUser.getId(), masterUser.getId());
         }else {
             return new Resp.Builder<SubUserPermissionDto>().buildResult("您无此项目权限。");
         }

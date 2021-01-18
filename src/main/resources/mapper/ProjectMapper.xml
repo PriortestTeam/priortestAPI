@@ -227,7 +227,7 @@
        select
         p.id,
         p.title,
-        group_concat(s.operation_auth_id) as operation_auth_ids
+        group_concat(s.operation_auth_id) as operationAuthIds
         from project p
         left join sys_project_permission s on p.id = s.project_id
          where p.user_id = #{masterId} and p.id = #{projectId}
