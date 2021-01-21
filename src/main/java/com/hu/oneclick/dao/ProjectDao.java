@@ -94,7 +94,7 @@ public interface ProjectDao {
      * @param masterId
      * @return
      */
-    List<Project> queryInProjectIdsAndPermission(@Param("projectIds") List<String> projectIds,@Param("subUserId") String subUserId, @Param("masterId") String masterId);
+    List<Project> queryInProjectIdsAndPermission(@Param("projectIds") List<String> projectIds, @Param("masterId") String masterId);
 
 
 

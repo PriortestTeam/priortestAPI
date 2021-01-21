@@ -95,12 +95,9 @@
     <select id="queryInProjectIdsAndPermission" resultMap="ProjectMap">
         select
         p.id,
-        p.title,
-        group_concat(s.operation_auth_id) as operation_auth_ids
+        p.title
         from project p
-        left join sys_project_permission s on p.id = s.project_id
         where p.user_id = #{masterId}
-        and s.sub_user_id = #{subUserId}
         and p.id in
         <foreach collection="projectIds" index="index" item="item" open="(" separator="," close=")">
             #{item}

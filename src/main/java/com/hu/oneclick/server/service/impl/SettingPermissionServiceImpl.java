@@ -93,11 +93,24 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
             //选中的权限id
             List<String> selects =  Arrays.asList(project.getOperationAuthIds().split(","));
             sysOperationAuthority.forEach(j -> {
+                //遍历父级
                 selects.forEach(k -> {
                     if (j.getId().equals(k)){
                         j.setIsSelect("1");
                     }
                 });
+
+                //遍历子级
+                List<SysOperationAuthority> childList = j.getChildList();
+                if (childList != null){
+                    childList.forEach(s ->{
+                        selects.forEach(k -> {
+                            if (s.getId().equals(k)){
+                                s.setIsSelect("1");
+                            }
+                        });
+                    });
+                }
             });
         }
         project.setSysOperationAuthorities(sysOperationAuthority);
@@ -119,8 +132,8 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
                 return new Resp.Builder<String>().fail();
             }
             //删除子用户关联项目权限表并重新添加
-            if (sysProjectPermissionDao.deleteBySubUserId(subUserDto.getId()) > 0
-                    && sysProjectPermissionDao.batchInsert(entity.getProjectPermissions()) > 0){
+            sysProjectPermissionDao.deleteBySubUserId(subUserDto.getId());
+            if (sysProjectPermissionDao.batchInsert(entity.getProjectPermissions()) > 0){
                 //删除用户，用户必须重新登录
                 deleteSubUserLoginStatus(subUserDto.getEmail());
                 return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
@@ -144,7 +157,7 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
             if (ids.size() <= 0){
                 return new Resp.Builder<List<Project>>().buildResult("该用户未分配项目。");
             }
-            result = projectDao.queryInProjectIdsAndPermission(ids,subUserId,masterUser.getId());
+            result = projectDao.queryInProjectIdsAndPermission(ids,masterUser.getId());
         }
         return new Resp.Builder<List<Project>>().setData(result).ok();
     }
