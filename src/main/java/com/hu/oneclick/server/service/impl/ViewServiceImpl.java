@@ -51,8 +51,10 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     public Resp<List<View>> list(View view) {
-        if (view.getScope() == null){
-            return new Resp.Builder<List<View>>().buildResult("scope 不能为空");
+        if (StringUtils.isEmpty(view.getScope())){
+            return new Resp.Builder<List<View>>().buildResult("scope 不能为空。");
+        }else if (StringUtils.isEmpty(view.getProjectId())){
+            return new Resp.Builder<List<View>>().buildResult("项目ID不能为空。");
         }
         sysPermissionService.viewPermission(null,convertPermission(view.getScope()));
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();

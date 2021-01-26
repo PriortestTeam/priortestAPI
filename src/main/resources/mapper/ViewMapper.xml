@@ -44,9 +44,7 @@
         from oneclick.view
         <where>
             user_id = #{userId}
-            <if test="projectId != null">
-                and project_id = #{projectId}
-            </if>
+            and project_id = #{projectId}
             <if test="title != null and title != ''">
                 and title = #{title}
             </if>
