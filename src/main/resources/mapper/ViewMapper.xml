@@ -3,7 +3,7 @@
 <mapper namespace="com.hu.oneclick.dao.ViewDao">
 
     <!--开启缓存-->
-    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+    <cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true" />
 
     <resultMap type="com.hu.oneclick.model.domain.View" id="ViewMap">
         <result property="id" column="id" jdbcType="INTEGER"/>

@@ -15,9 +15,11 @@ import com.hu.oneclick.server.service.ViewService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +45,10 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     public Resp<View> queryById(String id) {
-        View view = viewDao.queryById(id, jwtUserService.getMasterId());
+        View queryView = viewDao.queryById(id, jwtUserService.getMasterId());
+        //防止mybatis 缓存数据变更
+        View view = new View();
+        BeanUtils.copyProperties(queryView,view);
         view.setOneFilters(TwoConstant.convertToList(view.getFilter(), OneFilter.class));
         view.setFilter("");
         return new Resp.Builder<View>().setData(view).ok();
@@ -60,7 +65,12 @@ public class ViewServiceImpl implements ViewService {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         view.verifyUserType(sysUser.getManager());
         view.setUserId(jwtUserService.getMasterId());
-        List<View> views = viewDao.queryAll(view);
+
+        List<View> queryViews = viewDao.queryAll(view);
+
+        //防止mybatis 缓存数据变更
+        List<View> views = new ArrayList<>(queryViews.size());
+        BeanUtils.copyProperties(queryViews,views);
         views.forEach(e->{
             e.setOneFilters(TwoConstant.convertToList(e.getFilter(), OneFilter.class));
             e.setFilter("");
