@@ -61,6 +61,10 @@ public class ViewServiceImpl implements ViewService {
         view.verifyUserType(sysUser.getManager());
         view.setUserId(jwtUserService.getMasterId());
         List<View> views = viewDao.queryAll(view);
+        views.forEach(e->{
+            e.setOneFilters(TwoConstant.convertToList(e.getFilter(), OneFilter.class));
+            e.setFilter("");
+        });
         return new Resp.Builder<List<View>>().setData(views).total(views.size()).ok();
     }
 

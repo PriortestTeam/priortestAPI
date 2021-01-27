@@ -39,7 +39,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ViewMap">
         select
-        id, user_id, project_id, title, scope, is_private, owner, modify_user, modify_date, create_time,
+        id, user_id, project_id, title, scope, is_private, owner,filter ,modify_user, modify_date, create_time,
         update_time
         from oneclick.view
         <where>
