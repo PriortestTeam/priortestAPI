@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.exception.BizException;
@@ -12,6 +13,7 @@ import com.hu.oneclick.model.domain.OneFilter;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.server.service.ViewService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -69,14 +71,25 @@ public class ViewServiceImpl implements ViewService {
         List<View> queryViews = viewDao.queryAll(view);
 
         //防止mybatis 缓存数据变更
-        List<View> views = new ArrayList<>(queryViews.size());
-        BeanUtils.copyProperties(queryViews,views);
+        List<View> views = coverViews(queryViews);
+
         views.forEach(e->{
             e.setOneFilters(TwoConstant.convertToList(e.getFilter(), OneFilter.class));
             e.setFilter("");
         });
         return new Resp.Builder<List<View>>().setData(views).total(views.size()).ok();
     }
+
+    /**
+     * 深copy
+     * @param queryViews
+     * @return
+     */
+    private List<View> coverViews(List<View> queryViews){
+        String s = JSONObject.toJSONString(queryViews);
+        return JSONObject.parseArray(s, View.class);
+    }
+
 
     @Override
     public Resp<String> queryDoesExistByTitle(String projectId, String title, String scope) {
