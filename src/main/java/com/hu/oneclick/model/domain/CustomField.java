@@ -28,11 +28,11 @@ public class CustomField extends BaseEntity  implements VerifyParam, Serializabl
     private String userId;
 
     /**
-     * 作用范围，范围以逗号分隔 （project,TestCase）
+     * 作用范围，范围以逗号分隔 （1,0,1,1,1）
      */
     private String scope;
     /**
-     * 对应 scope， 填写 yes 如scope（project，TestCase），mandatory (yes,yes)
+     * 对应 scope， 填写 yes 如scope（1,0,1,1,1），mandatory （1,0,1,1,1）
      */
     private String mandatory;
 
