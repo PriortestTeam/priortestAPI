@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.BaseEntity;
@@ -53,6 +54,8 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
     private Date updateTime;
 
     private Date closeDate;
+
+    private String scope = OneConstant.SCOPE.ONE_PROJECT;
 
     /**
      * 项目绑定的权限
@@ -163,5 +166,13 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
 
     public void setSysOperationAuthorities(List<SysOperationAuthority> sysOperationAuthorities) {
         this.sysOperationAuthorities = sysOperationAuthorities;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }

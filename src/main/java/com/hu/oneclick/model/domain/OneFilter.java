@@ -50,13 +50,16 @@ public class OneFilter implements VerifyParam,Serializable {
 
     @Override
     public void verify() throws BizException {
-        if (StringUtils.isEmpty(this.sourceVal)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"筛选值" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (StringUtils.isEmpty(this.type)){
+        if (StringUtils.isEmpty(this.type)){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"类型" + SysConstantEnum.PARAM_EMPTY.getValue());
         }else if (StringUtils.isEmpty(this.andOr)){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"条件" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
+
+        if (StringUtils.isEmpty(this.sourceVal)){
+            return;
+        }
+
 
         switch (type){
             case "fString":

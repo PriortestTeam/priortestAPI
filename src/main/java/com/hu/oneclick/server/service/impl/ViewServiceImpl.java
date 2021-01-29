@@ -13,7 +13,6 @@ import com.hu.oneclick.model.domain.OneFilter;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.server.service.ViewService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
