@@ -55,6 +55,7 @@
                        cf.field_name as fieldName,
                        cf.scope as scope,
                        cf.mandatory as mandatory,
+                       cf.project_id as projectId,
                        t.default_value as defaultValue,
                        t.content as content,
                        t.`length` as `length`

@@ -55,6 +55,7 @@
                cf.field_name as fieldName,
                cf.scope as scope,
                cf.mandatory as mandatory,
+               cf.project_id as projectId,
                dd.default_value as defaultValue,
                dd.drop_down_list as dropDownList,
                dd.`length` as `length`
