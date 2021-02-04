@@ -2,6 +2,7 @@ package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.exception.BaseException;
+import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.CustomFieldDao;
 import com.hu.oneclick.dao.FieldDropDownDao;
@@ -72,7 +73,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(),fieldRadio.getProjectId()),fieldRadio.getFieldName());
             return Result.addResult((customFieldDao.insert(fieldRadio) > 0
                     && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
-        }catch (BaseException e){
+        }catch (BizException e){
             logger.error("class: CustomFieldServiceImpl#addCustomRadio,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -89,7 +90,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(),fieldRadio.getProjectId()),fieldRadio.getFieldName());
             return Result.updateResult((customFieldDao.update(fieldRadio) > 0
                     && fieldRadioDao.update(fieldRadio) > 0)  ? 1 : 0);
-        }catch (BaseException e){
+        }catch (BizException e){
             logger.error("class: CustomFieldServiceImpl#updateCustomRadio,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -103,7 +104,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             String userId = jwtUserServiceImpl.getMasterId();
             return Result.deleteResult((customFieldDao.deleteById(id,userId) > 0
                     && fieldRadioDao.deleteById(id) > 0)  ? 1 : 0);
-        }catch (BaseException e){
+        }catch (BizException e){
             logger.error("class: CustomFieldServiceImpl#deleteCustomRadio,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -130,7 +131,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(),fieldText.getProjectId()),fieldText.getFieldName());
             return Result.addResult((customFieldDao.insert(fieldText) > 0
                     && fieldTextDao.insert(fieldText) > 0) ? 1:0);
-        }catch (BaseException e){
+        }catch (BizException e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#addCustomText2,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -151,7 +152,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(),fieldText.getProjectId()),fieldText.getFieldName());
             return Result.updateResult((customFieldDao.update(fieldText) > 0
                     && fieldTextDao.update(fieldText) > 0) ? 1 : 0);
-        }catch (BaseException e){
+        }catch (BizException e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#updateCustomText2,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -165,7 +166,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             String userId = jwtUserServiceImpl.getMasterId();
             return Result.deleteResult((customFieldDao.deleteById(id,userId) > 0
                     && fieldTextDao.deleteById(id) > 0) ? 1 : 0);
-        }catch (BaseException e){
+        }catch (BizException e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#deleteCustomText,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -206,7 +207,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(),fieldDropDown.getProjectId()),fieldDropDown.getFieldName());
             return Result.addResult( (customFieldDao.insert(fieldDropDown) > 0
                     && fieldDropDownDao.insert(fieldDropDown) > 0) ? 1 : 0);
-        }catch (BaseException e){
+        }catch (BizException e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#addCustomDropDown,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -222,7 +223,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(),fieldDropDown.getProjectId()),fieldDropDown.getFieldName());
             return Result.updateResult((customFieldDao.update(fieldDropDown) > 0
                     && fieldDropDownDao.update(fieldDropDown) > 0) ? 1 : 0);
-        }catch (BaseException e){
+        }catch (BizException e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#updateCustomDropDown,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -236,7 +237,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             String userId = jwtUserServiceImpl.getMasterId();
             return Result.deleteResult((customFieldDao.deleteById(customFieldId,userId) > 0
                     && fieldDropDownDao.deleteById(customFieldId) > 0) ? 1 :0);
-        }catch (BaseException e){
+        }catch (BizException e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#deleteCustomDropDown,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());

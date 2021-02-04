@@ -65,7 +65,7 @@ public class SprintServiceImpl implements SprintService {
             sprint.setCreateTime(date);
             sprint.setUpdateTime(date);
             return Result.addResult(sprintDao.insert(sprint));
-        }catch (BaseException e){
+        }catch (BizException e){
             logger.error("class: SprintServiceImpl#insert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -82,7 +82,7 @@ public class SprintServiceImpl implements SprintService {
             verifyIsExist(sprint.getTitle(),sprint.getProjectId());
             sprint.setUserId(jwtUserService.getMasterId());
             return Result.updateResult(sprintDao.update(sprint));
-        }catch (BaseException e){
+        }catch (BizException e){
             logger.error("class: SprintServiceImpl#update,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -96,7 +96,7 @@ public class SprintServiceImpl implements SprintService {
             Sprint sprint = new Sprint();
             sprint.setId(id);
             return Result.deleteResult(sprintDao.delete(sprint));
-        }catch (BaseException e){
+        }catch (BizException e){
             logger.error("class: SprintServiceImpl#delete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
