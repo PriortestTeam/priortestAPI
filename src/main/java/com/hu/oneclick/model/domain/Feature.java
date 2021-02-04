@@ -6,6 +6,8 @@ import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Column;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -69,7 +71,11 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
 
     private Date updateTime;
 
-
+    /**
+     * 关联迭代表的title
+     */
+    @Transient
+    private String sprintTitle;
 
     @Override
     public void verify() throws BizException {
@@ -194,5 +200,11 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
         this.updateTime = updateTime;
     }
 
+    public String getSprintTitle() {
+        return sprintTitle;
+    }
 
+    public void setSprintTitle(String sprintTitle) {
+        this.sprintTitle = sprintTitle;
+    }
 }

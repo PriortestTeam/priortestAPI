@@ -34,7 +34,7 @@ public class FeatureSql {
                 SET("description=#{description}");
             }
             if (StringUtils.isNotEmpty(feature.getAuthorName())){
-                SET("authorName=#{authorName}");
+                SET("author_name=#{authorName}");
             }
             if (feature.getCloseDate() != null){
                 SET("close_date=#{closeDate}");
