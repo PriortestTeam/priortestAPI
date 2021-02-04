@@ -2,11 +2,11 @@ package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
-import com.hu.oneclick.dao.SprintDao;
+import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.Sprint;
-import com.hu.oneclick.server.service.SprintService;
+import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.server.service.FeatureService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,47 +20,48 @@ import java.util.List;
  * @author qingyang
  */
 @Service
-public class SprintServiceImpl implements SprintService {
+public class FeatureServiceImpl implements FeatureService {
 
     private final static Logger logger = LoggerFactory.getLogger(SprintServiceImpl.class);
 
-    private final SprintDao sprintDao;
+
+    private final FeatureDao featureDao;
 
     private final JwtUserServiceImpl jwtUserService;
 
-    public SprintServiceImpl(SprintDao sprintDao, JwtUserServiceImpl jwtUserService, JwtUserServiceImpl jwtUserService1) {
-        this.sprintDao = sprintDao;
-        this.jwtUserService = jwtUserService1;
+    public FeatureServiceImpl(FeatureDao featureDao, JwtUserServiceImpl jwtUserService) {
+        this.featureDao = featureDao;
+        this.jwtUserService = jwtUserService;
     }
 
 
     @Override
-    public Resp<Sprint> queryById(String id) {
+    public Resp<Feature> queryById(String id) {
         String masterId = jwtUserService.getMasterId();
-        Sprint sprint =  sprintDao.queryById(id,masterId);
-        return new Resp.Builder<Sprint>().setData(sprint).ok();
+        Feature feature =  featureDao.queryById(id,masterId);
+        return new Resp.Builder<Feature>().setData(feature).ok();
     }
 
     @Override
-    public Resp<List<Sprint>> queryList(Sprint sprint) {
-        sprint.queryListVerify();
-        sprint.setUserId(jwtUserService.getMasterId());
-        List<Sprint> select = sprintDao.select(sprint);
-        return new Resp.Builder<List<Sprint>>().setData(select).ok();
+    public Resp<List<Feature>> queryList(Feature feature) {
+        feature.queryListVerify();
+        feature.setUserId(jwtUserService.getMasterId());
+        List<Feature> select = featureDao.select(feature);
+        return new Resp.Builder<List<Feature>>().setData(select).ok();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> insert(Sprint sprint) {
+    public Resp<String> insert(Feature feature) {
         try {
-            sprint.verify();
-            sprint.setUserId(jwtUserService.getMasterId());
+            feature.verify();
+            feature.setUserId(jwtUserService.getMasterId());
             Date date = new Date();
-            sprint.setCreateTime(date);
-            sprint.setUpdateTime(date);
-            return Result.addResult(sprintDao.insert(sprint));
+            feature.setCreateTime(date);
+            feature.setUpdateTime(date);
+            return Result.addResult(featureDao.insert(feature));
         }catch (BaseException e){
-            logger.error("class: SprintServiceImpl#insert,error []" + e.getMessage());
+            logger.error("class: FeatureServiceImpl#insert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
@@ -68,13 +69,13 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> update(Sprint sprint) {
+    public Resp<String> update(Feature feature) {
         try {
-            sprint.verify();
-            sprint.setUserId(jwtUserService.getMasterId());
-            return Result.updateResult(sprintDao.update(sprint));
+            feature.verify();
+            feature.setUserId(jwtUserService.getMasterId());
+            return Result.updateResult(featureDao.update(feature));
         }catch (BaseException e){
-            logger.error("class: SprintServiceImpl#update,error []" + e.getMessage());
+            logger.error("class: FeatureServiceImpl#update,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
@@ -84,11 +85,11 @@ public class SprintServiceImpl implements SprintService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> delete(String id) {
         try {
-            Sprint sprint = new Sprint();
-            sprint.setId(id);
-            return Result.deleteResult(sprintDao.delete(sprint));
+            Feature feature = new Feature();
+            feature.setId(id);
+            return Result.deleteResult(featureDao.delete(feature));
         }catch (BaseException e){
-            logger.error("class: SprintServiceImpl#delete,error []" + e.getMessage());
+            logger.error("class: FeatureServiceImpl#delete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }

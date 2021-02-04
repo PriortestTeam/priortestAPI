@@ -123,6 +123,7 @@ public interface OneConstant {
     interface CUSTOM_FIELD_TYPE{
         String RADIO = "radio";
         String TEXT = "text";
+        String RICH_TEXT = "RichText";
         String DROP_DOWN = "DropDown";
         String CHECK_BOX = "CheckBox";
     }

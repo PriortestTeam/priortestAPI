@@ -1,5 +1,11 @@
 package com.hu.oneclick.model.domain;
 
+import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.exception.BizException;
+import com.hu.oneclick.model.base.BaseEntity;
+import com.hu.oneclick.model.base.VerifyParam;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,7 +15,7 @@ import java.util.Date;
  * @author makejava
  * @since 2021-02-03 13:54:35
  */
-public class Feature implements Serializable {
+public class Feature extends BaseEntity implements Serializable, VerifyParam {
     private static final long serialVersionUID = 495256750642592776L;
 
     /**
@@ -60,6 +66,28 @@ public class Feature implements Serializable {
      * 关联用户id
      */
     private String userId;
+
+    private Date updateTime;
+
+
+
+    @Override
+    public void verify() throws BizException {
+        if(StringUtils.isEmpty(projectId)){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目ID" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }else if(StringUtils.isEmpty(title)){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"故事名称" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+    }
+
+
+    public void queryListVerify() {
+        if(StringUtils.isEmpty(projectId)){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目ID" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+        super.setId(null);
+    }
+
 
 
     public String getProjectId() {
@@ -157,5 +185,14 @@ public class Feature implements Serializable {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
 
 }

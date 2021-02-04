@@ -61,7 +61,7 @@ public class FieldRichText extends CustomField implements Serializable {
 
     @Override
     public void setType() {
-        super.setType(OneConstant.CUSTOM_FIELD_TYPE.TEXT);
+        super.setType(OneConstant.CUSTOM_FIELD_TYPE.RICH_TEXT);
     }
 
 
