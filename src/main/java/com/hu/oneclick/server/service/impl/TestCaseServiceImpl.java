@@ -1,13 +1,11 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.Sprint;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.server.service.TestCaseService;
 import org.slf4j.Logger;
