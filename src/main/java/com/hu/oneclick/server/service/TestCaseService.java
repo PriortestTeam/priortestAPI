@@ -4,11 +4,14 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCase;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
  */
 public interface TestCaseService {
+
+    Resp< List<Map<String,String>>> queryTitles(String projectId, String title);
 
     Resp<TestCase> queryById(String id);
 

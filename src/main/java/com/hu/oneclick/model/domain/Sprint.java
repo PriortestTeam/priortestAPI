@@ -1,11 +1,13 @@
 package com.hu.oneclick.model.domain;
 
+import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -54,6 +56,8 @@ public class Sprint extends BaseEntity implements Serializable , VerifyParam {
 
     private Date updateTime;
 
+    @Transient
+    private String scope = OneConstant.SCOPE.ONE_SPRINT;
 
     @Override
     public void verify() throws BizException {
@@ -155,4 +159,11 @@ public class Sprint extends BaseEntity implements Serializable , VerifyParam {
     }
 
 
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
 }

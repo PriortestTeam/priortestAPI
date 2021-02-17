@@ -1,11 +1,13 @@
 package com.hu.oneclick.model.domain;
 
+import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -35,10 +37,6 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
      */
     private String feature;
     /**
-     * 状态，（0 no run, 2 pass , 3 failed）
-     */
-    private Integer status;
-    /**
      * 描述
      */
     private String description;
@@ -60,6 +58,33 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
      * 关联用户id
      */
     private String userId;
+
+
+    private String browser;
+
+    private String platform;
+
+    private String version;
+
+    private String caseCategory;
+
+    private String caseType;
+
+    private String externaId;
+
+    private String env;
+
+    private String preCondition;
+
+    private String lastRunStatus;
+
+
+
+    @Transient
+    private String featureTitle;
+
+    @Transient
+    private String scope = OneConstant.SCOPE.ONE_TEST_CASE;
 
 
     @Override
@@ -119,13 +144,6 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
         this.feature = feature;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 
     public String getDescription() {
         return description;
@@ -168,4 +186,91 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
     }
 
 
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getCaseCategory() {
+        return caseCategory;
+    }
+
+    public void setCaseCategory(String caseCategory) {
+        this.caseCategory = caseCategory;
+    }
+
+    public String getCaseType() {
+        return caseType;
+    }
+
+    public void setCaseType(String caseType) {
+        this.caseType = caseType;
+    }
+
+    public String getExternaId() {
+        return externaId;
+    }
+
+    public void setExternaId(String externaId) {
+        this.externaId = externaId;
+    }
+
+    public String getEnv() {
+        return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = env;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    public String getPreCondition() {
+        return preCondition;
+    }
+
+    public void setPreCondition(String preCondition) {
+        this.preCondition = preCondition;
+    }
+
+    public String getLastRunStatus() {
+        return lastRunStatus;
+    }
+
+    public void setLastRunStatus(String lastRunStatus) {
+        this.lastRunStatus = lastRunStatus;
+    }
+
+    public String getFeatureTitle() {
+        return featureTitle;
+    }
+
+    public void setFeatureTitle(String featureTitle) {
+        this.featureTitle = featureTitle;
+    }
 }

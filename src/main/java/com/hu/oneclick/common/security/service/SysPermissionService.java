@@ -133,4 +133,22 @@ public class SysPermissionService {
         hasPermission(viewParent,
                 OneConstant.PERMISSION.VIEW,projectId);
     }
+
+    /**
+     * 故事控制器
+     */
+    public void featurePermission(String projectSub, String featureParent) {
+        SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
+        if(projectId == null){
+            throw new BizException(SysConstantEnum.NOT_PROJECT.getCode(),SysConstantEnum.NOT_PROJECT.getValue());
+        }
+        //先验证项目权限
+        hasPermission(OneConstant.PERMISSION.PROJECT,
+                projectSub,projectId);
+        //验证view 权限
+        hasPermission(featureParent,
+                OneConstant.PERMISSION.ONE_FEATURE,projectId);
+
+    }
 }

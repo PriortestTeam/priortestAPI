@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.TestCycleDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.TestCycle" id="TestCycleMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="runStatus" column="run_status" jdbcType="INTEGER"/>
+        <result property="lastRunDate" column="last_run_date" jdbcType="TIMESTAMP"/>
+        <result property="lastModify" column="last_modify" jdbcType="TIMESTAMP"/>
+        <result property="feature" column="feature" jdbcType="INTEGER"/>
+        <result property="sprint" column="sprint" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="ped" column="ped" jdbcType="TIMESTAMP"/>
+        <result property="authorName" column="author_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultType="com.hu.oneclick.model.domain.TestCycle">
+        select t.id as id,
+               t.user_id as userId,
+               t.project_id as projectId,
+               t.title as title,
+               t.status as status,
+               t.run_status as runStatus,
+               t.last_run_date as lastRunDate,
+               t.last_modify as lastModify,
+               t.feature as feature,
+               t.sprint as sprint,
+               t.version as version,
+               t.create_time as createTime,
+               t.update_time as updateTime,
+               t.ped as ped,
+               t.author_name as authorName,
+               f.title as featureTitle,
+               s.title as sprintTitle
+        from test_cycle t
+        left join feature f on f.id = t.feature
+        left join sprint s on s.id = t.sprint
+        where t.id = #{id} and t.user_id = #{masterId}
+    </select>
+
+    <select id="queryTitles" resultType="java.util.Map">
+        select id,
+        title
+        from test_cycle
+        <where>
+            id = #{id}
+            and user_id = #{masterId}
+            <if test="title != null and title != ''">
+                and title like concat('%',#{title},'%')
+            </if>
+        </where>
+
+    </select>
+
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TestCycleMap">
+        select
+          id, user_id, project_id, title, status, run_status, last_run_date, last_modify, feature, sprint, version, create_time, update_time, ped, author_name
+        from oneclick.test_cycle
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="runStatus != null">
+                and run_status = #{runStatus}
+            </if>
+            <if test="lastRunDate != null">
+                and last_run_date = #{lastRunDate}
+            </if>
+            <if test="lastModify != null">
+                and last_modify = #{lastModify}
+            </if>
+            <if test="feature != null  and feature != ''">
+                and feature_id = #{featureId}
+            </if>
+            <if test="sprint != null  and sprint != ''">
+                and sprint = #{sprint}
+            </if>
+            <if test="version != null and version != ''">
+                and version = #{version}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="ped != null">
+                and ped = #{ped}
+            </if>
+            <if test="authorName != null and authorName != ''">
+                and author_name = #{authorName}
+            </if>
+        </where>
+    </select>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update oneclick.test_cycle
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="runStatus != null">
+                run_status = #{runStatus},
+            </if>
+            <if test="lastRunDate != null">
+                last_run_date = #{lastRunDate},
+            </if>
+            <if test="lastModify != null">
+                last_modify = #{lastModify},
+            </if>
+            <if test="feature != null and feature != ''">
+                feature = #{featureId},
+            </if>
+            <if test="sprint != null and sprint != ''">
+                sprint = #{sprint},
+            </if>
+            <if test="version != null and version != ''">
+                version = #{version},
+            </if>
+            <if test="ped != null">
+                ped = #{ped},
+            </if>
+            <if test="authorName != null and authorName != ''">
+                author_name = #{authorName},
+            </if>
+
+            update_time = NOW()
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

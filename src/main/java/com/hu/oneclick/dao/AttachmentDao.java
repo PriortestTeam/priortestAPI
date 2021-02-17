@@ -38,7 +38,6 @@ public interface AttachmentDao {
      * @param attachment 实例对象
      * @return 对象列表
      */
-    @Page
     List<Attachment> queryAll(Attachment attachment);
 
     /**

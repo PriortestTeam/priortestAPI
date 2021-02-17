@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.ModifyRecordDao">
+
+
+    <!--新增所有列-->
+    <insert id="inserts" keyProperty="id" useGeneratedKeys="true">
+        insert into modify_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,user_id,modify_user,before_val,after_val,modify_date,`scope`,project_id,link_id,modify_field
+        </trim>
+        values
+        <foreach collection="modifyRecord" item="m" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{m.id},#{m.userId},#{m.modifyUser},#{m.beforeVal},#{m.afterVal},#{m.modifyDate},#{m.scope},#{m.projectId},#{m.linkId},#{m.modifyField}
+            </trim>
+        </foreach>
+
+    </insert>
+
+</mapper>

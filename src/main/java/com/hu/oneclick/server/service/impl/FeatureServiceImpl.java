@@ -2,9 +2,9 @@ package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
@@ -19,6 +19,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -33,9 +34,19 @@ public class FeatureServiceImpl implements FeatureService {
 
     private final JwtUserServiceImpl jwtUserService;
 
-    public FeatureServiceImpl(FeatureDao featureDao, JwtUserServiceImpl jwtUserService) {
+    private final SysPermissionService sysPermissionService;
+
+    public FeatureServiceImpl(FeatureDao featureDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService) {
         this.featureDao = featureDao;
         this.jwtUserService = jwtUserService;
+        this.sysPermissionService = sysPermissionService;
+    }
+
+
+    @Override
+    public Resp<List<Map<String,String>>> queryTitles(String projectId, String title) {
+        List<Map<String,String>> select = featureDao.queryTitles(projectId,title,jwtUserService.getMasterId());
+        return new Resp.Builder<List<Map<String,String>>>().setData(select).total(select.size()).ok();
     }
 
 
@@ -58,11 +69,13 @@ public class FeatureServiceImpl implements FeatureService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> insert(Feature feature) {
         try {
+            sysPermissionService.featurePermission(OneConstant.PERMISSION.ADD,OneConstant.SCOPE.ONE_FEATURE);
             //验证参数
             feature.verify();
             //验证是否存在
             verifyIsExist(feature.getTitle(),feature.getProjectId());
             feature.setUserId(jwtUserService.getMasterId());
+            feature.setAuthorName(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
             Date date = new Date();
             feature.setCreateTime(date);
             feature.setUpdateTime(date);
@@ -78,8 +91,7 @@ public class FeatureServiceImpl implements FeatureService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> update(Feature feature) {
         try {
-            //验证参数
-            feature.verify();
+            sysPermissionService.featurePermission(OneConstant.PERMISSION.EDIT,OneConstant.SCOPE.ONE_FEATURE);
             //验证是否存在
             verifyIsExist(feature.getTitle(),feature.getProjectId());
             feature.setUserId(jwtUserService.getMasterId());
@@ -93,8 +105,26 @@ public class FeatureServiceImpl implements FeatureService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public Resp<String> closeUpdate(String id) {
+        try {
+            sysPermissionService.featurePermission(OneConstant.PERMISSION.EDIT,OneConstant.SCOPE.ONE_FEATURE);
+            Feature feature = new Feature();
+            feature.setId(id);
+            feature.setCloseDate(new Date());
+            feature.setStatus(0);
+            return Result.updateResult(featureDao.update(feature));
+        }catch (BizException e){
+            logger.error("class: FeatureServiceImpl#closeUpdate,error []" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> delete(String id) {
         try {
+            sysPermissionService.featurePermission(OneConstant.PERMISSION.DELETE,OneConstant.SCOPE.ONE_FEATURE);
             Feature feature = new Feature();
             feature.setId(id);
             return Result.deleteResult(featureDao.delete(feature));
@@ -109,6 +139,9 @@ public class FeatureServiceImpl implements FeatureService {
      *  查重
      */
     private void verifyIsExist(String title,String projectId){
+        if (StringUtils.isEmpty(title)){
+            return;
+        }
         Feature feature = new Feature();
         feature.setTitle(title);
         feature.setProjectId(projectId);

@@ -12,6 +12,7 @@ public interface ViewService {
 
     Resp<View> queryById(String id);
 
+
     Resp<List<View>> list(View view);
 
 

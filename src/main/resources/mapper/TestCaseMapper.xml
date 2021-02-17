@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.TestCaseDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.TestCase" id="TestCaseMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="priority" column="priority" jdbcType="VARCHAR"/>
+        <result property="feature" column="feature" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="executedDate" column="executed_date" jdbcType="TIMESTAMP"/>
+        <result property="authorName" column="author_name" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="browser" column="browser" jdbcType="VARCHAR"/>
+        <result property="platform" column="platform" jdbcType="VARCHAR"/>
+        <result property="version" column="version" jdbcType="VARCHAR"/>
+        <result property="caseCategory" column="case_category" jdbcType="VARCHAR"/>
+        <result property="caseType" column="case_type" jdbcType="VARCHAR"/>
+        <result property="externaId" column="externa_id" jdbcType="VARCHAR"/>
+        <result property="env" column="env" jdbcType="VARCHAR"/>
+        <result property="preCondition" column="pre_condition" jdbcType="VARCHAR"/>
+        <result property="lastRunStatus" column="last_run_status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultType="com.hu.oneclick.model.domain.TestCase">
+        select t.id as id,
+               t.project_id as projectId,
+               t.title as title,
+               t.priority as priority,
+               t.feature as feature,
+               t.description as description,
+               t.executed_date as executedDate,
+               t.author_name as authorName,
+               t.create_time as createTime,
+               t.update_time as updateTime,
+               t.user_id as userId,
+               t.browser as browser,
+               t.platform as platform,
+               t.version as version,
+               t.case_category as caseCategory,
+               t.case_type as caseType,
+               t.externa_id as externaId,
+               t.env as env,
+               t.pre_condition as preCondition,
+               t.last_run_status as lastRunStatus,
+               f.title as featureTitle
+        from test_case t
+        left join feature f on f.id = t.feature
+        where t.id = #{id}
+    </select>
+
+    <select id="queryTitles" resultType="java.util.Map">
+        select id,
+        title
+        from sprint
+        <where>
+            id = #{id}
+            and user_id = #{masterId}
+            <if test="title != null and title != ''">
+                and title like concat('%',#{title},'%')
+            </if>
+        </where>
+
+    </select>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update test_case
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="priority != null and priority != ''">
+                priority = #{priority},
+            </if>
+            <if test="feature != null and feature != ''">
+                feature = #{feature},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="executedDate != null">
+                executed_date = #{executedDate},
+            </if>
+            <if test="authorName != null and authorName != ''">
+                author_name = #{authorName},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="browser != null and browser != ''">
+                browser = #{browser},
+            </if>
+            <if test="platform != null and platform != ''">
+                platform = #{platform},
+            </if>
+            <if test="version != null and version != ''">
+                version = #{version},
+            </if>
+            <if test="caseCategory != null and caseCategory != ''">
+                case_category = #{caseCategory},
+            </if>
+            <if test="caseType != null and caseType != ''">
+                case_type = #{caseType},
+            </if>
+            <if test="externaId != null and externaId != ''">
+                externa_id = #{externaId},
+            </if>
+            <if test="env != null and env != ''">
+                env = #{env},
+            </if>
+            <if test="lastRunStatus != null and lastRunStatus != ''">
+                last_run_status = #{env},
+            </if>
+            update_time=NOW()
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

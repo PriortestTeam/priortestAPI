@@ -42,6 +42,11 @@ public class FeatureController {
         return featureService.update(feature);
     }
 
+    @PostMapping("closeUpdate")
+    public Resp<String> closeUpdate(@RequestParam String id) {
+        return featureService.closeUpdate(id);
+    }
+
     @DeleteMapping("delete/{id}")
     public Resp<String> delete(@PathVariable String id) {
         return featureService.delete(id);

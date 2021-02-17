@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.TestCaseStepDao">
+
+    <update id="update">
+        update test_case_step
+        <set>
+            <if test="step != null and step != ''">
+                step=#{step},
+            </if>
+            <if test="expectedResult != null and expectedResult != ''">
+                expected_result=#{expectedResult},
+            </if>
+            <if test="status != null and status != ''">
+                status=#{status},
+            </if>
+            <if test="testDate != null">
+                test_date=#{testDate},
+            </if>
+        </set>
+        where id = #{id} and test_case_id = #{testCaseId}
+    </update>
+</mapper>

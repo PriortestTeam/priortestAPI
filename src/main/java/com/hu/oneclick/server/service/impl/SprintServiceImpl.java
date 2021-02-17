@@ -1,15 +1,16 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.dao.SprintDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Sprint;
 import com.hu.oneclick.server.service.SprintService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -31,9 +33,18 @@ public class SprintServiceImpl implements SprintService {
 
     private final JwtUserServiceImpl jwtUserService;
 
-    public SprintServiceImpl(SprintDao sprintDao, JwtUserServiceImpl jwtUserService, JwtUserServiceImpl jwtUserService1) {
+    private final SysPermissionService sysPermissionService;
+
+    public SprintServiceImpl(SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService) {
         this.sprintDao = sprintDao;
-        this.jwtUserService = jwtUserService1;
+        this.jwtUserService = jwtUserService;
+        this.sysPermissionService = sysPermissionService;
+    }
+
+    @Override
+    public Resp<List<Map<String,String>>> queryTitles(String projectId, String title) {
+        List<Map<String,String>> select = sprintDao.queryTitles(projectId,title,jwtUserService.getMasterId());
+        return new Resp.Builder<List<Map<String,String>>>().setData(select).total(select.size()).ok();
     }
 
 
@@ -56,12 +67,14 @@ public class SprintServiceImpl implements SprintService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> insert(Sprint sprint) {
         try {
+            sysPermissionService.featurePermission(OneConstant.PERMISSION.ADD,OneConstant.SCOPE.ONE_SPRINT);
             //验证参数
             sprint.verify();
             //验证是否存在
             verifyIsExist(sprint.getTitle(),sprint.getProjectId());
             sprint.setUserId(jwtUserService.getMasterId());
             Date date = new Date();
+            sprint.setAuthorName(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
             sprint.setCreateTime(date);
             sprint.setUpdateTime(date);
             return Result.addResult(sprintDao.insert(sprint));
@@ -76,8 +89,7 @@ public class SprintServiceImpl implements SprintService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> update(Sprint sprint) {
         try {
-            //验证参数
-            sprint.verify();
+            sysPermissionService.featurePermission(OneConstant.PERMISSION.EDIT,OneConstant.SCOPE.ONE_SPRINT);
             //验证是否存在
             verifyIsExist(sprint.getTitle(),sprint.getProjectId());
             sprint.setUserId(jwtUserService.getMasterId());
@@ -93,6 +105,7 @@ public class SprintServiceImpl implements SprintService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> delete(String id) {
         try {
+            sysPermissionService.featurePermission(OneConstant.PERMISSION.DELETE,OneConstant.SCOPE.ONE_SPRINT);
             Sprint sprint = new Sprint();
             sprint.setId(id);
             return Result.deleteResult(sprintDao.delete(sprint));
@@ -103,10 +116,14 @@ public class SprintServiceImpl implements SprintService {
         }
     }
 
+
     /**
      *  查重
      */
     private void verifyIsExist(String title,String projectId){
+        if (StringUtils.isEmpty(title)){
+            return;
+        }
         Sprint sprint = new Sprint();
         sprint.setTitle(title);
         sprint.setProjectId(projectId);

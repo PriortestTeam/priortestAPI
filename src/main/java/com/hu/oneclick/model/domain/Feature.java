@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.BaseEntity;
@@ -76,6 +77,11 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
      */
     @Transient
     private String sprintTitle;
+
+
+    @Transient
+    private String scope = OneConstant.SCOPE.ONE_FEATURE;
+
 
     @Override
     public void verify() throws BizException {
@@ -206,5 +212,13 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
 
     public void setSprintTitle(String sprintTitle) {
         this.sprintTitle = sprintTitle;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }
