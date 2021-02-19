@@ -1,6 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.domain.Sprint;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.BaseMapper;
 
@@ -17,5 +18,5 @@ public interface SprintDao extends BaseMapper<Sprint> {
 
     int update(Sprint sprint);
 
-    List<Map<String,String>> queryTitles(@Param("projectId") String projectId,@Param("title") String title,@Param("masterId") String masterId);
+    List<LeftJoinDto> queryTitles(@Param("projectId") String projectId, @Param("title") String title, @Param("masterId") String masterId);
 }

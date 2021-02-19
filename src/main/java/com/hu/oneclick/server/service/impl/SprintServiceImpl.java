@@ -9,6 +9,7 @@ import com.hu.oneclick.dao.SprintDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Sprint;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.server.service.SprintService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,9 +43,9 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public Resp<List<Map<String,String>>> queryTitles(String projectId, String title) {
-        List<Map<String,String>> select = sprintDao.queryTitles(projectId,title,jwtUserService.getMasterId());
-        return new Resp.Builder<List<Map<String,String>>>().setData(select).total(select.size()).ok();
+    public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
+        List<LeftJoinDto> select = sprintDao.queryTitles(projectId,title,jwtUserService.getMasterId());
+        return new Resp.Builder<List<LeftJoinDto>>().setData(select).total(select.size()).ok();
     }
 
 

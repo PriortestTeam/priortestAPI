@@ -2,11 +2,14 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
+import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.server.service.TestCycleService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("testCycle")
@@ -43,6 +46,26 @@ public class TestCycleController {
     @DeleteMapping("delete/{id}")
     public Resp<String> delete(@PathVariable String id) {
         return testCycleService.delete(id);
+    }
+
+
+
+
+
+    @Page
+    @PostMapping("queryBindCaseList")
+    public  Resp<List<TestCase>> queryBindCaseList(@RequestParam String testCycleId) {
+        return testCycleService.queryBindCaseList(testCycleId);
+    }
+
+    @PostMapping("bindCaseInsert")
+    public Resp<String> bindCaseInsert(@RequestBody TestCycleJoinTestCase testCycleJoinTestCase) {
+        return testCycleService.bindCaseInsert(testCycleJoinTestCase);
+    }
+
+    @DeleteMapping("bindCaseDelete/{id}")
+    public Resp<String> bindCaseDelete(@PathVariable String id) {
+        return testCycleService.bindCaseDelete(id);
     }
 
 }

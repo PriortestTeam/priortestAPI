@@ -14,7 +14,8 @@
 
     <!--通过主键修改数据-->
     <update id="update">
-        update master_identifier
+        update  master_identifier
+        set
         flag = 1
         where id = #{id}
     </update>

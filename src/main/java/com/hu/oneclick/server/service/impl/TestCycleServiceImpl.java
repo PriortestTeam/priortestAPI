@@ -5,10 +5,14 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.TestCycleDao;
+import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.ModifyRecord;
+import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
+import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.server.service.ModifyRecordService;
 import com.hu.oneclick.server.service.TestCycleService;
 import org.apache.commons.lang3.StringUtils;
@@ -36,18 +40,21 @@ public class TestCycleServiceImpl implements TestCycleService {
 
     private final TestCycleDao testCycleDao;
 
+    private final TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
 
-    public TestCycleServiceImpl(ModifyRecordService modifyRecordService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao) {
+
+    public TestCycleServiceImpl(ModifyRecordService modifyRecordService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao) {
         this.modifyRecordService = modifyRecordService;
         this.jwtUserService = jwtUserService;
         this.testCycleDao = testCycleDao;
+        this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
     }
 
 
     @Override
-    public Resp<List<Map<String,String>>> queryTitles(String projectId, String title) {
-        List<Map<String,String>> select = testCycleDao.queryTitles(projectId,title,jwtUserService.getMasterId());
-        return new Resp.Builder<List<Map<String,String>>>().setData(select).total(select.size()).ok();
+    public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
+        List<LeftJoinDto> select = testCycleDao.queryTitles(projectId,title,jwtUserService.getMasterId());
+        return new Resp.Builder<List<LeftJoinDto>>().setData(select).total(select.size()).ok();
     }
 
 
@@ -121,6 +128,40 @@ public class TestCycleServiceImpl implements TestCycleService {
     }
 
 
+
+
+
+    @Override
+    public Resp<List<TestCase>> queryBindCaseList(String testCycleId) {
+        List<TestCase> select = testCycleJoinTestCaseDao.queryBindCaseList(testCycleId);
+        return new Resp.Builder< List<TestCase>>().setData(select).total(select.size()).ok();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> bindCaseInsert(TestCycleJoinTestCase testCycleJoinTestCase) {
+        try {
+            return Result.addResult(testCycleJoinTestCaseDao.insert(testCycleJoinTestCase));
+        }catch (BizException e){
+            logger.error("class: TestCycleServiceImpl#bindCaseInsert,error []" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> bindCaseDelete(String testCaseId) {
+        try {
+            return Result.deleteResult(testCycleJoinTestCaseDao.bindCaseDelete(testCaseId));
+        }catch (BizException e){
+            logger.error("class: TestCycleServiceImpl#bindCaseDelete,error []" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+
     /**
      *  查重
      */
@@ -164,6 +205,7 @@ public class TestCycleServiceImpl implements TestCycleService {
                         || field.equals("createTime")
                         || field.equals("scope")
                         || field.equals("serialVersionUID")
+                        || field.equals("description")
                         || fields[i].get(testCycle) == null
                         || fields[i].get(testCycle) == "") {
                     continue;
@@ -210,8 +252,8 @@ public class TestCycleServiceImpl implements TestCycleService {
                 return  "名称";
             case "runStatus":
                 return "运行状态";
-            case "故事":
-                return "feature";
+            case "feature":
+                return "故事";
             case "status":
                 return  "状态";
             case "lastRunDate":

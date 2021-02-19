@@ -9,6 +9,7 @@ import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.server.service.FeatureService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -44,9 +45,9 @@ public class FeatureServiceImpl implements FeatureService {
 
 
     @Override
-    public Resp<List<Map<String,String>>> queryTitles(String projectId, String title) {
-        List<Map<String,String>> select = featureDao.queryTitles(projectId,title,jwtUserService.getMasterId());
-        return new Resp.Builder<List<Map<String,String>>>().setData(select).total(select.size()).ok();
+    public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
+        List<LeftJoinDto> select = featureDao.queryTitles(projectId,title,jwtUserService.getMasterId());
+        return new Resp.Builder<List<LeftJoinDto>>().setData(select).total(select.size()).ok();
     }
 
 

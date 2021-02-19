@@ -1,0 +1,30 @@
+package com.hu.oneclick.server.service;
+
+import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.Issue;
+import com.hu.oneclick.model.domain.IssueJoinTestCase;
+
+import java.util.List;
+import java.util.Map;
+
+public interface IssueService {
+
+    Resp<Issue> queryById(String id);
+
+    Resp<List<Issue>> queryList(Issue issue);
+
+    Resp<String> insert(Issue issue);
+
+    Resp<String> update(Issue issue);
+
+    Resp<String> delete(String id);
+
+
+
+    Resp<List<Issue>> queryBindCaseList(String issueId);
+
+    Resp<String> bindCaseInsert(IssueJoinTestCase issueJoinTestCase);
+
+    Resp<String> bindCaseDelete(String testCaseId);
+
+}

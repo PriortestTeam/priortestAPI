@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  * @author qingyang
  */
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService{
 
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
+
     public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
@@ -64,9 +65,9 @@ public class UserServiceImpl implements UserService{
             verifyEmailCode(OneConstant.REDIS_KEY_PREFIX.REGISTRY + email, registerUser.getEmailCode());
 
             SysUser user = new SysUser();
-            BeanUtils.copyProperties(registerUser,user);
+            BeanUtils.copyProperties(registerUser, user);
             //检查数据库是否已存在用户
-            if (sysUserDao.queryByEmail(email) != null){
+            if (sysUserDao.queryByEmail(email) != null) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
             }
 
@@ -79,17 +80,17 @@ public class UserServiceImpl implements UserService{
 
             //设置主账号识别号，用于子用户登录
             MasterIdentifier masterIdentifier = masterIdentifierDao.queryOne();
-            if (masterIdentifier == null){
+            if (masterIdentifier == null) {
                 throw new BizException(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue());
             }
             user.setIdentifier(masterIdentifier.getId());
-            if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0){
+            if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: UserServiceImpl#register,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -103,7 +104,7 @@ public class UserServiceImpl implements UserService{
             String newPassword = args.get("newPassword");
             verify(newPassword, null);
 
-            if (!jwtUserServiceImpl.verifyPassword(oldPassword,sysUser)){
+            if (!jwtUserServiceImpl.verifyPassword(oldPassword, sysUser)) {
                 return new Resp.Builder<String>().buildResult("旧密码输入错误");
             }
 
@@ -111,12 +112,11 @@ public class UserServiceImpl implements UserService{
             updatePassword(sysUser);
             jwtUserServiceImpl.saveUserLoginInfo2(sysUser);
             return new Resp.Builder<String>().setData("修改成功").ok();
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: UserServiceImpl#modifyPassword,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
-
 
 
     @Override
@@ -126,10 +126,10 @@ public class UserServiceImpl implements UserService{
             String newPassword = args.get("newPassword");
             String verificationCode = args.get("verificationCode");
             String email = args.get("email");
-            verify(newPassword,verificationCode);
+            verify(newPassword, verificationCode);
             SysUser sysUser = sysUserDao.queryByEmail(email);
-            if (sysUser == null){
-                throw new BizException(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(),SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
+            if (sysUser == null) {
+                throw new BizException(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
             }
             //验证邮箱
             verifyEmailCode(OneConstant.REDIS_KEY_PREFIX.RESET_PASSWORD + email, verificationCode);
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService{
             sysUser.setPassword(encodePassword(newPassword));
             updatePassword(sysUser);
             return new Resp.Builder<String>().setData("修改成功").ok();
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: UserServiceImpl#resetPassword,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
@@ -145,36 +145,38 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public Resp<String> sendEmailCode(String email,String prefix) {
+    public Resp<String> sendEmailCode(String email, String prefix) {
         try {
-            SysUser user = sysUserDao.queryByEmail(email);
-            if (user == null){
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(),
-                        SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
+            if (prefix.equals(OneConstant.REDIS_KEY_PREFIX.RESET_PASSWORD)) {
+                SysUser user = sysUserDao.queryByEmail(email);
+                if (user == null) {
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(),
+                            SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
+                }
             }
             String redisKey = prefix + email;
             RBucket<String> bucket = redisClient.getBucket(redisKey);
             String s = bucket.get();
-            if (s != null && !"".equals(s)){
+            if (s != null && !"".equals(s)) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.PLEASE_TRY_AGAIN_LATER.getCode(),
                         SysConstantEnum.PLEASE_TRY_AGAIN_LATER.getValue());
             }
             String verifyCode = NumberUtil.getVerifyCode();
             bucket.set(verifyCode);
             //设置超时1分钟
-            bucket.expire(1,TimeUnit.MINUTES);
+            bucket.expire(1, TimeUnit.MINUTES);
             sendEmail();
             return new Resp.Builder<String>().ok();
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("class: UserServiceImpl#sendEmailCode,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue(), e.getMessage());
         }
     }
 
     @Override
     public Resp<String> queryEmailDoesItExist(String email) {
         SysUser user = sysUserDao.queryByEmail(email);
-        if (user == null){
+        if (user == null) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(),
                     SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
         }
@@ -185,14 +187,14 @@ public class UserServiceImpl implements UserService{
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateUserInfo(SysUser sysUser) {
         try {
-            if (sysUserDao.update(sysUser) <= 0){
+            if (sysUserDao.update(sysUser) <= 0) {
                 return new Resp.Builder<String>().setData("修改失败。").fail();
             }
             jwtUserServiceImpl.saveUserLoginInfo2(sysUserDao.queryById(sysUser.getId()));
             return new Resp.Builder<String>().setData("修改成功").ok();
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("class: UserServiceImpl#updateUserInfo,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue(), e.getMessage());
         }
     }
 
@@ -212,31 +214,33 @@ public class UserServiceImpl implements UserService{
 
     /**
      * 验证密码是否符合规则
+     *
      * @param password
      */
-    private void verify(String password ,String emailCode){
+    private void verify(String password, String emailCode) {
         PasswordCheckerUtil passwordCheckerUtil = new PasswordCheckerUtil();
-        if (StringUtils.isEmpty(password)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"密码" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (!passwordCheckerUtil.check(password)){
+        if (StringUtils.isEmpty(password)) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "密码" + SysConstantEnum.PARAM_EMPTY.getValue());
+        } else if (!passwordCheckerUtil.check(password)) {
             throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
         }
         if (emailCode != null) {
-            if (StringUtils.isEmpty(emailCode)){
-                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"邮箱验证码" + SysConstantEnum.PARAM_EMPTY.getValue());
+            if (StringUtils.isEmpty(emailCode)) {
+                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "邮箱验证码" + SysConstantEnum.PARAM_EMPTY.getValue());
             }
         }
     }
 
     /**
      * 验证邮箱验证码
+     *
      * @param key
      * @param verifyCode
      */
-    private void verifyEmailCode(String key, String verifyCode){
+    private void verifyEmailCode(String key, String verifyCode) {
         RBucket<String> bucket = redisClient.getBucket(key);
         String redisCode = bucket.get();
-        if (redisCode == null || "".equals(redisCode) || !redisCode.equals(verifyCode)){
+        if (redisCode == null || "".equals(redisCode) || !redisCode.equals(verifyCode)) {
             throw new BizException(SysConstantEnum.VERIFY_CODE_ERROR.getCode(), SysConstantEnum.VERIFY_CODE_ERROR.getValue());
         }
         bucket.delete();
@@ -244,21 +248,23 @@ public class UserServiceImpl implements UserService{
 
     /**
      * 更新密码
+     *
      * @param user
      */
-    private void updatePassword(SysUser user){
+    private void updatePassword(SysUser user) {
         int update = sysUserDao.updatePassword(user);
-        if (update <= 0){
-            throw new BizException(SysConstantEnum.FAILED.getCode(),SysConstantEnum.FAILED.getValue());
+        if (update <= 0) {
+            throw new BizException(SysConstantEnum.FAILED.getCode(), SysConstantEnum.FAILED.getValue());
         }
     }
 
     /**
      * 密码加密
+     *
      * @param password
      * @return
      */
-    private String encodePassword(String password){
+    private String encodePassword(String password) {
         return jwtUserServiceImpl.encryptPassword(password);
     }
 

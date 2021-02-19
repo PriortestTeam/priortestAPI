@@ -1,6 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.domain.TestCycle;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.BaseMapper;
 
@@ -16,5 +17,5 @@ public interface TestCycleDao extends BaseMapper<TestCycle> {
 
     int update(TestCycle testCycle);
 
-    List<Map<String, String>> queryTitles(@Param("projectId")String projectId, @Param("title") String title, @Param("masterId") String masterId);
+    List<LeftJoinDto> queryTitles(@Param("projectId")String projectId, @Param("title") String title, @Param("masterId") String masterId);
 }

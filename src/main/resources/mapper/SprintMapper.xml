@@ -32,12 +32,12 @@
         from sprint
         where id = #{id} and user_id = #{masterId}
     </select>
-    <select id="queryTitles" resultType="java.util.Map">
+    <select id="queryTitles" resultType="com.hu.oneclick.model.domain.dto.LeftJoinDto">
         select id,
                title
         from sprint
         <where>
-            id = #{id}
+            project_id = #{projectId}
             and user_id = #{masterId}
             <if test="title != null and title != ''">
                 and title like concat('%',#{title},'%')

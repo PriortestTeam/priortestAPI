@@ -18,6 +18,7 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="ped" column="ped" jdbcType="TIMESTAMP"/>
         <result property="authorName" column="author_name" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
@@ -37,6 +38,7 @@
                t.update_time as updateTime,
                t.ped as ped,
                t.author_name as authorName,
+               t.description as description,
                f.title as featureTitle,
                s.title as sprintTitle
         from test_cycle t
@@ -45,12 +47,12 @@
         where t.id = #{id} and t.user_id = #{masterId}
     </select>
 
-    <select id="queryTitles" resultType="java.util.Map">
+    <select id="queryTitles" resultType="com.hu.oneclick.model.domain.dto.LeftJoinDto">
         select id,
         title
         from test_cycle
         <where>
-            id = #{id}
+            project_id = #{projectId}
             and user_id = #{masterId}
             <if test="title != null and title != ''">
                 and title like concat('%',#{title},'%')
@@ -63,7 +65,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="TestCycleMap">
         select
-          id, user_id, project_id, title, status, run_status, last_run_date, last_modify, feature, sprint, version, create_time, update_time, ped, author_name
+          id, user_id, project_id, title, status, run_status, last_run_date, last_modify, feature, sprint,description, version, create_time, update_time, ped, author_name
         from oneclick.test_cycle
         <where>
             <if test="id != null">
@@ -135,6 +137,9 @@
             </if>
             <if test="feature != null and feature != ''">
                 feature = #{featureId},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
             </if>
             <if test="sprint != null and sprint != ''">
                 sprint = #{sprint},

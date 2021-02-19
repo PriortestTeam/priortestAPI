@@ -35,7 +35,7 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
     /**
      * 项目状态: 默认 Progress，1 Closed 关闭、2 Plan 计划、3 Progress 开发中
      */
-    private String status;
+    private Integer status;
     /**
      * 描述
      */
@@ -96,11 +96,11 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
         this.reportToName = reportToName;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

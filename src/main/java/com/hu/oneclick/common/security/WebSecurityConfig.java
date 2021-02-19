@@ -67,6 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login").anonymous()
                 .antMatchers("/user/register").anonymous()
                 .antMatchers("/user/sendEmailCode").anonymous()
+                .antMatchers("/user/sendEmailRegisterCode").anonymous()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
@@ -83,7 +84,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
                 //设置无权限接口
-                .permissiveRequestUrls("/login","/user/register","/user/sendEmailCode")
+                .permissiveRequestUrls("/login","/user/register","/user/sendEmailCode","/user/sendEmailRegisterCode")
                 .and()
                 .logout()
                 .logoutUrl("/logout")

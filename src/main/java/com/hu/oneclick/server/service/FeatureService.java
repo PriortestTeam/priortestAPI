@@ -2,6 +2,7 @@ package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
  */
 public interface FeatureService {
 
-    Resp< List<Map<String,String>>> queryTitles(String projectId, String title);
+    Resp< List<LeftJoinDto>> queryTitles(String projectId, String title);
 
     Resp<Feature> queryById(String id);
 

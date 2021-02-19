@@ -71,10 +71,12 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
      */
     private String authorName;
 
+    private String description;
 
 
-
+    @Transient
     private String featureTitle;
+    @Transient
     private String sprintTitle;
 
     @Transient
@@ -232,5 +234,13 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
 
     public void setSprintTitle(String sprintTitle) {
         this.sprintTitle = sprintTitle;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

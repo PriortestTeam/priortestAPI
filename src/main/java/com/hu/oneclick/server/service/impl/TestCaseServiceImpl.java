@@ -9,6 +9,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.ModifyRecord;
 import com.hu.oneclick.model.domain.TestCase;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.server.service.ModifyRecordService;
 import com.hu.oneclick.server.service.TestCaseService;
 import org.apache.commons.lang3.StringUtils;
@@ -47,9 +48,9 @@ public class TestCaseServiceImpl implements TestCaseService {
 
 
     @Override
-    public Resp<List<Map<String,String>>> queryTitles(String projectId, String title) {
-        List<Map<String,String>> select = testCaseDao.queryTitles(projectId,title,jwtUserService.getMasterId());
-        return new Resp.Builder<List<Map<String,String>>>().setData(select).total(select.size()).ok();
+    public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
+        List<LeftJoinDto> select = testCaseDao.queryTitles(projectId,title,jwtUserService.getMasterId());
+        return new Resp.Builder<List<LeftJoinDto>>().setData(select).total(select.size()).ok();
     }
 
 
@@ -134,6 +135,7 @@ public class TestCaseServiceImpl implements TestCaseService {
                        || field.equals("createTime")
                        || field.equals("scope")
                        || field.equals("serialVersionUID")
+                       || field.equals("description")
                        || fields[i].get(testCase) == null
                        || fields[i].get(testCase) == "") {
                    continue;
