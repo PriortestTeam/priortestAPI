@@ -1,6 +1,5 @@
 package com.hu.oneclick.controller;
 
-import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Attachment;
 import com.hu.oneclick.server.service.AttachmentService;
@@ -22,7 +21,7 @@ public class AttachmentController {
         this.attachmentService = attachmentService;
     }
 
-    @Page
+
     @GetMapping("list")
     public Resp<List<Attachment>> list(@RequestParam String type, @RequestParam String linkId){
         return attachmentService.list(type,linkId);

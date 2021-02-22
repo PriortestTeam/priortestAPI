@@ -29,7 +29,7 @@ public class TestCaseController {
         return testCaseService.queryById(id);
     }
 
-    @Page
+
     @PostMapping("queryList")
     public Resp<List<TestCase>> queryList(@RequestBody TestCase testCase) {
         return testCaseService.queryList(testCase);

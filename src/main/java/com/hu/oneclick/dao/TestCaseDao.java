@@ -1,5 +1,6 @@
 package com.hu.oneclick.dao;
 
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import org.apache.ibatis.annotations.Param;
@@ -20,5 +21,6 @@ public interface TestCaseDao extends BaseMapper<TestCase> {
 
     List<LeftJoinDto> queryTitles(@Param("projectId")String projectId, @Param("title") String title, @Param("masterId") String masterId);
 
+    @Page
     List<TestCase> queryList(TestCase testCase);
 }

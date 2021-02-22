@@ -8,7 +8,6 @@ import com.hu.oneclick.server.service.IssueService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("issue")
@@ -25,7 +24,7 @@ public class IssueController {
         return issueService.queryById(id);
     }
 
-    @Page
+
     @PostMapping("queryList")
     public Resp<List<Issue>> queryList(@RequestBody Issue issue) {
         return issueService.queryList(issue);

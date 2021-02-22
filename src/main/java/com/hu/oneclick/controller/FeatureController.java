@@ -26,7 +26,7 @@ public class FeatureController {
         return featureService.queryById(id);
     }
 
-    @Page
+
     @PostMapping("queryList")
     public Resp<List<Feature>> queryList(@RequestBody Feature feature) {
         return featureService.queryList(feature);

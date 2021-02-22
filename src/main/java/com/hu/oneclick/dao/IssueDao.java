@@ -1,5 +1,6 @@
 package com.hu.oneclick.dao;
 
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.Issue;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.BaseMapper;
@@ -13,5 +14,6 @@ public interface IssueDao extends BaseMapper<Issue> {
 
     int update(Issue issue);
 
+    @Page
     List<Issue> queryList(Issue issue);
 }

@@ -27,7 +27,7 @@ public class TestCycleController {
         return testCycleService.queryById(id);
     }
 
-    @Page
+
     @PostMapping("queryList")
     public Resp<List<TestCycle>> queryList(@RequestBody TestCycle testCycle) {
         return testCycleService.queryList(testCycle);
