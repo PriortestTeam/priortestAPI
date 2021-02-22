@@ -18,6 +18,57 @@
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryList" resultMap="FeatureMap">
+        select
+        id, project_id, sprint_id, epic, report_to, status, version, description, close_date, author_name, create_time,
+        title, user_id, update_time
+        from oneclick.feature
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="sprintId != null">
+                and sprint_id = #{sprintId}
+            </if>
+            <if test="epic != null and epic != ''">
+                and epic = #{epic}
+            </if>
+            <if test="reportTo != null and reportTo != ''">
+                and report_to = #{reportTo}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="version != null and version != ''">
+                and version = #{version}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="closeDate != null">
+                and close_date = #{closeDate}
+            </if>
+            <if test="authorName != null and authorName != ''">
+                and author_name = #{authorName}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
 
     <!--查询单个-->
     <select id="queryById" resultType="com.hu.oneclick.model.domain.Feature">

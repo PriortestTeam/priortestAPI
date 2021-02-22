@@ -5,11 +5,11 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.server.service.TestCycleService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("testCycle")
@@ -56,6 +56,11 @@ public class TestCycleController {
     @PostMapping("queryBindCaseList")
     public  Resp<List<TestCase>> queryBindCaseList(@RequestParam String testCycleId) {
         return testCycleService.queryBindCaseList(testCycleId);
+    }
+
+    @PostMapping("executeTestCase")
+    public Resp<String> executeTestCase(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
+        return testCycleService.executeTestCase(executeTestCaseDto);
     }
 
     @PostMapping("bindCaseInsert")

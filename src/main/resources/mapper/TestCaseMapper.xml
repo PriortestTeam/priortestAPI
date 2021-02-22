@@ -24,6 +24,75 @@
         <result property="preCondition" column="pre_condition" jdbcType="VARCHAR"/>
         <result property="lastRunStatus" column="last_run_status" jdbcType="INTEGER"/>
     </resultMap>
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryList" resultMap="TestCaseMap">
+        select
+        id, project_id, title, priority, feature, description, executed_date, author_name, create_time, update_time,
+        user_id, browser, platform, version, case_category, case_type, externa_id, env, pre_condition, last_run_status
+        from oneclick.test_case
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="priority != null and priority != ''">
+                and priority = #{priority}
+            </if>
+            <if test="feature != null and feature != ''">
+                and feature = #{feature}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="executedDate != null">
+                and executed_date = #{executedDate}
+            </if>
+            <if test="authorName != null and authorName != ''">
+                and author_name = #{authorName}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="browser != null and browser != ''">
+                and browser = #{browser}
+            </if>
+            <if test="platform != null and platform != ''">
+                and platform = #{platform}
+            </if>
+            <if test="version != null and version != ''">
+                and version = #{version}
+            </if>
+            <if test="caseCategory != null and caseCategory != ''">
+                and case_category = #{caseCategory}
+            </if>
+            <if test="caseType != null and caseType != ''">
+                and case_type = #{caseType}
+            </if>
+            <if test="externaId != null and externaId != ''">
+                and externa_id = #{externaId}
+            </if>
+            <if test="env != null and env != ''">
+                and env = #{env}
+            </if>
+            <if test="preCondition != null and preCondition != ''">
+                and pre_condition = #{preCondition}
+            </if>
+            <if test="lastRunStatus != null">
+                and last_run_status = #{lastRunStatus}
+            </if>
+        </where>
+    </select>
 
     <!--查询单个-->
     <select id="queryById" resultType="com.hu.oneclick.model.domain.TestCase">
@@ -119,7 +188,7 @@
                 env = #{env},
             </if>
             <if test="lastRunStatus != null and lastRunStatus != ''">
-                last_run_status = #{env},
+                last_run_status = #{lastRunStatus},
             </if>
             update_time=NOW()
         </set>

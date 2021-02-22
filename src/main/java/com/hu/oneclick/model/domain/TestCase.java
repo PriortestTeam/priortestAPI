@@ -76,7 +76,7 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
 
     private String preCondition;
 
-    private String lastRunStatus;
+    private Integer lastRunStatus;
 
 
 
@@ -258,11 +258,11 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
         this.preCondition = preCondition;
     }
 
-    public String getLastRunStatus() {
+    public Integer getLastRunStatus() {
         return lastRunStatus;
     }
 
-    public void setLastRunStatus(String lastRunStatus) {
+    public void setLastRunStatus(Integer lastRunStatus) {
         this.lastRunStatus = lastRunStatus;
     }
 

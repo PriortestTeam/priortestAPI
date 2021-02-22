@@ -4,16 +4,16 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.dao.TestCaseDao;
+import com.hu.oneclick.dao.TestCaseStepDao;
 import com.hu.oneclick.dao.TestCycleDao;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.ModifyRecord;
-import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.TestCycle;
-import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.*;
+import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
-import com.hu.oneclick.server.service.ModifyRecordService;
+import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.TestCycleService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,19 +34,25 @@ public class TestCycleServiceImpl implements TestCycleService {
     private final static Logger logger = LoggerFactory.getLogger(TestCycleServiceImpl.class);
 
 
-    private final ModifyRecordService modifyRecordService;
+    private final ModifyRecordsService modifyRecordsService;
 
     private final JwtUserServiceImpl jwtUserService;
 
     private final TestCycleDao testCycleDao;
 
+    private final TestCaseDao testCaseDao;
+
+    private final TestCaseStepDao testCaseStepDao;
+
     private final TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
 
 
-    public TestCycleServiceImpl(ModifyRecordService modifyRecordService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao) {
-        this.modifyRecordService = modifyRecordService;
+    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao) {
+        this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
         this.testCycleDao = testCycleDao;
+        this.testCaseDao = testCaseDao;
+        this.testCaseStepDao = testCaseStepDao;
         this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
     }
 
@@ -141,7 +147,21 @@ public class TestCycleServiceImpl implements TestCycleService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> bindCaseInsert(TestCycleJoinTestCase testCycleJoinTestCase) {
         try {
-            return Result.addResult(testCycleJoinTestCaseDao.insert(testCycleJoinTestCase));
+            List<TestCycleJoinTestCase> select = testCycleJoinTestCaseDao.queryList(testCycleJoinTestCase);
+            if (select != null && select.size() > 0){
+                throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),"测试用例" + SysConstantEnum.DATE_EXIST.getValue());
+            }
+            int count = 0; //计数
+            TestCycle testCycle = new TestCycle();
+            List<String> strings = testCycleJoinTestCaseDao.queryTestCycleStatus(testCycleJoinTestCase.getTestCycleId());
+            for (String s : strings) {
+                if ("0".equals(s)){
+                    count++;
+                }
+            }
+            //如果全部为0 表示都没运行，所以记录 未运行状态，1 已执行但为执行外状态
+            testCycle.setStatus(count == strings.size() ? 0 : 1);
+            return Result.updateResult(testCycleJoinTestCaseDao.insert(testCycleJoinTestCase),testCycleDao.update(testCycle));
         }catch (BizException e){
             logger.error("class: TestCycleServiceImpl#bindCaseInsert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -156,6 +176,69 @@ public class TestCycleServiceImpl implements TestCycleService {
             return Result.deleteResult(testCycleJoinTestCaseDao.bindCaseDelete(testCaseId));
         }catch (BizException e){
             logger.error("class: TestCycleServiceImpl#bindCaseDelete,error []" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> executeTestCase(ExecuteTestCaseDto executeTestCaseDto) {
+        String userId = jwtUserService.getMasterId();
+        Date date = new Date();
+        int testCycleStatus; //执行过
+        int testCycleRunStatus; //失败
+        int count = 0;
+        boolean flag = executeTestCaseDto.getStepStatus() == 2; //查看当前步骤用户选择成功还是失败
+        try {
+            //1 修改test case 最后一次执行的状态
+            TestCase testCase = new TestCase();
+            testCase.setId(executeTestCaseDto.getTestCaseId());
+            testCase.setLastRunStatus(executeTestCaseDto.getStepStatus());
+            testCase.setExecutedDate(date);
+            testCase.setUserId(userId);
+            //2 判断是否所有的test case 都被执行过，全部执行过后修改 test cycle 的status 为 complete
+            List<Map<String,String>> select = testCycleJoinTestCaseDao.queryBindCaseRunStatus(executeTestCaseDto.getTestCycleId());
+            for (Map<String, String> map : select) {
+                //查看执行状态,1 为已运行，为 1 计数加1 count 数等于 list 查询结果数则表示全部已执行过
+                if ("1".equals(map.get("executeStatus"))) {
+                    count++;
+                }
+                //3 判断test cycle 下边的 testcase 是否都执行成功，凡有一个失败 则状态为失败
+                if (flag){
+                    String runStatus = map.get("runStatus");
+                    if (runStatus != null){
+                        String[] split = runStatus.split(",");
+                        for (String s : split) {
+                            if (!"2".equals(s)) {
+                                flag = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            //状态2 为已执行完，1 为未执行完
+            testCycleStatus = count == select.size() ? 2 : 1;
+            testCycleRunStatus = flag ? 2 : 1;
+            TestCycle testCycle = new TestCycle();
+            testCycle.setId(executeTestCaseDto.getTestCycleId());
+            testCycle.setRunStatus(testCycleRunStatus);
+            testCycle.setStatus(testCycleStatus);
+            testCycle.setLastRunDate(date);
+            testCycle.setUserId(userId);
+            //4 步骤状态
+            TestCaseStep testCaseStep = new TestCaseStep();
+            testCaseStep.setId(executeTestCaseDto.getTestCaseStepId());
+            testCaseStep.setTestCaseId(executeTestCaseDto.getTestCaseId());
+            testCaseStep.setTestDate(date);
+            testCaseStep.setStatus(executeTestCaseDto.getStepStatus());
+            //开始更新
+            return Result.updateResult(testCycleDao.update(testCycle),
+                    testCaseDao.update(testCase),
+                    testCaseStepDao.update(testCaseStep));
+        }catch (BizException e){
+            logger.error("class: TestCycleServiceImpl#executeTestCase,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
@@ -234,7 +317,7 @@ public class TestCycleServiceImpl implements TestCycleService {
             if (modifyRecords.size() <= 0){
                 return;
             }
-            modifyRecordService.insert(modifyRecords);
+            modifyRecordsService.insert(modifyRecords);
         } catch (IllegalAccessException e) {
             throw new BizException(SysConstantEnum.ADD_FAILED.getCode(),"修改字段新增失败！");
         }

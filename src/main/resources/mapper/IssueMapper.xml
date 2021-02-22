@@ -24,7 +24,75 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
     </resultMap>
-
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryList" resultMap="IssueMap">
+        select
+        id, project_id, user_id, title, author, status, planned_release_date, close_date, test_case, test_cycle,
+        feature, priority, env, browser, platform, version, case_category, create_time, update_time, description
+        from oneclick.issue
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="author != null and author != ''">
+                and author = #{author}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="plannedReleaseDate != null">
+                and planned_release_date = #{plannedReleaseDate}
+            </if>
+            <if test="closeDate != null">
+                and close_date = #{closeDate}
+            </if>
+            <if test="testCase != null">
+                and test_case = #{testCase}
+            </if>
+            <if test="testCycle != null">
+                and test_cycle = #{testCycle}
+            </if>
+            <if test="feature != null">
+                and feature = #{feature}
+            </if>
+            <if test="priority != null and priority != ''">
+                and priority = #{priority}
+            </if>
+            <if test="env != null and env != ''">
+                and env = #{env}
+            </if>
+            <if test="browser != null and browser != ''">
+                and browser = #{browser}
+            </if>
+            <if test="platform != null and platform != ''">
+                and platform = #{platform}
+            </if>
+            <if test="version != null and version != ''">
+                and version = #{version}
+            </if>
+            <if test="caseCategory != null and caseCategory != ''">
+                and case_category = #{caseCategory}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+        </where>
+    </select>
     <!--查询单个-->
     <select id="queryById" resultMap="IssueMap">
         select id,

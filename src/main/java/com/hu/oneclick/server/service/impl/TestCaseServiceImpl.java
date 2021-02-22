@@ -10,7 +10,7 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.ModifyRecord;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
-import com.hu.oneclick.server.service.ModifyRecordService;
+import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.TestCaseService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author qingyang
@@ -36,13 +35,13 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     private final TestCaseDao testCaseDao;
 
-    private final ModifyRecordService modifyRecordService;
+    private final ModifyRecordsService modifyRecordsService;
 
     private final JwtUserServiceImpl jwtUserService;
 
-    public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordService modifyRecordService, JwtUserServiceImpl jwtUserService) {
+    public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService) {
         this.testCaseDao = testCaseDao;
-        this.modifyRecordService = modifyRecordService;
+        this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
     }
 
@@ -65,7 +64,7 @@ public class TestCaseServiceImpl implements TestCaseService {
     public Resp<List<TestCase>> queryList(TestCase testCase) {
         testCase.queryListVerify();
         testCase.setUserId(jwtUserService.getMasterId());
-        List<TestCase> select = testCaseDao.select(testCase);
+        List<TestCase> select = testCaseDao.queryList(testCase);
         return new Resp.Builder<List<TestCase>>().setData(select).total(select.size()).ok();
     }
 
@@ -164,7 +163,7 @@ public class TestCaseServiceImpl implements TestCaseService {
            if (modifyRecords.size() <= 0){
                return;
            }
-           modifyRecordService.insert(modifyRecords);
+           modifyRecordsService.insert(modifyRecords);
        } catch (IllegalAccessException e) {
            throw new BizException(SysConstantEnum.ADD_FAILED.getCode(),"修改字段新增失败！");
        }

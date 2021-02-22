@@ -1,7 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.TestCycleJoinTestCaseDao">
+    <resultMap type="com.hu.oneclick.model.domain.TestCycleJoinTestCase" id="TestCycleJoinTestCaseMap">
+        <result property="testCycleId" column="test_cycle_id" jdbcType="VARCHAR"/>
+        <result property="testCaseId" column="test_case_id" jdbcType="VARCHAR"/>
+        <result property="executeStatus" column="execute_status" jdbcType="INTEGER"/>
+    </resultMap>
 
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryList" resultMap="TestCycleJoinTestCaseMap">
+        select
+        test_cycle_id, test_case_id, execute_status
+        from oneclick.test_cycle_join_test_case
+        <where>
+            <if test="testCycleId != null and testCycleId != ''">
+                and test_cycle_id = #{testCycleId}
+            </if>
+            <if test="testCaseId != null and testCaseId != ''">
+                and test_case_id = #{testCaseId}
+            </if>
+            <if test="executeStatus != null">
+                and execute_status = #{executeStatus}
+            </if>
+        </where>
+    </select>
     <!--通过主键删除-->
     <delete id="bindCaseDelete">
         delete
@@ -20,6 +43,35 @@
                  join test_cycle c on tc.test_cycle_id = c.id
         where
             c.id = #{testCycleId}
+    </select>
+    <select id="queryBindCaseRunStatus" resultType="java.util.Map">
+        select
+            testCycleId,
+            testCaseId,
+            executeStatus,
+            group_concat(status) as runStatus
+            from(
+                select t.test_cycle_id  as testCycleId,
+                   t.test_case_id   as testCaseId,
+                   t.execute_status as executeStatus,
+                   0 as status
+            from test_cycle_join_test_case t
+            where t.test_cycle_id = #{testCycleId}
+            union
+            select t.test_cycle_id as testCycleId,
+                   t.test_case_id   as testCaseId,
+                   t.execute_status as executeStatus,
+                   tcs.status as status
+            from test_cycle_join_test_case t
+            join test_case_step tcs on t.test_case_id = tcs.test_case_id
+            where t.test_cycle_id = #{testCycleId}
+            ) as tmp group by tmp.testCaseId
+    </select>
+    <select id="queryTestCycleStatus" resultType="java.lang.String">
+        select
+            t.execute_status as executeStatus
+            from test_cycle_join_test_case t
+            where t.test_cycle_id = #{testCycleId}
     </select>
 
 </mapper>

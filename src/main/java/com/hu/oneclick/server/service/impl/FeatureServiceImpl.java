@@ -62,7 +62,7 @@ public class FeatureServiceImpl implements FeatureService {
     public Resp<List<Feature>> queryList(Feature feature) {
         feature.queryListVerify();
         feature.setUserId(jwtUserService.getMasterId());
-        List<Feature> select = featureDao.select(feature);
+        List<Feature> select = featureDao.queryList(feature);
         return new Resp.Builder<List<Feature>>().setData(select).total(select.size()).ok();
     }
 

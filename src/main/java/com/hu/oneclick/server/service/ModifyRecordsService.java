@@ -5,7 +5,7 @@ import com.hu.oneclick.model.domain.ModifyRecord;
 
 import java.util.List;
 
-public interface ModifyRecordService {
+public interface ModifyRecordsService {
     Resp<List<ModifyRecord>> queryList(ModifyRecord modifyRecord);
 
     void insert(List<ModifyRecord> modifyRecord);

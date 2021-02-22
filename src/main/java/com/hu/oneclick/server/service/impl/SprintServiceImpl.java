@@ -60,7 +60,7 @@ public class SprintServiceImpl implements SprintService {
     public Resp<List<Sprint>> queryList(Sprint sprint) {
         sprint.queryListVerify();
         sprint.setUserId(jwtUserService.getMasterId());
-        List<Sprint> select = sprintDao.select(sprint);
+        List<Sprint> select = sprintDao.queryList(sprint);
         return new Resp.Builder<List<Sprint>>().setData(select).total(select.size()).ok();
     }
 

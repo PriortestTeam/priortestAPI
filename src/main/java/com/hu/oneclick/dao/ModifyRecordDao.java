@@ -10,4 +10,5 @@ public interface ModifyRecordDao extends BaseMapper<ModifyRecord> {
 
     int inserts(@Param("modifyRecord") List<ModifyRecord> modifyRecord);
 
+    List<ModifyRecord> queryList(ModifyRecord modifyRecord);
 }

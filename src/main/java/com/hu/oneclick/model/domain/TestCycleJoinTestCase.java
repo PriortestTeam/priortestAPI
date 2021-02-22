@@ -11,6 +11,8 @@ public class TestCycleJoinTestCase implements Serializable {
     private String testCycleId;
     private String testCaseId;
 
+    private String executeStatus;
+
 
     public String getTestCycleId() {
         return testCycleId;
@@ -26,5 +28,13 @@ public class TestCycleJoinTestCase implements Serializable {
 
     public void setTestCaseId(String testCaseId) {
         this.testCaseId = testCaseId;
+    }
+
+    public String getExecuteStatus() {
+        return executeStatus;
+    }
+
+    public void setExecuteStatus(String executeStatus) {
+        this.executeStatus = executeStatus;
     }
 }

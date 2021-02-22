@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.BaseMapper;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author qingyang
@@ -19,4 +18,5 @@ public interface FeatureDao extends BaseMapper<Feature> {
 
     List<LeftJoinDto> queryTitles(@Param("projectId")String projectId, @Param("title") String title, @Param("masterId") String masterId);
 
+    List<Feature> queryList(Feature feature);
 }

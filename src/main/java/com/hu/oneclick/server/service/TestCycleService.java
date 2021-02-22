@@ -4,6 +4,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 
 import java.util.List;
@@ -29,5 +30,7 @@ public interface TestCycleService {
     Resp<String> bindCaseInsert(TestCycleJoinTestCase testCycleJoinTestCase);
 
     Resp<String> bindCaseDelete(String testCaseId);
+
+    Resp<String> executeTestCase(ExecuteTestCaseDto executeTestCaseDto);
 
 }

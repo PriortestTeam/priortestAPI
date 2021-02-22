@@ -11,7 +11,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.server.service.IssueService;
-import com.hu.oneclick.server.service.ModifyRecordService;
+import com.hu.oneclick.server.service.ModifyRecordsService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class IssueServiceImpl implements IssueService {
@@ -36,17 +35,17 @@ public class IssueServiceImpl implements IssueService {
 
     private final IssueJoinTestCaseDao issueJoinTestCaseDao;
 
-    private final ModifyRecordService modifyRecordService;
+    private final ModifyRecordsService modifyRecordsService;
 
     private final SysPermissionService sysPermissionService;
 
 
 
-    public IssueServiceImpl(IssueDao issueDao, JwtUserServiceImpl jwtUserService, IssueJoinTestCaseDao issueJoinTestCaseDao, ModifyRecordService modifyRecordService, SysPermissionService sysPermissionService) {
+    public IssueServiceImpl(IssueDao issueDao, JwtUserServiceImpl jwtUserService, IssueJoinTestCaseDao issueJoinTestCaseDao, ModifyRecordsService modifyRecordsService, SysPermissionService sysPermissionService) {
         this.issueDao = issueDao;
         this.jwtUserService = jwtUserService;
         this.issueJoinTestCaseDao = issueJoinTestCaseDao;
-        this.modifyRecordService = modifyRecordService;
+        this.modifyRecordsService = modifyRecordsService;
         this.sysPermissionService = sysPermissionService;
     }
 
@@ -62,7 +61,7 @@ public class IssueServiceImpl implements IssueService {
     public Resp<List<Issue>> queryList(Issue issue) {
         issue.queryListVerify();
         issue.setUserId(jwtUserService.getMasterId());
-        List<Issue> select = issueDao.select(issue);
+        List<Issue> select = issueDao.queryList(issue);
         return new Resp.Builder<List<Issue>>().setData(select).total(select.size()).ok();
     }
 
@@ -206,7 +205,7 @@ public class IssueServiceImpl implements IssueService {
             if (modifyRecords.size() <= 0){
                 return;
             }
-            modifyRecordService.insert(modifyRecords);
+            modifyRecordsService.insert(modifyRecords);
         } catch (IllegalAccessException e) {
             throw new BizException(SysConstantEnum.ADD_FAILED.getCode(),"修改字段新增失败！");
         }
