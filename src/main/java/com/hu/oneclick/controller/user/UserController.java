@@ -4,6 +4,7 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
+import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import com.hu.oneclick.server.user.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -69,4 +70,13 @@ public class UserController {
         return userService.queryUserPermissions();
     }
 
+    /**
+     * 获取子用户列表，下拉框使用
+     * @param subUserName
+     * @return
+     */
+    @PostMapping("queryByNameSubUsers")
+    public Resp<List<SubUserDto>> queryByNameSubUsers(@RequestParam String subUserName){
+        return userService.queryByNameSubUsers(subUserName);
+    }
 }

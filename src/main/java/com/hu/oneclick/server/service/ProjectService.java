@@ -25,4 +25,6 @@ public interface ProjectService {
     Resp<String> deleteProject(String projectId);
 
     Resp<String> checkProject(String projectId);
+
+    Resp<String> getCloseProject(String id,String closeDesc);
 }

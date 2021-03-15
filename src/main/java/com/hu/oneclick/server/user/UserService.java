@@ -3,6 +3,7 @@ package com.hu.oneclick.server.user;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
+import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 
 import java.util.List;
@@ -66,5 +67,7 @@ public interface UserService {
      * @return
      */
     Resp<List<SysProjectPermissionDto>> queryUserPermissions();
+
+    Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName);
 
 }

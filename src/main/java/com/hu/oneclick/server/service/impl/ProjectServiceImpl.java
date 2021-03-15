@@ -5,7 +5,6 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.dao.ProjectDao;
-import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Project;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -136,6 +136,23 @@ public class ProjectServiceImpl implements ProjectService {
             return Result.updateResult(flag);
         }catch (BizException e){
             logger.error("class: ProjectServiceImpl#checkProject,error []" + e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> getCloseProject(String id,String closeDesc) {
+        try {
+            Project project = new Project();
+            project.setUserId(jwtUserService.getMasterId());
+            project.setId(id);
+            project.setStatus(1);
+            project.setCloseDate(new Date());
+            project.setCloseDesc(closeDesc);
+            return Result.updateResult(projectDao.update(project));
+        }catch (BizException e){
+            logger.error("class: ProjectServiceImpl#getCloseProject,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
     }

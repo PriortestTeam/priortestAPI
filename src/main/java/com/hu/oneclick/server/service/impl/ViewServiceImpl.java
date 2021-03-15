@@ -3,6 +3,7 @@ package com.hu.oneclick.server.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
+import com.hu.oneclick.common.enums.SysStatusEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
@@ -12,6 +13,7 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.OneFilter;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.View;
+import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.server.service.ViewService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -161,6 +164,108 @@ public class ViewServiceImpl implements ViewService {
             logger.error("class: ViewServiceImpl#deleteView,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
+    }
+
+    @Override
+    public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(String scope) {
+        String s = "string";
+        String i = "int";
+        String d = "date";
+        List<ViewScopeChildParams> result = new ArrayList<>();
+        switch (scope) {
+            case OneConstant.SCOPE.ONE_PROJECT:
+                result.add(new ViewScopeChildParams(s,"title", "项目名称"));
+                result.add(new ViewScopeChildParams(d,"planReleaseDate", "计划上线日期"));
+
+                List<ViewScopeChildParams> childList1 = new ArrayList<>();
+                childList1.add(new ViewScopeChildParams(SysStatusEnum.PROJECT_STATUS_CLOSED.getKey(),SysStatusEnum.PROJECT_STATUS_CLOSED.getValue()));
+                childList1.add(new ViewScopeChildParams(SysStatusEnum.PROJECT_STATUS_PLAN.getKey(),SysStatusEnum.PROJECT_STATUS_PLAN.getValue()));
+                childList1.add(new ViewScopeChildParams(SysStatusEnum.PROJECT_STATUS_PROGRESS.getKey(),SysStatusEnum.PROJECT_STATUS_PROGRESS.getValue()));
+
+                result.add(new ViewScopeChildParams(i,"status", "状态",childList1));
+                result.add(new ViewScopeChildParams(s,"reportToName", "项目负责人"));
+                result.add(new ViewScopeChildParams(d,"closeDate", "关闭日期"));
+                break;
+            case OneConstant.SCOPE.ONE_SPRINT:
+                result.add(new ViewScopeChildParams(s,"title", "迭代名称"));
+
+                List<ViewScopeChildParams> childList2 = new ArrayList<>();
+                childList2.add(new ViewScopeChildParams(SysStatusEnum.SPRINT_STATUS_CLOSED.getKey(),SysStatusEnum.SPRINT_STATUS_CLOSED.getValue()));
+                childList2.add(new ViewScopeChildParams(SysStatusEnum.SPRINT_STATUS_OPEN.getKey(),SysStatusEnum.SPRINT_STATUS_OPEN.getValue()));
+
+                result.add(new ViewScopeChildParams(i,"status", "状态",childList2));
+                result.add(new ViewScopeChildParams(s,"reportToName", "项目管理人"));
+                result.add(new ViewScopeChildParams(d,"startDate", "开始时间"));
+                result.add(new ViewScopeChildParams(d,"endDate", "结束时间"));
+                result.add(new ViewScopeChildParams(d,"createDate", "创建时间"));
+                result.add(new ViewScopeChildParams(d,"closeDate", "关闭时间"));
+                break;
+            case OneConstant.SCOPE.ONE_FEATURE:
+                result.add(new ViewScopeChildParams(s,"title", "故事名称"));
+                result.add(new ViewScopeChildParams(s,"authorName", "管理人"));
+                result.add(new ViewScopeChildParams(s,"reportTo", "指派用户"));
+
+                List<ViewScopeChildParams> childList3 = new ArrayList<>();
+                childList3.add(new ViewScopeChildParams(SysStatusEnum.FEATURE_STATUS_PROGRESS.getKey(),SysStatusEnum.FEATURE_STATUS_PROGRESS.getValue()));
+                childList3.add(new ViewScopeChildParams(SysStatusEnum.FEATURE_STATUS_PLAN.getKey(),SysStatusEnum.FEATURE_STATUS_PLAN.getValue()));
+                childList3.add(new ViewScopeChildParams(SysStatusEnum.FEATURE_STATUS_CLOSED.getKey(),SysStatusEnum.FEATURE_STATUS_CLOSED.getValue()));
+
+                result.add(new ViewScopeChildParams(i,"status", "状态",childList3));
+                result.add(new ViewScopeChildParams(s,"version", "版本"));
+                result.add(new ViewScopeChildParams(d,"closeDate", "关闭时间"));
+                result.add(new ViewScopeChildParams(d,"createDate", "创建时间"));
+                break;
+            case OneConstant.SCOPE.ONE_TEST_CASE:
+                result.add(new ViewScopeChildParams(s,"title", "测试用例名称"));
+                result.add(new ViewScopeChildParams(s,"authorName", "管理人"));
+                result.add(new ViewScopeChildParams(s,"priority", "优先权"));
+                result.add(new ViewScopeChildParams(d,"executedDate", "执行时间"));
+                result.add(new ViewScopeChildParams(d,"createTime", "创建时间"));
+                result.add(new ViewScopeChildParams(s,"browser", "浏览器"));
+                result.add(new ViewScopeChildParams(s,"platform", "平台"));
+                result.add(new ViewScopeChildParams(s,"version", "版本"));
+
+                List<ViewScopeChildParams> childList4 = new ArrayList<>();
+                childList4.add(new ViewScopeChildParams(SysStatusEnum.TEST_CASE_LAST_RUN_STATUS_SUCCESS.getKey(),SysStatusEnum.TEST_CASE_LAST_RUN_STATUS_SUCCESS.getValue()));
+                childList4.add(new ViewScopeChildParams(SysStatusEnum.TEST_CASE_LAST_RUN_STATUS_FILED.getKey(),SysStatusEnum.TEST_CASE_LAST_RUN_STATUS_FILED.getValue()));
+
+                result.add(new ViewScopeChildParams(i,"lastRunStatus", "最后运行状态",childList4));
+                break;
+            case OneConstant.SCOPE.ONE_TEST_CYCLE:
+                result.add(new ViewScopeChildParams(s,"title", "测试周期名称"));
+
+                List<ViewScopeChildParams> childList5 = new ArrayList<>();
+                childList5.add(new ViewScopeChildParams(SysStatusEnum.TEST_CYCLE_LAST_RUN_STATUS_SUCCESS.getKey(),SysStatusEnum.TEST_CYCLE_LAST_RUN_STATUS_SUCCESS.getValue()));
+                childList5.add(new ViewScopeChildParams(SysStatusEnum.TEST_CYCLE_LAST_RUN_STATUS_FILED.getKey(),SysStatusEnum.TEST_CYCLE_LAST_RUN_STATUS_FILED.getValue()));
+
+                result.add(new ViewScopeChildParams(i,"status", "状态",childList5));
+
+                List<ViewScopeChildParams> childList6 = new ArrayList<>();
+                childList5.add(new ViewScopeChildParams(SysStatusEnum.TEST_CYCLE_STATUS_NOT_RUN.getKey(),SysStatusEnum.TEST_CYCLE_STATUS_NOT_RUN.getValue()));
+                childList5.add(new ViewScopeChildParams(SysStatusEnum.TEST_CYCLE_STATUS_COMPLETED.getKey(),SysStatusEnum.TEST_CYCLE_STATUS_COMPLETED.getValue()));
+                childList5.add(new ViewScopeChildParams(SysStatusEnum.TEST_CYCLE_STATUS_UNCOMPLETED.getKey(),SysStatusEnum.TEST_CYCLE_STATUS_UNCOMPLETED.getValue()));
+
+                result.add(new ViewScopeChildParams(i,"runStatus", "运行状态",childList6));
+                result.add(new ViewScopeChildParams(d,"lastRunDate", "最后一次运行时间"));
+                result.add(new ViewScopeChildParams(d,"lastModify", "最后修改时间"));
+                result.add(new ViewScopeChildParams(s,"version", "版本"));
+                result.add(new ViewScopeChildParams(d,"createDate", "创建时间"));
+                result.add(new ViewScopeChildParams(s,"authorName", "创建人"));
+                break;
+            case OneConstant.SCOPE.ONE_ISSUE:
+                result.add(new ViewScopeChildParams(s,"title", "缺陷名称"));
+                result.add(new ViewScopeChildParams(s,"author", "创建人"));
+                result.add(new ViewScopeChildParams(i,"status", "状态"));
+                result.add(new ViewScopeChildParams(s,"priority", "优先权"));
+                result.add(new ViewScopeChildParams(s,"version", "版本"));
+                result.add(new ViewScopeChildParams(d,"plannedReleaseDate", "计划发行日期"));
+                result.add(new ViewScopeChildParams(d,"closeDate", "关闭时间"));
+                result.add(new ViewScopeChildParams(d,"createDate", "创建时间"));
+                break;
+            default:
+                break;
+        }
+        return new Resp.Builder<List<ViewScopeChildParams>>().setData(result).total(result.size()).ok();
     }
 
     /**

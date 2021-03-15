@@ -17,6 +17,10 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="operationAuthIds" column="operation_auth_ids" jdbcType="VARCHAR"/>
         <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
+
+        <result property="testFrame" column="test_frame" jdbcType="VARCHAR"/>
+        <result property="projectCategory" column="project_category" jdbcType="VARCHAR"/>
+        <result property="closeDesc" column="close_desc" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="queryById" resultMap="ProjectMap">
@@ -30,7 +34,10 @@
                del_flag,
                create_time,
                update_time,
-               close_date
+               close_date,
+               test_frame,
+               project_category,
+               close_desc
         from project
         where id = #{id}
     </select>
@@ -38,7 +45,10 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProjectMap">
         select
-          id, user_id, title, report_to_name, status, description, plan_release_date, del_flag, create_time, update_time,close_date
+          id, user_id, title, report_to_name, status, description,
+          plan_release_date, del_flag, create_time, update_time,
+          close_date,test_frame,
+               project_category
         from oneclick.project
         limit #{offset}, #{limit}
     </select>
@@ -46,7 +56,12 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ProjectMap">
         select
-        id, user_id, title, report_to_name, status, description, plan_release_date , del_flag, create_time, update_time,close_date
+        id, user_id, title,
+         report_to_name, status,
+         description, plan_release_date ,
+          del_flag, create_time,
+          update_time,close_date,test_frame,
+        project_category
         from oneclick.project
         <where>
             user_id = #{userId}
@@ -62,9 +77,16 @@
             <if test="description != null and description != ''">
                 and description = #{description}
             </if>
-            <if test="planReleaseDate != null">
-                and plan_release_date = #{planReleaseDate}
+            <if test="planReleaseDateBegin != null and planReleaseDateEnd != null">
+                and plan_release_date &gt; #{planReleaseDateBegin}
+                and plan_release_date &lt; #{planReleaseDateEnd}
             </if>
+
+            <if test="closeDateBegin != null and closeDateEnd != null">
+                and close_date &gt; #{closeDateBegin}
+                and close_date &lt; #{closeDateEnd}
+            </if>
+
             and del_flag = 0
             order by create_time desc
         </where>
@@ -131,6 +153,12 @@
             <if test="planReleaseDate != null">
                 plan_release_date,
             </if>
+            <if test="testFrame != null and testFrame != ''">
+                test_frame,
+            </if>
+            <if test="projectCategory != null and projectCategory != ''">
+                project_category,
+            </if>
             create_time,
             update_time
         </trim>
@@ -156,6 +184,12 @@
             <if test="planReleaseDate != null">
                 #{planReleaseDate},
             </if>
+            <if test="testFrame != null and testFrame != ''">
+                #{testFrame},
+            </if>
+            <if test="projectCategory != null and projectCategory != ''">
+                #{projectCategory},
+            </if>
             NOW(),
             NOW()
         </trim>
@@ -165,7 +199,7 @@
 
     <!--通过主键修改数据-->
     <update id="update">
-        update oneclick.project
+        update project
         <set>
             <if test="id != null and id != ''">
                 id = #{id},
@@ -188,8 +222,17 @@
             <if test="planReleaseDate != null">
                 plan_release_date = #{planReleaseDate},
             </if>
-            <if test="closeDate != null and closeDate != ''">
+            <if test="closeDate != null">
                 close_date = #{closeDate},
+            </if>
+            <if test="testFrame != null and testFrame != ''">
+                test_frame = #{testFrame},
+            </if>
+            <if test="projectCategory != null and projectCategory != ''">
+                project_category = #{projectCategory},
+            </if>
+            <if test="closeDesc != null and closeDesc != ''">
+                close_desc = #{closeDesc},
             </if>
             update_time = NOW()
         </set>

@@ -24,7 +24,15 @@ public class ProjectController {
         this.viewService = viewService;
     }
 
-
+    /**
+     * 关闭项目
+     * @param id,closeDesc
+     * @return
+     */
+    @GetMapping("getCloseProject")
+    public Resp<String> getCloseProject(@RequestParam String id, @RequestParam String closeDesc) {
+        return projectService.getCloseProject(id,closeDesc);
+    }
     @GetMapping("queryDoesExistByTitle")
     public Resp<String> queryDoesExistByTitle(@RequestParam String title) {
         return projectService.queryDoesExistByTitle(title);

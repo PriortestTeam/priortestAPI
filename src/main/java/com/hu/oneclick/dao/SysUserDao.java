@@ -117,4 +117,6 @@ public interface SysUserDao {
      */
     int deleteSubUser(@Param("id") String id, @Param("masterId") String masterId);
 
+    List<SubUserDto> queryByNameSubUsers(@Param("masterId") String masterId,@Param("subUserName") String subUserName);
+
 }

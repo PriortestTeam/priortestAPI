@@ -32,6 +32,7 @@ public class Sprint extends BaseEntity implements Serializable , VerifyParam {
     /**
      * 状态，（1 open ，0 close）
      */
+    @Transient
     private Integer status;
     /**
      * 开始时间
@@ -55,6 +56,8 @@ public class Sprint extends BaseEntity implements Serializable , VerifyParam {
     private Date createTime;
 
     private Date updateTime;
+
+    private String epic;
 
     @Transient
     private String scope = OneConstant.SCOPE.ONE_SPRINT;
@@ -165,5 +168,13 @@ public class Sprint extends BaseEntity implements Serializable , VerifyParam {
 
     public void setScope(String scope) {
         this.scope = scope;
+    }
+
+    public String getEpic() {
+        return epic;
+    }
+
+    public void setEpic(String epic) {
+        this.epic = epic;
     }
 }

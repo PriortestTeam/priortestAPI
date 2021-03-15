@@ -49,13 +49,26 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
      */
     private Integer delFlag;
 
+    private String testFrame;
+    private String projectCategory;
+
     private Date createTime;
 
     private Date updateTime;
 
     private Date closeDate;
 
+    private String closeDesc;
+
     private String scope = OneConstant.SCOPE.ONE_PROJECT;
+
+
+    private Date closeDateBegin;
+    private Date closeDateEnd;
+
+    private Date planReleaseDateBegin;
+    private Date planReleaseDateEnd;
+
 
     /**
      * 项目绑定的权限
@@ -174,5 +187,61 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
 
     public void setScope(String scope) {
         this.scope = scope;
+    }
+
+    public Date getCloseDateBegin() {
+        return closeDateBegin;
+    }
+
+    public void setCloseDateBegin(Date closeDateBegin) {
+        this.closeDateBegin = closeDateBegin;
+    }
+
+    public Date getCloseDateEnd() {
+        return closeDateEnd;
+    }
+
+    public void setCloseDateEnd(Date closeDateEnd) {
+        this.closeDateEnd = closeDateEnd;
+    }
+
+    public Date getPlanReleaseDateBegin() {
+        return planReleaseDateBegin;
+    }
+
+    public void setPlanReleaseDateBegin(Date planReleaseDateBegin) {
+        this.planReleaseDateBegin = planReleaseDateBegin;
+    }
+
+    public Date getPlanReleaseDateEnd() {
+        return planReleaseDateEnd;
+    }
+
+    public void setPlanReleaseDateEnd(Date planReleaseDateEnd) {
+        this.planReleaseDateEnd = planReleaseDateEnd;
+    }
+
+    public String getTestFrame() {
+        return testFrame;
+    }
+
+    public void setTestFrame(String testFrame) {
+        this.testFrame = testFrame;
+    }
+
+    public String getProjectCategory() {
+        return projectCategory;
+    }
+
+    public void setProjectCategory(String projectCategory) {
+        this.projectCategory = projectCategory;
+    }
+
+    public String getCloseDesc() {
+        return closeDesc;
+    }
+
+    public void setCloseDesc(String closeDesc) {
+        this.closeDesc = closeDesc;
     }
 }

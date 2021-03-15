@@ -13,6 +13,39 @@ import java.util.regex.Pattern;
  * @author qingyang
  */
 public class DateUtil {
+
+
+    public static void main(String[] args) {
+
+        String date = "2018-01-12 12:07:06";
+    }
+
+
+
+    /**
+     * 比较日期相等
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static boolean comparisonEqualDate(Date startDate, Date endDate){
+        SimpleDateFormat sdf = new SimpleDateFormat ("yyyy-MM-dd");
+        String format = sdf.format(startDate);
+        String format1 = sdf.format(endDate);
+        return format.equals(format1);
+    }
+    public static boolean compareDate(Date time1,Date time2){
+        return time1.getTime() - time2.getTime() > 0;
+    }
+    public static boolean compareDate(String time1,String time2) throws ParseException{
+        //如果想比较日期则写成"yyyy-MM-dd"就可以了
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        //将字符串形式的时间转化为Date类型的时间
+        Date a=sdf.parse(time1);
+        Date b=sdf.parse(time2);
+        return a.getTime() - b.getTime() > 0;
+    }
+
     public static String parseStr(String str) {
         String sDate = "";
         SimpleDateFormat sdf1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
@@ -1582,27 +1615,6 @@ public class DateUtil {
             }
         }
         return "";
-    }
-
-    public static void main(String[] args) {
-
-        String date = "2018-01-12 12:07:06";
-
-        int yyyy = Integer.parseInt (date.substring (0, 4));
-        int mm = Integer.parseInt (date.substring (5, 7));
-        int dd = Integer.parseInt (date.substring (8, 10));
-
-        int hh = Integer.parseInt (date.substring (11, 13));
-        int MM = Integer.parseInt (date.substring (14, 16));
-        int ss = Integer.parseInt (date.substring (17, 19));
-
-        //System.out.println (yyyy);
-        //System.out.println (mm);
-        //System.out.println (dd);
-
-        //System.out.println (hh);
-        //System.out.println (MM);
-        //System.out.println (ss);
     }
 
 

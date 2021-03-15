@@ -13,6 +13,7 @@ import com.hu.oneclick.model.domain.MasterIdentifier;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
+import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -210,6 +211,12 @@ public class UserServiceImpl implements UserService {
     public Resp<List<SysProjectPermissionDto>> queryUserPermissions() {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
         return new Resp.Builder<List<SysProjectPermissionDto>>().setData(userLoginInfo.getPermissions()).ok();
+    }
+
+    @Override
+    public Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName) {
+        List<SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
+        return new Resp.Builder<List<SubUserDto>>().setData(subUserDtos).total(subUserDtos.size()).ok();
     }
 
     /**

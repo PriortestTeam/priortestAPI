@@ -2,6 +2,7 @@ package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.View;
+import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface ViewService {
     Resp<String> updateView(View view);
 
     Resp<String> deleteView(String id);
+
+    Resp<List<ViewScopeChildParams>> getViewScopeChildParams(String scope);
 }

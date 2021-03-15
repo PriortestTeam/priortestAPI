@@ -6,7 +6,6 @@
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="startDate" column="start_date" jdbcType="TIMESTAMP"/>
         <result property="endDate" column="end_date" jdbcType="TIMESTAMP"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
@@ -14,11 +13,12 @@
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="epic" column="epic" jdbcType="VARCHAR"/>
     </resultMap>
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="SprintMap">
         select
-        id, user_id, title, status, start_date, end_date, description, author_name, create_time, update_time, project_id
+        id, user_id, title, start_date, end_date, description, author_name, create_time, update_time, project_id,epic
         from oneclick.sprint
         <where>
             <if test="id != null">
@@ -29,9 +29,6 @@
             </if>
             <if test="title != null and title != ''">
                 and title = #{title}
-            </if>
-            <if test="status != null">
-                and status = #{status}
             </if>
             <if test="startDate != null">
                 and start_date = #{startDate}
@@ -61,14 +58,14 @@
         select id,
                user_id,
                title,
-               status,
                start_date,
                end_date,
                description,
                author_name,
                create_time,
                update_time,
-               project_id
+               project_id,
+               epic
         from sprint
         where id = #{id} and user_id = #{masterId}
     </select>
@@ -94,9 +91,6 @@
             <if test="title != null and title != ''">
                 title = #{title},
             </if>
-            <if test="status != null">
-                status = #{status},
-            </if>
             <if test="startDate != null">
                 start_date = #{startDate},
             </if>
@@ -109,7 +103,9 @@
             <if test="authorName != null and authorName != ''">
                 author_name = #{authorName},
             </if>
-
+            <if test="epic != null and epic != ''">
+                epic = #{epic},
+            </if>
                 update_time = NOW()
         </set>
         where id = #{id}

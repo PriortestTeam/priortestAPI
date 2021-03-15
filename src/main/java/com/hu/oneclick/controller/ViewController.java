@@ -2,6 +2,7 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.View;
+import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.server.service.ViewService;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,11 @@ public class ViewController {
     @GetMapping("queryById/{id}")
     public Resp<View> queryById(@PathVariable String id){
         return viewService.queryById(id);
+    }
+
+    @GetMapping("getViewScopeChildParams")
+    public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope){
+        return viewService.getViewScopeChildParams(scope);
     }
 
 

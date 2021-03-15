@@ -25,18 +25,8 @@
         title, user_id, update_time
         from oneclick.feature
         <where>
-            <if test="id != null">
-                and id = #{id}
-            </if>
-            <if test="projectId != null">
-                and project_id = #{projectId}
-            </if>
-            <if test="sprintId != null">
-                and sprint_id = #{sprintId}
-            </if>
-            <if test="epic != null and epic != ''">
-                and epic = #{epic}
-            </if>
+            user_id = #{userId}
+            and project_id = #{projectId}
             <if test="reportTo != null and reportTo != ''">
                 and report_to = #{reportTo}
             </if>
@@ -46,26 +36,19 @@
             <if test="version != null and version != ''">
                 and version = #{version}
             </if>
-            <if test="description != null and description != ''">
-                and description = #{description}
-            </if>
-            <if test="closeDate != null">
-                and close_date = #{closeDate}
+            <if test="closeDateBegin != null and closeDateEnd != null">
+                and close_date &gt; #{closeDateBegin}
+                and close_date &lt; #{closeDateEnd}
             </if>
             <if test="authorName != null and authorName != ''">
                 and author_name = #{authorName}
             </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
+            <if test="createTimeBegin != null and createTimeEnd != null">
+                and create_time &gt; #{createTimeBegin}
+                and create_time &lt; #{createTimeEnd}
             </if>
             <if test="title != null and title != ''">
                 and title = #{title}
-            </if>
-            <if test="userId != null">
-                and user_id = #{userId}
-            </if>
-            <if test="updateTime != null">
-                and update_time = #{updateTime}
             </if>
         </where>
     </select>

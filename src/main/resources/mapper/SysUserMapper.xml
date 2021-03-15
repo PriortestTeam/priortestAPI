@@ -182,6 +182,20 @@
             and u.id = #{userId}
             and u.parent_id = #{masterId}
     </select>
+    <select id="queryByNameSubUsers" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">
+        select
+        id as id,
+        user_name as userName
+        from sys_user
+        <where>
+            1 = 1
+            and parent_id = #{masterId}
+            <if test="subUserName != null and subUserName != ''">
+                and user_name like concat('%',#{subUserName},'%')
+            </if>
+        </where>
+
+    </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">

@@ -5,6 +5,7 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
+import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.dao.SprintDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
@@ -20,7 +21,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author qingyang
@@ -61,7 +61,30 @@ public class SprintServiceImpl implements SprintService {
         sprint.queryListVerify();
         sprint.setUserId(jwtUserService.getMasterId());
         List<Sprint> select = sprintDao.queryList(sprint);
+        select.forEach(this::analysisStatus);
         return new Resp.Builder<List<Sprint>>().setData(select).total(select.size()).ok();
+    }
+
+    public void analysisStatus(Sprint sprint){
+        Date date = new Date();
+        if (sprint.getStartDate() == null
+                || sprint.getEndDate() == null
+                || !DateUtil.compareDate(sprint.getEndDate(),date)){
+            //关闭状态：结束日期< 当前日期
+            sprint.setStatus(0);
+            return;
+        }
+        //计划中状态：当前日期大于起始日期，小于结束日期
+        if (DateUtil.compareDate(date,sprint.getStartDate())
+                && !DateUtil.compareDate(date,sprint.getEndDate())){
+            sprint.setStatus(2);
+            return;
+        }
+        //1 开发中状态：起始日期=当前日期
+        if (DateUtil.comparisonEqualDate(date,sprint.getStartDate())){
+            sprint.setStatus(1);
+        }
+
     }
 
     @Override
