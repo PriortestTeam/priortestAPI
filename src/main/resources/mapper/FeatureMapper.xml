@@ -5,7 +5,6 @@
     <resultMap type="com.hu.oneclick.model.domain.Feature" id="FeatureMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
-        <result property="sprintId" column="sprint_id" jdbcType="INTEGER"/>
         <result property="epic" column="epic" jdbcType="VARCHAR"/>
         <result property="reportTo" column="report_to" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
@@ -21,7 +20,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="FeatureMap">
         select
-        id, project_id, sprint_id, epic, report_to, status, version, description, close_date, author_name, create_time,
+        id, project_id, epic, report_to, status, version, description, close_date, author_name, create_time,
         title, user_id, update_time
         from oneclick.feature
         <where>
@@ -58,7 +57,6 @@
         select
             f.id as id,
             f.project_id as projectId,
-            f.sprint_id as sprintId,
             f.epic as epic,
             f.report_to as reportTo,
             f.status as status,
@@ -68,10 +66,8 @@
             f.author_name as authorName,
             f.create_time as createTime,
             f.title as title,
-            f.update_time as updateTime,
-            s.title as sprintTitle
+            f.update_time as updateTime
         from feature f
-        left join sprint s on f.sprint_id = s.id
         where f.id=#{id} and f.user_id = #{masterId}
     </select>
     <select id="queryTitles" resultType="com.hu.oneclick.model.domain.dto.LeftJoinDto">
@@ -92,9 +88,6 @@
     <update id="update">
         update feature
         <set>
-            <if test="sprintId != null">
-                sprint_id = #{sprintId},
-            </if>
             <if test="epic != null and epic != ''">
                 epic = #{epic},
             </if>

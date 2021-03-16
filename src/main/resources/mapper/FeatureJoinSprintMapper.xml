@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.FeatureJoinSprintDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.FeatureJoinSprint" id="FeatureJoinSprintMap">
+        <result property="featureId" column="feature_id" jdbcType="INTEGER"/>
+        <result property="sprint" column="sprint" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="FeatureJoinSprintMap">
+        select
+        feature_id, sprint
+        from feature_join_sprint
+        <where>
+                feature_id = #{featureId}
+        </where>
+    </select>
+    <select id="verifyIsExist" resultType="java.lang.Integer" parameterType="com.hu.oneclick.model.domain.FeatureJoinSprint">
+        select
+        count(1)
+        from feature_join_sprint
+        where
+            feature_id = #{featureId}
+            and sprint = #{sprint}
+    </select>
+
+    <select id="queryBindSprints" resultType="com.hu.oneclick.model.domain.Sprint">
+        select
+        s.id as id,
+        s.title as title,
+        s.start_date as startDate,
+        s.end_date as endDate,
+        s.description as description,
+        s.author_name as authorName,
+        s.create_time as createTime,
+        s.update_time as updateTime,
+        s.project_id as projectId,
+        s.epic as epic
+        from feature_join_sprint fjs
+        join feature f on fjs.feature_id = f.id
+        join sprint s on fjs.sprint = s.id
+        where f.id = #{featureId}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="" useGeneratedKeys="true">
+        insert into feature_join_sprint
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="featureId != null">
+                feature_id,
+            </if>
+            <if test="sprint != null">
+                sprint,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="featureId != null">
+                #{featureId},
+            </if>
+            <if test="sprint != null">
+                #{sprint},
+            </if>
+        </trim>
+    </insert>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update feature_join_sprint
+        <set>
+            <if test="sprint != null">
+                sprint = #{sprint},
+            </if>
+        </set>
+        where feature_id = #{featureId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from feature_join_sprint where feature_id = #{featureId} and sprint = #{sprint}
+    </delete>
+
+</mapper>

@@ -7,10 +7,10 @@ import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Column;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 故事(Feature)实体类
@@ -25,10 +25,6 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
      * 关联项目id
      */
     private String projectId;
-    /**
-     * 关联迭代id
-     */
-    private String sprintId;
     /**
      * 记录
      */
@@ -82,6 +78,9 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
     @Transient
     private String scope = OneConstant.SCOPE.ONE_FEATURE;
 
+    @Transient
+    List<Sprint> sprints;
+
 
     @Override
     public void verify() throws BizException {
@@ -110,13 +109,6 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
         this.projectId = projectId;
     }
 
-    public String getSprintId() {
-        return sprintId;
-    }
-
-    public void setSprintId(String sprintId) {
-        this.sprintId = sprintId;
-    }
 
     public String getUserId() {
         return userId;
@@ -220,5 +212,13 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
 
     public void setScope(String scope) {
         this.scope = scope;
+    }
+
+    public List<Sprint> getSprints() {
+        return sprints;
+    }
+
+    public void setSprints(List<Sprint> sprints) {
+        this.sprints = sprints;
     }
 }

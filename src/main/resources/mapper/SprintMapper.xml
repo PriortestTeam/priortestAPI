@@ -14,11 +14,13 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <result property="epic" column="epic" jdbcType="VARCHAR"/>
+        <result property="module" column="module" jdbcType="VARCHAR"/>
+
     </resultMap>
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="SprintMap">
         select
-        id, user_id, title, start_date, end_date, description, author_name, create_time, update_time, project_id,epic
+        id, user_id, title, start_date, end_date, description, author_name, create_time, update_time, project_id,epic,`module`
         from oneclick.sprint
         <where>
             <if test="id != null">
@@ -65,7 +67,8 @@
                create_time,
                update_time,
                project_id,
-               epic
+               epic,
+               `module`
         from sprint
         where id = #{id} and user_id = #{masterId}
     </select>
@@ -99,6 +102,9 @@
             </if>
             <if test="description != null and description != ''">
                 description = #{description},
+            </if>
+            <if test="module != null and module != ''">
+                `module`= #{module},
             </if>
             <if test="authorName != null and authorName != ''">
                 author_name = #{authorName},

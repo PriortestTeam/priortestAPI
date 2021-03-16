@@ -59,6 +59,8 @@ public class Sprint extends BaseEntity implements Serializable , VerifyParam {
 
     private String epic;
 
+    private String module;
+
     @Transient
     private String scope = OneConstant.SCOPE.ONE_SPRINT;
 
@@ -176,5 +178,13 @@ public class Sprint extends BaseEntity implements Serializable , VerifyParam {
 
     public void setEpic(String epic) {
         this.epic = epic;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
     }
 }
