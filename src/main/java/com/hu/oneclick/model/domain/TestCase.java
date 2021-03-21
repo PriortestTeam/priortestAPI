@@ -78,7 +78,10 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
 
     private Integer lastRunStatus;
 
-
+    private String module;
+    private String testDevice;
+    private Date testDate;
+    private String testMethod;
 
     @Transient
     private String featureTitle;
@@ -272,5 +275,37 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
 
     public void setFeatureTitle(String featureTitle) {
         this.featureTitle = featureTitle;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+
+    public String getTestDevice() {
+        return testDevice;
+    }
+
+    public void setTestDevice(String testDevice) {
+        this.testDevice = testDevice;
+    }
+
+    public Date getTestDate() {
+        return testDate;
+    }
+
+    public void setTestDate(Date testDate) {
+        this.testDate = testDate;
+    }
+
+    public String getTestMethod() {
+        return testMethod;
+    }
+
+    public void setTestMethod(String testMethod) {
+        this.testMethod = testMethod;
     }
 }

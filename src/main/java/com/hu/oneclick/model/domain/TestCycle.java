@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 测试周期(TestCycle)实体类
@@ -48,14 +49,7 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
      * 最后修改时间
      */
     private Date lastModify;
-    /**
-     * 关联故事id
-     */
-    private String feature;
-    /**
-     * 关联迭代id
-     */
-    private String sprint;
+
     /**
      * 版本
      */
@@ -73,15 +67,19 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
 
     private String description;
 
+    private String assignTo;
+    private String notifiyList;
 
-    @Transient
-    private String featureTitle;
-    @Transient
-    private String sprintTitle;
 
     @Transient
     private String scope = OneConstant.SCOPE.ONE_TEST_CYCLE;
 
+
+    @Transient
+    private List<Feature> features;
+
+    @Transient
+    private List<Sprint> sprints;
 
     @Override
     public void verify() throws BizException {
@@ -155,23 +153,6 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
     public void setLastModify(Date lastModify) {
         this.lastModify = lastModify;
     }
-
-    public String getFeature() {
-        return feature;
-    }
-
-    public void setFeature(String feature) {
-        this.feature = feature;
-    }
-
-    public String getSprint() {
-        return sprint;
-    }
-
-    public void setSprint(String sprint) {
-        this.sprint = sprint;
-    }
-
     public String getVersion() {
         return version;
     }
@@ -220,21 +201,6 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
         this.scope = scope;
     }
 
-    public String getFeatureTitle() {
-        return featureTitle;
-    }
-
-    public void setFeatureTitle(String featureTitle) {
-        this.featureTitle = featureTitle;
-    }
-
-    public String getSprintTitle() {
-        return sprintTitle;
-    }
-
-    public void setSprintTitle(String sprintTitle) {
-        this.sprintTitle = sprintTitle;
-    }
 
     public String getDescription() {
         return description;
@@ -242,5 +208,37 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getAssignTo() {
+        return assignTo;
+    }
+
+    public void setAssignTo(String assignTo) {
+        this.assignTo = assignTo;
+    }
+
+    public String getNotifiyList() {
+        return notifiyList;
+    }
+
+    public void setNotifiyList(String notifiyList) {
+        this.notifiyList = notifiyList;
+    }
+
+    public List<Feature> getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(List<Feature> features) {
+        this.features = features;
+    }
+
+    public List<Sprint> getSprints() {
+        return sprints;
+    }
+
+    public void setSprints(List<Sprint> sprints) {
+        this.sprints = sprints;
     }
 }

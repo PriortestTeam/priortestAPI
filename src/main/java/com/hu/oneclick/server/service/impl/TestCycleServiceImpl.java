@@ -4,10 +4,7 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
-import com.hu.oneclick.dao.TestCaseDao;
-import com.hu.oneclick.dao.TestCaseStepDao;
-import com.hu.oneclick.dao.TestCycleDao;
-import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
+import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
@@ -44,16 +41,22 @@ public class TestCycleServiceImpl implements TestCycleService {
 
     private final TestCaseStepDao testCaseStepDao;
 
+    private final FeatureDao featureDao;
+
     private final TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
 
+    private final SprintDao sprintDao;
 
-    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao) {
+
+    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao) {
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
         this.testCycleDao = testCycleDao;
         this.testCaseDao = testCaseDao;
         this.testCaseStepDao = testCaseStepDao;
+        this.featureDao = featureDao;
         this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
+        this.sprintDao = sprintDao;
     }
 
 
@@ -68,6 +71,14 @@ public class TestCycleServiceImpl implements TestCycleService {
     public Resp<TestCycle> queryById(String id) {
         String masterId = jwtUserService.getMasterId();
         TestCycle testCycle = testCycleDao.queryById(id,masterId);
+
+        //查询testCase 关联的 feature
+        List<Feature> features = featureDao.queryTitlesByTestCycleId(testCycle.getId());
+        //查询sprint 的title
+        List<Sprint> sprints = sprintDao.queryTitlesInFeatureId(features);
+
+        testCycle.setSprints(sprints);
+        testCycle.setFeatures(features);
         return new Resp.Builder<TestCycle>().setData(testCycle).ok();
     }
 

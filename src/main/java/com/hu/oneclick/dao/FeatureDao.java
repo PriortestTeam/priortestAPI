@@ -21,4 +21,6 @@ public interface FeatureDao extends BaseMapper<Feature> {
 
     @Page
     List<Feature> queryList(Feature feature);
+
+    List<Feature> queryTitlesByTestCycleId(@Param("testCycleId")String testCycleId);
 }

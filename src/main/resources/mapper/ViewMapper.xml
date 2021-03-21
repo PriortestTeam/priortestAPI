@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.ViewDao">
-
     <!--开启缓存-->
     <cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true" />
 
@@ -18,12 +17,13 @@
         <result property="modifyDate" column="modify_date" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="ViewMap">
         select
-          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time
+          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id
         from oneclick.view
         where id = #{id} and user_id = #{masterId}
     </select>
@@ -31,7 +31,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ViewMap">
         select
-          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time
+          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id
         from oneclick.view
         limit #{offset}, #{limit}
     </select>
@@ -40,7 +40,7 @@
     <select id="queryAll" resultMap="ViewMap">
         select
         id, user_id, project_id, title, scope, is_private, owner,filter ,modify_user, modify_date, create_time,
-        update_time
+        update_time,parent_id
         from oneclick.view
         <where>
             user_id = #{userId}
@@ -103,9 +103,11 @@
             <if test="modifyDate != null">
                 modify_date,
             </if>
+            <if test="parentId != null and parentId != ''">
+                parent_id,
+            </if>
             create_time,
             update_time
-
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -138,6 +140,9 @@
             <if test="modifyDate != null">
                 #{modifyDate},
             </if>
+            <if test="parentId != null and parentId != ''">
+                #{parentId},
+            </if>
             NOW(),
             NOW()
         </trim>
@@ -162,6 +167,9 @@
             </if>
             <if test="modifyDate != null">
                 modify_date = #{modifyDate},
+            </if>
+            <if test="parentId != null and parentId != ''">
+                parent_id = #{parentId},
             </if>
             update_time = NOW()
         </set>

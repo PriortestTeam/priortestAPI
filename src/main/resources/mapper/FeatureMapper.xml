@@ -82,6 +82,15 @@
             </if>
         </where>
     </select>
+    <select id="queryTitlesByTestCycleId" resultType="com.hu.oneclick.model.domain.Feature">
+        select
+        f.id as id,
+            f.title as title
+        from feature f
+                 join test_case tc on tc.feature = f.id
+                 join test_cycle_join_test_case tcjtc on tc.id = tcjtc.test_case_id
+        where tcjtc.test_cycle_id = #{testCycleId};
+    </select>
 
 
     <!--通过主键修改数据-->

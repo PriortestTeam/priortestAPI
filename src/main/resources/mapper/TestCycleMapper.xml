@@ -11,14 +11,15 @@
         <result property="runStatus" column="run_status" jdbcType="INTEGER"/>
         <result property="lastRunDate" column="last_run_date" jdbcType="TIMESTAMP"/>
         <result property="lastModify" column="last_modify" jdbcType="TIMESTAMP"/>
-        <result property="feature" column="feature" jdbcType="INTEGER"/>
-        <result property="sprint" column="sprint" jdbcType="INTEGER"/>
         <result property="version" column="version" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="ped" column="ped" jdbcType="TIMESTAMP"/>
         <result property="authorName" column="author_name" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="assignTo" column="assign_to" jdbcType="VARCHAR"/>
+        <result property="notifiyList" column="notifiy_list" jdbcType="VARCHAR"/>
+
     </resultMap>
 
     <!--查询单个-->
@@ -31,19 +32,15 @@
                t.run_status as runStatus,
                t.last_run_date as lastRunDate,
                t.last_modify as lastModify,
-               t.feature as feature,
-               t.sprint as sprint,
                t.version as version,
                t.create_time as createTime,
                t.update_time as updateTime,
                t.ped as ped,
                t.author_name as authorName,
                t.description as description,
-               f.title as featureTitle,
-               s.title as sprintTitle
+               t.assign_to as assignTo,
+               t.notifiy_list as notifiyList
         from test_cycle t
-        left join feature f on f.id = t.feature
-        left join sprint s on s.id = t.sprint
         where t.id = #{id} and t.user_id = #{masterId}
     </select>
 
@@ -65,7 +62,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="TestCycleMap">
         select
-          id, user_id, project_id, title, status, run_status, last_run_date, last_modify, feature, sprint,description, version, create_time, update_time, ped, author_name
+          id, user_id, project_id, title, status, run_status, last_run_date, last_modify,description, version, create_time, update_time, ped, author_name,assign_to,notifiy_list
         from oneclick.test_cycle
         <where>
             <if test="id != null">
@@ -92,12 +89,7 @@
             <if test="lastModify != null">
                 and last_modify = #{lastModify}
             </if>
-            <if test="feature != null  and feature != ''">
-                and feature_id = #{featureId}
-            </if>
-            <if test="sprint != null  and sprint != ''">
-                and sprint = #{sprint}
-            </if>
+
             <if test="version != null and version != ''">
                 and version = #{version}
             </if>
@@ -135,14 +127,9 @@
             <if test="lastModify != null">
                 last_modify = #{lastModify},
             </if>
-            <if test="feature != null and feature != ''">
-                feature = #{featureId},
-            </if>
+
             <if test="description != null and description != ''">
                 description = #{description},
-            </if>
-            <if test="sprint != null and sprint != ''">
-                sprint = #{sprint},
             </if>
             <if test="version != null and version != ''">
                 version = #{version},
@@ -153,7 +140,12 @@
             <if test="authorName != null and authorName != ''">
                 author_name = #{authorName},
             </if>
-
+            <if test="notifiyList != null and notifiyList != ''">
+                notifiy_list = #{notifiyList},
+            </if>
+            <if test="assignTo != null and assignTo != ''">
+                assign_to = #{assignTo},
+            </if>
             update_time = NOW()
         </set>
         where id = #{id}

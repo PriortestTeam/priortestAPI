@@ -64,6 +64,8 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
 
     private Date updateTime;
 
+    private String parentId;
+
 
 
     @Override
@@ -201,5 +203,13 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
 
     public void setOneFilters(List<OneFilter> oneFilters) {
         this.oneFilters = oneFilters;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }

@@ -14,5 +14,4 @@ public class OneClickApplication {
     public static void main(String[] args) {
         SpringApplication.run(OneClickApplication.class, args);
     }
-
 }

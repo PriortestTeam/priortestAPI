@@ -20,7 +20,8 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="SprintMap">
         select
-        id, user_id, title, start_date, end_date, description, author_name, create_time, update_time, project_id,epic,`module`
+        id, user_id, title, start_date, end_date, description, author_name, create_time, update_time,
+        project_id,epic,`module`
         from oneclick.sprint
         <where>
             <if test="id != null">
@@ -74,7 +75,7 @@
     </select>
     <select id="queryTitles" resultType="com.hu.oneclick.model.domain.dto.LeftJoinDto">
         select id,
-               title
+        title
         from sprint
         <where>
             project_id = #{projectId}
@@ -84,6 +85,18 @@
             </if>
         </where>
 
+    </select>
+    <select id="queryTitlesInFeatureId" resultType="com.hu.oneclick.model.domain.Sprint">
+        select
+                s.id as id,
+               s.title as title
+        from sprint s
+        join feature_join_sprint fjs on fjs.sprint = s.id
+        where
+        fjs.feature_id in
+        <foreach collection="features" index="index" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
     </select>
 
 
@@ -112,7 +125,7 @@
             <if test="epic != null and epic != ''">
                 epic = #{epic},
             </if>
-                update_time = NOW()
+            update_time = NOW()
         </set>
         where id = #{id}
     </update>
