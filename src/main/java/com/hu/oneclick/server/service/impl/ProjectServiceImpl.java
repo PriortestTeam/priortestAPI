@@ -125,9 +125,10 @@ public class ProjectServiceImpl implements ProjectService {
                 userUseOpenProject.setProjectId(projectId);
                 userUseOpenProject.setUserId(sysUser.getId());
                 userUseOpenProject.setTitle(project.getTitle());
-
-                if (projectDao.deleteUseOpenProject(sysUser.getUserUseOpenProject().getId()) > 0
-                        && projectDao.insertUseOpenProject(userUseOpenProject) > 0){
+                if (sysUser.getUserUseOpenProject() != null){
+                    projectDao.deleteUseOpenProject(sysUser.getUserUseOpenProject().getId());
+                }
+                if (projectDao.insertUseOpenProject(userUseOpenProject) > 0){
                     sysUser.setUserUseOpenProject(userUseOpenProject);
                     jwtUserService.saveUserLoginInfo2(sysUser);
                     flag = 1;

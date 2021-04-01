@@ -76,7 +76,7 @@ public class UserController {
      * @return
      */
     @PostMapping("queryByNameSubUsers")
-    public Resp<List<SubUserDto>> queryByNameSubUsers(@RequestParam String subUserName){
+    public Resp<List<SubUserDto>> queryByNameSubUsers(@RequestParam(required = false) String subUserName){
         return userService.queryByNameSubUsers(subUserName);
     }
 }
