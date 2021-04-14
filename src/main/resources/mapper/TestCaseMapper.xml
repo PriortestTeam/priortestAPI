@@ -27,15 +27,17 @@
 
         <result property="module" column="module" jdbcType="VARCHAR"/>
         <result property="testDevice" column="test_device" jdbcType="VARCHAR"/>
-        <result property="testDate" column="test_date" jdbcType="TIMESTAMP"/>
+        <result property="testData" column="test_data" jdbcType="TIMESTAMP"/>
         <result property="testMethod" column="test_method" jdbcType="VARCHAR"/>
+        <result property="foreignId" column="foreign_id" jdbcType="VARCHAR"/>
+
     </resultMap>
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="TestCaseMap">
         select
         id, project_id, title, priority, feature, description, executed_date, author_name, create_time, update_time,
         user_id, browser, platform, version, case_category, case_type, externa_id, env, pre_condition, last_run_status,
-        `module`,test_device,test_date,test_method
+        `module`,test_device,test_data,test_method,foreign_id
         from oneclick.test_case
         <where>
             <if test="id != null">
@@ -125,8 +127,9 @@
                t.last_run_status as lastRunStatus,
                t.module as `module`,
                t.test_device as testDevice,
-               t.test_date as testDate,
+               t.test_data as testData,
                t.test_method as testMethod,
+               t.foreign_id as foreignId,
                f.title as featureTitle
         from test_case t
         left join feature f on f.id = t.feature
@@ -208,8 +211,8 @@
             <if test="testDevice != null and testDevice != ''">
                 test_device = #{testDevice},
             </if>
-            <if test="testDate != null">
-                test_date = #{testDate},
+            <if test="testData != null">
+                test_data = #{testData},
             </if>
             <if test="testMethod != null and testMethod != ''">
                 test_method = #{testMethod},

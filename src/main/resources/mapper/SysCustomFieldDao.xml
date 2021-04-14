@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.SysCustomFieldDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.SysCustomField" id="SysCustomFieldMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="fieldName" column="field_name" jdbcType="VARCHAR"/>
+        <result property="fieldNameCn" column="field_name_cn" jdbcType="VARCHAR"/>
+        <result property="defaultValues" column="default_values" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SysCustomFieldMap">
+        select id,
+               field_name,
+               field_name_cn,
+               default_values
+        from sys_custom_field
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SysCustomFieldMap">
+        select id,
+               field_name,
+               field_name_cn,
+               default_values
+        from sys_custom_field limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="SysCustomFieldMap">
+        select
+        id, field_name, field_name_cn, default_values
+        from sys_custom_field
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into sys_custom_field(field_name, field_name_cn, default_values)
+        values (#{fieldName}, #{fieldNameCn}, #{defaultValues})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into sys_custom_field(field_name, field_name_cn, default_values)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.fieldName}, #{entity.fieldNameCn}, #{entity.defaultValues})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into sys_custom_field(field_name, field_name_cn, default_values)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.fieldName}, #{entity.fieldNameCn}, #{entity.defaultValues})
+        </foreach>
+        on duplicate key update
+        field_name = values(field_name) , field_name_cn = values(field_name_cn) , default_values =
+        values(default_values)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update sys_custom_field
+        <set>
+            <if test="fieldName != null and fieldName != ''">
+                field_name = #{fieldName},
+            </if>
+            <if test="fieldNameCn != null and fieldNameCn != ''">
+                field_name_cn = #{fieldNameCn},
+            </if>
+            <if test="defaultValues != null and defaultValues != ''">
+                default_values = #{defaultValues},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from sys_custom_field
+        where id = #{id}
+    </delete>
+
+</mapper>

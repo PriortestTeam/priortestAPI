@@ -193,6 +193,7 @@
             <if test="subUserName != null and subUserName != ''">
                 and user_name like concat('%',#{subUserName},'%')
             </if>
+            limit 0,10
         </where>
 
     </select>

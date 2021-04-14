@@ -69,6 +69,7 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
     private Date planReleaseDateBegin;
     private Date planReleaseDateEnd;
 
+    private String foreignId;
 
     /**
      * 项目绑定的权限
@@ -243,5 +244,13 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
 
     public void setCloseDesc(String closeDesc) {
         this.closeDesc = closeDesc;
+    }
+
+    public String getForeignId() {
+        return foreignId;
+    }
+
+    public void setForeignId(String foreignId) {
+        this.foreignId = foreignId;
     }
 }

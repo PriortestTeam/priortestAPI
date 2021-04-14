@@ -31,7 +31,7 @@ public interface FeatureJoinSprintDao {
      * @return 影响行数
      */
     int insert(FeatureJoinSprint featureJoinSprint);
-
+    int inserts(@Param("featureJoinSprint")List<FeatureJoinSprint> featureJoinSprint);
     /**
      * 修改数据
      *
@@ -47,6 +47,7 @@ public interface FeatureJoinSprintDao {
      * @return 影响行数
      */
     int deleteById(@Param("featureId") String featureId,@Param("sprint") String sprint);
+    int deleteByFeatureId(@Param("featureId") String featureId);
 
     int verifyIsExist(FeatureJoinSprint featureJoinSprint);
 

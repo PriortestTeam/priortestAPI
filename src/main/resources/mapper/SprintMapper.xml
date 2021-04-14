@@ -98,6 +98,22 @@
             #{item.id}
         </foreach>
     </select>
+    <select id="querySprintList" resultType="com.hu.oneclick.model.domain.Sprint">
+        select
+           id,
+          title
+        from sprint
+        <where>
+            1 = 1
+            and project_id = #{projectId}
+            <if test="title != null and title != ''">
+               and title like concat('%',#{title},'%')
+            </if>
+            limit 0, 10
+        </where>
+
+
+    </select>
 
 
     <!--通过主键修改数据-->

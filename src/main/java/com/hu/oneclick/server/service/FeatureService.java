@@ -34,4 +34,5 @@ public interface FeatureService {
 
     Resp<String> bindSprintDelete(String sprint,String featureId);
 
+    Resp<List<Sprint>> querySprintList(String title);
 }

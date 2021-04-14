@@ -61,6 +61,8 @@ public interface OneConstant {
         String REGISTRY = "register_send_email";
         String MODIFY_PASSWORD = "modify_password_send_email";
         String RESET_PASSWORD = "reset_password_send_email";
+
+        String SYS_CUSTOM_FIELDS = "sys_custom_fields";
     }
 
 

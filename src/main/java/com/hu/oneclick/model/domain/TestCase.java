@@ -80,8 +80,10 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
 
     private String module;
     private String testDevice;
-    private Date testDate;
+    private Date testData;
     private String testMethod;
+
+    private String foreignId;
 
     @Transient
     private String featureTitle;
@@ -293,12 +295,12 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
         this.testDevice = testDevice;
     }
 
-    public Date getTestDate() {
-        return testDate;
+    public Date getTestData() {
+        return testData;
     }
 
-    public void setTestDate(Date testDate) {
-        this.testDate = testDate;
+    public void setTestData(Date testData) {
+        this.testData = testData;
     }
 
     public String getTestMethod() {
@@ -307,5 +309,13 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
 
     public void setTestMethod(String testMethod) {
         this.testMethod = testMethod;
+    }
+
+    public String getForeignId() {
+        return foreignId;
+    }
+
+    public void setForeignId(String foreignId) {
+        this.foreignId = foreignId;
     }
 }

@@ -36,6 +36,7 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
     /**
      * 状态，（1 progress ，0 closed, 2 plan）
      */
+    @Transient
     private Integer status;
     /**
      * 版本
@@ -68,6 +69,8 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
 
     private Date updateTime;
 
+    private String moudle;
+
     /**
      * 关联迭代表的title
      */
@@ -81,6 +84,14 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
     @Transient
     List<Sprint> sprints;
 
+    @Transient
+    private String closeDateBegin;
+    @Transient
+    private String closeDateEnd;
+    @Transient
+    private String createTimeBegin;
+    @Transient
+    private String createTimeEnd;
 
     @Override
     public void verify() throws BizException {
@@ -220,5 +231,45 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
 
     public void setSprints(List<Sprint> sprints) {
         this.sprints = sprints;
+    }
+
+    public String getCloseDateBegin() {
+        return closeDateBegin;
+    }
+
+    public void setCloseDateBegin(String closeDateBegin) {
+        this.closeDateBegin = closeDateBegin;
+    }
+
+    public String getCloseDateEnd() {
+        return closeDateEnd;
+    }
+
+    public void setCloseDateEnd(String closeDateEnd) {
+        this.closeDateEnd = closeDateEnd;
+    }
+
+    public String getCreateTimeBegin() {
+        return createTimeBegin;
+    }
+
+    public void setCreateTimeBegin(String createTimeBegin) {
+        this.createTimeBegin = createTimeBegin;
+    }
+
+    public String getCreateTimeEnd() {
+        return createTimeEnd;
+    }
+
+    public void setCreateTimeEnd(String createTimeEnd) {
+        this.createTimeEnd = createTimeEnd;
+    }
+
+    public String getMoudle() {
+        return moudle;
+    }
+
+    public void setMoudle(String moudle) {
+        this.moudle = moudle;
     }
 }

@@ -24,4 +24,5 @@ public interface SprintDao extends BaseMapper<Sprint> {
 
     List<Sprint> queryTitlesInFeatureId(@Param("features") List<Feature> features);
 
+    List<Sprint> querySprintList(@Param("title") String title,@Param("projectId") String projectId);
 }

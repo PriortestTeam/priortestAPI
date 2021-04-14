@@ -8,6 +8,7 @@ import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.FeatureJoinSprintDao;
+import com.hu.oneclick.dao.SprintDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Feature;
@@ -22,8 +23,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingLong;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 
 /**
  * @author qingyang
@@ -38,13 +43,16 @@ public class FeatureServiceImpl implements FeatureService {
 
     private final FeatureJoinSprintDao featureJoinSprintDao;
 
+    private final SprintDao sprintDao;
+
     private final JwtUserServiceImpl jwtUserService;
 
     private final SysPermissionService sysPermissionService;
 
-    public FeatureServiceImpl(FeatureDao featureDao, FeatureJoinSprintDao featureJoinSprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService) {
+    public FeatureServiceImpl(FeatureDao featureDao, FeatureJoinSprintDao featureJoinSprintDao, SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService) {
         this.featureDao = featureDao;
         this.featureJoinSprintDao = featureJoinSprintDao;
+        this.sprintDao = sprintDao;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
     }
@@ -147,6 +155,7 @@ public class FeatureServiceImpl implements FeatureService {
             Date date = new Date();
             feature.setCreateTime(date);
             feature.setUpdateTime(date);
+            updateFeatureJoinSprint(feature);
             return Result.addResult(featureDao.insert(feature));
         } catch (BizException e) {
             logger.error("class: FeatureServiceImpl#insert,error []" + e.getMessage());
@@ -163,6 +172,7 @@ public class FeatureServiceImpl implements FeatureService {
             //验证是否存在
             verifyIsExist(feature.getTitle(), feature.getProjectId());
             feature.setUserId(jwtUserService.getMasterId());
+            updateFeatureJoinSprint(feature);
             return Result.updateResult(featureDao.update(feature));
         } catch (BizException e) {
             logger.error("class: FeatureServiceImpl#update,error []" + e.getMessage());
@@ -170,6 +180,37 @@ public class FeatureServiceImpl implements FeatureService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
+
+    /**
+     * 更新关联的迭代表
+     * @param feature
+     */
+    private void updateFeatureJoinSprint(Feature feature){
+        featureJoinSprintDao.deleteByFeatureId(feature.getId());
+
+        if (feature.getSprints() == null || feature.getSprints().size() <= 0){
+            return;
+        }
+
+        List<Sprint> sprints = feature.getSprints();
+        List<FeatureJoinSprint> featureJoinSprints = new ArrayList<>(sprints.size());
+
+        Set<String> strings = new HashSet<>(sprints.size());
+        for (Sprint sprint : sprints) {
+            if (strings.contains(sprint.getId())){
+                continue;
+            }
+            strings.add(sprint.getId());
+        }
+        for (String string : strings) {
+            FeatureJoinSprint featureJoinSprint = new FeatureJoinSprint();
+            featureJoinSprint.setSprint(string);
+            featureJoinSprint.setFeatureId(feature.getId());
+            featureJoinSprints.add(featureJoinSprint);
+        }
+        Result.addResult(featureJoinSprintDao.inserts(featureJoinSprints));
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -235,6 +276,13 @@ public class FeatureServiceImpl implements FeatureService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> bindSprintDelete(String sprint, String featureId) {
         return Result.deleteResult(featureJoinSprintDao.deleteById(featureId, sprint));
+    }
+
+    @Override
+    public Resp<List<Sprint>> querySprintList(String title) {
+        String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+        List<Sprint> selects = sprintDao.querySprintList(title,projectId);
+        return new Resp.Builder<List<Sprint>>().setData(selects).total(selects.size()).ok();
     }
 
     /**

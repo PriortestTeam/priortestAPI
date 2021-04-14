@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 public class TestCycleJoinTestCase implements Serializable {
@@ -11,6 +12,7 @@ public class TestCycleJoinTestCase implements Serializable {
     private String testCycleId;
     private String testCaseId;
 
+    @Transient
     private String executeStatus;
 
 

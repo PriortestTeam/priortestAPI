@@ -16,12 +16,14 @@
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="moudle" column="moudle" jdbcType="VARCHAR"/>
+
     </resultMap>
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="FeatureMap">
         select
         id, project_id, epic, report_to, status, version, description, close_date, author_name, create_time,
-        title, user_id, update_time
+        title, user_id, update_time,moudle
         from oneclick.feature
         <where>
             user_id = #{userId}
@@ -66,7 +68,8 @@
             f.author_name as authorName,
             f.create_time as createTime,
             f.title as title,
-            f.update_time as updateTime
+            f.update_time as updateTime,
+            f.moudle as moudle
         from feature f
         where f.id=#{id} and f.user_id = #{masterId}
     </select>
@@ -119,6 +122,9 @@
                 author_name = #{authorName},
             </if>
             <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="moudle != null and moudle != ''">
                 title = #{title},
             </if>
             update_time=NOW()

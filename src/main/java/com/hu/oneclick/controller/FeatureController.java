@@ -1,8 +1,9 @@
 package com.hu.oneclick.controller;
 
-import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.model.domain.FeatureJoinSprint;
+import com.hu.oneclick.model.domain.Sprint;
 import com.hu.oneclick.server.service.FeatureService;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,5 +53,27 @@ public class FeatureController {
         return featureService.delete(id);
     }
 
+
+    /**
+     * 关联迭代接口
+     */
+    @PostMapping("querySprintList")
+    public Resp<List<Sprint>> querySprintList(@RequestParam(required = false) String title) {
+        return featureService.querySprintList(title);
+    }
+    @PostMapping("queryBindSprints")
+    public Resp<List<Sprint>> queryBindSprints(@RequestParam String featureId) {
+        return featureService.queryBindSprints(featureId);
+    }
+
+//    @PostMapping("bindSprintInsert")
+//    public Resp<String> bindSprintInsert(@RequestBody FeatureJoinSprint featureJoinSprint) {
+//        return featureService.bindSprintInsert(featureJoinSprint);
+//    }
+//
+//    @PostMapping("bindSprintDelete")
+//    public Resp<String> bindSprintDelete(@RequestParam String sprint,@RequestParam String featureId) {
+//        return featureService.bindSprintDelete(sprint,featureId);
+//    }
 
 }

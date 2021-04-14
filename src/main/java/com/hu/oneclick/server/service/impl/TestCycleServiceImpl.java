@@ -74,11 +74,12 @@ public class TestCycleServiceImpl implements TestCycleService {
 
         //查询testCase 关联的 feature
         List<Feature> features = featureDao.queryTitlesByTestCycleId(testCycle.getId());
-        //查询sprint 的title
-        List<Sprint> sprints = sprintDao.queryTitlesInFeatureId(features);
-
-        testCycle.setSprints(sprints);
         testCycle.setFeatures(features);
+        //查询sprint 的title
+        if (features!=null && features.size() > 0){
+            List<Sprint> sprints = sprintDao.queryTitlesInFeatureId(features);
+            testCycle.setSprints(sprints);
+        }
         return new Resp.Builder<TestCycle>().setData(testCycle).ok();
     }
 
@@ -172,6 +173,7 @@ public class TestCycleServiceImpl implements TestCycleService {
             }
             //如果全部为0 表示都没运行，所以记录 未运行状态，1 已执行但为执行外状态
             testCycle.setStatus(count == strings.size() ? 0 : 1);
+            testCycle.setId(testCycleJoinTestCase.getTestCycleId());
             return Result.updateResult(testCycleJoinTestCaseDao.insert(testCycleJoinTestCase),testCycleDao.update(testCycle));
         }catch (BizException e){
             logger.error("class: TestCycleServiceImpl#bindCaseInsert,error []" + e.getMessage());
