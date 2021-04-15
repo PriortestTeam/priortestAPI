@@ -9,5 +9,7 @@ public interface SysCustomFieldService {
 
     Resp<List<SysCustomFieldVo>> querySysCustomFields();
 
+    Resp<String> updateSysCustomFields(SysCustomFieldVo sysCustomFieldVo);
 
+    Resp<SysCustomFieldVo> getSysCustomField(String fieldName);
 }

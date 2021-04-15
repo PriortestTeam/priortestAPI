@@ -35,6 +35,13 @@
         from sys_custom_field
     </select>
 
+    <select id="queryByFieldName" resultMap="SysCustomFieldMap">
+        select
+        id, field_name, field_name_cn, default_values
+        from sys_custom_field
+        where = #{fieldName}
+    </select>
+
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into sys_custom_field(field_name, field_name_cn, default_values)

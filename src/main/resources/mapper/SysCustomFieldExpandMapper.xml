@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.SysCustomFieldExpandDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.SysCustomFieldExpand" id="SysCustomFieldExpandMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="linkSysCustomField" column="link_sys_custom_field" jdbcType="INTEGER"/>
+        <result property="values" column="values" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SysCustomFieldExpandMap">
+        select
+          id, user_id, project_id, link_sys_custom_field, values, create_time, update_time
+        from oneclick.sys_custom_field_expand
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SysCustomFieldExpandMap">
+        select
+          id, user_id, project_id, link_sys_custom_field, values, create_time, update_time
+        from oneclick.sys_custom_field_expand
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryList" resultMap="SysCustomFieldExpandMap">
+        select
+        id, user_id, project_id, link_sys_custom_field, values, create_time, update_time
+        from oneclick.sys_custom_field_expand where user_id = #{masterId} and project_id = #{projectId}
+    </select>
+
+    <select id="queryByUserIdAndFieldName" resultMap="SysCustomFieldExpandMap">
+          select
+        id, user_id, project_id, link_sys_custom_field, values, create_time, update_time
+        from oneclick.sys_custom_field_expand where user_id = #{masterId}
+        and link_sys_custom_field = #{fieldName}
+        and project_id = #{projectId}
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into oneclick.sys_custom_field_expand
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="projectId != null">
+                project_id,
+            </if>
+            <if test="linkSysCustomField != null">
+                link_sys_custom_field,
+            </if>
+            <if test="values != null and values != ''">
+                values,
+            </if>
+            create_time,
+            update_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="projectId != null">
+                #{projectId},
+            </if>
+            <if test="linkSysCustomField != null">
+                #{linkSysCustomField},
+            </if>
+            <if test="values != null and values != ''">
+                #{values},
+            </if>
+            NOW(),
+            NOW()
+        </trim>
+    </insert>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update oneclick.sys_custom_field_expand
+        <set>
+            <if test="projectId != null">
+                project_id = #{projectId},
+            </if>
+            <if test="linkSysCustomField != null">
+                link_sys_custom_field = #{linkSysCustomField},
+            </if>
+            <if test="values != null and values != ''">
+                values = #{values},
+            </if>
+            update_time = NOW()
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from oneclick.sys_custom_field_expand where id = #{id}
+    </delete>
+
+</mapper>

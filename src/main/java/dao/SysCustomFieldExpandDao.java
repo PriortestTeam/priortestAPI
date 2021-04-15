@@ -1,15 +1,17 @@
-package com.hu.oneclick.dao;
+package
 
-import com.hu.oneclick.model.domain.SysCustomFieldExpand;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+
+.dao;
+        .entity.SysCustomFieldExpand;
 
 /**
  * (SysCustomFieldExpand)表数据库访问层
  *
  * @author makejava
- * @since 2021-04-11 15:04:59
+ * @since 2021-04-01 10:57:39
  */
 public interface SysCustomFieldExpandDao {
 
@@ -19,7 +21,7 @@ public interface SysCustomFieldExpandDao {
      * @param id 主键
      * @return 实例对象
      */
-    SysCustomFieldExpand queryById(String id);
+    SysCustomFieldExpand queryById(@Param("id") String id);
 
     /**
      * 查询指定行数据
@@ -37,11 +39,8 @@ public interface SysCustomFieldExpandDao {
      * @param sysCustomFieldExpand 实例对象
      * @return 对象列表
      */
-    List<SysCustomFieldExpand> queryList(SysCustomFieldExpand sysCustomFieldExpand);
+    List<SysCustomFieldExpand> queryAll(SysCustomFieldExpand sysCustomFieldExpand);
 
-    SysCustomFieldExpand queryByUserIdAndFieldName(@Param("fieldName") String fieldName,
-                                                   @Param("masterId") String masterId,
-                                                   @Param("projectId") String projectId);
     /**
      * 新增数据
      *
@@ -49,22 +48,6 @@ public interface SysCustomFieldExpandDao {
      * @return 影响行数
      */
     int insert(SysCustomFieldExpand sysCustomFieldExpand);
-
-    /**
-     * 批量新增数据（MyBatis原生foreach方法）
-     *
-     * @param entities List<SysCustomFieldExpand> 实例对象列表
-     * @return 影响行数
-     */
-    int insertBatch(@Param("entities") List<SysCustomFieldExpand> entities);
-
-    /**
-     * 批量新增或按主键更新数据（MyBatis原生foreach方法）
-     *
-     * @param entities List<SysCustomFieldExpand> 实例对象列表
-     * @return 影响行数
-     */
-    int insertOrUpdateBatch(@Param("entities") List<SysCustomFieldExpand> entities);
 
     /**
      * 修改数据
@@ -80,6 +63,6 @@ public interface SysCustomFieldExpandDao {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(String id);
+    int deleteById(@Param("id") String id);
 
 }

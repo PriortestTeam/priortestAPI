@@ -1,4 +1,4 @@
-package com.hu.oneclick.model.domain;
+package entity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -7,18 +7,18 @@ import java.util.Date;
  * (SysCustomFieldExpand)实体类
  *
  * @author makejava
- * @since 2021-04-11 15:04:59
+ * @since 2021-04-01 10:57:39
  */
 public class SysCustomFieldExpand implements Serializable {
-    private static final long serialVersionUID = -66541877898615659L;
+    private static final long serialVersionUID = -20297181306272036L;
 
-    private  String id;
+    private Long id;
 
-    private String userId;
+    private Long userId;
 
-    private String projectId;
+    private Long projectId;
 
-    private String linkSysCustomField;
+    private Long linkSysCustomField;
 
     private String values;
 
@@ -26,35 +26,36 @@ public class SysCustomFieldExpand implements Serializable {
 
     private Date updateTime;
 
-    public String getId() {
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public String getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(String projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
-    public String getLinkSysCustomField() {
+    public Long getLinkSysCustomField() {
         return linkSysCustomField;
     }
 
-    public void setLinkSysCustomField(String linkSysCustomField) {
+    public void setLinkSysCustomField(Long linkSysCustomField) {
         this.linkSysCustomField = linkSysCustomField;
     }
 
@@ -81,4 +82,5 @@ public class SysCustomFieldExpand implements Serializable {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
 }
