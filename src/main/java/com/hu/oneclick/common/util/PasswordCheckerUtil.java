@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public class PasswordCheckerUtil {
     // 包含大写字母
-    private boolean upperCase = false;
+    private boolean upperCase = true;
     // 包含小写字母
-    private boolean lowerCase = false;
+    private boolean lowerCase = true;
     // 包含字母
     private boolean letter = true;
     // 包含数字

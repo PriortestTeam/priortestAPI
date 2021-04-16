@@ -27,6 +27,11 @@ public class SysCustomFieldVo implements VerifyParam {
         }else if(StringUtils.isEmpty(sysCustomField.getFieldName())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"字段名" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
+        mergeValues.forEach(e->{
+            if (e.length() >= 30){
+                throw new BizException(SysConstantEnum.FAILED.getCode(),"字符串度不能超过30个");
+            }
+        });
     }
 
 

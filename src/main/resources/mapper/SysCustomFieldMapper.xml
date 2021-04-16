@@ -39,7 +39,7 @@
         select
         id, field_name, field_name_cn, default_values
         from sys_custom_field
-        where = #{fieldName}
+        where field_name = #{fieldName}
     </select>
 
     <!--新增所有列-->

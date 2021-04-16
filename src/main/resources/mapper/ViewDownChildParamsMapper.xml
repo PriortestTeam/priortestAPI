@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.ViewDownChildParamsDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.ViewDownChildParams" id="ViewDownChildParamsMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="scope" column="scope" jdbcType="VARCHAR"/>
+        <result property="defaultValues" column="default_values" jdbcType="OTHER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ViewDownChildParamsMap">
+        select
+          id, scope, default_values, create_time, update_time
+        from view_down_child_params
+        where id = #{id}
+    </select>
+    <!--查询单个-->
+    <select id="queryByScope" resultMap="ViewDownChildParamsMap">
+        select
+          id, scope, default_values, create_time, update_time
+        from view_down_child_params
+        where scope= #{scope}
+    </select>
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ViewDownChildParamsMap">
+        select
+          id, scope, default_values, create_time, update_time
+        from oneclick.view_down_child_params
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryList" resultMap="ViewDownChildParamsMap">
+        select
+        id, scope, default_values, create_time, update_time
+        from oneclick.view_down_child_params
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="scope != null and scope != ''">
+                and scope = #{scope}
+            </if>
+            <if test="defaultValues != null">
+                and default_values = #{defaultValues}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into oneclick.view_down_child_params
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="scope != null and scope != ''">
+                scope,
+            </if>
+            <if test="defaultValues != null">
+                default_values,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="scope != null and scope != ''">
+                #{scope},
+            </if>
+            <if test="defaultValues != null">
+                #{defaultValues},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update oneclick.view_down_child_params
+        <set>
+            <if test="scope != null and scope != ''">
+                scope = #{scope},
+            </if>
+            <if test="defaultValues != null">
+                default_values = #{defaultValues},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from oneclick.view_down_child_params where id = #{id}
+    </delete>
+
+</mapper>

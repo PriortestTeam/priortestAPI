@@ -1,10 +1,7 @@
 package com.hu.oneclick.controller;
 
-import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.Sprint;
 import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.server.service.SprintService;
 import com.hu.oneclick.server.service.TestCaseService;
 import org.springframework.web.bind.annotation.*;
 
