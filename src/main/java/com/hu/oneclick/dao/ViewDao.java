@@ -2,6 +2,7 @@ package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.View;
+import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -78,4 +79,15 @@ public interface ViewDao {
                               @Param("title") String title,
                               @Param("projectId") String projectId,
                               @Param("scope")String scope);
+
+    List<View> queryViewParents(@Param("masterId") String masterId,
+                                @Param("scope") String scope,
+                                @Param("title")  String title,
+                                @Param("projectId") String projectId);
+
+    String queryTitleByParentId(@Param("parentId") String parentId);
+
+    List<ViewTreeDto> queryViewByScopeAll(@Param("masterId") String masterId,
+                                          @Param("projectId") String projectId,
+                                          @Param("scope") String scope);
 }

@@ -3,6 +3,7 @@ package com.hu.oneclick.controller;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
+import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.ViewService;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,4 +62,16 @@ public class ViewController {
     private Resp<String> deleteView(@PathVariable String viewId){
         return viewService.deleteView(viewId);
     }
+
+
+    @GetMapping("queryViewParents")
+    private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String viewTitle){
+        return viewService.queryViewParents(scope,viewTitle);
+    }
+
+    @GetMapping("queryViewTrees")
+    private Resp<List<ViewTreeDto>> queryViewTrees(@RequestParam String scope){
+        return viewService.queryViewTrees(scope);
+    }
+
 }

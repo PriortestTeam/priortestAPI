@@ -1,11 +1,12 @@
 package com.hu.oneclick.model.domain.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author qingyang
  */
-public class ViewScopeChildParams {
+public class ViewScopeChildParams implements Serializable {
 
     private String filedName;
 
@@ -19,27 +20,6 @@ public class ViewScopeChildParams {
     private List<ViewScopeChildParams> selectChild;
     private String optionValue;
     private String optionValueCn;
-
-
-    public ViewScopeChildParams(String type,String filedName, String filedNameCn) {
-        this.filedName = filedName;
-        this.filedNameCn = filedNameCn;
-        this.type = type;
-    }
-
-    public ViewScopeChildParams(String type,String filedName, String filedNameCn, List<ViewScopeChildParams> selectChild) {
-        this.filedName = filedName;
-        this.filedNameCn = filedNameCn;
-        this.type = type;
-        this.selectChild = selectChild;
-    }
-
-
-
-    public ViewScopeChildParams(String optionValue, String optionValueCn) {
-        this.optionValue = optionValue;
-        this.optionValueCn = optionValueCn;
-    }
 
     public String getFiledName() {
         return filedName;
@@ -64,6 +44,13 @@ public class ViewScopeChildParams {
     public void setType(String type) {
         this.type = type;
     }
+    public List<ViewScopeChildParams> getSelectChild() {
+        return selectChild;
+    }
+
+    public void setSelectChild(List<ViewScopeChildParams> selectChild) {
+        this.selectChild = selectChild;
+    }
 
     public String getOptionValue() {
         return optionValue;
@@ -79,13 +66,5 @@ public class ViewScopeChildParams {
 
     public void setOptionValueCn(String optionValueCn) {
         this.optionValueCn = optionValueCn;
-    }
-
-    public List<ViewScopeChildParams> getSelectChild() {
-        return selectChild;
-    }
-
-    public void setSelectChild(List<ViewScopeChildParams> selectChild) {
-        this.selectChild = selectChild;
     }
 }

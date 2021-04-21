@@ -63,6 +63,8 @@ public interface OneConstant {
         String RESET_PASSWORD = "reset_password_send_email";
 
         String SYS_CUSTOM_FIELDS = "sys_custom_fields";
+
+        String viewScopeDown = "VIEW_SCOPE_DOWN";
     }
 
 

@@ -37,6 +37,8 @@ public enum SysConstantEnum {
     NOT_PROJECT(SysConstantEnum.NUMBER + "018","请选择一个项目。"),
     SCOPE_ERROR(SysConstantEnum.NUMBER + "019","scope 异常。"),
 
+    VIEW_ONN_FILTER_IS_REDUNDANT(SysConstantEnum.NUMBER + "030","过滤项不可重复。"),
+
     //成功
     SUCCESS(SysConstantEnum.NUMBER,"调用成功。"),
     ADD_SUCCESS(SysConstantEnum.NUMBER,"新增成功。"),

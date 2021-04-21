@@ -1,8 +1,10 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
+import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
@@ -15,15 +17,18 @@ import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.ViewDownChildParams;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
+import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.ViewService;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,11 +48,14 @@ public class ViewServiceImpl implements ViewService {
 
     private final ViewDownChildParamsDao viewDownChildParamsDao;
 
-    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao) {
+    private final RedissonClient redissonClient;
+
+    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient) {
         this.viewDao = v;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
         this.viewDownChildParamsDao = viewDownChildParamsDao;
+        this.redissonClient = redissonClient;
     }
 
     @Override
@@ -58,6 +66,7 @@ public class ViewServiceImpl implements ViewService {
         BeanUtils.copyProperties(queryView,view);
         view.setOneFilters(TwoConstant.convertToList(view.getFilter(), OneFilter.class));
         view.setFilter("");
+        view.setParentTitle(queryParentTitle(view.getParentId()));
         return new Resp.Builder<View>().setData(view).ok();
     }
 
@@ -79,10 +88,23 @@ public class ViewServiceImpl implements ViewService {
         List<View> views = coverViews(queryViews);
 
         views.forEach(e->{
+            e.setParentTitle(queryParentTitle(e.getParentId()));
             e.setOneFilters(TwoConstant.convertToList(e.getFilter(), OneFilter.class));
             e.setFilter("");
         });
         return new Resp.Builder<List<View>>().setData(views).total(views.size()).ok();
+    }
+
+    /**
+     * 查询父title
+     * @param parentId
+     * @return
+     */
+    private String queryParentTitle(String parentId){
+        if (!"0".equals(parentId) && StringUtils.isNotEmpty(parentId)){
+            return viewDao.queryTitleByParentId(parentId);
+        }
+        return null;
     }
 
     /**
@@ -176,14 +198,90 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(String scope) {
+        String key = OneConstant.REDIS_KEY_PREFIX.viewScopeDown + "-"+ scope;
+        RBucket<String> bucket = redissonClient.getBucket(key);
+        //缓存存在返回
+        String s = bucket.get();
+        if(!StringUtils.isEmpty(s)){
+            List<ViewScopeChildParams> childParams = JSONArray.parseArray(s,ViewScopeChildParams.class);
+            return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).total(childParams.size()).ok();
+        }
         ViewDownChildParams viewDownChildParams = viewDownChildParamsDao.queryByScope(scope);
         if (viewDownChildParams == null){
             return new Resp.Builder<List<ViewScopeChildParams>>().buildResult("scope 无效");
         }
         String defaultValues = viewDownChildParams.getDefaultValues();
-        List<String> strings = Arrays.asList(defaultValues.split(","));
+        List<ViewScopeChildParams> childParams = JSONArray.parseArray(defaultValues,ViewScopeChildParams.class);
+        bucket.set(defaultValues);
+        return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).total(childParams.size()).ok();
+    }
 
-        return new Resp.Builder<List<ViewScopeChildParams>>().setData(result).total(result.size()).ok();
+    @Override
+    public Resp<List<View>> queryViewParents(String scope, String viewTitle) {
+        if (StringUtils.isEmpty(scope)){
+           return new Resp.Builder<List<View>>().buildResult("scope" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+        String masterId = jwtUserService.getMasterId();
+        String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+        List<View> result = viewDao.queryViewParents(masterId,scope,viewTitle,projectId);
+        return new Resp.Builder<List<View>>().setData(result).total(result.size()).ok();
+    }
+
+    /**
+     * 查询树结构view
+     * @param scope
+     * @return
+     */
+    @Override
+    public Resp<List<ViewTreeDto>> queryViewTrees(String scope) {
+        if (StringUtils.isEmpty(scope)){
+            return new Resp.Builder<List<ViewTreeDto>>().buildResult("scope" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+        String masterId = jwtUserService.getMasterId();
+        String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+        List<ViewTreeDto> treeAll = viewDao.queryViewByScopeAll(masterId,projectId,scope);
+        //递归
+        List<ViewTreeDto> result = viewTreeRecursion(treeAll);
+        return new Resp.Builder<List<ViewTreeDto>>().setData(result).ok();
+    }
+
+    /**
+     * queryViewTrees 递归
+     */
+    private List<ViewTreeDto> viewTreeRecursion(List<ViewTreeDto> treeAll){
+        if(treeAll == null || treeAll.size() <= 0){
+            return null;
+        }
+        List<ViewTreeDto> result = new ArrayList<>();
+        //循环找父级
+        treeAll.forEach(e->{
+            if (verifyParentId(e.getParentId())){
+                e.setChildViews(childViewTreeRecursion(treeAll ,e.getId()));
+                result.add(e);
+            }
+        });
+        return result;
+    }
+
+    /**
+     * 递归自己
+     * @param treeAll,parentId
+     * @return
+     */
+    private List<ViewTreeDto> childViewTreeRecursion(List<ViewTreeDto> treeAll,String id){
+        List<ViewTreeDto> result = new ArrayList<>();
+        treeAll.forEach(e->{
+            //取反
+            if (!verifyParentId(e.getParentId())
+                    && e.getParentId().equals(id)){
+                e.setChildViews(childViewTreeRecursion(treeAll,e.getId()));
+                result.add(e);
+            }
+        });
+        return result;
+    }
+    private boolean verifyParentId(String parentId){
+        return StringUtils.isEmpty(parentId) || "0".equals(parentId);
     }
 
     /**

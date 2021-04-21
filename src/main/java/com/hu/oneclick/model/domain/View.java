@@ -6,10 +6,13 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.annotation.Transient;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 视图表(View)实体类
@@ -66,6 +69,9 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
 
     private String parentId;
 
+    @Transient
+    private String parentTitle;
+
 
 
     @Override
@@ -88,6 +94,16 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
         }
         if (oneFilters == null || oneFilters.size() == 0){
             return;
+        }
+
+        //验证是否有重复
+        Set<String> isRedundant = new HashSet<>(oneFilters.size());
+        for (OneFilter oneFilter : this.oneFilters) {
+            String fieldName = oneFilter.getFieldName();
+            if (isRedundant.contains(fieldName)){
+                throw new BizException(SysConstantEnum.VIEW_ONN_FILTER_IS_REDUNDANT.getCode(), SysConstantEnum.VIEW_ONN_FILTER_IS_REDUNDANT.getValue());
+            }
+            isRedundant.add(fieldName);
         }
 
         //验证参数是否异常
@@ -211,5 +227,13 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getParentTitle() {
+        return parentTitle;
+    }
+
+    public void setParentTitle(String parentTitle) {
+        this.parentTitle = parentTitle;
     }
 }

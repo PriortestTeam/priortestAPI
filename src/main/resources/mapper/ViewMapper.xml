@@ -68,6 +68,55 @@
             and title = #{title}
             <!-- and is_private = #{isPrivate}-->
     </select>
+    <select id="queryViewParents" resultType="com.hu.oneclick.model.domain.View">
+           select
+            title,
+            id
+        from oneclick.view
+        <where>
+            user_id = #{masterId}
+            and project_id = #{projectId}
+            and scope = #{scope}
+            <if test="title != null and title != ''">and title like concat('%',#{title},'%')</if>
+        </where>
+        order by id
+        limit 0,10
+    </select>
+    <select id="queryTitleByParentId" resultType="java.lang.String">
+        select
+        title
+        from oneclick.view
+        where id = #{parentId}
+    </select>
+
+
+
+    <resultMap type="com.hu.oneclick.model.domain.dto.ViewTreeDto" id="queryViewByScopeAllMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="scope" column="scope" jdbcType="VARCHAR"/>
+        <result property="isPrivate" column="is_private" jdbcType="INTEGER"/>
+        <result property="owner" column="owner" jdbcType="VARCHAR"/>
+        <result property="filter" column="filter" jdbcType="VARCHAR"/>
+        <result property="modifyUser" column="modify_user" jdbcType="VARCHAR"/>
+        <result property="modifyDate" column="modify_date" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="queryViewByScopeAll" resultMap="queryViewByScopeAllMap">
+        select
+        id, user_id, project_id, title, scope, is_private, owner,filter ,modify_user, modify_date, create_time,
+        update_time,parent_id
+        from oneclick.view
+        where
+        user_id = #{masterId}
+        and project_id = #{projectId}
+        and scope = #{scope}
+    </select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
