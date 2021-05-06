@@ -189,9 +189,15 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
         for (SysCustomField customField : sysCustomFields) {
             SysCustomFieldVo sysCustomFieldVo = new SysCustomFieldVo();
             //如果相等了，先取出系统默认值，在取出扩展合并
-            StringBuilder defaultValues = new StringBuilder((StringUtils.isEmpty(customField.getDefaultValues()) ? "" : customField.getDefaultValues()));
+            StringBuilder defaultValues =
+                    new StringBuilder((StringUtils.isEmpty(customField.getDefaultValues()) ? "" : customField.getDefaultValues()));
+            int flag = 0;
             for (SysCustomFieldExpand customFieldExpand : sysCustomFieldExpands) {
                 if (customField.getFieldName().equals(customFieldExpand.getLinkSysCustomField())) {
+                    if (!"".equals(defaultValues.toString()) && flag == 0){
+                        defaultValues.append(",");
+                    }
+                    flag ++;
                     //取扩展值
                     String values = StringUtils.isEmpty(customFieldExpand.getValues()) ? "" : customFieldExpand.getValues();
                     //合并
