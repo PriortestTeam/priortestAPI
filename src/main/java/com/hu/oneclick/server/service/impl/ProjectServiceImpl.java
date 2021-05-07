@@ -60,13 +60,13 @@ public class ProjectServiceImpl implements ProjectService {
     public Resp<List<Project>> queryForProjects(Project project) {
         project.setUserId(jwtUserService.getMasterId());
         List<Project> projects = projectDao.queryAll(project);
-        return new Resp.Builder<List<Project>>().setData(projects).total(projects.size()).ok();
+        return new Resp.Builder<List<Project>>().setData(projects).total(projects).ok();
     }
 
     @Override
     public Resp<List<Project>> queryForProjects() {
         List<Project> projects = projectDao.queryAllProjects(jwtUserService.getMasterId());
-        return new Resp.Builder<List<Project>>().setData(projects).total(projects.size()).ok();
+        return new Resp.Builder<List<Project>>().setData(projects).totalSize((long)projects.size()).ok();
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.hu.oneclick.common.security.flutter;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.model.base.Resp;
 import org.apache.commons.lang3.StringUtils;
@@ -72,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 			//否则失败
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("Authorization is null.")));
+            response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("请填写账号密码")));
             return;
 		}
         try {

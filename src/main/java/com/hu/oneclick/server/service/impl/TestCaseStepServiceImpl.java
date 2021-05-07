@@ -45,7 +45,7 @@ public class TestCaseStepServiceImpl implements TestCaseStepService {
     public Resp<List<TestCaseStep>> queryList(TestCaseStep testCaseStep) {
         testCaseStep.queryListVerify();
         List<TestCaseStep> select = testCaseStepDao.queryList(testCaseStep);
-        return new Resp.Builder<List<TestCaseStep>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder<List<TestCaseStep>>().setData(select).total(select).ok();
     }
 
     @Override

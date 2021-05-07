@@ -1,7 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.common.constant.TwoConstant;
-import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.CustomFieldDao;
@@ -55,7 +54,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<List<CustomField>> queryCustomList(CustomField customField) {
         customField.setUserId(jwtUserServiceImpl.getMasterId());
         List<CustomField> customFields = customFieldDao.queryAll(customField);
-        return new Resp.Builder<List<CustomField>>().setData(customFields).total(customFields.size()).ok() ;
+        return new Resp.Builder<List<CustomField>>().setData(customFields).total(customFields).ok() ;
     }
 
     @Override

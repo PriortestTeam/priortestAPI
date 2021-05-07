@@ -23,6 +23,6 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public Resp<List<SysRole>> queryRoles() {
         List<SysRole> sysRoles = sysRoleDao.queryAll(null);
-        return new Resp.Builder<List<SysRole>>().setData(sysRoles).total(sysRoles.size()).ok();
+        return new Resp.Builder<List<SysRole>>().setData(sysRoles).totalSize((long)sysRoles.size()).ok();
     }
 }

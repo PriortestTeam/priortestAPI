@@ -62,7 +62,7 @@ public class IssueServiceImpl implements IssueService {
         issue.queryListVerify();
         issue.setUserId(jwtUserService.getMasterId());
         List<Issue> select = issueDao.queryList(issue);
-        return new Resp.Builder<List<Issue>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder<List<Issue>>().setData(select).total(select).ok();
     }
 
     @Override
@@ -120,7 +120,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public Resp<List<Issue>> queryBindCaseList(String issueId) {
         List<Issue> select = issueJoinTestCaseDao.queryBindCaseList(issueId);
-        return new Resp.Builder< List<Issue>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder< List<Issue>>().setData(select).total(select).ok();
     }
 
     @Override

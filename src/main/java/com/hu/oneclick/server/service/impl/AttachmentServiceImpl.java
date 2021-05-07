@@ -66,7 +66,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         attachment.setUserId(jwtUserService.getMasterId());
         attachment.setLinkId(linkId);
         List<Attachment> attachments = attachmentDao.queryAll(attachment);
-        return new Resp.Builder<List<Attachment>>().setData(attachments).total(attachments.size()).ok();
+        return new Resp.Builder<List<Attachment>>().setData(attachments).total(attachments).ok();
     }
 
     @Override

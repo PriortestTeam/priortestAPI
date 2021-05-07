@@ -92,7 +92,7 @@ public class ViewServiceImpl implements ViewService {
             e.setOneFilters(TwoConstant.convertToList(e.getFilter(), OneFilter.class));
             e.setFilter("");
         });
-        return new Resp.Builder<List<View>>().setData(views).total(views.size()).ok();
+        return new Resp.Builder<List<View>>().setData(views).total(queryViews).ok();
     }
 
     /**

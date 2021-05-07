@@ -62,7 +62,7 @@ public class SprintServiceImpl implements SprintService {
         sprint.setUserId(jwtUserService.getMasterId());
         List<Sprint> select = sprintDao.queryList(sprint);
         select.forEach(this::analysisStatus);
-        return new Resp.Builder<List<Sprint>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder<List<Sprint>>().setData(select).total(select).ok();
     }
 
     public void analysisStatus(Sprint sprint){

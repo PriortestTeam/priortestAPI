@@ -65,7 +65,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         testCase.queryListVerify();
         testCase.setUserId(jwtUserService.getMasterId());
         List<TestCase> select = testCaseDao.queryList(testCase);
-        return new Resp.Builder<List<TestCase>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder<List<TestCase>>().setData(select).total(select).ok();
     }
 
     @Override

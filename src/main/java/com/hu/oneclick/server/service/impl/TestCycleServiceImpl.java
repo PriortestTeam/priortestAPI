@@ -88,7 +88,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         testCycle.queryListVerify();
         testCycle.setUserId(jwtUserService.getMasterId());
         List<TestCycle> select = testCycleDao.queryAll(testCycle);
-        return new Resp.Builder<List<TestCycle>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder<List<TestCycle>>().setData(select).total(select).ok();
     }
 
     @Override
@@ -152,7 +152,7 @@ public class TestCycleServiceImpl implements TestCycleService {
     @Override
     public Resp<List<TestCase>> queryBindCaseList(String testCycleId) {
         List<TestCase> select = testCycleJoinTestCaseDao.queryBindCaseList(testCycleId);
-        return new Resp.Builder< List<TestCase>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder< List<TestCase>>().setData(select).total(select).ok();
     }
 
     @Override

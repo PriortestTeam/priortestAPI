@@ -58,7 +58,7 @@ public class SubUserServiceImpl implements SubUserService{
         if (projects != null && projects.size() > 0){
             sysUsers.forEach(e -> accept(e, projects));
         }
-        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers.size()).ok();
+        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();
     }
 
     private void accept(SubUserDto subUserDto, List<Project> projects) {

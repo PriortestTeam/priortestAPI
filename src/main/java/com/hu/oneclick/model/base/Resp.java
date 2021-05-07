@@ -1,6 +1,9 @@
 package com.hu.oneclick.model.base;
 
+import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.enums.SysConstantEnum;
+
+import java.util.List;
 
 /**
  * @author qingyang
@@ -9,7 +12,7 @@ public class Resp<T> {
 
     private String code;
     private String msg;
-    private Integer total;
+    private Long total;
     private T data;
 
     public Resp(){}
@@ -24,7 +27,7 @@ public class Resp<T> {
     public static class  Builder<T> {
         private String code;
         private String msg;
-        private Integer total;
+        private Long total;
         private T data;
 
 
@@ -56,8 +59,14 @@ public class Resp<T> {
             this.msg= SysConstantEnum.FAILED.getValue();
             return new Resp<T>(this);
         }
-        public Builder<T> total(Integer total){
+        public Builder<T> totalSize(Long total){
             this.total=total;
+            return this;
+        }
+
+        public Builder<T> total(Object obj){
+            List<T> list = (List<T>) obj;
+            this.total =  new PageInfo(list).getTotal();
             return this;
         }
         public Builder<T> setData(T data){
@@ -83,11 +92,11 @@ public class Resp<T> {
         this.msg = msg;
     }
 
-    public Integer getTotal() {
+    public Long getTotal() {
         return total;
     }
 
-    public void setTotal(Integer total) {
+    public void setTotal(Long total) {
         this.total = total;
     }
 

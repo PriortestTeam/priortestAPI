@@ -25,11 +25,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 
-import static java.util.Comparator.comparing;
-import static java.util.Comparator.comparingLong;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
-
 /**
  * @author qingyang
  */
@@ -133,7 +128,7 @@ public class FeatureServiceImpl implements FeatureService {
         feature.setUserId(jwtUserService.getMasterId());
         List<Feature> select = featureDao.queryList(feature);
         select.forEach(this::accept);
-        return new Resp.Builder<List<Feature>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder<List<Feature>>().setData(select).total(select).ok();
     }
     private void accept(Feature feature) {
         List<Sprint> sprints = queryBindSprintList(feature.getId());
