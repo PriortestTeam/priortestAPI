@@ -204,7 +204,7 @@ public class ViewServiceImpl implements ViewService {
         String s = bucket.get();
         if(!StringUtils.isEmpty(s)){
             List<ViewScopeChildParams> childParams = JSONArray.parseArray(s,ViewScopeChildParams.class);
-            return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).total(childParams.size()).ok();
+            return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).totalSize((long)childParams.size()).ok();
         }
         ViewDownChildParams viewDownChildParams = viewDownChildParamsDao.queryByScope(scope);
         if (viewDownChildParams == null){
@@ -213,7 +213,7 @@ public class ViewServiceImpl implements ViewService {
         String defaultValues = viewDownChildParams.getDefaultValues();
         List<ViewScopeChildParams> childParams = JSONArray.parseArray(defaultValues,ViewScopeChildParams.class);
         bucket.set(defaultValues);
-        return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).total(childParams.size()).ok();
+        return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).totalSize((long)childParams.size()).ok();
     }
 
     @Override

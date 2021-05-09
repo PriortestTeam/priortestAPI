@@ -2,6 +2,7 @@ package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.dto.ProjectDto;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface ProjectService {
 
     Resp<String> queryDoesExistByTitle(String title);
 
-    Resp<List<Project>> queryForProjects(Project project);
+    Resp<List<Project>> queryForProjects(ProjectDto project);
 
     Resp<List<Project>> queryForProjects();
 

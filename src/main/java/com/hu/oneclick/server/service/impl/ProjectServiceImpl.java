@@ -10,7 +10,9 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.server.service.ProjectService;
+import com.hu.oneclick.server.service.QueryFilterService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -35,10 +37,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectDao projectDao;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient) {
+    private final QueryFilterService queryFilterService;
+
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
+        this.queryFilterService = queryFilterService;
     }
 
     @Override
@@ -57,8 +62,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Resp<List<Project>> queryForProjects(Project project) {
+    public Resp<List<Project>> queryForProjects(ProjectDto project) {
         project.setUserId(jwtUserService.getMasterId());
+
+        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto()));
+
         List<Project> projects = projectDao.queryAll(project);
         return new Resp.Builder<List<Project>>().setData(projects).total(projects).ok();
     }

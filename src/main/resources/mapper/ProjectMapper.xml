@@ -79,15 +79,21 @@
             <if test="description != null and description != ''">
                 and description = #{description}
             </if>
-            <if test="planReleaseDateBegin != null and planReleaseDateEnd != null">
+            <if test="planReleaseDateBegin != null and planReleaseDateEnd != ''">
                 and plan_release_date &gt; #{planReleaseDateBegin}
                 and plan_release_date &lt; #{planReleaseDateEnd}
             </if>
 
-            <if test="closeDateBegin != null and closeDateEnd != null">
+            <if test="closeDateBegin != null and closeDateEnd != ''">
                 and close_date &gt; #{closeDateBegin}
                 and close_date &lt; #{closeDateEnd}
             </if>
+
+
+            <if test="filter != null and filter != ''">
+                ${filter}
+            </if>
+
 
             and del_flag = 0
             order by create_time desc

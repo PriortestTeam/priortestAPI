@@ -2,6 +2,7 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.ViewService;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,7 @@ public class ProjectController {
 
 
     @PostMapping("queryForProjects")
-    private Resp<List<Project>> queryForProjects(@RequestBody Project project){
+    private Resp<List<Project>> queryForProjects(@RequestBody ProjectDto project){
         return projectService.queryForProjects(project);
     }
 
