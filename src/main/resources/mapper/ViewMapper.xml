@@ -18,12 +18,13 @@
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="ViewMap">
         select
-          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id
+          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id,`level`
         from oneclick.view
         where id = #{id} and user_id = #{masterId}
     </select>
@@ -31,7 +32,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ViewMap">
         select
-          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id
+          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id,`level`
         from oneclick.view
         limit #{offset}, #{limit}
     </select>
@@ -40,7 +41,7 @@
     <select id="queryAll" resultMap="ViewMap">
         select
         id, user_id, project_id, title, scope, is_private, owner,filter ,modify_user, modify_date, create_time,
-        update_time,parent_id
+        update_time,parent_id,`level`
         from oneclick.view
         <where>
             user_id = #{userId}
@@ -105,12 +106,13 @@
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="queryViewByScopeAll" resultMap="queryViewByScopeAllMap">
         select
         id, user_id, project_id, title, scope, is_private, owner,filter ,modify_user, modify_date, create_time,
-        update_time,parent_id
+        update_time,parent_id,`level`
         from oneclick.view
         where
         user_id = #{masterId}
@@ -155,6 +157,9 @@
             <if test="parentId != null and parentId != ''">
                 parent_id,
             </if>
+            <if test="level != null">
+                `level`,
+            </if>
             create_time,
             update_time
         </trim>
@@ -191,6 +196,9 @@
             </if>
             <if test="parentId != null and parentId != ''">
                 #{parentId},
+            </if>
+            <if test="level != null">
+                #{level},
             </if>
             NOW(),
             NOW()

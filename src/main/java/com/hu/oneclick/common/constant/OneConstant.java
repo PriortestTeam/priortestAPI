@@ -17,6 +17,9 @@ public interface OneConstant {
 
         //代替空字符
         String REPLACE_EMPTY_CHARACTERS = "{==}";
+
+        //view 父子关联层级
+        Integer VIEW_PARENT_CHILDREN_LEVEL = 3;
     }
 
 

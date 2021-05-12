@@ -69,6 +69,8 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
 
     private String parentId;
 
+    private Integer level;
+
     @Transient
     private String parentTitle;
 
@@ -124,6 +126,14 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
         }
     }
 
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     public String getUserId() {
         return userId;

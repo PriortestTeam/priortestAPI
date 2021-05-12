@@ -216,7 +216,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName) {
         List<SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
-        return new Resp.Builder<List<SubUserDto>>().setData(subUserDtos).total(subUserDtos.size()).ok();
+        return new Resp.Builder<List<SubUserDto>>().setData(subUserDtos).totalSize((long)subUserDtos.size()).ok();
     }
 
     /**

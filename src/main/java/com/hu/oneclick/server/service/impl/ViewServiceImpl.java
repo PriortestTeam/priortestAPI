@@ -136,12 +136,21 @@ public class ViewServiceImpl implements ViewService {
             sysPermissionService.viewPermission(OneConstant.PERMISSION.ADD,convertPermission(view.getScope()));
             SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
             String projectId = sysUser.getUserUseOpenProject().getProjectId();
+            String masterId = jwtUserService.getMasterId();
             if (StringUtils.isEmpty(projectId)){
                 return new Resp.Builder<String>().buildResult("请选择一个项目");
             }
+            //检查是否关联父级，如果关联父级，则查询父级 是否还可进行关联，最大级别3
+            if (StringUtils.isNotEmpty(view.getParentId())){
+                View parentView = viewDao.queryById(view.getParentId(), masterId);
+                int level = parentView.getLevel() + 1;
+                if (level > OneConstant.COMMON.VIEW_PARENT_CHILDREN_LEVEL){
+                    return new Resp.Builder<String>().buildResult("您已超出最大层级，不可添加。");
+                }
+            }
 
             Result.verifyDoesExist(queryByTitle(projectId,view.getTitle(),view.getScope()),view.getTitle());
-            view.setUserId(jwtUserService.getMasterId());
+            view.setUserId(masterId);
             view.setProjectId(projectId);
             view.setOwner(sysUser.getUserName());
             return Result.addResult(viewDao.insert(view));

@@ -72,7 +72,7 @@ public class QueryFilterServiceImpl implements QueryFilterService {
                     rs.append(oneFilter.getAndOr())
                             .append(" ");
                     String buildFDate = fieldName  + " > '" + oneFilter.getBeginDate() + "'"
-                            + " " +
+                            + " and " +
                             fieldName  + " < '" + oneFilter.getEndDate() + "'";
                     rs.append(buildFDate);
                     break;
