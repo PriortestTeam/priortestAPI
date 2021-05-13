@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.CaseFormat;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -149,6 +150,10 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
     @Override
     public Resp<SysCustomFieldVo> getSysCustomField(String fieldName) {
         try {
+            //做一下驼峰转下划线
+            if (!StringUtils.isEmpty(fieldName)){
+                fieldName =  CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
+            }
             List<SysCustomFieldVo> result;
             String masterId = jwtUserService.getMasterId();
             String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
