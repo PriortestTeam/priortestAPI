@@ -259,7 +259,7 @@ public class ViewServiceImpl implements ViewService {
      */
     private List<ViewTreeDto> viewTreeRecursion(List<ViewTreeDto> treeAll){
         if(treeAll == null || treeAll.size() <= 0){
-            return null;
+            return new ArrayList<>();
         }
         List<ViewTreeDto> result = new ArrayList<>();
         //循环找父级
