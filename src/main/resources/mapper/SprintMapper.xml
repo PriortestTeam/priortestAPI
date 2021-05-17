@@ -54,6 +54,12 @@
             <if test="projectId != null">
                 and project_id = #{projectId}
             </if>
+
+            <if test="filter != null and filter != ''">
+                ${filter}
+            </if>
+
+
         </where>
     </select>
     <!--查询单个-->

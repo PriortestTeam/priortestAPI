@@ -10,7 +10,9 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.server.service.ModifyRecordsService;
+import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.TestCycleService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,8 +49,10 @@ public class TestCycleServiceImpl implements TestCycleService {
 
     private final SprintDao sprintDao;
 
+    private final QueryFilterService queryFilterService;
 
-    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao) {
+
+    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao, QueryFilterService queryFilterService) {
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
         this.testCycleDao = testCycleDao;
@@ -57,6 +61,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         this.featureDao = featureDao;
         this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
         this.sprintDao = sprintDao;
+        this.queryFilterService = queryFilterService;
     }
 
 
@@ -84,9 +89,13 @@ public class TestCycleServiceImpl implements TestCycleService {
     }
 
     @Override
-    public Resp<List<TestCycle>> queryList(TestCycle testCycle) {
+    public Resp<List<TestCycle>> queryList(TestCycleDto testCycle) {
         testCycle.queryListVerify();
-        testCycle.setUserId(jwtUserService.getMasterId());
+        String masterId = jwtUserService.getMasterId();
+        testCycle.setUserId(masterId);
+
+        testCycle.setFilter(queryFilterService.mysqlFilterProcess(testCycle.getViewTreeDto(),masterId));
+
         List<TestCycle> select = testCycleDao.queryAll(testCycle);
         return new Resp.Builder<List<TestCycle>>().setData(select).total(select).ok();
     }

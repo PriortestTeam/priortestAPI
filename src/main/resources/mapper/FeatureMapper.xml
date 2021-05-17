@@ -51,6 +51,12 @@
             <if test="title != null and title != ''">
                 and title = #{title}
             </if>
+
+
+            <if test="filter != null and filter != ''">
+                ${filter}
+            </if>
+
         </where>
     </select>
 

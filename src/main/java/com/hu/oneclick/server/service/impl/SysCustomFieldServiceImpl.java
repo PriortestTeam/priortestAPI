@@ -60,12 +60,12 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             String s = bucket.get();
             if (s != null) {
                 result = JSONObject.parseArray(s, SysCustomFieldVo.class);
-                return new Resp.Builder<List<SysCustomFieldVo>>().setData(result).totalSize((long)result.size()).ok();
+                return new Resp.Builder<List<SysCustomFieldVo>>().setData(result).totalSize(result.size()).ok();
             }
             //缓存没有查数据库
             List<SysCustomFieldVo> sysCustomFieldVos = queryAll(masterId,projectId);
             bucket.set(JSONObject.toJSONString(sysCustomFieldVos), 24, TimeUnit.HOURS);
-            return new Resp.Builder<List<SysCustomFieldVo>>().setData(sysCustomFieldVos).totalSize((long)sysCustomFieldVos.size()).ok();
+            return new Resp.Builder<List<SysCustomFieldVo>>().setData(sysCustomFieldVos).totalSize(sysCustomFieldVos.size()).ok();
         } catch (BizException e) {
             logger.error("class: SysCustomFieldServiceImpl#querySysCustomFields,error []" + e.getMessage());
             return new Resp.Builder<List<SysCustomFieldVo>>().buildResult("查询失败");

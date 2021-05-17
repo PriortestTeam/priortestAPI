@@ -3,9 +3,9 @@ package com.hu.oneclick.common.constant;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
-import com.hu.oneclick.model.domain.OneFilter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -105,7 +105,7 @@ public class TwoConstant {
      */
     public static <T> List<T> convertToList(String source, Class<T> clazz){
         if(StringUtils.isEmpty(source)){
-            return null;
+            return new ArrayList<>();
         }
         return JSONObject.parseArray(source, clazz);
     }

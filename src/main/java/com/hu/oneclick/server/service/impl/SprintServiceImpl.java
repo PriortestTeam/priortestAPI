@@ -11,6 +11,8 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Sprint;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.SprintDto;
+import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.SprintService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,10 +38,13 @@ public class SprintServiceImpl implements SprintService {
 
     private final SysPermissionService sysPermissionService;
 
-    public SprintServiceImpl(SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService) {
+    private final QueryFilterService queryFilterService;
+
+    public SprintServiceImpl(SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService) {
         this.sprintDao = sprintDao;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
+        this.queryFilterService = queryFilterService;
     }
 
     @Override
@@ -57,9 +62,13 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public Resp<List<Sprint>> queryList(Sprint sprint) {
+    public Resp<List<Sprint>> queryList(SprintDto sprint) {
         sprint.queryListVerify();
-        sprint.setUserId(jwtUserService.getMasterId());
+        String masterId = jwtUserService.getMasterId();
+        sprint.setUserId(masterId);
+
+        sprint.setFilter(queryFilterService.mysqlFilterProcess(sprint.getViewTreeDto(),masterId));
+
         List<Sprint> select = sprintDao.queryList(sprint);
         select.forEach(this::analysisStatus);
         return new Resp.Builder<List<Sprint>>().setData(select).total(select).ok();

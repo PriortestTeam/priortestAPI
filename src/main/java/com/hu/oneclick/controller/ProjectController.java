@@ -18,11 +18,8 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    private final ViewService viewService;
-
     public ProjectController(ProjectService projectService, ViewService viewService) {
         this.projectService = projectService;
-        this.viewService = viewService;
     }
 
     /**

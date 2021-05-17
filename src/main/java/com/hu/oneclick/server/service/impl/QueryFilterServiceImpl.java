@@ -2,6 +2,7 @@ package com.hu.oneclick.server.service.impl;
 
 import com.google.common.base.CaseFormat;
 import com.hu.oneclick.common.constant.TwoConstant;
+import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.domain.OneFilter;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
@@ -18,16 +19,25 @@ import java.util.List;
 @Service
 public class QueryFilterServiceImpl implements QueryFilterService {
 
+    private final ViewDao viewDao;
 
+    public QueryFilterServiceImpl(ViewDao viewDao) {
+        this.viewDao = viewDao;
+    }
 
     @Override
-    public String mysqlFilterProcess(ViewTreeDto viewTr) {
+    public String mysqlFilterProcess(ViewTreeDto viewTr,String masterId) {
         if (viewTr == null){
             return null;
         }
+        List<ViewTreeDto> viewTreeDtoList = viewDao.queryViewTreeById(masterId, viewTr.getId());
+        if (viewTreeDtoList == null || viewTreeDtoList.size() <= 0){
+            return null;
+        }
+
         StringBuilder rs = new StringBuilder();
         //1 找出自己及所有后代的Filter
-        List<View> listView = antiRecursion(viewTr,null);
+        List<View> listView = antiRecursion(viewTreeDtoList.get(0),null);
         //2 取 对象
         for (View view : listView) {
             List<OneFilter> oneFilters = TwoConstant.convertToList(view.getFilter(), OneFilter.class);
@@ -97,13 +107,12 @@ public class QueryFilterServiceImpl implements QueryFilterService {
         }
         View view = new View();
         BeanUtils.copyProperties(viewTr,view);
-        listView.add(view);
+        listView.add(0,view);
 
         List<ViewTreeDto> childViews = viewTr.getChildViews();
         if(childViews != null){
             for (ViewTreeDto childView : childViews) {
                 List<View> resultViews = antiRecursion(childView, listView);
-
             }
         }
         return listView;

@@ -213,7 +213,7 @@ public class ViewServiceImpl implements ViewService {
         String s = bucket.get();
         if(!StringUtils.isEmpty(s)){
             List<ViewScopeChildParams> childParams = JSONArray.parseArray(s,ViewScopeChildParams.class);
-            return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).totalSize((long)childParams.size()).ok();
+            return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).totalSize(childParams.size()).ok();
         }
         ViewDownChildParams viewDownChildParams = viewDownChildParamsDao.queryByScope(scope);
         if (viewDownChildParams == null){
@@ -222,7 +222,7 @@ public class ViewServiceImpl implements ViewService {
         String defaultValues = viewDownChildParams.getDefaultValues();
         List<ViewScopeChildParams> childParams = JSONArray.parseArray(defaultValues,ViewScopeChildParams.class);
         bucket.set(defaultValues);
-        return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).totalSize((long)childParams.size()).ok();
+        return new Resp.Builder<List<ViewScopeChildParams>>().setData(childParams).totalSize(childParams.size()).ok();
     }
 
     @Override
@@ -233,7 +233,7 @@ public class ViewServiceImpl implements ViewService {
         String masterId = jwtUserService.getMasterId();
         String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
         List<View> result = viewDao.queryViewParents(masterId,scope,viewTitle,projectId);
-        return new Resp.Builder<List<View>>().setData(result).total(result.size()).ok();
+        return new Resp.Builder<List<View>>().setData(result).totalSize(result.size()).ok();
     }
 
     /**

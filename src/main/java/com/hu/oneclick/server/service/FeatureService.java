@@ -4,6 +4,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.FeatureJoinSprint;
 import com.hu.oneclick.model.domain.Sprint;
+import com.hu.oneclick.model.domain.dto.FeatureDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface FeatureService {
 
     Resp<Feature> queryById(String id);
 
-    Resp<List<Feature>> queryList(Feature feature);
+    Resp<List<Feature>> queryList(FeatureDto feature);
 
     Resp<String> insert(Feature feature);
 

@@ -3,9 +3,9 @@ package com.hu.oneclick.server.service;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.TestCaseDto;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author qingyang
@@ -16,7 +16,7 @@ public interface TestCaseService {
 
     Resp<TestCase> queryById(String id);
 
-    Resp<List<TestCase>> queryList(TestCase testCase);
+    Resp<List<TestCase>> queryList(TestCaseDto testCase);
 
     Resp<String> insert(TestCase testCase);
 

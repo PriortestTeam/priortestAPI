@@ -3,6 +3,7 @@ package com.hu.oneclick.controller;
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Sprint;
+import com.hu.oneclick.model.domain.dto.SprintDto;
 import com.hu.oneclick.server.service.SprintService;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class SprintController {
 
     @Page
     @PostMapping("queryList")
-    public Resp<List<Sprint>> queryList(@RequestBody Sprint sprint) {
+    public Resp<List<Sprint>> queryList(@RequestBody SprintDto sprint) {
         return sprintService.queryList(sprint);
     }
 

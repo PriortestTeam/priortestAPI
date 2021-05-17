@@ -10,7 +10,9 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.ModifyRecord;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.TestCaseDto;
 import com.hu.oneclick.server.service.ModifyRecordsService;
+import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.TestCaseService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,10 +41,13 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     private final JwtUserServiceImpl jwtUserService;
 
-    public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService) {
+    private final QueryFilterService queryFilterService;
+
+    public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, QueryFilterService queryFilterService) {
         this.testCaseDao = testCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
+        this.queryFilterService = queryFilterService;
     }
 
 
@@ -61,9 +66,13 @@ public class TestCaseServiceImpl implements TestCaseService {
     }
 
     @Override
-    public Resp<List<TestCase>> queryList(TestCase testCase) {
+    public Resp<List<TestCase>> queryList(TestCaseDto testCase) {
         testCase.queryListVerify();
-        testCase.setUserId(jwtUserService.getMasterId());
+        String masterId = jwtUserService.getMasterId();
+        testCase.setUserId(masterId);
+
+        testCase.setFilter(queryFilterService.mysqlFilterProcess(testCase.getViewTreeDto(),masterId));
+
         List<TestCase> select = testCaseDao.queryList(testCase);
         return new Resp.Builder<List<TestCase>>().setData(select).total(select).ok();
     }

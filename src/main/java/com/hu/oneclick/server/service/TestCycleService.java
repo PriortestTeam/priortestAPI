@@ -6,6 +6,7 @@ import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.TestCycleDto;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface TestCycleService {
 
     Resp<TestCycle> queryById(String id);
 
-    Resp<List<TestCycle>> queryList(TestCycle testCycle);
+    Resp<List<TestCycle>> queryList(TestCycleDto testCycle);
 
     Resp<String> insert(TestCycle testCycle);
 

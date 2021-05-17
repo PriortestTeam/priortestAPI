@@ -9,9 +9,13 @@ import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.dao.IssueJoinTestCaseDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.*;
+import com.hu.oneclick.model.domain.Issue;
+import com.hu.oneclick.model.domain.IssueJoinTestCase;
+import com.hu.oneclick.model.domain.ModifyRecord;
+import com.hu.oneclick.model.domain.dto.IssueDto;
 import com.hu.oneclick.server.service.IssueService;
 import com.hu.oneclick.server.service.ModifyRecordsService;
+import com.hu.oneclick.server.service.QueryFilterService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,14 +43,17 @@ public class IssueServiceImpl implements IssueService {
 
     private final SysPermissionService sysPermissionService;
 
+    private final QueryFilterService queryFilterService;
 
 
-    public IssueServiceImpl(IssueDao issueDao, JwtUserServiceImpl jwtUserService, IssueJoinTestCaseDao issueJoinTestCaseDao, ModifyRecordsService modifyRecordsService, SysPermissionService sysPermissionService) {
+
+    public IssueServiceImpl(IssueDao issueDao, JwtUserServiceImpl jwtUserService, IssueJoinTestCaseDao issueJoinTestCaseDao, ModifyRecordsService modifyRecordsService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService) {
         this.issueDao = issueDao;
         this.jwtUserService = jwtUserService;
         this.issueJoinTestCaseDao = issueJoinTestCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.sysPermissionService = sysPermissionService;
+        this.queryFilterService = queryFilterService;
     }
 
 
@@ -58,9 +65,13 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public Resp<List<Issue>> queryList(Issue issue) {
+    public Resp<List<Issue>> queryList(IssueDto issue) {
         issue.queryListVerify();
-        issue.setUserId(jwtUserService.getMasterId());
+        String masterId = jwtUserService.getMasterId();
+        issue.setUserId(masterId);
+
+        issue.setFilter(queryFilterService.mysqlFilterProcess(issue.getViewTreeDto(),masterId));
+
         List<Issue> select = issueDao.queryList(issue);
         return new Resp.Builder<List<Issue>>().setData(select).total(select).ok();
     }

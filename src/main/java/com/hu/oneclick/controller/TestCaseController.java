@@ -2,6 +2,7 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCase;
+import com.hu.oneclick.model.domain.dto.TestCaseDto;
 import com.hu.oneclick.server.service.TestCaseService;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ public class TestCaseController {
 
 
     @PostMapping("queryList")
-    public Resp<List<TestCase>> queryList(@RequestBody TestCase testCase) {
+    public Resp<List<TestCase>> queryList(@RequestBody TestCaseDto testCase) {
         return testCaseService.queryList(testCase);
     }
 

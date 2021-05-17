@@ -5,6 +5,7 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.dao.ProjectDao;
+import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Project;
@@ -39,7 +40,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final QueryFilterService queryFilterService;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService) {
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
@@ -63,9 +64,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Resp<List<Project>> queryForProjects(ProjectDto project) {
-        project.setUserId(jwtUserService.getMasterId());
+        String masterId = jwtUserService.getMasterId();
+        project.setUserId(masterId);
 
-        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto()));
+        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto(),masterId));
 
         List<Project> projects = projectDao.queryAll(project);
         return new Resp.Builder<List<Project>>().setData(projects).total(projects).ok();
@@ -74,7 +76,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Resp<List<Project>> queryForProjects() {
         List<Project> projects = projectDao.queryAllProjects(jwtUserService.getMasterId());
-        return new Resp.Builder<List<Project>>().setData(projects).totalSize((long)projects.size()).ok();
+        return new Resp.Builder<List<Project>>().setData(projects).totalSize(projects.size()).ok();
     }
 
     @Override

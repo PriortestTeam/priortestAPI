@@ -7,6 +7,6 @@ import com.hu.oneclick.model.domain.dto.ViewTreeDto;
  */
 public interface QueryFilterService {
 
-    String mysqlFilterProcess(ViewTreeDto viewTr);
+    String mysqlFilterProcess(ViewTreeDto viewTr,String masterId);
 
 }

@@ -4,6 +4,7 @@ import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.IssueJoinTestCase;
+import com.hu.oneclick.model.domain.dto.IssueDto;
 import com.hu.oneclick.server.service.IssueService;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class IssueController {
 
 
     @PostMapping("queryList")
-    public Resp<List<Issue>> queryList(@RequestBody Issue issue) {
+    public Resp<List<Issue>> queryList(@RequestBody IssueDto issue) {
         return issueService.queryList(issue);
     }
 

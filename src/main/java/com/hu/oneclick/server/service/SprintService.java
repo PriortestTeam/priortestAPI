@@ -3,6 +3,7 @@ package com.hu.oneclick.server.service;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Sprint;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.SprintDto;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface SprintService {
 
     Resp<Sprint> queryById(String id);
 
-    Resp<List<Sprint>> queryList(Sprint sprint);
+    Resp<List<Sprint>> queryList(SprintDto sprint);
 
     Resp<String> insert(Sprint sprint);
 

@@ -59,6 +59,10 @@ public class Resp<T> {
             this.msg= SysConstantEnum.FAILED.getValue();
             return new Resp<T>(this);
         }
+        public Builder<T> totalSize(Integer total){
+            this.totalSize((long)total);
+            return this;
+        }
         public Builder<T> totalSize(Long total){
             this.total=total;
             return this;

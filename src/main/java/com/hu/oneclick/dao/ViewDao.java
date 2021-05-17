@@ -90,4 +90,6 @@ public interface ViewDao {
     List<ViewTreeDto> queryViewByScopeAll(@Param("masterId") String masterId,
                                           @Param("projectId") String projectId,
                                           @Param("scope") String scope);
+
+    List<ViewTreeDto> queryViewTreeById(@Param("masterId") String masterId,@Param("viewId") String viewId);
 }

@@ -6,6 +6,7 @@ import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
+import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.server.service.TestCycleService;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,7 @@ public class TestCycleController {
 
 
     @PostMapping("queryList")
-    public Resp<List<TestCycle>> queryList(@RequestBody TestCycle testCycle) {
+    public Resp<List<TestCycle>> queryList(@RequestBody TestCycleDto testCycle) {
         return testCycleService.queryList(testCycle);
     }
 

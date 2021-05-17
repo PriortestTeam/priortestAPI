@@ -2,8 +2,8 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Feature;
-import com.hu.oneclick.model.domain.FeatureJoinSprint;
 import com.hu.oneclick.model.domain.Sprint;
+import com.hu.oneclick.model.domain.dto.FeatureDto;
 import com.hu.oneclick.server.service.FeatureService;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,7 @@ public class FeatureController {
 
 
     @PostMapping("queryList")
-    public Resp<List<Feature>> queryList(@RequestBody Feature feature) {
+    public Resp<List<Feature>> queryList(@RequestBody FeatureDto feature) {
         return featureService.queryList(feature);
     }
 

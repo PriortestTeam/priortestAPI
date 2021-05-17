@@ -14,8 +14,10 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.FeatureJoinSprint;
 import com.hu.oneclick.model.domain.Sprint;
+import com.hu.oneclick.model.domain.dto.FeatureDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.server.service.FeatureService;
+import com.hu.oneclick.server.service.QueryFilterService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +46,17 @@ public class FeatureServiceImpl implements FeatureService {
 
     private final SysPermissionService sysPermissionService;
 
-    public FeatureServiceImpl(FeatureDao featureDao, FeatureJoinSprintDao featureJoinSprintDao, SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService) {
+    private final QueryFilterService queryFilterService;
+
+
+
+    public FeatureServiceImpl(FeatureDao featureDao, FeatureJoinSprintDao featureJoinSprintDao, SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService) {
         this.featureDao = featureDao;
         this.featureJoinSprintDao = featureJoinSprintDao;
         this.sprintDao = sprintDao;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
+        this.queryFilterService = queryFilterService;
     }
 
 
@@ -123,9 +130,13 @@ public class FeatureServiceImpl implements FeatureService {
     }
 
     @Override
-    public Resp<List<Feature>> queryList(Feature feature) {
+    public Resp<List<Feature>> queryList(FeatureDto feature) {
         feature.queryListVerify();
-        feature.setUserId(jwtUserService.getMasterId());
+        String masterId = jwtUserService.getMasterId();
+        feature.setUserId(masterId);
+
+        feature.setFilter(queryFilterService.mysqlFilterProcess(feature.getViewTreeDto(),masterId));
+
         List<Feature> select = featureDao.queryList(feature);
         select.forEach(this::accept);
         return new Resp.Builder<List<Feature>>().setData(select).total(select).ok();
