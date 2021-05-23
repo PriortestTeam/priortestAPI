@@ -34,7 +34,7 @@ spring:
 
 
   redis:
-    host: localhost
+    host: 192.168.184.10
     port: 6379
     ssl: false
 #    password: qingyang_redis

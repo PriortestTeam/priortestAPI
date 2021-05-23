@@ -9,6 +9,7 @@ import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.QueryFilterService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,11 +64,12 @@ public class QueryFilterServiceImpl implements QueryFilterService {
             //4 取type
             switch (oneFilter.getType()){
                 case "fString":
+                    if (StringUtils.isEmpty(oneFilter.getTextVal())){continue;}
                     rs.append(oneFilter.getAndOr())
                             .append(" ");
                     String buildFString = fieldName
-                            + " = "
-                            + "'" + oneFilter.getTextVal() + "'";
+                            + " like concat('%',"
+                            + "'" + oneFilter.getTextVal() + "','%')";
                     rs.append(buildFString);
                     break;
                 case "fInteger":
