@@ -1,6 +1,7 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.TestCaseDto;
 import com.hu.oneclick.server.service.TestCaseService;
@@ -46,6 +47,15 @@ public class TestCaseController {
     @DeleteMapping("delete/{id}")
     public Resp<String> delete(@PathVariable String id) {
         return testCaseService.delete(id);
+    }
+
+
+    /**
+     * 根据选择的故事id查询testcase 的需要的值
+     */
+    @GetMapping
+    public Resp<Feature> queryTestNeedByFeatureId(@RequestParam String featureId){
+        return testCaseService.queryTestNeedByFeatureId(featureId);
     }
 
 }

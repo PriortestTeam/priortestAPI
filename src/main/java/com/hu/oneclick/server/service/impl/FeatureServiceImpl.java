@@ -63,7 +63,7 @@ public class FeatureServiceImpl implements FeatureService {
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
         List<LeftJoinDto> select = featureDao.queryTitles(projectId, title, jwtUserService.getMasterId());
-        return new Resp.Builder<List<LeftJoinDto>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder<List<LeftJoinDto>>().setData(select).totalSize(select.size()).ok();
     }
 
 
@@ -288,7 +288,7 @@ public class FeatureServiceImpl implements FeatureService {
     public Resp<List<Sprint>> querySprintList(String title) {
         String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
         List<Sprint> selects = sprintDao.querySprintList(title,projectId);
-        return new Resp.Builder<List<Sprint>>().setData(selects).total(selects.size()).ok();
+        return new Resp.Builder<List<Sprint>>().setData(selects).totalSize(selects.size()).ok();
     }
 
     /**

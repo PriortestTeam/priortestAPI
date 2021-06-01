@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.TestCaseDto;
@@ -24,4 +25,5 @@ public interface TestCaseService {
 
     Resp<String> delete(String id);
 
+    Resp<Feature> queryTestNeedByFeatureId(String featureId);
 }

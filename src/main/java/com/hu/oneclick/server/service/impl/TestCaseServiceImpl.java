@@ -4,11 +4,14 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.ModifyRecord;
 import com.hu.oneclick.model.domain.TestCase;
+import com.hu.oneclick.model.domain.dto.FeatureDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.TestCaseDto;
 import com.hu.oneclick.server.service.ModifyRecordsService;
@@ -43,11 +46,14 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     private final QueryFilterService queryFilterService;
 
-    public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, QueryFilterService queryFilterService) {
+    private final FeatureDao featureDao;
+
+    public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, QueryFilterService queryFilterService, FeatureDao featureDao) {
         this.testCaseDao = testCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
         this.queryFilterService = queryFilterService;
+        this.featureDao = featureDao;
     }
 
 
@@ -193,6 +199,12 @@ public class TestCaseServiceImpl implements TestCaseService {
         }
     }
 
+    @Override
+    public Resp<Feature> queryTestNeedByFeatureId(String featureId) {
+        String masterId = jwtUserService.getMasterId();
+        Feature featureDto = featureDao.queryById(featureId,masterId);
+        return new Resp.Builder<Feature>().setData(featureDto).ok();
+    }
 
 
     /**

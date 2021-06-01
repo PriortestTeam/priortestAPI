@@ -101,7 +101,6 @@
         where tcjtc.test_cycle_id = #{testCycleId};
     </select>
 
-
     <!--通过主键修改数据-->
     <update id="update">
         update feature

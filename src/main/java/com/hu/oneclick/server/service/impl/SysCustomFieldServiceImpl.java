@@ -91,7 +91,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             List<String> sysDefaultValues = StringUtils.isEmpty(defaultValues) ? null : Arrays.asList(defaultValues.split(","));
 
             if (sysDefaultValues == null) {
-                saveValues.containsAll(requestValues);
+                saveValues.addAll(requestValues);
             }else{
                 for (String requestValue : requestValues) {
                     //检查是否为空,为空代表没有默认值
@@ -214,7 +214,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             }
             //置位空
             customField.setDefaultValues("");
-            List<String> mergeValues = StringUtils.isEmpty(defaultValues.toString()) ? null
+            List<String> mergeValues = StringUtils.isEmpty(defaultValues.toString()) ? new ArrayList<>()
                     : Arrays.asList(defaultValues.toString().split(","));
             sysCustomFieldVo.setSysCustomField(customField);
             sysCustomFieldVo.setMergeValues(mergeValues);
