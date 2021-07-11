@@ -53,7 +53,7 @@ public class TestCaseController {
     /**
      * 根据选择的故事id查询testcase 的需要的值
      */
-    @GetMapping
+    @GetMapping("queryTestNeedByFeatureId")
     public Resp<Feature> queryTestNeedByFeatureId(@RequestParam String featureId){
         return testCaseService.queryTestNeedByFeatureId(featureId);
     }
