@@ -18,7 +18,7 @@
         <result property="platform" column="platform" jdbcType="VARCHAR"/>
         <result property="version" column="version" jdbcType="VARCHAR"/>
         <result property="caseCategory" column="case_category" jdbcType="VARCHAR"/>
-        <result property="caseType" column="case_type" jdbcType="VARCHAR"/>
+        <result property="testType" column="test_type" jdbcType="VARCHAR"/>
         <result property="externaId" column="externa_id" jdbcType="VARCHAR"/>
         <result property="env" column="env" jdbcType="VARCHAR"/>
         <result property="preCondition" column="pre_condition" jdbcType="VARCHAR"/>
@@ -27,7 +27,7 @@
 
         <result property="module" column="module" jdbcType="VARCHAR"/>
         <result property="testDevice" column="test_device" jdbcType="VARCHAR"/>
-        <result property="testData" column="test_data" jdbcType="TIMESTAMP"/>
+        <result property="testData" column="test_data" jdbcType="VARCHAR"/>
         <result property="testMethod" column="test_method" jdbcType="VARCHAR"/>
         <result property="foreignId" column="foreign_id" jdbcType="VARCHAR"/>
 
@@ -36,7 +36,7 @@
     <select id="queryList" resultMap="TestCaseMap">
         select
         id, project_id, title, priority, feature, description, executed_date, author_name, create_time, update_time,
-        user_id, browser, platform, version, case_category, case_type, externa_id, env, pre_condition, last_run_status,
+        user_id, browser, platform, version, case_category, test_type, externa_id, env, pre_condition, last_run_status,
         `module`,test_device,test_data,test_method,foreign_id
         from oneclick.test_case
         <where>
@@ -85,8 +85,8 @@
             <if test="caseCategory != null and caseCategory != ''">
                 and case_category = #{caseCategory}
             </if>
-            <if test="caseType != null and caseType != ''">
-                and case_type = #{caseType}
+            <if test="testType != null and testType != ''">
+                and test_type = #{testType}
             </if>
             <if test="externaId != null and externaId != ''">
                 and externa_id = #{externaId}
@@ -126,7 +126,7 @@
                t.platform as platform,
                t.version as version,
                t.case_category as caseCategory,
-               t.case_type as caseType,
+               t.test_type as testType,
                t.externa_id as externaId,
                t.env as env,
                t.pre_condition as preCondition,
@@ -198,8 +198,8 @@
             <if test="caseCategory != null and caseCategory != ''">
                 case_category = #{caseCategory},
             </if>
-            <if test="caseType != null and caseType != ''">
-                case_type = #{caseType},
+            <if test="testType != null and testType != ''">
+                test_type = #{testType},
             </if>
             <if test="externaId != null and externaId != ''">
                 externa_id = #{externaId},

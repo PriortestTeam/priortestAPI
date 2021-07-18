@@ -60,7 +60,7 @@ public class TestCaseServiceImpl implements TestCaseService {
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
         List<LeftJoinDto> select = testCaseDao.queryTitles(projectId,title,jwtUserService.getMasterId());
-        return new Resp.Builder<List<LeftJoinDto>>().setData(select).total(select.size()).ok();
+        return new Resp.Builder<List<LeftJoinDto>>().setData(select).total(select).ok();
     }
 
 

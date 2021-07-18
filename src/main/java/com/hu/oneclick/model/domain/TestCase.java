@@ -68,7 +68,7 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
 
     private String caseCategory;
 
-    private String caseType;
+    private String testType;
 
     private String externaId;
 
@@ -80,7 +80,7 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
 
     private String module;
     private String testDevice;
-    private Date testData;
+    private String testData;
     private String testMethod;
 
     private String foreignId;
@@ -117,14 +117,6 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
         this.projectId = projectId;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -148,7 +140,6 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
     public void setFeature(String feature) {
         this.feature = feature;
     }
-
 
     public String getDescription() {
         return description;
@@ -190,6 +181,13 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
         this.updateTime = updateTime;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getBrowser() {
         return browser;
@@ -223,12 +221,12 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
         this.caseCategory = caseCategory;
     }
 
-    public String getCaseType() {
-        return caseType;
+    public String getTestType() {
+        return testType;
     }
 
-    public void setCaseType(String caseType) {
-        this.caseType = caseType;
+    public void setTestType(String testType) {
+        this.testType = testType;
     }
 
     public String getExternaId() {
@@ -247,14 +245,6 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
         this.env = env;
     }
 
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
     public String getPreCondition() {
         return preCondition;
     }
@@ -269,14 +259,6 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
 
     public void setLastRunStatus(Integer lastRunStatus) {
         this.lastRunStatus = lastRunStatus;
-    }
-
-    public String getFeatureTitle() {
-        return featureTitle;
-    }
-
-    public void setFeatureTitle(String featureTitle) {
-        this.featureTitle = featureTitle;
     }
 
     public String getModule() {
@@ -295,11 +277,11 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
         this.testDevice = testDevice;
     }
 
-    public Date getTestData() {
+    public String getTestData() {
         return testData;
     }
 
-    public void setTestData(Date testData) {
+    public void setTestData(String testData) {
         this.testData = testData;
     }
 
@@ -317,5 +299,21 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
 
     public void setForeignId(String foreignId) {
         this.foreignId = foreignId;
+    }
+
+    public String getFeatureTitle() {
+        return featureTitle;
+    }
+
+    public void setFeatureTitle(String featureTitle) {
+        this.featureTitle = featureTitle;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }
