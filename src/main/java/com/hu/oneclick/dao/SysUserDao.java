@@ -126,4 +126,11 @@ public interface SysUserDao {
      * @return
      */
     List<PlatformUserDto> queryPlatformUsers(PlatformUserDto platformUserDto);
+
+    /**
+     * 更新平台用户
+     * @param platformUserDto
+     * @return
+     */
+    int updatePlatformUser(PlatformUserDto platformUserDto);
 }

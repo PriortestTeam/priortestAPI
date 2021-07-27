@@ -29,4 +29,11 @@ public interface PlatformUserService {
      * @return
      */
     Resp<List<PlatformUserDto>> queryPlatformUsers(PlatformUserDto platformUserDto);
+
+    /**
+     * 更新平台用户
+     * @param platformUserDto
+     * @return
+     */
+    Resp<String> updatePlatformUser(PlatformUserDto platformUserDto);
 }

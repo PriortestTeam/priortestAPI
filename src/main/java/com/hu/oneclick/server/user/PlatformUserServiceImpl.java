@@ -9,10 +9,12 @@ import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.SubUserProjectDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.PlatformUserDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,6 +84,22 @@ public class PlatformUserServiceImpl implements PlatformUserService {
         List<PlatformUserDto>  list= sysUserDao.queryPlatformUsers(platformUserDto);
 
         return new Resp.Builder<List<PlatformUserDto>>().setData(list).total(list).ok();
+    }
+
+    @Override
+    public Resp<String> updatePlatformUser(PlatformUserDto platformUserDto) {
+        try {
+            //邮箱不为空代表需要修改
+            if (platformUserDto.getEmail() != null){
+                //验证用户是否存在
+                verifySubEmailExists(platformUserDto.getEmail());
+            }
+            Result.updateResult(sysUserDao.updatePlatformUser(platformUserDto));
+            return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
+        }catch (BizException e){
+            logger.error("class: SubUserServiceImpl#updateSubUser,error []" + e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
     }
 
 

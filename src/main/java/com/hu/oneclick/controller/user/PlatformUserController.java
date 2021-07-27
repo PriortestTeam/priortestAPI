@@ -7,6 +7,7 @@ import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SysRoleService;
 import com.hu.oneclick.server.user.PlatformUserService;
 import com.hu.oneclick.server.user.SubUserService;
+import com.hu.oneclick.server.user.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +23,11 @@ public class PlatformUserController {
 
     private final PlatformUserService platformUserService;
 
-    public PlatformUserController(PlatformUserService platformUserService) {
+    private final UserService userService;
+
+    public PlatformUserController(PlatformUserService platformUserService,UserService userService) {
         this.platformUserService = platformUserService;
+        this.userService = userService;
     }
 
     @PostMapping("/queryPlatformUser")
@@ -32,24 +36,19 @@ public class PlatformUserController {
         return platformUserService.queryPlatformUsers(platformUserDto);
     }
 
-
     @PostMapping("createPlatformUser")
     public Resp<String> createPlatformUser(@RequestBody PlatformUserDto platformUserDto){
         return platformUserService.createPlatformUser(platformUserDto);
     }
 
-
     @PostMapping("updatePlatformUser")
-    public Resp<String> updatePlatformUser(@RequestBody SubUserDto sysUser){
-        //return  subUserService.updateSubUser(sysUser);
-        return null;
+    public Resp<String> updatePlatformUser(@RequestBody PlatformUserDto platformUserDto){
+        return platformUserService.updatePlatformUser(platformUserDto);
     }
 
     @DeleteMapping("deletePlatformUser/{id}")
     public Resp<String> deletePlatformUser(@PathVariable String id){
-
-        //return  subUserService.deleteSubUser(id);
-        return null;
+        return userService.deleteUserById(id);
     }
 
 

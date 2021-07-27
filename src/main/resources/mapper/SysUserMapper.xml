@@ -473,4 +473,44 @@
         from sys_user u
         where u.manager = 0
     </select>
+
+    <update id="updatePlatformUser">
+        update oneclick.sys_user
+        <set>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName},
+            </if>
+            <if test="status != null ">
+                status = #{status},
+            </if>
+            <if test="contactNo != null and contactNo != ''">
+                contactNo = #{contactNo},
+            </if>
+            <if test="company != null and company != ''">
+                company = #{company},
+            </if>
+            <if test="profession != null and profession != ''">
+                contact_no = #{contactNo},
+            </if>
+            <if test="industry != null and industry != ''">
+                industry = #{industry},
+            </if>
+            <if test="activeState != null">
+                active_state = #{activeState},
+            </if>
+            <if test="timeZone != null">
+                `time_zone` = #{timeZone},
+            </if>
+            <if test="locale != null and locale != ''">
+                locale = #{locale},
+            </if>
+            update_time = NOW()
+        </set>
+        where
+        id = #{id}
+        and del_flag = 0
+    </update>
 </mapper>

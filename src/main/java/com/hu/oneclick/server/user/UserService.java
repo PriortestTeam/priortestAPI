@@ -70,4 +70,13 @@ public interface UserService {
 
     Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName);
 
+
+    /**
+     * 删除用户
+     * @param id
+     * @return
+     */
+    Resp<String> deleteUserById(String id);
+
+
 }
