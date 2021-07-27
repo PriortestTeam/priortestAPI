@@ -222,6 +222,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> deleteUserById(String id) {
+        //删除平台用户并删除子用户
+
         return Result.deleteResult(sysUserDao.deleteById(id));
     }
 

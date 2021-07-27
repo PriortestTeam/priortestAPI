@@ -513,4 +513,10 @@
         id = #{id}
         and del_flag = 0
     </update>
+
+    <delete id="deleteByParentId">
+        delete from sys_user where
+             parent_id = #{parentId}
+    </delete>
+
 </mapper>

@@ -63,7 +63,7 @@ public class PlatformUserServiceImpl implements PlatformUserService {
             //设置默认头像
             platformUserDto.setPhoto(defaultPhoto);
             platformUserDto.setType(OneConstant.USER_TYPE.ADMIN);
-            platformUserDto.setManager(OneConstant.PLATEFORM_USER_TYPE.MANAGER);
+            platformUserDto.setManager(OneConstant.PLATEFORM_USER_TYPE.ORDINARY);
             //主用户识别码，主要用于关联子用户（子用户登录时使用）（8位随机数）
             platformUserDto.setIdentifier(NumberUtil.getIdentifier());
 
@@ -97,7 +97,20 @@ public class PlatformUserServiceImpl implements PlatformUserService {
             Result.updateResult(sysUserDao.updatePlatformUser(platformUserDto));
             return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
         }catch (BizException e){
-            logger.error("class: SubUserServiceImpl#updateSubUser,error []" + e.getMessage());
+            logger.error("class: PlatformUserServiceImpl#createPlatformUser,error []" + e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> deletePlatformUserByid(String id) {
+        try {
+            sysUserDao.deleteById(id);
+            sysUserDao.deleteByParentId(id);
+            return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_SUCCESS.getValue()).ok();
+        }catch (BizException e){
+            logger.error("class: PlatformUserServiceImpl#createPlatformUser,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
     }

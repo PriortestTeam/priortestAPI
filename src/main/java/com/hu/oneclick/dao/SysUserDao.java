@@ -133,4 +133,10 @@ public interface SysUserDao {
      * @return
      */
     int updatePlatformUser(PlatformUserDto platformUserDto);
+
+    /**
+     * 根据父id删除
+     * @param parentId 父id
+     */
+    void deleteByParentId(@Param("parentId")String parentId);
 }

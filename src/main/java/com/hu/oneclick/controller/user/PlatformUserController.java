@@ -8,6 +8,7 @@ import com.hu.oneclick.server.service.SysRoleService;
 import com.hu.oneclick.server.user.PlatformUserService;
 import com.hu.oneclick.server.user.SubUserService;
 import com.hu.oneclick.server.user.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 @RestController()
 @RequestMapping("/platformUser")
+@PreAuthorize("@ps.backstageManagement()")
 public class PlatformUserController {
 
     private final PlatformUserService platformUserService;
@@ -48,7 +50,7 @@ public class PlatformUserController {
 
     @DeleteMapping("deletePlatformUser/{id}")
     public Resp<String> deletePlatformUser(@PathVariable String id){
-        return userService.deleteUserById(id);
+        return platformUserService.deletePlatformUserByid(id);
     }
 
 

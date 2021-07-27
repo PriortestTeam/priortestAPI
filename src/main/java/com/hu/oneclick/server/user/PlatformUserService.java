@@ -36,4 +36,11 @@ public interface PlatformUserService {
      * @return
      */
     Resp<String> updatePlatformUser(PlatformUserDto platformUserDto);
+
+    /**
+     * 删除平台用户 并删除子用户
+     * @param id
+     * @return
+     */
+    Resp<String> deletePlatformUserByid(String id);
 }
