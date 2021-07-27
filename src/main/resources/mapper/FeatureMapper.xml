@@ -130,7 +130,7 @@
                 title = #{title},
             </if>
             <if test="moudle != null and moudle != ''">
-                title = #{title},
+                moudle = #{moudle},
             </if>
             update_time=NOW()
         </set>

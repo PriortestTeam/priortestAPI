@@ -456,4 +456,21 @@
         and manager = 2
         and parent_id = #{masterId}
     </delete>
+
+    <select id="queryPlatformUsers" resultType="com.hu.oneclick.model.domain.dto.PlatformUserDto">
+        select u.id as id,
+               u.email as email,
+               u.user_name as userName,
+               u.status as status,
+               u.register_date as registerDate,
+               u.contact_no as contactNo,
+               u.company as company,
+               u.profession as profession,
+               u.industry as industry,
+               u.close_date as closeDate,
+               u.`type` as type,
+               u.enable as enable
+        from sys_user u
+        where u.manager = 0
+    </select>
 </mapper>
