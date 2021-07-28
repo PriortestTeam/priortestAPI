@@ -469,7 +469,10 @@
                u.industry as industry,
                u.close_date as closeDate,
                u.`type` as type,
-               u.enable as enable
+               u.enable as enable,
+               u.active_state as activeState,
+               u.time_zone as timeZone,
+               u.locale as locale
         from sys_user u
         where u.manager = 0
     </select>
