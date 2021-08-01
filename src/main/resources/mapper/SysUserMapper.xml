@@ -490,7 +490,7 @@
                 status = #{status},
             </if>
             <if test="contactNo != null and contactNo != ''">
-                contactNo = #{contactNo},
+                contact_no = #{contactNo},
             </if>
             <if test="company != null and company != ''">
                 company = #{company},
