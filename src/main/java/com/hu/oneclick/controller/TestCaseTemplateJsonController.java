@@ -2,9 +2,12 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCaseTemplateJson;
+import com.hu.oneclick.model.domain.dto.ImportTestCaseDto;
+import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCaseTemplateJsonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,6 +21,9 @@ public class TestCaseTemplateJsonController {
 
     @Autowired
     private TestCaseTemplateJsonService testCaseTemplateJsonService;
+
+    @Autowired
+    private TestCaseService testCaseService;
 
     @PostMapping("insert")
     public Resp<String> insert(@RequestBody TestCaseTemplateJson testCaseTemplateJson) {
@@ -49,6 +55,17 @@ public class TestCaseTemplateJsonController {
         return testCaseTemplateJsonService.queryById(id);
     }
 
+
+    /**
+     * 导入测试测试用例
+     * @param file 导入文件
+     * @param param 参数：json类型
+     * @return
+     */
+    @PostMapping("importTestCase")
+    public  Resp<ImportTestCaseDto> importTestCase(@RequestParam("file") MultipartFile file, @RequestParam("param") String param){
+        return testCaseService.importTestCase(file,param);
+    }
 
 
 

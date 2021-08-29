@@ -41,6 +41,11 @@ public class TestCaseStep extends BaseEntity implements Serializable, VerifyPara
 
     private Date createTime;
 
+    /**
+     *测试数据
+     */
+    private String testData;
+
     @Override
     public void verify() throws BizException {
         if(StringUtils.isEmpty(testCaseId)){
@@ -109,6 +114,11 @@ public class TestCaseStep extends BaseEntity implements Serializable, VerifyPara
         this.createTime = createTime;
     }
 
+    public String getTestData() {
+        return testData;
+    }
 
-
+    public void setTestData(String testData) {
+        this.testData = testData;
+    }
 }

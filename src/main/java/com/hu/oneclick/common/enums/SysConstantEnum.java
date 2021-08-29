@@ -48,9 +48,13 @@ public enum SysConstantEnum {
     DELETE_SUCCESS(SysConstantEnum.NUMBER,"删除成功。"),
     LOGIN_SUCCESS(SysConstantEnum.NUMBER,"登录成功。"),
     REGISTER_SUCCESS(SysConstantEnum.NUMBER,"注册成功。"),
-    LOGOUT_SUCCESS(SysConstantEnum.NUMBER,"注销成功。")
+    LOGOUT_SUCCESS(SysConstantEnum.NUMBER,"注销成功。"),
 
 
+    //测试用例导入定义错误类型
+    IMPORT_TESTCASE_ERROR_NOTSELECT("NOTSELECT","是属于下拉菜单的，导入数据必须与系统中已有数据相对应"),
+    IMPORT_TESTCASE_ERROR_REQUIRED("REQUIRED","必填项未填写，导入数据必须填写此项"),
+    IMPORT_TESTCASE_ERROR_NOFEATURE("NOFEATURE","未找到存在项目中Feature")
     ;
 
 
