@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -19,6 +20,9 @@ import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.TestCaseService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -30,8 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -260,187 +263,241 @@ public class TestCaseServiceImpl implements TestCaseService {
             int successCount = 0;
             int errorCount = 0;
             //判断文件后缀，根据不同后缀操作数据
-            if(suffix.equals("xlsx")||suffix.equals("xls")||suffix.equals("et")){
-                Workbook workbook= null;
-               // 如果是xls，使用HSSFWorkbook；如果是xlsx，使用XSSFWorkbook
-                try {
-                    if(suffix.equals("xls")){
-                        workbook = new HSSFWorkbook(multipartFile.getInputStream());
-                    } else {
-                        workbook = new XSSFWorkbook(multipartFile.getInputStream());
+            JSONArray rowValueArray = buildRowValueArray(suffix, multipartFile.getInputStream(),
+                    cellIndexObject, ifIgnorFirstRow);
+            for (Object o : rowValueArray) {
+                JSONObject rowValue=(JSONObject)o;
+                TestCase testCase = new TestCase();
+                //处理Feature 故事
+                if (rowValue.containsKey("featureCol")) {
+                    JSONObject featureCol = rowValue.getJSONObject("featureCol");
+                    String title = featureCol.getString("value");
+                    if (StringUtils.isBlank(title)) {
+                        //记录错误，故事标题不能为空
+                        buildErrorTips(errorTipsMap, SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
+                                ,featureCol, null);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    Feature feature = queryFeatureByTitle(title);
+                    if(null==feature){
+                        //记录错误，未查询到此项目的标题
+                        buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_NOFEATURE
+                                ,featureCol,null);
+                    }else{
+                        testCase.setProjectId(feature.getProjectId());
+                        testCase.setFeature(feature.getId());
+                    }
                 }
-                int numberOfSheets = workbook.getNumberOfSheets();
-                for (int i = 0; i < numberOfSheets; i++) {
-                    Sheet sheet = workbook.getSheetAt(i);
-                    int lastRowNum = sheet.getPhysicalNumberOfRows();
-                    for (int rowNum = 0; rowNum < lastRowNum; rowNum++) {
-                        if (1==ifIgnorFirstRow&&rowNum==0) {
-                            continue;
-                        }
-                        Boolean errorFlag = false;
-                        Row row = sheet.getRow(rowNum);
-                        TestCase testCase = new TestCase();
-                        //处理Feature 故事
-                        if (cellIndexObject.containsKey("featureCol")) {
-                            Cell cell = row.getCell(cellIndexObject.getInteger("featureCol"));
-                            String title = null;
-                            if (null == cell || StringUtils.isBlank((title=cell.getStringCellValue()))) {
-                                //记录错误，故事标题不能为空
-                                buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
-                                        ,jsonObject.getString("featureCol"),rowNum,null);
-                                errorFlag = true;
-                            }
-                            Feature feature = queryFeatureByTitle(title);
-                            if(null==feature){
-                                //记录错误，未查询到此项目的标题
-                                buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_NOFEATURE
-                                        ,jsonObject.getString("featureCol"),rowNum,null);
-                                errorFlag = true;
-                            }else{
-                                testCase.setProjectId(feature.getProjectId());
-                                testCase.setFeature(feature.getId());
-                            }
-                        }
-                        //处理文本字段
-                        //title
-                        setValue(cellIndexObject,"testTitleCol",row,testCase
-                                ,jsonObject,errorTipsMap,"title",true,errorFlag);
-                        //Pre-condition 测试条件
-                        setValue(cellIndexObject,"preConditionCol",row,testCase
-                                ,jsonObject,errorTipsMap,"preCondition",false,errorFlag);
-                        //Comments 备注
-                        setValue(cellIndexObject,"descriptionCol",row,testCase
-                                ,jsonObject,errorTipsMap,"description",false,errorFlag);
-                        //ExternalID
-                        setValue(cellIndexObject,"externalIdCol",row,testCase
-                                ,jsonObject,errorTipsMap,"externaId",false,errorFlag);
-                        //处理固定字典类型
-                       // Priority 优先级
-                        setSelectValue(cellIndexObject,"priorityCol",row,allowPriority,testCase
-                                ,jsonObject,errorTipsMap,"priority",errorFlag,true);
-                        //Browser 浏览器
-                        setSelectValue(cellIndexObject,"browserCol",row,allowBrowser,testCase
-                                ,jsonObject,errorTipsMap,"browser",errorFlag,false);
-                        //Platform 平台
-                        setSelectValue(cellIndexObject,"platformCol",row,allowPlatform,testCase
-                                ,jsonObject,errorTipsMap,"platform",errorFlag,false);
-                        //处理动态字典类型
-                        //Module 模块
-                        setSelectValue(cellIndexObject,"moduleCol",row,moudleMergeValues,testCase
-                                ,jsonObject,errorTipsMap,"module",errorFlag,true);
-                        //DeviceType 测试设备
-                        setSelectValue(cellIndexObject,"deviceTypeCol",row,testDeviceMergeValues,testCase
-                                ,jsonObject,errorTipsMap,"testDevice",errorFlag,false);
-                        //Env 测试环境
-                        setSelectValue(cellIndexObject,"envCol",row,testEnvMergeValues,testCase
-                                ,jsonObject,errorTipsMap,"env",errorFlag,true);
-                        //Version
-                        setSelectValue(cellIndexObject,"versionCol",row,versionsMergeValues,testCase
-                                ,jsonObject,errorTipsMap,"version",errorFlag,true);
-                        //CaseCategory  测试分类
-                        setSelectValue(cellIndexObject,"caseCategoryCol",row,testCategoryMergeValues,testCase
-                                ,jsonObject,errorTipsMap,"caseCategory",errorFlag,true);
-                        //CaseType 测试类型
-                        setSelectValue(cellIndexObject,"caseTypeCol",row,testTypeMergeValues,testCase
-                                ,jsonObject,errorTipsMap,"testType",errorFlag,true);
-                        //Automation 测试方法
-                        setSelectValue(cellIndexObject,"automationCol",row,testMethodMergeValues,testCase
-                                ,jsonObject,errorTipsMap,"testMethod",errorFlag,true);
+                //处理文本字段
+                //title
+                setValue(rowValue.getJSONObject("testTitleCol"),testCase
+                        ,errorTipsMap,"title",true);
+                //Pre-condition 测试条件
+                setValue(rowValue.getJSONObject("preConditionCol"),testCase
+                        ,errorTipsMap,"preCondition",false);
+                //Comments 备注
+                setValue(rowValue.getJSONObject("descriptionCol"),testCase
+                        ,errorTipsMap,"description",false);
+                //ExternalID
+                setValue(rowValue.getJSONObject("externalIdCol") ,testCase
+                        ,errorTipsMap,"externaId",false);
+                //处理固定字典类型
+                // Priority 优先级
+                setSelectValue(rowValue.getJSONObject("priorityCol"),allowPriority,testCase
+                        ,errorTipsMap,"priority",true);
+                //Browser 浏览器
+                setSelectValue(rowValue.getJSONObject("browserCol") ,allowBrowser,testCase
+                        ,errorTipsMap,"browser",false);
+                //Platform 平台
+                setSelectValue(rowValue.getJSONObject("platformCol"),allowPlatform,testCase
+                        ,errorTipsMap,"platform",false);
+                //处理动态字典类型
+                //Module 模块
+                setSelectValue(rowValue.getJSONObject("moduleCol"),moudleMergeValues,testCase
+                        ,errorTipsMap,"module",true);
+                //DeviceType 测试设备
+                setSelectValue(rowValue.getJSONObject("deviceTypeCol"),testDeviceMergeValues,testCase
+                        ,errorTipsMap,"testDevice",false);
+                //Env 测试环境
+                setSelectValue(rowValue.getJSONObject("envCol"),testEnvMergeValues,testCase
+                        ,errorTipsMap,"env",true);
+                //Version
+                setSelectValue(rowValue.getJSONObject("versionCol"),versionsMergeValues,testCase
+                        ,errorTipsMap,"version",true);
+                //CaseCategory  测试分类
+                setSelectValue(rowValue.getJSONObject("caseCategoryCol"),testCategoryMergeValues,testCase
+                        ,errorTipsMap,"caseCategory",true);
+                //CaseType 测试类型
+                setSelectValue(rowValue.getJSONObject("caseTypeCol"),testTypeMergeValues,testCase
+                        ,errorTipsMap,"testType",true);
+                //Automation 测试方法
+                setSelectValue(rowValue.getJSONObject("automationCol"),testMethodMergeValues,testCase
+                        ,errorTipsMap,"testMethod",true);
 
-                        //处理 Step
-                        List<TestCaseStep> testCaseSteps = new ArrayList<>();
-                        if (cellIndexObject.containsKey("stepCol")) {
-                            String setpValue = getCellValue(cellIndexObject, errorTipsMap, jsonObject,
-                                    row, "stepCol", true, errorFlag);
+                //处理 Step
+                List<TestCaseStep> testCaseSteps = new ArrayList<>();
+                if (cellIndexObject.containsKey("stepCol")) {
+                    String setpValue = getCellValue( errorTipsMap,
+                            rowValue.getJSONObject("stepCol"), true);
 
-                            //测试数据
-                            String cellTestDataValue = getCellValue(cellIndexObject, errorTipsMap, jsonObject,
-                                    row, "stepTestDataCol", true, errorFlag);
+                    //测试数据
+                    String cellTestDataValue = getCellValue(errorTipsMap,
+                            rowValue.getJSONObject("stepTestDataCol"),  true);
 
-                            //Expected Result 预期结果
-                            String cellExpectedResultValue = getCellValue(cellIndexObject, errorTipsMap, jsonObject,
-                                    row, "stepExpectResultCol", true, errorFlag);
+                    //Expected Result 预期结果
+                    String cellExpectedResultValue = getCellValue(errorTipsMap,
+                            rowValue.getJSONObject("stepExpectResultCol"), true);
 
-                            //Actual Result 实际结果
-                            String cellActualResultValue = getCellValue(cellIndexObject, errorTipsMap, jsonObject,
-                                    row, "stepActualResultCol", true, errorFlag);
-                            Integer ifSplitTestStep=jsonObject.getInteger("ifSplitTestStep");
-                            //是否分隔
-                            if(1==ifSplitTestStep){
-                                String splitTestStep = jsonObject.getString("splitTestStep");
-                                String[] steps = setpValue.split(splitTestStep);
-                                String[] testDatas = cellTestDataValue.split(splitTestStep);
-                                String[] expectedResults = cellExpectedResultValue.split(splitTestStep);
-                                String[] actualResult = cellActualResultValue.split(splitTestStep);
-                                for (int i1 = 0; i1 < steps.length; i1++) {
-                                    int stepsLength = steps.length;
-                                    TestCaseStep testCaseStep = new TestCaseStep();
-                                    testCaseStep.setTestCaseId(testCase.getId());
-                                    testCaseStep.setCreateTime(new Date());
-                                    testCaseStep.setStatus(0);
-                                    testCaseStep.setStep(steps[i1]);
-                                    //如果测试数据的长度与测试名称一致 则分开存储
-                                    if(stepsLength==testDatas.length){
-                                        testCaseStep.setTestData(testDatas[i1]);
-                                    }else{          //如果不相等则每个步骤都插入一致的测试数据
-                                        testCaseStep.setTestData(cellTestDataValue);
-                                    }
-                                    //预期结果的长度与测试名称一致 则分开存储
-                                    if(stepsLength==expectedResults.length){
-                                        testCaseStep.setExpectedResult(expectedResults[i1]);
-                                    }else{          //如果不相等则每个步骤都插入一致的测试数据
-                                        testCaseStep.setExpectedResult(cellExpectedResultValue);
-                                    }
-                                    //实际结果的长度与测试名称一致 则分开存储
-                                    if(stepsLength==actualResult.length){
-                                        //testCaseStep.setStatus(actualResult[i1]);
-                                    }else{          //如果不相等则每个步骤都插入一致的测试数据
-                                        //testCaseStep.setStatus(cellActualResultValue);
-                                    }
-                                    testCaseSteps.add(testCaseStep);
-                                }
-                            }else{
-                                TestCaseStep testCaseStep = new TestCaseStep();
-                                testCaseStep.setTestCaseId(testCase.getId());
-                                testCaseStep.setTestData(setpValue);
+                    //Actual Result 实际结果
+                    String cellActualResultValue = getCellValue( errorTipsMap,
+                            rowValue.getJSONObject("stepActualResultCol"), true);
+                    Integer ifSplitTestStep=jsonObject.getInteger("ifSplitTestStep");
+                    //是否分隔
+                    if(1==ifSplitTestStep){
+                        String splitTestStep = jsonObject.getString("splitTestStep");
+                        String[] steps = setpValue.split(splitTestStep);
+                        String[] testDatas = cellTestDataValue.split(splitTestStep);
+                        String[] expectedResults = cellExpectedResultValue.split(splitTestStep);
+                        String[] actualResult = cellActualResultValue.split(splitTestStep);
+                        for (int i1 = 0; i1 < steps.length; i1++) {
+                            int stepsLength = steps.length;
+                            TestCaseStep testCaseStep = new TestCaseStep();
+                            testCaseStep.setTestCaseId(testCase.getId());
+                            testCaseStep.setCreateTime(new Date());
+                            testCaseStep.setStatus(0);
+                            testCaseStep.setStep(steps[i1]);
+                            //如果测试数据的长度与测试名称一致 则分开存储
+                            if(stepsLength==testDatas.length){
+                                testCaseStep.setTestData(testDatas[i1]);
+                            }else{          //如果不相等则每个步骤都插入一致的测试数据
                                 testCaseStep.setTestData(cellTestDataValue);
+                            }
+                            //预期结果的长度与测试名称一致 则分开存储
+                            if(stepsLength==expectedResults.length){
+                                testCaseStep.setExpectedResult(expectedResults[i1]);
+                            }else{          //如果不相等则每个步骤都插入一致的测试数据
                                 testCaseStep.setExpectedResult(cellExpectedResultValue);
-                                testCaseStep.setStatus(0);
-                                testCaseStep.setCreateTime(new Date());
+                            }
+                            //实际结果的长度与测试名称一致 则分开存储
+                            if(stepsLength==actualResult.length){
+                                //testCaseStep.setStatus(actualResult[i1]);
+                            }else{          //如果不相等则每个步骤都插入一致的测试数据
                                 //testCaseStep.setStatus(cellActualResultValue);
-                                testCaseSteps.add(testCaseStep);
                             }
-                        }else{
-                            buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
-                                    ,jsonObject.getString("stepCol"),rowNum,null);
-                            errorFlag = true;
+                            testCaseSteps.add(testCaseStep);
                         }
-                        //判断是否异常
-                        if(!errorFlag){
-                            Resp<String> insert = this.insert(testCase);
-                            if (insert.getCode().equals("200")) {
-                                for (TestCaseStep testCaseStep : testCaseSteps) {
-                                    testCaseStepDao.insert(testCaseStep);
-                                }
-                                successCount++;
-                            }else{
-                                throw new BizException(insert.getCode(),insert.getMsg());
-                            }
-                        }else{
-                            errorCount++;
-                        }
+                    }else{
+                        TestCaseStep testCaseStep = new TestCaseStep();
+                        testCaseStep.setTestCaseId(testCase.getId());
+                        testCaseStep.setTestData(setpValue);
+                        testCaseStep.setTestData(cellTestDataValue);
+                        testCaseStep.setExpectedResult(cellExpectedResultValue);
+                        testCaseStep.setStatus(0);
+                        testCaseStep.setCreateTime(new Date());
+                        //testCaseStep.setStatus(cellActualResultValue);
+                        testCaseSteps.add(testCaseStep);
                     }
+                }else{
+                    buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
+                            ,rowValue.getJSONObject("stepCol"),null);
+                }
+                //判断是否异常
+                if(errorTipsMap.isEmpty()){
+                    Resp<String> insert = this.insert(testCase);
+                    if (insert.getCode().equals("200")) {
+                        for (TestCaseStep testCaseStep : testCaseSteps) {
+                            testCaseStepDao.insert(testCaseStep);
+                        }
+                        successCount++;
+                    }else{
+                        throw new BizException(insert.getCode(),insert.getMsg());
+                    }
+                }else{
+                    errorCount++;
                 }
             }
             return new Resp.Builder<ImportTestCaseDto>().setData(buildImportTestCaseDto(errorTipsMap, successCount)).ok();
-        }catch (BizException e){
+        }catch (Exception e){
             logger.error("class: TestCaseServiceImpl#importTestCase,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<ImportTestCaseDto>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<ImportTestCaseDto>().buildResult(SysConstantEnum.SYSTEM_BUSY.getCode(),e.getMessage());
         }
+    }
+
+
+    /**
+     * 根据文件封装col数据
+     * @param suffix 文件后缀
+     * @param inputStream  文件流
+     * @param cellIndexObject 列的下标JSON
+     * @param ifIgnorFirstRow 是否忽略第一行
+     * @return
+     */
+    public JSONArray buildRowValueArray(String suffix,InputStream inputStream,
+                                        JSONObject cellIndexObject,
+                                        Integer ifIgnorFirstRow) throws IOException {
+        JSONArray rowValueArray = new JSONArray();
+        if(suffix.equals("csv")){
+            //编码格式要是用GBK
+            InputStreamReader is = new InputStreamReader(inputStream, "GBK");
+            BufferedReader reader=new BufferedReader(is);
+            CSVParser parser = CSVFormat.DEFAULT.parse(reader);
+            int rownum = 0;
+
+            // 读取文件每行内容
+            for (CSVRecord record : parser.getRecords()) {
+                //  跳过表头
+                if (1==ifIgnorFirstRow&&rownum==0) {
+                    rownum++;
+                    continue;
+                }
+                JSONObject rowValue = new JSONObject();
+                //封装数据
+                for (String colKey : cellIndexObject.keySet()) {
+                    JSONObject colValue = new JSONObject();
+                    Integer colIndex = cellIndexObject.getInteger(colKey);
+                    String value = record.get(colIndex);
+                    colValue.put("value", value);
+                    colValue.put("rownum", rownum);
+                    colValue.put("colIndex",colIndex);
+                    colValue.put("colLetter",getColLetterByIndex(colIndex));
+                    rowValue.put(colKey,colValue);
+                    //colValueArray.add(colKey);
+                }
+                rowValueArray.add(rowValue);
+                rownum++;
+            }
+        }else{
+            Workbook workbook= null;
+            if(suffix.equals("xls")){
+                workbook = new HSSFWorkbook(inputStream);
+            } else {
+                workbook = new XSSFWorkbook(inputStream);
+            }
+            Sheet sheet = workbook.getSheetAt(0);
+            int lastRowNum = sheet.getPhysicalNumberOfRows();
+            for (int rownum = 0; rownum < lastRowNum; rownum++) {
+                if (1 == ifIgnorFirstRow && rownum == 0) {
+                    continue;
+                }
+                Row row = sheet.getRow(rownum);
+                JSONObject rowValue = new JSONObject();
+                //封装数据
+                for (String colKey : cellIndexObject.keySet()) {
+                    JSONObject colValue = new JSONObject();
+                    Integer colIndex = cellIndexObject.getInteger(colKey);
+                    Cell cell = row.getCell(colIndex);
+                    cell.setCellType(CellType.STRING);
+                    String stringCellValue = cell.getStringCellValue();
+                    colValue.put("value", stringCellValue);
+                    colValue.put("rownum", rownum);
+                    colValue.put("colIndex",colIndex);
+                    colValue.put("colLetter",getColLetterByIndex(colIndex));
+                    rowValue.put(colKey,colValue);
+                }
+                rowValueArray.add(rowValue);
+            }
+        }
+        return rowValueArray;
     }
 
     /**
@@ -464,7 +521,7 @@ public class TestCaseServiceImpl implements TestCaseService {
                     String[] split = s.split("-");
                     strings.add("列" + split[0] + "的值应该【" + (split.length>=2? split[1]:"")+ "】,错误行:"+stringStringMap.get(s));
                 }else{
-                    strings.add("错误行:"+stringStringMap.get(s));
+                    strings.add("列"+s+",错误行:"+stringStringMap.get(s));
                 }
             }
             errorMap.put(sysConstantEnum.getValue(), strings);
@@ -475,56 +532,49 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     /**
      * 获取cell的值，如果为required为true，则将错误信息插入
-     * @param cellIndexObject  构建导入测试模板获取列对应的cell下标
      * @param errorTipsMap 错误提示的map
-     * @param row 行
-     * @param colKey 导入列的名称
+     * @param colValue 导入列的值
      * @param required 是否必填
-     * @param errorFlag 错误标识
      * @return
      */
-    private String getCellValue(JSONObject cellIndexObject,
-                                Map<SysConstantEnum, Map<String, String>> errorTipsMap
-                                ,JSONObject jsonObjectParam
-                                ,Row row,String colKey,
-                                boolean required,Boolean errorFlag){
-        if (cellIndexObject.containsKey(colKey)) {
-            Cell cell = row.getCell(cellIndexObject.getInteger(colKey));
-            String value = cell.getStringCellValue();
-            if(required){
-                if (StringUtils.isBlank(value)) {
-                    buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
-                            ,jsonObjectParam.getString(colKey),row.getRowNum(),null);
-                    if(errorFlag) {
-                        errorFlag = false;
-                    }
-                }
-            }
+    private String getCellValue( Map<SysConstantEnum, Map<String, String>> errorTipsMap
+                                ,JSONObject colValue,
+                                boolean required){
+        String value = "";
+        if (null != colValue && StringUtils.isNotBlank(value = colValue.getString("value"))) {
             return value;
+        }else {
+            if(required){
+                buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
+                        ,colValue,null);
+            }
         }
-        return null;
+        return value;
     }
 
-    private void setValue(JSONObject cellIndexObject,String colKey,
-                                Row row,TestCase testCase,JSONObject jsonObjectParam,
+    /**
+     * 设置字符串的值
+     * @param colValue
+     * @param testCase
+     * @param errorTipsMap
+     * @param field
+     * @param required
+     */
+    private void setValue(JSONObject colValue,TestCase testCase,
                                 Map<SysConstantEnum, Map<String, String>> errorTipsMap
-                                ,String field,boolean required,Boolean errorFlag){
+                                ,String field,boolean required){
         try {
-            if (cellIndexObject.containsKey(colKey)) {
-                Cell cell = row.getCell(cellIndexObject.getInteger(colKey));
-                String value = cell.getStringCellValue();
-                if(StringUtils.isNotBlank(value)){
+            String value = null;
+            if (null != colValue && StringUtils.isNotBlank(value = colValue.getString("value"))) {
+                if (StringUtils.isNotBlank(value)) {
                     Class<?> fieldType = testCase.getClass().getDeclaredField(field).getType();
                     testCase.getClass().getMethod("set" + field.substring(0, 1).toUpperCase() + field.substring(1),
-                            fieldType).invoke(testCase,value);
-                }else{
-                    if(required){
-                        buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
-                                ,jsonObjectParam.getString(colKey),row.getRowNum(),null);
-                        if(errorFlag) {
-                            errorFlag = false;
-                        }
-                    }
+                            fieldType).invoke(testCase, value);
+                }
+            } else {
+                if (required) {
+                    buildErrorTips(errorTipsMap, SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
+                            , colValue, null);
                 }
             }
         } catch (Exception e) {
@@ -534,52 +584,38 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     /**
      * 设置下拉的字段
-     * @param cellIndexObject  构建导入测试模板获取列对应的cell下标
-     * @param colKey 导入列的名称
-     * @param row 行
+     * @param colValue 列的值
      * @param allow 筛选的字典
      * @param testCase 要设置字段的对象
-     * @param jsonObjectParam 前端传入的导入模板
      * @param errorTipsMap 错误提示的map
      * @param field 要设置的字段
-     * @param errorFlag 是否错误
      * @throws NoSuchFieldException
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-    private void setSelectValue(JSONObject cellIndexObject,String colKey,
-                      Row row,List<String> allow,TestCase testCase
-                        ,JSONObject jsonObjectParam,
+    private void setSelectValue(JSONObject colValue,
+                                List<String> allow,TestCase testCase,
                       Map<SysConstantEnum, Map<String, String>> errorTipsMap
-                        ,String field,Boolean errorFlag,boolean required){
+                        ,String field,boolean required){
         try {
-            if (cellIndexObject.containsKey(colKey)) {
-                Cell cell = row.getCell(cellIndexObject.getInteger(colKey));
-                cell.setCellType(CellType.STRING);
-                String stringCellValue = cell.getStringCellValue();
-                if (StringUtils.isNotBlank(stringCellValue)) {
-                    if (allow.contains(stringCellValue)) {
+            String value = null;
+            if (null!=colValue && StringUtils.isNotBlank(value = colValue.getString("value"))) {
+                if (StringUtils.isNotBlank(value)) {
+                    if (allow.contains(value)) {
                         Class<?> fieldType = testCase.getClass().getDeclaredField(field).getType();
                         testCase.getClass().getMethod("set" + field.substring(0, 1).toUpperCase() + field.substring(1),
-                                fieldType).invoke(testCase,stringCellValue);
+                                fieldType).invoke(testCase,value);
                     }else {
                         buildErrorTips(errorTipsMap, SysConstantEnum.IMPORT_TESTCASE_ERROR_NOTSELECT
-                                , jsonObjectParam.getString(colKey), row.getRowNum(), String.join(",",allow));
-                        if(errorFlag) {
-                            errorFlag = false;
-                        }
-                    }
-                }else{
-                    if(required){
-                        buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
-                                ,jsonObjectParam.getString(colKey),row.getRowNum(),null);
-                        if(errorFlag) {
-                            errorFlag = false;
-                        }
+                                , colValue, String.join(",",allow));
                     }
                 }
-
+            }else{
+                if(required){
+                    buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
+                            ,colValue,null);
+                }
             }
         } catch (Exception e) {
             throw new BizException(e.getMessage());
@@ -592,29 +628,30 @@ public class TestCaseServiceImpl implements TestCaseService {
      *
      * @param tipsMap         原map
      * @param sysConstantEnum 错误类型
-     * @param col             列号
-     * @param row             行数
+     * @param colValue 列
      * @param selectVal       下拉内容，错误类型为下拉必填
      */
-    private void buildErrorTips(Map<SysConstantEnum, Map<String,String>> tipsMap, SysConstantEnum sysConstantEnum,
-                                String col, int row, String selectVal) {
+    private void buildErrorTips(Map<SysConstantEnum, Map<String,String>> tipsMap,
+                                SysConstantEnum sysConstantEnum,
+                                JSONObject colValue, String selectVal) {
         Map<String,String> errorMaps = tipsMap.get(sysConstantEnum);
         //判断此错误类型是否已经添加
         if (null==errorMaps) {
             tipsMap.put(sysConstantEnum, new HashMap<>());
             errorMaps = tipsMap.get(sysConstantEnum);
         }
+        String col = colValue.getString("colLetter");
+        Integer rownum = colValue.getInteger("rownum") + 1;
         //如存在下拉项，则与列拼接成为key，方便后面截取拼接返回消息
         if (StringUtils.isNoneBlank(selectVal)) {
             col += "-" + selectVal;
         }
-        row ++;
         //存储错误列的行数
         String colMap = errorMaps.get(col);
         if (StringUtils.isBlank(colMap)) {
-            errorMaps.put(col, row+"");
+            errorMaps.put(col, rownum+"");
         } else {
-            errorMaps.put(col, errorMaps.get(col)+"," + row);
+            errorMaps.put(col, errorMaps.get(col)+"," + rownum);
         }
     }
 
@@ -638,6 +675,16 @@ public class TestCaseServiceImpl implements TestCaseService {
             }
         }
         return res;
+    }
+
+    /**
+     * 根据下标获取列的字母字母
+     * @param colIndex
+     * @return
+     */
+    private String getColLetterByIndex(int colIndex){
+        String letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        return letter.substring(colIndex,colIndex+1);
     }
 
     /**
