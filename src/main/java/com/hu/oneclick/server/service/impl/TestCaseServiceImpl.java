@@ -265,6 +265,8 @@ public class TestCaseServiceImpl implements TestCaseService {
             //判断文件后缀，根据不同后缀操作数据
             JSONArray rowValueArray = buildRowValueArray(suffix, multipartFile.getInputStream(),
                     cellIndexObject, ifIgnorFirstRow);
+            List<TestCase> testCases = new ArrayList<>();
+            Map<String, List<TestCaseStep>> testCaseStepsMap = new HashMap<>();
             for (Object o : rowValueArray) {
                 JSONObject rowValue=(JSONObject)o;
                 TestCase testCase = new TestCase();
@@ -400,9 +402,14 @@ public class TestCaseServiceImpl implements TestCaseService {
                     buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
                             ,rowValue.getJSONObject("stepCol"),null);
                 }
-                //判断是否异常
-                if(errorTipsMap.isEmpty()){
+                testCases.add(testCase);
+                testCaseStepsMap.put(testCase.getId(), testCaseSteps);
+            }
+            //判断是否异常
+            if(errorTipsMap.isEmpty()){
+                for (TestCase testCase : testCases) {
                     Resp<String> insert = this.insert(testCase);
+                    List<TestCaseStep> testCaseSteps = testCaseStepsMap.get(testCase.getId());
                     if (insert.getCode().equals("200")) {
                         for (TestCaseStep testCaseStep : testCaseSteps) {
                             testCaseStepDao.insert(testCaseStep);
@@ -411,9 +418,9 @@ public class TestCaseServiceImpl implements TestCaseService {
                     }else{
                         throw new BizException(insert.getCode(),insert.getMsg());
                     }
-                }else{
-                    errorCount++;
                 }
+            }else{
+                errorCount++;
             }
             return new Resp.Builder<ImportTestCaseDto>().setData(buildImportTestCaseDto(errorTipsMap, successCount)).ok();
         }catch (Exception e){
