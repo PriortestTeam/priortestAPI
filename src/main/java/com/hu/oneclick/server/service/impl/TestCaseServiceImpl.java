@@ -512,6 +512,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         importTestCaseDto.setSuccess(new ArrayList());
         importTestCaseDto.getSuccess().add("成功导入"+successCount+"条测试用例");
         importTestCaseDto.setError(new ArrayList());
+        importTestCaseDto.setWarning(new ArrayList());
         for (SysConstantEnum sysConstantEnum : errorTipsMap.keySet()) {
             Map<String, List<String>> errorMap = new HashMap<>();
             List<String> strings = new ArrayList<>();

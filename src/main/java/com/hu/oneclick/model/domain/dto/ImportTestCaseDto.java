@@ -13,12 +13,12 @@ import java.util.List;
 @Data
 public class ImportTestCaseDto  implements Serializable {
 
-    private List error;
+    private List<Object> error;
 
 
-    private List warning;
+    private List<Object> warning;
 
 
-    private List success;
+    private List<Object> success;
 
 }
