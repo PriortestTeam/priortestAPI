@@ -54,7 +54,8 @@ public enum SysConstantEnum {
     //测试用例导入定义错误类型
     IMPORT_TESTCASE_ERROR_NOTSELECT("NOTSELECT","是属于下拉菜单的，导入数据必须与系统中已有数据相对应"),
     IMPORT_TESTCASE_ERROR_REQUIRED("REQUIRED","必填项未填写，导入数据必须填写此项"),
-    IMPORT_TESTCASE_ERROR_NOFEATURE("NOFEATURE","未找到存在项目中Feature")
+    IMPORT_TESTCASE_ERROR_NOFEATURE("NOFEATURE","未找到存在项目中Feature"),
+    IMPORT_TESTCASE_ERROR_EXIST_FEATURE_EXTERNALID("EXIST_FEATURE_EXTERNALID","此Feature下已存在ExternaID无法进行新增"),
     ;
 
 

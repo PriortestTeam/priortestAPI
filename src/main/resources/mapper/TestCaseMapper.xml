@@ -37,7 +37,7 @@
         select
         id, project_id, title, priority, feature, description, executed_date, author_name, create_time, update_time,
         user_id, browser, platform, version, case_category, test_type, externa_id, env, pre_condition, last_run_status,
-        `module`,test_device,test_data,test_method,foreign_id
+        `module`,test_device,test_data,test_method,foreign_id,status
         from oneclick.test_case
         <where>
             <if test="id != null">
@@ -100,7 +100,6 @@
             <if test="lastRunStatus != null">
                 and last_run_status = #{lastRunStatus}
             </if>
-
 
             <if test="filter != null and filter != ''">
                 ${filter}
@@ -222,6 +221,9 @@
             </if>
             <if test="testMethod != null and testMethod != ''">
                 test_method = #{testMethod},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
             </if>
             update_time=NOW()
         </set>

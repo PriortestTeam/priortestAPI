@@ -6,20 +6,16 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.util.DateUtil;
+import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.dao.TestCaseStepDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.Feature;
-import com.hu.oneclick.model.domain.ModifyRecord;
-import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.TestCaseStep;
+import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.*;
-import com.hu.oneclick.server.service.ModifyRecordsService;
-import com.hu.oneclick.server.service.QueryFilterService;
-import com.hu.oneclick.server.service.SysCustomFieldService;
-import com.hu.oneclick.server.service.TestCaseService;
+import com.hu.oneclick.server.service.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -62,8 +58,13 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     private final TestCaseStepDao testCaseStepDao;
 
+    private final MailService mailService;
+
+    private final ViewService viewService;
+
     public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService
-            , QueryFilterService queryFilterService, FeatureDao featureDao,SysCustomFieldService sysCustomFieldService, TestCaseStepDao testCaseStepDao) {
+            , QueryFilterService queryFilterService, FeatureDao featureDao,SysCustomFieldService sysCustomFieldService
+            , TestCaseStepDao testCaseStepDao,MailService mailService,ViewService viewService) {
         this.testCaseDao = testCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
@@ -71,6 +72,8 @@ public class TestCaseServiceImpl implements TestCaseService {
         this.featureDao = featureDao;
         this.sysCustomFieldService = sysCustomFieldService;
         this.testCaseStepDao = testCaseStepDao;
+        this.mailService = mailService;
+        this.viewService = viewService;
     }
 
 
@@ -107,12 +110,16 @@ public class TestCaseServiceImpl implements TestCaseService {
             //验证参数
             testCase.verify();
             //验证是否存在
-            verifyIsExist(testCase.getTitle(),testCase.getProjectId());
+            verifyIsExist(testCase.getTitle(),testCase.getProjectId(),null);
+            verifyIsExistExternaID(testCase.getExternaId(), testCase.getFeature(),null);
             testCase.setUserId(jwtUserService.getMasterId());
             testCase.setAuthorName(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
-            Date date = new Date();
-            testCase.setCreateTime(date);
-            testCase.setUpdateTime(date);
+            //判断创建时间是否传入，如未传入自动生成
+            if (null==testCase.getCreateTime()) {
+                Date date = new Date();
+                testCase.setCreateTime(date);
+                testCase.setUpdateTime(date);
+            }
             return Result.addResult(testCaseDao.insert(testCase));
         }catch (BizException e){
             logger.error("class: TestCaseServiceImpl#insert,error []" + e.getMessage());
@@ -126,7 +133,8 @@ public class TestCaseServiceImpl implements TestCaseService {
     public Resp<String> update(TestCase testCase) {
         try {
             //验证是否存在
-            verifyIsExist(testCase.getTitle(),testCase.getProjectId());
+            verifyIsExist(testCase.getTitle(),testCase.getProjectId(),testCase.getId());
+            verifyIsExistExternaID(testCase.getExternaId(), testCase.getFeature(),testCase.getId());
             testCase.setUserId(jwtUserService.getMasterId());
             //新增修改字段记录
             modifyRecord(testCase);
@@ -251,7 +259,7 @@ public class TestCaseServiceImpl implements TestCaseService {
             List<String> allowPriority =Arrays.asList("高", "中", "低");
             List<String> allowBrowser = Arrays.asList("Google Chrome", "Fire Fox", "IE");
             List<String> allowPlatform = Arrays.asList("window", "mac");
-            List<String> statusPlatform = Arrays.asList("成功", "准备","草稿");
+            List<String> statusPlatform = Arrays.asList("Ready", "Draft");
             List<String> moudleMergeValues = sysCustomFieldService.getSysCustomField("moudle").getData().getMergeValues();
             List<String> versionsMergeValues = sysCustomFieldService.getSysCustomField("versions").getData().getMergeValues();
             List<String> testCategoryMergeValues = sysCustomFieldService.getSysCustomField("testCategory").getData().getMergeValues();
@@ -259,9 +267,11 @@ public class TestCaseServiceImpl implements TestCaseService {
             List<String> testEnvMergeValues = sysCustomFieldService.getSysCustomField("testEnv").getData().getMergeValues();
             List<String> testDeviceMergeValues = sysCustomFieldService.getSysCustomField("testDevice").getData().getMergeValues();
             List<String> testMethodMergeValues = sysCustomFieldService.getSysCustomField("testMethod").getData().getMergeValues();
+            Date now = new Date();
             Map<SysConstantEnum, Map<String, String>> errorTipsMap = new HashMap<>();
             int successCount = 0;
             int errorCount = 0;
+            int updateCount = 0;
             //判断文件后缀，根据不同后缀操作数据
             JSONArray rowValueArray = buildRowValueArray(suffix, multipartFile.getInputStream(),
                     cellIndexObject, ifIgnorFirstRow);
@@ -296,12 +306,15 @@ public class TestCaseServiceImpl implements TestCaseService {
                 //Pre-condition 测试条件
                 setValue(rowValue.getJSONObject("preConditionCol"),testCase
                         ,errorTipsMap,"preCondition",false);
-                //Comments 备注
+                //description 描述
                 setValue(rowValue.getJSONObject("descriptionCol"),testCase
                         ,errorTipsMap,"description",false);
                 //ExternalID
                 setValue(rowValue.getJSONObject("externalIdCol") ,testCase
                         ,errorTipsMap,"externaId",false);
+                //Comments 备注
+                setValue(rowValue.getJSONObject("commentsCol"),testCase
+                        ,errorTipsMap,"comments",false);
                 //处理固定字典类型
                 // Priority 优先级
                 setSelectValue(rowValue.getJSONObject("priorityCol"),allowPriority,testCase
@@ -312,6 +325,9 @@ public class TestCaseServiceImpl implements TestCaseService {
                 //Platform 平台
                 setSelectValue(rowValue.getJSONObject("platformCol"),allowPlatform,testCase
                         ,errorTipsMap,"platform",false);
+                //status 状态
+                setSelectValue(rowValue.getJSONObject("statusCol"),statusPlatform,testCase
+                        ,errorTipsMap,"status",false);
                 //处理动态字典类型
                 //Module 模块
                 setSelectValue(rowValue.getJSONObject("moduleCol"),moudleMergeValues,testCase
@@ -334,6 +350,28 @@ public class TestCaseServiceImpl implements TestCaseService {
                 //Automation 测试方法
                 setSelectValue(rowValue.getJSONObject("automationCol"),testMethodMergeValues,testCase
                         ,errorTipsMap,"testMethod",true);
+                ///判断是否新增或者更新，根据故事ID+ExternalID查询测试用例，如果存在则进行更新；
+
+                //判断ExternalI是否存在，进行判断下一步是否更新
+                if (jsonObject.containsKey("ifUpdateCase")) {
+                    JSONObject externalIdCol = rowValue.getJSONObject("externalIdCol");
+                    String externalId = externalIdCol.getString("value");
+                    TestCase queryFeaturExternalIDTestCase = new TestCase();
+                    queryFeaturExternalIDTestCase.setFeature(testCase.getFeature());
+                    queryFeaturExternalIDTestCase.setExternaId(externalId);
+                    queryFeaturExternalIDTestCase.setId(null);
+                    TestCase featurExternalIDTestCase = this.testCaseDao.selectOne(queryFeaturExternalIDTestCase);
+                    if(null!=featurExternalIDTestCase){
+                        Boolean ifUpdateCase =jsonObject.getBooleanValue("ifUpdateCase");
+                        if(ifUpdateCase){           //进行更新
+                            //将已存在ID打上标识，后续判断新增或插入
+                            testCase.setId("UPDATE"+featurExternalIDTestCase.getId());
+                        }else{  //如果存在，并且更新标识为否，提示用户此故事下，已经存在此ExternalID，无法进行插入
+                            buildErrorTips(errorTipsMap, SysConstantEnum.IMPORT_TESTCASE_ERROR_EXIST_FEATURE_EXTERNALID
+                                    ,externalIdCol, null);
+                        }
+                    }
+                }
 
                 //处理 Step
                 List<TestCaseStep> testCaseSteps = new ArrayList<>();
@@ -348,23 +386,18 @@ public class TestCaseServiceImpl implements TestCaseService {
                     //Expected Result 预期结果
                     String cellExpectedResultValue = getCellValue(errorTipsMap,
                             rowValue.getJSONObject("stepExpectResultCol"), true);
-
-                    //Actual Result 实际结果
-                    String cellActualResultValue = getCellValue( errorTipsMap,
-                            rowValue.getJSONObject("stepActualResultCol"), true);
-                    Integer ifSplitTestStep=jsonObject.getInteger("ifSplitTestStep");
+                    Boolean ifSplitTestStep = jsonObject.getBoolean("ifSplitTestStep");
                     //是否分隔
-                    if(1==ifSplitTestStep){
+                    if(ifSplitTestStep){
                         String splitTestStep = jsonObject.getString("splitTestStep");
                         String[] steps = setpValue.split(splitTestStep);
                         String[] testDatas = cellTestDataValue.split(splitTestStep);
                         String[] expectedResults = cellExpectedResultValue.split(splitTestStep);
-                        String[] actualResult = cellActualResultValue.split(splitTestStep);
+
                         for (int i1 = 0; i1 < steps.length; i1++) {
                             int stepsLength = steps.length;
                             TestCaseStep testCaseStep = new TestCaseStep();
-                            testCaseStep.setTestCaseId(testCase.getId());
-                            testCaseStep.setCreateTime(new Date());
+                            testCaseStep.setCreateTime(now);
                             testCaseStep.setStatus(0);
                             testCaseStep.setStep(steps[i1]);
                             //如果测试数据的长度与测试名称一致 则分开存储
@@ -379,23 +412,15 @@ public class TestCaseServiceImpl implements TestCaseService {
                             }else{          //如果不相等则每个步骤都插入一致的测试数据
                                 testCaseStep.setExpectedResult(cellExpectedResultValue);
                             }
-                            //实际结果的长度与测试名称一致 则分开存储
-                            if(stepsLength==actualResult.length){
-                                //testCaseStep.setStatus(actualResult[i1]);
-                            }else{          //如果不相等则每个步骤都插入一致的测试数据
-                                //testCaseStep.setStatus(cellActualResultValue);
-                            }
                             testCaseSteps.add(testCaseStep);
                         }
                     }else{
                         TestCaseStep testCaseStep = new TestCaseStep();
-                        testCaseStep.setTestCaseId(testCase.getId());
                         testCaseStep.setTestData(setpValue);
                         testCaseStep.setTestData(cellTestDataValue);
                         testCaseStep.setExpectedResult(cellExpectedResultValue);
                         testCaseStep.setStatus(0);
-                        testCaseStep.setCreateTime(new Date());
-                        //testCaseStep.setStatus(cellActualResultValue);
+                        testCaseStep.setCreateTime(now);
                         testCaseSteps.add(testCaseStep);
                     }
                 }else{
@@ -403,26 +428,54 @@ public class TestCaseServiceImpl implements TestCaseService {
                             ,rowValue.getJSONObject("stepCol"),null);
                 }
                 testCases.add(testCase);
-                testCaseStepsMap.put(testCase.getId(), testCaseSteps);
+                testCaseStepsMap.put(testCase.getId().replace("UPDATE",""), testCaseSteps);
             }
-            //判断是否异常
+
+            //判断是否异常,如出现异常，则全部进行操作db
             if(errorTipsMap.isEmpty()){
+                //判断是否新增或者更新，根据故事ID+ExternalID查询测试用例，如果存在则进行更新；
                 for (TestCase testCase : testCases) {
-                    Resp<String> insert = this.insert(testCase);
+                    Resp<String> insertOrUpdate = null;
+                    //如ID为空则进行新增
+                    if(!testCase.getId().startsWith("UPDATE")){
+                        testCase.setCreateTime(now);
+                        testCase.setUpdateTime(now);
+                        insertOrUpdate = this.insert(testCase);
+                        successCount++;
+                    }else{          //如ID不为空更新
+                        testCase.setId(testCase.getId().replace("UPDATE",""));
+                        insertOrUpdate= this.update(testCase);
+                        //删除测试用例步骤重新插入
+                        TestCaseStep delTestCase = new TestCaseStep();
+                        delTestCase.setTestCaseId(testCase.getId());
+                        delTestCase.setId(null);
+                        this.testCaseStepDao.delete(delTestCase);
+                        updateCount++;
+                    }
                     List<TestCaseStep> testCaseSteps = testCaseStepsMap.get(testCase.getId());
-                    if (insert.getCode().equals("200")) {
+                    if (insertOrUpdate.getCode().equals("200")) {
                         for (TestCaseStep testCaseStep : testCaseSteps) {
+                            testCaseStep.setTestCaseId(testCase.getId());
                             testCaseStepDao.insert(testCaseStep);
                         }
-                        successCount++;
                     }else{
-                        throw new BizException(insert.getCode(),insert.getMsg());
+                        throw new BizException(insertOrUpdate.getCode(),insertOrUpdate.getMsg());
                     }
                 }
+                //判断是否创建视图
+                Boolean ifCreateView =jsonObject.getBooleanValue("ifCreateView");
+                if(ifCreateView){
+                    createViewImportTestCase(now);
+                }
             }else{
-                errorCount++;
+                errorCount=rowValueArray.size();
             }
-            return new Resp.Builder<ImportTestCaseDto>().setData(buildImportTestCaseDto(errorTipsMap, successCount)).ok();
+            //判断是否发送email
+            Boolean ifSendEmail =jsonObject.getBooleanValue("ifSendEmail");
+            if (ifSendEmail) {
+                sendEmailImportTestCase(successCount,updateCount,errorCount);
+            }
+            return new Resp.Builder<ImportTestCaseDto>().setData(buildImportTestCaseDto(errorTipsMap, successCount,updateCount,errorCount)).ok();
         }catch (Exception e){
             logger.error("class: TestCaseServiceImpl#importTestCase,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -430,7 +483,56 @@ public class TestCaseServiceImpl implements TestCaseService {
         }
     }
 
+    /**
+     * 导入测试用例发送emial
+     * @param successCount
+     * @param updateCount
+     * @param errorCount
+     */
+    private void sendEmailImportTestCase(int successCount,int updateCount,int errorCount){
+        //获取当前登录人的邮箱
+        String email = jwtUserService.getUserLoginInfo().getSysUser().getEmail();
+        //判断是否子用户，根据分割标识
+        if(email.indexOf(OneConstant.COMMON.SUB_USER_SEPARATOR)>0){
+            email = email.split(OneConstant.COMMON.SUB_USER_SEPARATOR)[1];
+        }
+        MailDto mailDto = new MailDto();
+        mailDto.setToEmail(email);
+        mailDto.setTitle(OneConstant.EMAIL.TITLE_IMPORTTESTCASE);
+        mailDto.setTemplateHtmlName(OneConstant.EMAIL.TEMPLATEHTMLNAME_IMPORTTESTCASE);
+        Map<String, Object> attachmentMap = new HashMap<>();
+        attachmentMap.put("importDateTime", DateUtil.format(new Date(),"yyyy年MM月dd日 HH:mm:ss" ));
+        attachmentMap.put("successCount", successCount);
+        attachmentMap.put("errorCount", errorCount);
+        attachmentMap.put("updateCount", updateCount);
+        mailDto.setAttachment(attachmentMap);
+        mailService.sendTemplateMail(mailDto);
+    }
 
+    /**
+     * 导入测试创建视图
+     * @param now 导入时间
+     */
+    private void  createViewImportTestCase(Date now){
+        String nowString = DateUtil.format(now,"yyyy-MM-dd HH:mm:ss");
+        JSONObject filterJson = new JSONObject();
+        filterJson.put("andOr","and");
+        filterJson.put("beginDate", nowString);
+        filterJson.put("endDate", nowString);
+        filterJson.put("fieldName","createTime");
+        filterJson.put("intVal", "");
+        filterJson.put("sourceVal", "");
+        filterJson.put("textVal", "");
+        filterJson.put("type", "fDateTime");
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add(filterJson);
+        View view = new View();
+        view.setFilter(jsonArray.toJSONString());
+        view.setScope("TestCase");
+        view.setIsPrivate(0);
+        view.setTitle("创建时间："+nowString+"-"+nowString);
+        viewService.addView(view);
+    }
     /**
      * 根据文件封装col数据
      * @param suffix 文件后缀
@@ -475,10 +577,10 @@ public class TestCaseServiceImpl implements TestCaseService {
             }
         }else{
             Workbook workbook= null;
-            if(suffix.equals("xls")){
-                workbook = new HSSFWorkbook(inputStream);
-            } else {
+            if(suffix.equals("xlsx")){
                 workbook = new XSSFWorkbook(inputStream);
+            } else {
+                workbook = new HSSFWorkbook(inputStream);
             }
             Sheet sheet = workbook.getSheetAt(0);
             int lastRowNum = sheet.getPhysicalNumberOfRows();
@@ -511,13 +613,20 @@ public class TestCaseServiceImpl implements TestCaseService {
      * 构建导入返回参数
      * @param errorTipsMap
      * @param successCount
+     * @param updateCount
      * @return
      */
     private ImportTestCaseDto buildImportTestCaseDto(Map<SysConstantEnum, Map<String, String>> errorTipsMap,
-                                                     int successCount){
+                                                     int successCount,int updateCount,int errorCount){
         ImportTestCaseDto importTestCaseDto = new ImportTestCaseDto();
         importTestCaseDto.setSuccess(new ArrayList());
-        importTestCaseDto.getSuccess().add("成功导入"+successCount+"条测试用例");
+        importTestCaseDto.getSuccess().add("导入成功"+successCount+"条测试用例");
+        if(updateCount>0){
+            importTestCaseDto.getSuccess().add("更新成功"+updateCount+"条测试用例");
+        }
+        if(errorCount>0){
+            importTestCaseDto.getSuccess().add("导入异常"+errorCount+"条测试用例");
+        }
         importTestCaseDto.setError(new ArrayList());
         importTestCaseDto.setWarning(new ArrayList());
         for (SysConstantEnum sysConstantEnum : errorTipsMap.keySet()) {
@@ -713,7 +822,7 @@ public class TestCaseServiceImpl implements TestCaseService {
     /**
      *  查重
      */
-    private void verifyIsExist(String title,String projectId){
+    private void verifyIsExist(String title,String projectId,String testCaseId){
         if (StringUtils.isEmpty(title)){
             return;
         }
@@ -721,8 +830,34 @@ public class TestCaseServiceImpl implements TestCaseService {
         testCase.setTitle(title);
         testCase.setProjectId(projectId);
         testCase.setId(null);
-        if (testCaseDao.selectOne(testCase) != null){
+        TestCase testCaseOne = testCaseDao.selectOne(testCase);
+        //如果testCaseId不为空则判断查询出ID是否与传入ID一致说明不重复
+        if(testCaseId!=null&&testCaseOne!=null&&!testCaseOne.getId().equals(testCaseId)){
             throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),testCase.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
+        }else if (testCaseId==null&&testCaseOne!= null){
+            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),testCase.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
+        }
+    }
+
+    /**
+     * 判断externaID是否在故事下存在
+     * @param externaID
+     * @param feature
+     */
+    private void verifyIsExistExternaID(String externaID,String feature,String testCaseId){
+        if (StringUtils.isEmpty(externaID)){
+            return;
+        }
+        TestCase testCase = new TestCase();
+        testCase.setExternaId(externaID);
+        testCase.setFeature(feature);
+        testCase.setId(null);
+        TestCase testCaseOne = testCaseDao.selectOne(testCase);
+        //如果testCaseId不为空则判断查询出ID是否与传入ID一致说明不重复
+        if(testCaseId!=null&&testCaseOne!=null&&!testCaseOne.getId().equals(testCaseId)){
+            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),"externaID:"+externaID + SysConstantEnum.DATE_EXIST.getValue());
+        }else if (testCaseId==null&&testCaseOne!= null){
+            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),"externaID:"+externaID + SysConstantEnum.DATE_EXIST.getValue());
         }
     }
 
