@@ -93,14 +93,19 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     @Override
     public Resp<List<TestCase>> queryList(TestCaseDto testCase) {
-        testCase.queryListVerify();
-        String masterId = jwtUserService.getMasterId();
-        testCase.setUserId(masterId);
+        try {
+            testCase.queryListVerify();
+            String masterId = jwtUserService.getMasterId();
+            testCase.setUserId(masterId);
 
-        testCase.setFilter(queryFilterService.mysqlFilterProcess(testCase.getViewTreeDto(),masterId));
+            testCase.setFilter(queryFilterService.mysqlFilterProcess(testCase.getViewTreeDto(), masterId));
 
-        List<TestCase> select = testCaseDao.queryList(testCase);
-        return new Resp.Builder<List<TestCase>>().setData(select).total(select).ok();
+            List<TestCase> select = testCaseDao.queryList(testCase);
+            return new Resp.Builder<List<TestCase>>().setData(select).total(select).ok();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

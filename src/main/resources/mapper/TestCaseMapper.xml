@@ -30,7 +30,8 @@
         <result property="testData" column="test_data" jdbcType="VARCHAR"/>
         <result property="testMethod" column="test_method" jdbcType="VARCHAR"/>
         <result property="foreignId" column="foreign_id" jdbcType="VARCHAR"/>
-
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="comments" column="comments" jdbcType="VARCHAR"/>
     </resultMap>
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="TestCaseMap">
@@ -135,7 +136,9 @@
                t.test_data as testData,
                t.test_method as testMethod,
                t.foreign_id as foreignId,
-               f.title as featureTitle
+               f.title as featureTitle,
+               t.status as status,
+               t.comments as comments
         from test_case t
         left join feature f on f.id = t.feature
         where t.id = #{id}
