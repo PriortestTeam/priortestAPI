@@ -41,7 +41,7 @@
     </select>
 
     <!--通过实体作为筛选条件查询-->
-    <select id="queryList" resultMap="SysCustomFieldExpandMap">
+    <select id="queryList" resultMap="SysCustomFieldExpandMap" flushCache="true">
         select
         id,
           user_id,

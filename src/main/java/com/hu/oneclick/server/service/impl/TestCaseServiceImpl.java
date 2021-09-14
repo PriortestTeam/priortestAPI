@@ -143,6 +143,9 @@ public class TestCaseServiceImpl implements TestCaseService {
             testCase.setUserId(jwtUserService.getMasterId());
             //新增修改字段记录
             modifyRecord(testCase);
+            if(null==testCase.getUpdateTime()){
+                testCase.setUpdateTime(new Date());
+            }
             return Result.updateResult(testCaseDao.update(testCase));
         }catch (BizException e){
             logger.error("class: TestCaseServiceImpl#update,error []" + e.getMessage());
@@ -272,7 +275,10 @@ public class TestCaseServiceImpl implements TestCaseService {
             List<String> testEnvMergeValues = sysCustomFieldService.getSysCustomField("testEnv").getData().getMergeValues();
             List<String> testDeviceMergeValues = sysCustomFieldService.getSysCustomField("testDevice").getData().getMergeValues();
             List<String> testMethodMergeValues = sysCustomFieldService.getSysCustomField("testMethod").getData().getMergeValues();
-            Date now = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.set(Calendar.MILLISECOND, 0);
+            Date now = calendar.getTime();
             Map<SysConstantEnum, Map<String, String>> errorTipsMap = new HashMap<>();
             int successCount = 0;
             int errorCount = 0;
@@ -449,6 +455,7 @@ public class TestCaseServiceImpl implements TestCaseService {
                         successCount++;
                     }else{          //如ID不为空更新
                         testCase.setId(testCase.getId().replace("UPDATE",""));
+                        testCase.setUpdateTime(now);
                         insertOrUpdate= this.update(testCase);
                         //删除测试用例步骤重新插入
                         TestCaseStep delTestCase = new TestCaseStep();
@@ -535,7 +542,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         view.setFilter(jsonArray.toJSONString());
         view.setScope("TestCase");
         view.setIsPrivate(0);
-        view.setTitle("创建时间："+nowString+"-"+nowString);
+        view.setTitle("创建时间："+nowString+"~"+nowString);
         viewService.addView(view);
     }
     /**
