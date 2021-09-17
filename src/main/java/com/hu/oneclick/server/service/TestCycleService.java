@@ -34,4 +34,5 @@ public interface TestCycleService {
 
     Resp<String> executeTestCase(ExecuteTestCaseDto executeTestCaseDto);
 
+    Resp<List<String>> getTestCycleVersion(String projectId);
 }

@@ -26,4 +26,8 @@ public interface TestCaseService {
     Resp<String> delete(String id);
 
     Resp<Feature> queryTestNeedByFeatureId(String featureId);
+
+    Resp<List<String>> getProjectEnv(String projectId);
+
+    Resp<List<String>> getProjectVersion(String projectId);
 }

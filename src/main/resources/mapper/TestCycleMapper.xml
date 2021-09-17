@@ -151,4 +151,8 @@
         where id = #{id}
     </update>
 
+    <select id="getTestCycleVersion" resultType="string" parameterType="java.lang.String">
+        SELECT DISTINCT version FROM test_cycle WHERE project_id = #{projectId}
+    </select>
+
 </mapper>

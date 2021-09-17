@@ -3,6 +3,8 @@ package com.hu.oneclick.controller;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
 import com.hu.oneclick.server.service.ProjectService;
+import com.hu.oneclick.server.service.TestCaseService;
+import com.hu.oneclick.server.service.TestCycleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +23,30 @@ public class SignOffController {
 
     @Autowired
     private ProjectService projectService;
+    @Autowired
+    private TestCaseService testCaseService;
+    @Autowired
+    private TestCycleService testCycleService;
 
     @GetMapping("/getProject")
     public Resp<List<String>> getProject(){
         return projectService.getProject();
     }
+
+    @GetMapping("/getProjectEnv")
+    public Resp<List<String>> getProjectEnv(@RequestParam String projectId){
+        return testCaseService.getProjectEnv(projectId);
+    }
+
+    @GetMapping("/getProjectVersion")
+    public Resp<List<String>> getProjectVersion(@RequestParam String projectId){
+        return testCaseService.getProjectVersion(projectId);
+    }
+
+    @GetMapping("/getTestCycleVersion")
+    public Resp<List<String>> getTestCycleVersion(@RequestParam String projectId){
+        return testCycleService.getTestCycleVersion(projectId);
+    }
+
 
 }

@@ -227,4 +227,12 @@
         </set>
         where id = #{id}
     </update>
+
+    <select id="getProjectEnv" resultType="string" parameterType="java.lang.String">
+        SELECT DISTINCT env FROM test_case WHERE project_id = #{projectId}
+    </select>
+
+    <select id="getProjectVersion" resultType="string" parameterType="java.lang.String">
+        SELECT DISTINCT version FROM test_case WHERE project_id = #{projectId}
+    </select>
 </mapper>

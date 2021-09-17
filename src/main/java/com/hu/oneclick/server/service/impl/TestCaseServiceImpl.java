@@ -264,5 +264,15 @@ public class TestCaseServiceImpl implements TestCaseService {
         return args;
     }
 
+    @Override
+    public Resp<List<String>> getProjectEnv(String projectId) {
+        List<String> projectEnv= testCaseDao.getProjectEnv(projectId);
+        return new Resp.Builder<List<String>>().setData(projectEnv).ok();
+    }
 
+    @Override
+    public Resp<List<String>> getProjectVersion(String projectId) {
+        List<String> projectVersion= testCaseDao.getProjectVersion(projectId);
+        return new Resp.Builder<List<String>>().setData(projectVersion).ok();
+    }
 }

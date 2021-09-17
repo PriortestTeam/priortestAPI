@@ -58,7 +58,7 @@ logging:
 onclick:
   config:
     interceptor:
-      enable: true
+      enable: false
   default:
     photo: https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2511150983,4244929698&fm=26&gp=0.jpg
   minioConfig:

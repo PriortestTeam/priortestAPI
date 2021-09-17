@@ -19,4 +19,6 @@ public interface TestCycleDao extends BaseMapper<TestCycle> {
     int update(TestCycle testCycle);
 
     List<LeftJoinDto> queryTitles(@Param("projectId")String projectId, @Param("title") String title, @Param("masterId") String masterId);
+
+    List<String> getTestCycleVersion(String projectId);
 }
