@@ -3,7 +3,7 @@ package com.hu.oneclick.server.service;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
-import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
+import com.hu.oneclick.model.domain.dto.SignOffDto;
 
 import java.util.List;
 
@@ -33,4 +33,5 @@ public interface ProjectService {
     Resp<List<String>> getProject();
 
 
+    Resp<String> generate(SignOffDto signOffDto);
 }

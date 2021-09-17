@@ -12,7 +12,7 @@ import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
-import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
+import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import org.apache.commons.lang3.StringUtils;
@@ -192,4 +192,17 @@ public class ProjectServiceImpl implements ProjectService {
         return new Resp.Builder<List<String>>().setData(project).ok();
     }
 
+    /**
+     * 检测生成pdf表
+     * @param signOffDto
+     * @return
+     */
+    @Override
+    public Resp<String> generate(SignOffDto signOffDto) {
+        if (StringUtils.isEmpty(signOffDto.getProjectId())) {
+            return new Resp.Builder<String>().setData("请选择一个项目").fail();
+        }
+
+        return null;
+    }
 }
