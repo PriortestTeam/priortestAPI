@@ -221,13 +221,14 @@ public class ProjectServiceImpl implements ProjectService {
             return new Resp.Builder<String>().setData("请选择一个项目").fail();
         }
 
+        String[] split = signOffDto.getFileUrl().split("。");
+        creatExcel(split[0], split[1]);
         return null;
     }
 
     @Override
     public Resp<String> upload(MultipartFile file, HttpServletRequest req) {
         SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/");
-        String url;
         String format = sdf.format(new Date());
         String realPath = req.getServletContext().getRealPath("/") + format;
         File folder = new File(realPath);
@@ -236,30 +237,31 @@ public class ProjectServiceImpl implements ProjectService {
         }
         String oldName = file.getOriginalFilename();
         String imageName = UUID.randomUUID().toString();
-        String newName =  imageName+ oldName.substring(oldName.lastIndexOf("."));
+        String newName = imageName + oldName.substring(oldName.lastIndexOf("."));
         String uri = folder.getPath() + File.separator + newName;
         try {
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(uri));
-            url = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + format + newName;
         } catch (IOException e) {
             e.printStackTrace();
             return new Resp.Builder<String>().setData(e.getMessage()).fail();
         }
-        creatExcel(uri,imageName);
-        return new Resp.Builder<String>().setData(url).ok();
+
+        return new Resp.Builder<String>().setData(uri + "。" + imageName).ok();
     }
 
     private void creatExcel(String realPath, String imageName) {
 
         //创建Excel文件(Workbook)
         HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("Test");// 创建工作表(Sheet)
+        // 创建工作表(Sheet)
+        HSSFSheet sheet = workbook.createSheet("Test");
         FileInputStream stream = null;
         byte[] bytes = null;
         try {
             stream = new FileInputStream(realPath);
             bytes = new byte[(int) stream.getChannel().size()];
-            stream.read(bytes);//读取图片到二进制数组
+            //读取图片到二进制数组
+            stream.read(bytes);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -269,7 +271,7 @@ public class ProjectServiceImpl implements ProjectService {
         patriarch.createPicture(anchor, pictureIdx);
         //保存Excel文件
         try {
-            FileOutputStream out = new FileOutputStream(realPath.substring(0,realPath.lastIndexOf(File.separatorChar)+1)+imageName+".xls");
+            FileOutputStream out = new FileOutputStream(realPath.substring(0, realPath.lastIndexOf(File.separatorChar) + 1) + imageName + ".xls");
             workbook.write(out);
 
             out.close();//关闭文件流
