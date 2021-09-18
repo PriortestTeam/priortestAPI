@@ -15,7 +15,7 @@ public class SignOffDto {
     private String version;
     private String testCycleVersion;
     private List<String> issue;
-    private MultipartFile file;
+    private String fileUrl;
 
     public String getProjectId() {
         return projectId;
@@ -57,11 +57,11 @@ public class SignOffDto {
         this.issue = issue;
     }
 
-    public MultipartFile getFile() {
-        return file;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setFile(MultipartFile file) {
-        this.file = file;
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 }

@@ -15,15 +15,32 @@ import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.QueryFilterService;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
+import org.apache.poi.hssf.usermodel.HSSFPicture;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author qingyang
@@ -194,6 +211,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     /**
      * 检测生成pdf表
+     *
      * @param signOffDto
      * @return
      */
@@ -204,5 +222,59 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         return null;
+    }
+
+    @Override
+    public Resp<String> upload(MultipartFile file, HttpServletRequest req) {
+        SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/");
+        String url;
+        String format = sdf.format(new Date());
+        String realPath = req.getServletContext().getRealPath("/") + format;
+        File folder = new File(realPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        String oldName = file.getOriginalFilename();
+        String imageName = UUID.randomUUID().toString();
+        String newName =  imageName+ oldName.substring(oldName.lastIndexOf("."));
+        String uri = folder.getPath() + File.separator + newName;
+        try {
+            FileUtils.copyInputStreamToFile(file.getInputStream(), new File(uri));
+            url = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + format + newName;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Resp.Builder<String>().setData(e.getMessage()).fail();
+        }
+        creatExcel(uri,imageName);
+        return new Resp.Builder<String>().setData(url).ok();
+    }
+
+    private void creatExcel(String realPath, String imageName) {
+
+        //创建Excel文件(Workbook)
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet("Test");// 创建工作表(Sheet)
+        FileInputStream stream = null;
+        byte[] bytes = null;
+        try {
+            stream = new FileInputStream(realPath);
+            bytes = new byte[(int) stream.getChannel().size()];
+            stream.read(bytes);//读取图片到二进制数组
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        int pictureIdx = workbook.addPicture(bytes, HSSFWorkbook.PICTURE_TYPE_JPEG);
+        HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 0, 0, (short) 5, 5);
+        patriarch.createPicture(anchor, pictureIdx);
+        //保存Excel文件
+        try {
+            FileOutputStream out = new FileOutputStream(realPath.substring(0,realPath.lastIndexOf(File.separatorChar)+1)+imageName+".xls");
+            workbook.write(out);
+
+            out.close();//关闭文件流
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
