@@ -12,7 +12,7 @@ public class PDFUtil {
         String sourceFilePath="d:/test.xlsx";
         String desFilePath="d:/rest.pdf";
 
-        excel2pdf(sourceFilePath, desFilePath);
+        excelTopdf(sourceFilePath, desFilePath);
 
     }
 
@@ -39,7 +39,7 @@ public class PDFUtil {
      * @param sourceFilePath  excel文件
      * @param desFilePathd  pad 输出文件目录
      */
-    public static void excel2pdf(String sourceFilePath, String desFilePathd ){
+    public static void excelTopdf(String sourceFilePath, String desFilePathd ){
         if (!getLicense()) { // 验证License 若不验证则转化出的pdf文档会有水印产生
             return;
         }

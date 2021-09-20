@@ -4,6 +4,7 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
+import com.hu.oneclick.common.util.PDFUtil;
 import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
@@ -17,11 +18,15 @@ import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFPicture;
+import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,13 +221,100 @@ public class ProjectServiceImpl implements ProjectService {
      * @return
      */
     @Override
-    public Resp<String> generate(SignOffDto signOffDto) {
+    public Resp<String> generate(SignOffDto signOffDto, HttpServletRequest req) {
         if (StringUtils.isEmpty(signOffDto.getProjectId())) {
             return new Resp.Builder<String>().setData("请选择一个项目").fail();
         }
+        SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/");
+        String format = sdf.format(new Date());
+        //文件路径
+        String realPath = req.getServletContext().getRealPath("/") + format;
+        File folder = new File(realPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+//        String[] split = signOffDto.getFileUrl().split("。");
+//        creatSignExcel(split[0], split[1]);
 
-        String[] split = signOffDto.getFileUrl().split("。");
-        creatExcel(split[0], split[1]);
+        //创建Excel文件(Workbook)
+        HSSFWorkbook workbook = new HSSFWorkbook();
+
+        //边框
+        HSSFCellStyle style = workbook.createCellStyle();
+        style.setBorderTop(HSSFCellStyle.BORDER_THICK);//上边框
+        style.setBorderBottom(HSSFCellStyle.BORDER_THICK);//下边框
+        style.setBorderLeft(HSSFCellStyle.BORDER_THICK);//左边框
+        style.setBorderRight(HSSFCellStyle.BORDER_THICK);//右边框
+        //创建工作表(Sheet)
+        HSSFSheet sheet = workbook.createSheet("Test");
+        sheet.setDefaultColumnWidth(30);
+        // 创建行,从0开始
+        HSSFRow row = sheet.createRow(0);
+        // 创建行的单元格,也是从0开始
+        row.createCell(0).setCellValue("项目");
+        // 项目
+        row.createCell(1).setCellValue(this.queryById(signOffDto.getProjectId()).getData().getTitle());
+
+        // 测试环境
+        HSSFRow row1 = sheet.createRow(1);
+        row1.createCell(0).setCellValue("测试环境");
+        row1.createCell(1).setCellValue(signOffDto.getEnv());
+        // 测试版本
+        HSSFRow row2 = sheet.createRow(2);
+        row2.createCell(0).setCellValue("测试版本");
+        row2.createCell(1).setCellValue(signOffDto.getVersion());
+        //编译URL
+        HSSFRow row3 = sheet.createRow(3);
+        row3.createCell(0).setCellValue("编译URL");
+        row3.createCell(1).setCellValue(signOffDto.getVersion());
+        //在线报表
+        HSSFRow row4 = sheet.createRow(4);
+        row4.createCell(0).setCellValue("在线报表");
+        row4.createCell(1).setCellValue(signOffDto.getVersion());
+        //全部测试用例
+        HSSFRow row5 = sheet.createRow(5);
+        row5.createCell(0).setCellValue("全部测试用例");
+        row5.createCell(1).setCellValue(signOffDto.getVersion());
+        //测试执行率
+        HSSFRow row6 = sheet.createRow(6);
+        row6.createCell(0).setCellValue("测试执行率");
+        row6.createCell(1).setCellValue(signOffDto.getVersion());
+        //测试通过率
+        HSSFRow row7 = sheet.createRow(7);
+        row7.createCell(0).setCellValue("测试通过率");
+        row7.createCell(1).setCellValue(signOffDto.getVersion());
+
+        //测试通过率
+        HSSFRow row8 = sheet.createRow(8);
+        row8.createCell(0).setCellValue("功能测试结果");
+        CellRangeAddress region = new CellRangeAddress(8, 8, 0, 1);
+        sheet.addMergedRegion(region);
+        for (int i = 0; i < 9; i++) {
+
+            sheet.getRow(i).setHeightInPoints(30);
+            if (i == 8) {
+                continue;
+            }
+            for (int j = 0; j < 2; j++) {
+
+                sheet.getRow(i).getCell(j).setCellStyle(style);
+            }
+        }
+
+        try {
+            String uuid = UUID.randomUUID().toString();
+            String sourceFilePath = realPath + uuid + ".xls";
+            String desFilePathd = realPath + uuid + ".pdf";
+            FileOutputStream out = new FileOutputStream(sourceFilePath);
+
+            //保存Excel文件
+            workbook.write(out);
+            PDFUtil.excelTopdf(sourceFilePath, desFilePathd);
+            out.close();//关闭文件流
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
@@ -249,7 +341,7 @@ public class ProjectServiceImpl implements ProjectService {
         return new Resp.Builder<String>().setData(uri + "。" + imageName).ok();
     }
 
-    private void creatExcel(String realPath, String imageName) {
+    private void creatSignExcel(String realPath, String imageName) {
 
         //创建Excel文件(Workbook)
         HSSFWorkbook workbook = new HSSFWorkbook();

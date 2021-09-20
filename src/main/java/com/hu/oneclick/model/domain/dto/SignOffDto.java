@@ -10,11 +10,29 @@ import java.util.List;
  * @since JDK 1.8.0
  */
 public class SignOffDto {
+    /**
+     *项目
+     */
     private String projectId;
+    /**
+     *测试环境
+     */
     private String env;
+    /**
+     * 发布版本
+     */
     private String version;
+    /**
+     * 测试周期
+     */
     private String testCycleVersion;
-    private List<String> issue;
+    /**
+     * 缺陷
+     */
+    private String issue;
+    /**
+     * 签名
+     */
     private String fileUrl;
 
     public String getProjectId() {
@@ -49,11 +67,11 @@ public class SignOffDto {
         this.testCycleVersion = testCycleVersion;
     }
 
-    public List<String> getIssue() {
+    public String getIssue() {
         return issue;
     }
 
-    public void setIssue(List<String> issue) {
+    public void setIssue(String issue) {
         this.issue = issue;
     }
 

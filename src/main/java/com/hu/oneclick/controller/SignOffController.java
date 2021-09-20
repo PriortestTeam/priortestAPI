@@ -54,8 +54,8 @@ public class SignOffController {
     }
 
     @PostMapping("/generate")
-    public Resp<String> generate(@RequestBody SignOffDto signOffDto) {
-        return projectService.generate(signOffDto);
+    public Resp<String> generate(@RequestBody SignOffDto signOffDto, HttpServletRequest req) {
+        return projectService.generate(signOffDto,req);
     }
 
     @PostMapping("/upload")
