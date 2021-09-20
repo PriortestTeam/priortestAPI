@@ -241,10 +241,12 @@ public class ProjectServiceImpl implements ProjectService {
 
         //边框
         HSSFCellStyle style = workbook.createCellStyle();
-        style.setBorderTop(HSSFCellStyle.BORDER_THICK);//上边框
-        style.setBorderBottom(HSSFCellStyle.BORDER_THICK);//下边框
-        style.setBorderLeft(HSSFCellStyle.BORDER_THICK);//左边框
-        style.setBorderRight(HSSFCellStyle.BORDER_THICK);//右边框
+        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框
+        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);//下边框
+        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框
+        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//水平居中
+        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
         //创建工作表(Sheet)
         HSSFSheet sheet = workbook.createSheet("Test");
         sheet.setDefaultColumnWidth(30);
@@ -284,15 +286,152 @@ public class ProjectServiceImpl implements ProjectService {
         row7.createCell(0).setCellValue("测试通过率");
         row7.createCell(1).setCellValue(signOffDto.getVersion());
 
-        //测试通过率
+        //功能测试结果
         HSSFRow row8 = sheet.createRow(8);
         row8.createCell(0).setCellValue("功能测试结果");
         CellRangeAddress region = new CellRangeAddress(8, 8, 0, 1);
         sheet.addMergedRegion(region);
-        for (int i = 0; i < 9; i++) {
 
-            sheet.getRow(i).setHeightInPoints(30);
-            if (i == 8) {
+        HSSFRow row9 = sheet.createRow(9);
+        row9.createCell(0).setCellValue("测试用例");
+        row9.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row10 = sheet.createRow(10);
+        row10.createCell(0).setCellValue("没有执行");
+        row10.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row11 = sheet.createRow(11);
+        row11.createCell(0).setCellValue("成功");
+        row11.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row12 = sheet.createRow(12);
+        row12.createCell(0).setCellValue("失败");
+        row12.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row13 = sheet.createRow(13);
+        row13.createCell(0).setCellValue("性能测试结果");
+        CellRangeAddress region1 = new CellRangeAddress(13, 13, 0, 1);
+        sheet.addMergedRegion(region1);
+
+        HSSFRow row14 = sheet.createRow(14);
+        row14.createCell(0).setCellValue("测试用例");
+        row14.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row15 = sheet.createRow(15);
+        row15.createCell(0).setCellValue("没有执行");
+        row15.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row16 = sheet.createRow(16);
+        row16.createCell(0).setCellValue("成功");
+        row16.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row17 = sheet.createRow(17);
+        row17.createCell(0).setCellValue("失败");
+        row17.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row18 = sheet.createRow(18);
+        row18.createCell(0).setCellValue("测试覆盖");
+        CellRangeAddress region18 = new CellRangeAddress(18, 18, 0, 1);
+        sheet.addMergedRegion(region18);
+
+        HSSFRow row19 = sheet.createRow(19);
+        row19.createCell(0).setCellValue("Feature1");
+        row19.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row20 = sheet.createRow(20);
+        row20.createCell(0).setCellValue("Feature2");
+        row20.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row21 = sheet.createRow(21);
+        row21.createCell(0).setCellValue("新缺陷");
+        CellRangeAddress region21 = new CellRangeAddress(21, 21, 0, 1);
+        sheet.addMergedRegion(region21);
+
+        HSSFRow row22 = sheet.createRow(22);
+        row22.createCell(0).setCellValue("紧急");
+        row22.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row23 = sheet.createRow(23);
+        row23.createCell(0).setCellValue("重要");
+        row23.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row24 = sheet.createRow(24);
+        row24.createCell(0).setCellValue("一般");
+        row24.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row25 = sheet.createRow(25);
+        row25.createCell(0).setCellValue("已知缺陷");
+        CellRangeAddress region25 = new CellRangeAddress(25, 25, 0, 1);
+        sheet.addMergedRegion(region25);
+
+        HSSFRow row26 = sheet.createRow(26);
+        row26.createCell(0).setCellValue("紧急");
+        row26.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row27 = sheet.createRow(27);
+        row27.createCell(0).setCellValue("重要");
+        row27.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row28 = sheet.createRow(28);
+        row28.createCell(0).setCellValue("一般");
+        row28.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row29 = sheet.createRow(29);
+        row29.createCell(0).setCellValue("测试周期列表");
+        CellRangeAddress region29 = new CellRangeAddress(29, 29, 0, 1);
+        sheet.addMergedRegion(region29);
+
+        HSSFRow row30 = sheet.createRow(30);
+        row30.createCell(0).setCellValue("测试周期 1");
+        row30.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row31 = sheet.createRow(31);
+        row31.createCell(0).setCellValue("测试周期 2");
+        row31.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row32 = sheet.createRow(32);
+        row32.createCell(0).setCellValue("测试平台/设备");
+        CellRangeAddress region32 = new CellRangeAddress(32, 32, 0, 1);
+        sheet.addMergedRegion(region32);
+
+        HSSFRow row33 = sheet.createRow(33);
+        row33.createCell(0).setCellValue("Win");
+        row33.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row34 = sheet.createRow(34);
+        row34.createCell(0).setCellValue("Linux");
+        row34.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row35 = sheet.createRow(35);
+        row35.createCell(0).setCellValue("Mac");
+        row35.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row36 = sheet.createRow(36);
+        row36.createCell(0).setCellValue("签发");
+        CellRangeAddress region36 = new CellRangeAddress(36, 36, 0, 1);
+        sheet.addMergedRegion(region36);
+
+        HSSFRow row37 = sheet.createRow(37);
+        row37.createCell(0).setCellValue("签队团队");
+        row37.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row38 = sheet.createRow(38);
+        row38.createCell(0).setCellValue("状态");
+        row38.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row39 = sheet.createRow(39);
+        row39.createCell(0).setCellValue("日期");
+        row39.createCell(1).setCellValue(signOffDto.getVersion());
+
+        HSSFRow row40 = sheet.createRow(40);
+        row40.createCell(0).setCellValue("备注");
+        row40.createCell(1).setCellValue(signOffDto.getVersion());
+
+
+        for (int i = 0; i < 41; i++) {
+
+            sheet.getRow(i).setHeightInPoints(20);
+            if (i == 8 || i == 13 || i == 18 || i == 21 || i == 25 || i == 29 ||i == 32|| i == 36) {
                 continue;
             }
             for (int j = 0; j < 2; j++) {
