@@ -16,13 +16,12 @@ import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.QueryFilterService;
+import com.hu.oneclick.server.service.TestCycleService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFPatriarch;
-import org.apache.poi.hssf.usermodel.HSSFPicture;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -37,15 +36,14 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author qingyang
@@ -63,11 +61,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final QueryFilterService queryFilterService;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao) {
+    private final TestCycleService testCycleService;
+
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
         this.queryFilterService = queryFilterService;
+        this.testCycleService = testCycleService;
     }
 
     @Override
@@ -228,7 +229,8 @@ public class ProjectServiceImpl implements ProjectService {
         SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/");
         String format = sdf.format(new Date());
         //文件路径
-        String realPath = req.getServletContext().getRealPath("/") + format;
+//        String realPath = req.getServletContext().getRealPath("/") + format;
+        String realPath = "d:/";
         File folder = new File(realPath);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -273,10 +275,12 @@ public class ProjectServiceImpl implements ProjectService {
         HSSFRow row4 = sheet.createRow(4);
         row4.createCell(0).setCellValue("在线报表");
         row4.createCell(1).setCellValue(signOffDto.getVersion());
+
+        List<Map<String, String>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
         //全部测试用例
         HSSFRow row5 = sheet.createRow(5);
         row5.createCell(0).setCellValue("全部测试用例");
-        row5.createCell(1).setCellValue(signOffDto.getVersion());
+        row5.createCell(1).setCellValue(allTestCycle.size());
         //测试执行率
         HSSFRow row6 = sheet.createRow(6);
         row6.createCell(0).setCellValue("测试执行率");
@@ -292,9 +296,12 @@ public class ProjectServiceImpl implements ProjectService {
         CellRangeAddress region = new CellRangeAddress(8, 8, 0, 1);
         sheet.addMergedRegion(region);
 
+        Map<String, List<Map<String, String>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category")));
+        List<Map<String, String>> function = caseCategory.get("功能");
+
         HSSFRow row9 = sheet.createRow(9);
         row9.createCell(0).setCellValue("测试用例");
-        row9.createCell(1).setCellValue(signOffDto.getVersion());
+        row9.createCell(1).setCellValue(function.size());
 
         HSSFRow row10 = sheet.createRow(10);
         row10.createCell(0).setCellValue("没有执行");
@@ -315,7 +322,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         HSSFRow row14 = sheet.createRow(14);
         row14.createCell(0).setCellValue("测试用例");
-        row14.createCell(1).setCellValue(signOffDto.getVersion());
+        row14.createCell(1).setCellValue(allTestCycle.stream().filter(f -> "性能".equals(f.get("case_category"))).count());
 
         HSSFRow row15 = sheet.createRow(15);
         row15.createCell(0).setCellValue("没有执行");

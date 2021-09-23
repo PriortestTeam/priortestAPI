@@ -10,6 +10,7 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
@@ -381,5 +382,12 @@ public class TestCycleServiceImpl implements TestCycleService {
     public Resp<List<String>> getTestCycleVersion(String projectId) {
         List<String> cycleVersion = testCycleDao.getTestCycleVersion(projectId);
         return new Resp.Builder<List<String>>().setData(cycleVersion).ok();
+    }
+
+    @Override
+    public List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto) {
+
+        List<Map<String, String>> allTestCycle = testCycleDao.getAllTestCycle(signOffDto.getProjectId(), signOffDto.getVersion(), signOffDto.getEnv(), signOffDto.getTestCycleVersion());
+        return allTestCycle;
     }
 }

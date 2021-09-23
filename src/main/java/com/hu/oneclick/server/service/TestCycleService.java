@@ -6,9 +6,11 @@ import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.TestCycleDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TestCycleService {
 
@@ -35,4 +37,6 @@ public interface TestCycleService {
     Resp<String> executeTestCase(ExecuteTestCaseDto executeTestCaseDto);
 
     Resp<List<String>> getTestCycleVersion(String projectId);
+
+    List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto);
 }

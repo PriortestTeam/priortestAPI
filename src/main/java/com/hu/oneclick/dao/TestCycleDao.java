@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.BaseMapper;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TestCycleDao extends BaseMapper<TestCycle> {
 
@@ -21,4 +22,6 @@ public interface TestCycleDao extends BaseMapper<TestCycle> {
     List<LeftJoinDto> queryTitles(@Param("projectId")String projectId, @Param("title") String title, @Param("masterId") String masterId);
 
     List<String> getTestCycleVersion(String projectId);
+
+    List<Map<String,String>> getAllTestCycle(String projectId, String version, String env, String testCycleVersion);
 }
