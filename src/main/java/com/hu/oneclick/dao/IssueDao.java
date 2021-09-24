@@ -16,4 +16,6 @@ public interface IssueDao extends BaseMapper<Issue> {
 
     @Page
     List<Issue> queryList(Issue issue);
+
+    Issue queryCycleAndTest(String testCaseId, String testCycleId);
 }

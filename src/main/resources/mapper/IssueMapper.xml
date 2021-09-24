@@ -181,4 +181,12 @@
         where id = #{id}
     </update>
 
+    <select id="queryCycleAndTest" resultType="com.hu.oneclick.model.domain.Issue">
+        SELECT *
+        FROM issue
+        WHERE test_case = #{param1}
+          and test_cycle = #{param2};
+
+    </select>
+
 </mapper>

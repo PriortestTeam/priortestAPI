@@ -4,13 +4,16 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
+import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PDFUtil;
 import com.hu.oneclick.dao.FeatureDao;
+import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.TestCycle;
@@ -42,6 +45,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -69,13 +73,16 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final FeatureDao featureDao;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, FeatureDao featureDao) {
+    private final IssueDao issueDao;
+
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, FeatureDao featureDao, IssueDao issueDao) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
         this.queryFilterService = queryFilterService;
         this.testCycleService = testCycleService;
         this.featureDao = featureDao;
+        this.issueDao = issueDao;
     }
 
     @Override
@@ -446,21 +453,62 @@ public class ProjectServiceImpl implements ProjectService {
         sheet.addMergedRegion(region36);
         header.put(row36.getRowNum(), true);
 
+        String[] url = signOffDto.getFileUrl().split("。");
+//        creatSignExcel(url[0],url[1],workbook,sheet);
+
+        FileInputStream stream = null;
+        byte[] bytes = null;
+        try {
+            stream = new FileInputStream(url[0]);
+            bytes = new byte[(int) stream.getChannel().size()];
+            //读取图片到二进制数组
+            stream.read(bytes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        int pictureIdx = workbook.addPicture(bytes, HSSFWorkbook.PICTURE_TYPE_JPEG);
+        HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 1, rowId, (short)2, (rowId+1));
+        patriarch.createPicture(anchor, pictureIdx);
+
+
         HSSFRow row37 = sheet.createRow(rowId++);
         row37.createCell(0).setCellValue("签队团队");
-        row37.createCell(1).setCellValue(signOffDto.getVersion());
+        row37.createCell(1).setCellValue("");
 
         HSSFRow row38 = sheet.createRow(rowId++);
         row38.createCell(0).setCellValue("状态");
-        row38.createCell(1).setCellValue(signOffDto.getVersion());
+        boolean flag = false;
+        long ex = runStatusPass + runStatusFail;
+        int size = function.size();
+        float pass = (float) runStatusPass / size;
+
+        ArrayList<String> list = new ArrayList<>();
+        for (Map<String, String> map : allTestCycle) {
+            String testCaseId = map.get("test_case_id");
+            String testCycleId = map.get("test_cycle_id");
+            Issue issue = issueDao.queryCycleAndTest(testCaseId, testCycleId);
+            if (issue != null && issue.getStatus() == 4 && "高".equals(issue.getPriority())) {
+                list.add(issue.getId());
+            }
+        }
+        if (size == ex) {
+            flag = true;
+        } else if (pass >= 0.95) {
+            flag = true;
+        } else if (list.size() < 3) {
+            flag = true;
+        }
+
+        row38.createCell(1).setCellValue(flag?"通过":"失败");
 
         HSSFRow row39 = sheet.createRow(rowId++);
         row39.createCell(0).setCellValue("日期");
-        row39.createCell(1).setCellValue(signOffDto.getVersion());
+        row39.createCell(1).setCellValue(DateUtil.format(new Date()));
 
         HSSFRow row40 = sheet.createRow(rowId++);
         row40.createCell(0).setCellValue("备注");
-        row40.createCell(1).setCellValue(signOffDto.getVersion());
+        row40.createCell(1).setCellValue("");
 
 
         for (int i = 0; i < rowId; i++) {
@@ -497,7 +545,8 @@ public class ProjectServiceImpl implements ProjectService {
     public Resp<String> upload(MultipartFile file, HttpServletRequest req) {
         SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/");
         String format = sdf.format(new Date());
-        String realPath = req.getServletContext().getRealPath("/") + format;
+//        String realPath = req.getServletContext().getRealPath("/") + format;
+        String realPath = "d:/";
         File folder = new File(realPath);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -516,12 +565,8 @@ public class ProjectServiceImpl implements ProjectService {
         return new Resp.Builder<String>().setData(uri + "。" + imageName).ok();
     }
 
-    private void creatSignExcel(String realPath, String imageName) {
+    private void creatSignExcel(String realPath, String imageName,HSSFWorkbook workbook,HSSFSheet sheet) {
 
-        //创建Excel文件(Workbook)
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        // 创建工作表(Sheet)
-        HSSFSheet sheet = workbook.createSheet("Test");
         FileInputStream stream = null;
         byte[] bytes = null;
         try {
