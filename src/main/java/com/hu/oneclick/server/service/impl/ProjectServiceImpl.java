@@ -5,12 +5,15 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.PDFUtil;
+import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
@@ -40,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -63,12 +67,15 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final TestCycleService testCycleService;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService) {
+    private final FeatureDao featureDao;
+
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, FeatureDao featureDao) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
         this.queryFilterService = queryFilterService;
         this.testCycleService = testCycleService;
+        this.featureDao = featureDao;
     }
 
     @Override
@@ -241,6 +248,8 @@ public class ProjectServiceImpl implements ProjectService {
         //创建Excel文件(Workbook)
         HSSFWorkbook workbook = new HSSFWorkbook();
 
+        //判断是否是表头
+        HashMap<Integer, Boolean> header = new HashMap<>();
         //边框
         HSSFCellStyle style = workbook.createCellStyle();
         style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框
@@ -295,6 +304,7 @@ public class ProjectServiceImpl implements ProjectService {
         row8.createCell(0).setCellValue("功能测试结果");
         CellRangeAddress region = new CellRangeAddress(8, 8, 0, 1);
         sheet.addMergedRegion(region);
+        header.put(row8.getRowNum(), true);
 
         Map<String, List<Map<String, String>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category")));
         List<Map<String, String>> function = caseCategory.get("功能");
@@ -303,142 +313,161 @@ public class ProjectServiceImpl implements ProjectService {
         row9.createCell(0).setCellValue("测试用例");
         row9.createCell(1).setCellValue(function.size());
 
+        long runStatusPass = function.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(1))).count();
+        long runStatusFail = function.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(2))).count();
+
         HSSFRow row10 = sheet.createRow(10);
         row10.createCell(0).setCellValue("没有执行");
-        row10.createCell(1).setCellValue(signOffDto.getVersion());
+        row10.createCell(1).setCellValue(function.size() - runStatusPass - runStatusFail);
 
         HSSFRow row11 = sheet.createRow(11);
         row11.createCell(0).setCellValue("成功");
-        row11.createCell(1).setCellValue(signOffDto.getVersion());
+        row11.createCell(1).setCellValue(runStatusPass);
 
         HSSFRow row12 = sheet.createRow(12);
         row12.createCell(0).setCellValue("失败");
-        row12.createCell(1).setCellValue(signOffDto.getVersion());
+        row12.createCell(1).setCellValue(runStatusFail);
 
         HSSFRow row13 = sheet.createRow(13);
         row13.createCell(0).setCellValue("性能测试结果");
         CellRangeAddress region1 = new CellRangeAddress(13, 13, 0, 1);
         sheet.addMergedRegion(region1);
+        header.put(row13.getRowNum(), true);
 
+        List<Map<String, String>> performance = caseCategory.get("性能");
         HSSFRow row14 = sheet.createRow(14);
         row14.createCell(0).setCellValue("测试用例");
-        row14.createCell(1).setCellValue(allTestCycle.stream().filter(f -> "性能".equals(f.get("case_category"))).count());
+        row14.createCell(1).setCellValue(performance.size());
+
+        long runStatusPassCs = performance.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(1))).count();
+        long runStatusFailCs = performance.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(2))).count();
+
 
         HSSFRow row15 = sheet.createRow(15);
         row15.createCell(0).setCellValue("没有执行");
-        row15.createCell(1).setCellValue(signOffDto.getVersion());
+        row15.createCell(1).setCellValue(performance.size() - runStatusPassCs - runStatusFailCs);
 
         HSSFRow row16 = sheet.createRow(16);
         row16.createCell(0).setCellValue("成功");
-        row16.createCell(1).setCellValue(signOffDto.getVersion());
+        row16.createCell(1).setCellValue(runStatusPassCs);
 
         HSSFRow row17 = sheet.createRow(17);
         row17.createCell(0).setCellValue("失败");
-        row17.createCell(1).setCellValue(signOffDto.getVersion());
+        row17.createCell(1).setCellValue(runStatusFailCs);
 
         HSSFRow row18 = sheet.createRow(18);
         row18.createCell(0).setCellValue("测试覆盖");
         CellRangeAddress region18 = new CellRangeAddress(18, 18, 0, 1);
         sheet.addMergedRegion(region18);
+        header.put(row18.getRowNum(), true);
 
-        HSSFRow row19 = sheet.createRow(19);
-        row19.createCell(0).setCellValue("Feature1");
-        row19.createCell(1).setCellValue(signOffDto.getVersion());
+        int rowId = row18.getRowNum() + 1;
+        Map<String, List<Map<String, String>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("feature")));
+        for (String featureId : feature.keySet()) {
+            List<Map<String, String>> maps = feature.get(featureId);
+            String masterId = jwtUserService.getMasterId();
+            Feature queryById = featureDao.queryById(featureId, masterId);
+            HSSFRow row19 = sheet.createRow(rowId++);
 
-        HSSFRow row20 = sheet.createRow(20);
-        row20.createCell(0).setCellValue("Feature2");
-        row20.createCell(1).setCellValue(signOffDto.getVersion());
+            row19.createCell(0).setCellValue(queryById.getTitle());
+            row19.createCell(1).setCellValue(maps.size());
+        }
 
-        HSSFRow row21 = sheet.createRow(21);
+        HSSFRow row21 = sheet.createRow(rowId++);
         row21.createCell(0).setCellValue("新缺陷");
-        CellRangeAddress region21 = new CellRangeAddress(21, 21, 0, 1);
+        CellRangeAddress region21 = new CellRangeAddress(rowId - 1, rowId - 1, 0, 1);
         sheet.addMergedRegion(region21);
+        header.put(row21.getRowNum(), true);
 
-        HSSFRow row22 = sheet.createRow(22);
+        HSSFRow row22 = sheet.createRow(rowId++);
         row22.createCell(0).setCellValue("紧急");
         row22.createCell(1).setCellValue(signOffDto.getVersion());
 
-        HSSFRow row23 = sheet.createRow(23);
+        HSSFRow row23 = sheet.createRow(rowId++);
         row23.createCell(0).setCellValue("重要");
         row23.createCell(1).setCellValue(signOffDto.getVersion());
 
-        HSSFRow row24 = sheet.createRow(24);
+        HSSFRow row24 = sheet.createRow(rowId++);
         row24.createCell(0).setCellValue("一般");
         row24.createCell(1).setCellValue(signOffDto.getVersion());
 
-        HSSFRow row25 = sheet.createRow(25);
+        HSSFRow row25 = sheet.createRow(rowId++);
         row25.createCell(0).setCellValue("已知缺陷");
-        CellRangeAddress region25 = new CellRangeAddress(25, 25, 0, 1);
+        CellRangeAddress region25 = new CellRangeAddress(rowId - 1, rowId - 1, 0, 1);
         sheet.addMergedRegion(region25);
+        header.put(row25.getRowNum(), true);
 
-        HSSFRow row26 = sheet.createRow(26);
+        HSSFRow row26 = sheet.createRow(rowId++);
         row26.createCell(0).setCellValue("紧急");
         row26.createCell(1).setCellValue(signOffDto.getVersion());
 
-        HSSFRow row27 = sheet.createRow(27);
+        HSSFRow row27 = sheet.createRow(rowId++);
         row27.createCell(0).setCellValue("重要");
         row27.createCell(1).setCellValue(signOffDto.getVersion());
 
-        HSSFRow row28 = sheet.createRow(28);
+        HSSFRow row28 = sheet.createRow(rowId++);
         row28.createCell(0).setCellValue("一般");
         row28.createCell(1).setCellValue(signOffDto.getVersion());
 
-        HSSFRow row29 = sheet.createRow(29);
+        HSSFRow row29 = sheet.createRow(rowId++);
         row29.createCell(0).setCellValue("测试周期列表");
-        CellRangeAddress region29 = new CellRangeAddress(29, 29, 0, 1);
+        CellRangeAddress region29 = new CellRangeAddress(rowId - 1, rowId - 1, 0, 1);
         sheet.addMergedRegion(region29);
+        header.put(row29.getRowNum(), true);
 
-        HSSFRow row30 = sheet.createRow(30);
-        row30.createCell(0).setCellValue("测试周期 1");
-        row30.createCell(1).setCellValue(signOffDto.getVersion());
+        Map<String, List<Map<String, String>>> testCycleIds = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("test_cycle_id")));
+        for (String testCycleId : testCycleIds.keySet()) {
+            Resp<TestCycle> testCycleResp = testCycleService.queryById(testCycleId);
+            String title = testCycleResp.getData().getTitle();
+            List<Map<String, String>> maps = testCycleIds.get(testCycleId);
+            HSSFRow row30 = sheet.createRow(rowId++);
+            row30.createCell(0).setCellValue(title);
+            row30.createCell(1).setCellValue(maps.size());
+        }
 
-        HSSFRow row31 = sheet.createRow(31);
-        row31.createCell(0).setCellValue("测试周期 2");
-        row31.createCell(1).setCellValue(signOffDto.getVersion());
-
-        HSSFRow row32 = sheet.createRow(32);
+        HSSFRow row32 = sheet.createRow(rowId++);
         row32.createCell(0).setCellValue("测试平台/设备");
-        CellRangeAddress region32 = new CellRangeAddress(32, 32, 0, 1);
+        CellRangeAddress region32 = new CellRangeAddress(rowId - 1, rowId - 1, 0, 1);
         sheet.addMergedRegion(region32);
+        header.put(row32.getRowNum(), true);
 
-        HSSFRow row33 = sheet.createRow(33);
-        row33.createCell(0).setCellValue("Win");
-        row33.createCell(1).setCellValue(signOffDto.getVersion());
+        Map<String, List<Map<String, String>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform")));
+        for (String platForm : platforms.keySet()) {
+            List<Map<String, String>> maps = platforms.get(platForm);
+            HSSFRow row33 = sheet.createRow(rowId++);
+            row33.createCell(0).setCellValue(platForm);
+            row33.createCell(1).setCellValue(maps.size());
 
-        HSSFRow row34 = sheet.createRow(34);
-        row34.createCell(0).setCellValue("Linux");
-        row34.createCell(1).setCellValue(signOffDto.getVersion());
+        }
 
-        HSSFRow row35 = sheet.createRow(35);
-        row35.createCell(0).setCellValue("Mac");
-        row35.createCell(1).setCellValue(signOffDto.getVersion());
-
-        HSSFRow row36 = sheet.createRow(36);
+        HSSFRow row36 = sheet.createRow(rowId++);
         row36.createCell(0).setCellValue("签发");
-        CellRangeAddress region36 = new CellRangeAddress(36, 36, 0, 1);
+        CellRangeAddress region36 = new CellRangeAddress(rowId - 1, rowId - 1, 0, 1);
         sheet.addMergedRegion(region36);
+        header.put(row36.getRowNum(), true);
 
-        HSSFRow row37 = sheet.createRow(37);
+        HSSFRow row37 = sheet.createRow(rowId++);
         row37.createCell(0).setCellValue("签队团队");
         row37.createCell(1).setCellValue(signOffDto.getVersion());
 
-        HSSFRow row38 = sheet.createRow(38);
+        HSSFRow row38 = sheet.createRow(rowId++);
         row38.createCell(0).setCellValue("状态");
         row38.createCell(1).setCellValue(signOffDto.getVersion());
 
-        HSSFRow row39 = sheet.createRow(39);
+        HSSFRow row39 = sheet.createRow(rowId++);
         row39.createCell(0).setCellValue("日期");
         row39.createCell(1).setCellValue(signOffDto.getVersion());
 
-        HSSFRow row40 = sheet.createRow(40);
+        HSSFRow row40 = sheet.createRow(rowId++);
         row40.createCell(0).setCellValue("备注");
         row40.createCell(1).setCellValue(signOffDto.getVersion());
 
 
-        for (int i = 0; i < 41; i++) {
+        for (int i = 0; i < rowId; i++) {
 
             sheet.getRow(i).setHeightInPoints(20);
-            if (i == 8 || i == 13 || i == 18 || i == 21 || i == 25 || i == 29 ||i == 32|| i == 36) {
+
+            if (header.containsKey(i)) {
                 continue;
             }
             for (int j = 0; j < 2; j++) {
