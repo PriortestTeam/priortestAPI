@@ -188,5 +188,8 @@
           and test_cycle = #{param2};
 
     </select>
+    <select id="findAll" resultType="com.hu.oneclick.model.domain.Issue">
+        select * from issue
+    </select>
 
 </mapper>

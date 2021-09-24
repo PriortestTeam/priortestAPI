@@ -286,25 +286,30 @@ public class ProjectServiceImpl implements ProjectService {
         //编译URL
         HSSFRow row3 = sheet.createRow(3);
         row3.createCell(0).setCellValue("编译URL");
-        row3.createCell(1).setCellValue(signOffDto.getVersion());
+        row3.createCell(1).setCellValue("");
         //在线报表
         HSSFRow row4 = sheet.createRow(4);
         row4.createCell(0).setCellValue("在线报表");
-        row4.createCell(1).setCellValue(signOffDto.getVersion());
+        row4.createCell(1).setCellValue("");
 
         List<Map<String, String>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
         //全部测试用例
         HSSFRow row5 = sheet.createRow(5);
         row5.createCell(0).setCellValue("全部测试用例");
-        row5.createCell(1).setCellValue(allTestCycle.size());
+        int value = allTestCycle.size();
+        row5.createCell(1).setCellValue(value);
         //测试执行率
         HSSFRow row6 = sheet.createRow(6);
         row6.createCell(0).setCellValue("测试执行率");
-        row6.createCell(1).setCellValue(signOffDto.getVersion());
+        long count = allTestCycle.stream().filter(f -> String.valueOf(f.get("execute_status")).equals(String.valueOf(1))).count();
+        float testEx = (float) count / value;
+        row6.createCell(1).setCellValue(String.format("%.1f", (testEx * 100)) + "%");
         //测试通过率
         HSSFRow row7 = sheet.createRow(7);
         row7.createCell(0).setCellValue("测试通过率");
-        row7.createCell(1).setCellValue(signOffDto.getVersion());
+        long runStatus = allTestCycle.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(1))).count();
+        float testPass = (float) runStatus / count == 0 ? 1 : count;
+        row7.createCell(1).setCellValue(String.format("%.1f", (testPass * 100)) + "%");
 
         //功能测试结果
         HSSFRow row8 = sheet.createRow(8);
@@ -386,17 +391,31 @@ public class ProjectServiceImpl implements ProjectService {
         sheet.addMergedRegion(region21);
         header.put(row21.getRowNum(), true);
 
+        ArrayList<Issue> issuesList = new ArrayList<>();
+        for (Map<String, String> map : allTestCycle) {
+            String testCaseId = map.get("test_case_id");
+            String testCycleId = map.get("test_cycle_id");
+            Issue issue = issueDao.queryCycleAndTest(testCaseId, testCycleId);
+            if (issue != null && issue.getStatus() == 4 && "高".equals(issue.getPriority())) {
+                issuesList.add(issue);
+            }
+        }
+
+
         HSSFRow row22 = sheet.createRow(rowId++);
         row22.createCell(0).setCellValue("紧急");
-        row22.createCell(1).setCellValue(signOffDto.getVersion());
+        long urgent = issuesList.stream().filter(f -> "高".equals(f.getPriority())).count();
+        row22.createCell(1).setCellValue(urgent);
 
         HSSFRow row23 = sheet.createRow(rowId++);
         row23.createCell(0).setCellValue("重要");
-        row23.createCell(1).setCellValue(signOffDto.getVersion());
+        long important = issuesList.stream().filter(f -> "中".equals(f.getPriority())).count();
+        row23.createCell(1).setCellValue(important);
 
         HSSFRow row24 = sheet.createRow(rowId++);
         row24.createCell(0).setCellValue("一般");
-        row24.createCell(1).setCellValue(signOffDto.getVersion());
+        long general = issuesList.stream().filter(f -> "低".equals(f.getPriority())).count();
+        row24.createCell(1).setCellValue(general);
 
         HSSFRow row25 = sheet.createRow(rowId++);
         row25.createCell(0).setCellValue("已知缺陷");
@@ -404,17 +423,24 @@ public class ProjectServiceImpl implements ProjectService {
         sheet.addMergedRegion(region25);
         header.put(row25.getRowNum(), true);
 
+
+        List<Issue> allIssue = issueDao.findAll();
+        allIssue.removeAll(issuesList);
+
         HSSFRow row26 = sheet.createRow(rowId++);
         row26.createCell(0).setCellValue("紧急");
-        row26.createCell(1).setCellValue(signOffDto.getVersion());
+        long haveUrgent = allIssue.stream().filter(f -> "高".equals(f.getPriority())).count();
+        row26.createCell(1).setCellValue(haveUrgent);
 
         HSSFRow row27 = sheet.createRow(rowId++);
         row27.createCell(0).setCellValue("重要");
-        row27.createCell(1).setCellValue(signOffDto.getVersion());
+        long haveImportant = allIssue.stream().filter(f -> "中".equals(f.getPriority())).count();
+        row27.createCell(1).setCellValue(haveImportant);
 
         HSSFRow row28 = sheet.createRow(rowId++);
         row28.createCell(0).setCellValue("一般");
-        row28.createCell(1).setCellValue(signOffDto.getVersion());
+        long haveGeneral = allIssue.stream().filter(f -> "低".equals(f.getPriority())).count();
+        row28.createCell(1).setCellValue(haveGeneral);
 
         HSSFRow row29 = sheet.createRow(rowId++);
         row29.createCell(0).setCellValue("测试周期列表");
@@ -454,9 +480,8 @@ public class ProjectServiceImpl implements ProjectService {
         header.put(row36.getRowNum(), true);
 
         String[] url = signOffDto.getFileUrl().split("。");
-//        creatSignExcel(url[0],url[1],workbook,sheet);
 
-        FileInputStream stream = null;
+        FileInputStream stream;
         byte[] bytes = null;
         try {
             stream = new FileInputStream(url[0]);
@@ -468,7 +493,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         int pictureIdx = workbook.addPicture(bytes, HSSFWorkbook.PICTURE_TYPE_JPEG);
         HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
-        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 1, rowId, (short)2, (rowId+1));
+        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 1, rowId, (short) 2, (rowId + 1));
         patriarch.createPicture(anchor, pictureIdx);
 
 
@@ -483,24 +508,16 @@ public class ProjectServiceImpl implements ProjectService {
         int size = function.size();
         float pass = (float) runStatusPass / size;
 
-        ArrayList<String> list = new ArrayList<>();
-        for (Map<String, String> map : allTestCycle) {
-            String testCaseId = map.get("test_case_id");
-            String testCycleId = map.get("test_cycle_id");
-            Issue issue = issueDao.queryCycleAndTest(testCaseId, testCycleId);
-            if (issue != null && issue.getStatus() == 4 && "高".equals(issue.getPriority())) {
-                list.add(issue.getId());
-            }
-        }
+
         if (size == ex) {
             flag = true;
         } else if (pass >= 0.95) {
             flag = true;
-        } else if (list.size() < 3) {
+        } else if (issuesList.size() < 3) {
             flag = true;
         }
 
-        row38.createCell(1).setCellValue(flag?"通过":"失败");
+        row38.createCell(1).setCellValue(flag ? "通过" : "失败");
 
         HSSFRow row39 = sheet.createRow(rowId++);
         row39.createCell(0).setCellValue("日期");
@@ -565,7 +582,7 @@ public class ProjectServiceImpl implements ProjectService {
         return new Resp.Builder<String>().setData(uri + "。" + imageName).ok();
     }
 
-    private void creatSignExcel(String realPath, String imageName,HSSFWorkbook workbook,HSSFSheet sheet) {
+    private void creatSignExcel(String realPath, String imageName, HSSFWorkbook workbook, HSSFSheet sheet) {
 
         FileInputStream stream = null;
         byte[] bytes = null;

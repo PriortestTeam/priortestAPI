@@ -18,4 +18,6 @@ public interface IssueDao extends BaseMapper<Issue> {
     List<Issue> queryList(Issue issue);
 
     Issue queryCycleAndTest(String testCaseId, String testCycleId);
+
+    List<Issue> findAll();
 }
