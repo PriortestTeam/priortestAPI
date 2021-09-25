@@ -6,6 +6,8 @@ import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("signOff")
+@Api(tags = "验收")
 public class SignOffController {
 
     @Autowired
@@ -54,6 +57,7 @@ public class SignOffController {
     }
 
     @PostMapping("/generate")
+    @ApiOperation("生成pdf文档")
     public Resp<String> generate(@RequestBody SignOffDto signOffDto, HttpServletRequest req) {
         return projectService.generate(signOffDto,req);
     }
