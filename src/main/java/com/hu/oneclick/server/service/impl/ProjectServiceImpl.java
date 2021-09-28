@@ -5,7 +5,6 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.DateUtil;
-import com.hu.oneclick.common.util.PDFUtil;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.dao.ProjectDao;
@@ -23,6 +22,8 @@ import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.TestCycleService;
+import com.spire.xls.FileFormat;
+import com.spire.xls.Workbook;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -71,17 +72,14 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final TestCycleService testCycleService;
 
-    private final FeatureDao featureDao;
-
     private final IssueDao issueDao;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, FeatureDao featureDao, IssueDao issueDao) {
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
         this.queryFilterService = queryFilterService;
         this.testCycleService = testCycleService;
-        this.featureDao = featureDao;
         this.issueDao = issueDao;
     }
 
@@ -374,14 +372,13 @@ public class ProjectServiceImpl implements ProjectService {
         header.put(row18.getRowNum(), true);
 
         int rowId = row18.getRowNum() + 1;
-        Map<String, List<Map<String, String>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("feature")));
+        Map<String, List<Map<String, String>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module")));
         for (String featureId : feature.keySet()) {
             List<Map<String, String>> maps = feature.get(featureId);
-            String masterId = jwtUserService.getMasterId();
-            Feature queryById = featureDao.queryById(featureId, masterId);
+
             HSSFRow row19 = sheet.createRow(rowId++);
 
-            row19.createCell(0).setCellValue(queryById.getTitle());
+            row19.createCell(0).setCellValue(featureId);
             row19.createCell(1).setCellValue(maps.size());
         }
 
@@ -549,9 +546,14 @@ public class ProjectServiceImpl implements ProjectService {
 
             //保存Excel文件
             workbook.write(out);
-            PDFUtil.excelTopdf(sourceFilePath, desFilePathd);
+            // 加载Excel文档.
+            Workbook wb = new Workbook();
+            wb.loadFromFile(sourceFilePath);
+
+            // 调用方法保存为PDF格式.
+            wb.saveToFile(desFilePathd, FileFormat.PDF);
             out.close();//关闭文件流
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
