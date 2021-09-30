@@ -53,6 +53,10 @@ public interface OneConstant {
         Integer TRIAL_EXPIRED = 3;
         //激活失败
         Integer ACTIVE_FAILED = 4;
+        //待激活
+        Integer ACTIVE_GENERATION = 5;
+        //二次激活
+        Integer RE_ACTIVE_GENERATION = 5;
     }
 
     /**

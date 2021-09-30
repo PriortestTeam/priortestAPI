@@ -36,6 +36,8 @@ public enum SysConstantEnum {
     DATE_EXIST(SysConstantEnum.NUMBER + "017","已存在，不可重复添加。"),
     NOT_PROJECT(SysConstantEnum.NUMBER + "018","请选择一个项目。"),
     SCOPE_ERROR(SysConstantEnum.NUMBER + "019","scope 异常。"),
+    REPASSWORD_ERROR(SysConstantEnum.NUMBER + "020","两次密码不一致"),
+    NOUSER_ERROR(SysConstantEnum.NUMBER + "021","没有该用户"),
 
     VIEW_ONN_FILTER_IS_REDUNDANT(SysConstantEnum.NUMBER + "030","过滤项不可重复。"),
 
@@ -46,6 +48,7 @@ public enum SysConstantEnum {
     DELETE_SUCCESS(SysConstantEnum.NUMBER,"删除成功。"),
     LOGIN_SUCCESS(SysConstantEnum.NUMBER,"登录成功。"),
     REGISTER_SUCCESS(SysConstantEnum.NUMBER,"注册成功。"),
+    ACTIVATION_SUCCESS(SysConstantEnum.NUMBER,"激活成功。"),
     LOGOUT_SUCCESS(SysConstantEnum.NUMBER,"注销成功。")
 
 

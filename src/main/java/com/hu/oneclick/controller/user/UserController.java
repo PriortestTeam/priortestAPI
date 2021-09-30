@@ -3,10 +3,12 @@ package com.hu.oneclick.controller.user;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import com.hu.oneclick.server.user.UserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public Resp<String> register(@RequestBody RegisterUser registerUser) {
+    public Resp<String> register(@RequestBody SysUser registerUser) {
         return userService.register(registerUser);
     }
 
@@ -36,18 +38,18 @@ public class UserController {
     }
 
     @PostMapping("modifyPassword")
-    public Resp<String> modifyPassword(@RequestBody Map<String,String> args){
+    public Resp<String> modifyPassword(@RequestBody Map<String, String> args) {
         return userService.modifyPassword(args);
     }
 
     @PostMapping("resetPassword")
-    public Resp<String> resetPassword(@RequestBody Map<String,String> args){
+    public Resp<String> resetPassword(@RequestBody Map<String, String> args) {
         return userService.resetPassword(args);
     }
 
     @GetMapping("sendResetPasswordEmailUrl")
     public Resp<String> sendResetPasswordEmailCode(@RequestParam String email) {
-        return userService.sendEmailCode(email,OneConstant.REDIS_KEY_PREFIX.RESET_PASSWORD);
+        return userService.sendEmailCode(email, OneConstant.REDIS_KEY_PREFIX.RESET_PASSWORD);
     }
 
     @GetMapping("queryEmailDoesItExist")
@@ -72,11 +74,18 @@ public class UserController {
 
     /**
      * 获取子用户列表，下拉框使用
+     *
      * @param subUserName
      * @return
      */
     @PostMapping("queryByNameSubUsers")
-    public Resp<List<SubUserDto>> queryByNameSubUsers(@RequestParam(required = false) String subUserName){
+    public Resp<List<SubUserDto>> queryByNameSubUsers(@RequestParam(required = false) String subUserName) {
         return userService.queryByNameSubUsers(subUserName);
+    }
+
+    @ApiOperation("激活账户")
+    @PostMapping("activateAccount")
+    public Resp<String> activateAccount(@RequestBody ActivateAccountDto activateAccountDto) {
+        return userService.activateAccount(activateAccountDto);
     }
 }

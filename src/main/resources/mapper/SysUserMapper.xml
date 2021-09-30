@@ -3,7 +3,7 @@
 <mapper namespace="com.hu.oneclick.dao.SysUserDao">
 
     <!--开启缓存-->
-    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
 
     <resultMap type="com.hu.oneclick.model.domain.SysUser" id="SysUserMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
@@ -27,6 +27,7 @@
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="activitiDate" column="activiti_date" jdbcType="TIMESTAMP"/>
         <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
         <result property="sysRoleId" column="sys_role_id" jdbcType="INTEGER"/>
         <result property="identifier" column="identifier" jdbcType="VARCHAR"/>
@@ -34,26 +35,61 @@
 
     <!--查询单个-->
     <select id="queryById" resultMap="SysUserMap">
-        select
-          id, email, user_name,
-           password, photo, status,
-            register_date, contact_no, company,
-             profession, industry, close_date, `type`, active_state,
-             enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier
+        select id,
+               email,
+               user_name,
+               password,
+               photo,
+               status,
+               register_date,
+               contact_no,
+               company,
+               profession,
+               industry,
+               close_date,
+               `type`,
+               active_state,
+               enable,
+               time_zone,
+               locale,
+               manager,
+               del_flag,
+               create_time,
+               update_time,
+               parent_id,
+               sys_role_id,
+               identifier
         from oneclick.sys_user
         where id = #{id}
     </select>
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="SysUserMap">
-        select
-           id, email, user_name,
-           password, photo, status,
-            register_date, contact_no, company,
-             profession, industry, close_date, `type`, active_state,
-             enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier
-        from oneclick.sys_user
-        limit #{offset}, #{limit}
+        select id,
+               email,
+               user_name,
+               password,
+               photo,
+               status,
+               register_date,
+               contact_no,
+               company,
+               profession,
+               industry,
+               close_date,
+               `type`,
+               active_state,
+               enable,
+               time_zone,
+               locale,
+               manager,
+               del_flag,
+               create_time,
+               update_time,
+               parent_id,
+               sys_role_id,
+               identifier
+        from oneclick.sys_user limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
@@ -123,15 +159,35 @@
         </where>
     </select>
     <select id="queryByEmail" resultMap="SysUserMap">
-        select
-          id, email, user_name, password, photo, status, register_date, contact_no, company, profession, industry, close_date, `type`, active_state, enable, time_zone, locale, manager, del_flag, create_time, update_time, parent_id,identifier
+        select id,
+               email,
+               user_name,
+               password,
+               photo,
+               status,
+               register_date,
+               contact_no,
+               company,
+               profession,
+               industry,
+               close_date,
+               `type`,
+               active_state,
+               enable,
+               time_zone,
+               locale,
+               manager,
+               del_flag,
+               create_time,
+               update_time,
+               parent_id,
+               identifier
         from oneclick.sys_user
-        where
-        email = #{email}
-        and del_flag = 0
-        limit 1
+        where email = #{email}
+          and del_flag = 0 limit 1
     </select>
-    <select id="querySubUsers" resultType="com.hu.oneclick.model.domain.dto.SubUserDto"  parameterType="com.hu.oneclick.model.domain.dto.SubUserDto">
+    <select id="querySubUsers" resultType="com.hu.oneclick.model.domain.dto.SubUserDto"
+            parameterType="com.hu.oneclick.model.domain.dto.SubUserDto">
         select u.id as id,
         u.email as email,
         u.user_name as userName,
@@ -151,36 +207,35 @@
         left join sub_user_project sup on u.id = sup.user_id
         left join sys_role sr on u.sys_role_id = sr.id
         <where>
-        1 = 1
-        and u.type = 2
-        and u.parent_id = #{parentId}
+            1 = 1
+            and u.type = 2
+            and u.parent_id = #{parentId}
         </where>
         order by u.register_date desc
     </select>
     <select id="querySubUserInfo" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">
-        select u.id as id,
-        u.email as email,
-        u.user_name as userName,
-        u.photo as photo,
-        u.register_date as registerDate,
-        u.`type` as type,
-        u.enable as enable,
-        u.time_zone as timeZone,
-        u.update_time as updateTime,
-        u.parent_id as parentId,
-        u.sys_role_id as sysRoleId,
-        u.identifier as identifier,
-        sup.project_id as projectIdStr,
+        select u.id            as id,
+               u.email         as email,
+               u.user_name     as userName,
+               u.photo         as photo,
+               u.register_date as registerDate,
+               u.`type`        as type,
+               u.enable        as enable,
+               u.time_zone     as timeZone,
+               u.update_time   as updateTime,
+               u.parent_id     as parentId,
+               u.sys_role_id   as sysRoleId,
+               u.identifier    as identifier,
+               sup.project_id  as projectIdStr,
 
-        sr.role_name as roleName
+               sr.role_name    as roleName
         from sys_user u
-        left join sub_user_project sup on u.id = sup.user_id
-        left join sys_role sr on u.sys_role_id = sr.id
-        where
-            1 = 1
-            and u.type = 2
-            and u.id = #{userId}
-            and u.parent_id = #{masterId}
+                 left join sub_user_project sup on u.id = sup.user_id
+                 left join sys_role sr on u.sys_role_id = sr.id
+        where 1 = 1
+          and u.type = 2
+          and u.id = #{userId}
+          and u.parent_id = #{masterId}
     </select>
     <select id="queryByNameSubUsers" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">
         select
@@ -384,6 +439,9 @@
             <if test="locale != null and locale != ''">
                 locale = #{locale},
             </if>
+            <if test="activitiDate != null">
+                activiti_date = NOW(),
+            </if>
             update_time = NOW()
         </set>
         where
@@ -392,12 +450,10 @@
     </update>
     <update id="updatePassword">
         update oneclick.sys_user
-        set
-           password = #{password},
-           update_time = NOW()
-        where
-        id = #{id}
-        and del_flag = 0
+        set password    = #{password},
+            update_time = NOW()
+        where id = #{id}
+          and del_flag = 0
     </update>
     <update id="updateSubUser">
         update oneclick.sys_user
@@ -448,12 +504,16 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from oneclick.sys_user where id = #{id}
+        delete
+        from oneclick.sys_user
+        where id = #{id}
     </delete>
 
     <delete id="deleteSubUser">
-        delete from sys_user where id = #{id}
-        and manager = 2
-        and parent_id = #{masterId}
+        delete
+        from sys_user
+        where id = #{id}
+          and manager = 2
+          and parent_id = #{masterId}
     </delete>
 </mapper>

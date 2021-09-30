@@ -64,7 +64,7 @@ public class SysUser extends BaseEntity implements Serializable {
      */
     private Integer type;
     /**
-     * 激活状态， 1 试用中 3 试用过期 2 激活成功 4 激活失败
+     * 激活状态， 1 试用中 3 试用过期 2 激活成功 4 激活失败 5 待激活 6 二次激活
      */
     private Integer activeState;
     /**
@@ -83,6 +83,13 @@ public class SysUser extends BaseEntity implements Serializable {
      * 是否是管理员， 默认为 0, 1 是管理员（负责后台系统的登录）3 子成员
      */
     private Integer manager;
+
+
+
+    /**
+     * 激活时间
+     */
+    private Date activitiDate;
     /**
      * 0 存在，1 删除
      */
@@ -304,5 +311,13 @@ public class SysUser extends BaseEntity implements Serializable {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public Date getActivitiDate() {
+        return activitiDate;
+    }
+
+    public void setActivitiDate(Date activitiDate) {
+        this.activitiDate = activitiDate;
     }
 }

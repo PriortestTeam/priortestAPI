@@ -2,7 +2,7 @@ package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.dto.RegisterUser;
+import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 
@@ -19,7 +19,7 @@ public interface UserService {
      * @param registerUser
      * @return
      */
-    Resp<String> register(RegisterUser registerUser);
+    Resp<String> register(SysUser registerUser);
 
     /**
      * 修改密码
@@ -70,4 +70,5 @@ public interface UserService {
 
     Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName);
 
+    Resp<String> activateAccount(ActivateAccountDto activateAccountDto);
 }

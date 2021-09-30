@@ -11,8 +11,8 @@ import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.MasterIdentifier;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
-import com.hu.oneclick.model.domain.dto.RegisterUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -58,12 +59,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> register(RegisterUser registerUser) {
+    public Resp<String> register(SysUser registerUser) {
         try {
-            registerUser.verify();
-            //注册，校验code码
+
             String email = registerUser.getEmail();
-            verifyEmailCode(OneConstant.REDIS_KEY_PREFIX.REGISTRY + email, registerUser.getEmailCode());
+            if (StringUtils.isEmpty(email)) {
+                throw new BizException(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
+            }
 
             SysUser user = new SysUser();
             BeanUtils.copyProperties(registerUser, user);
@@ -71,13 +73,10 @@ public class UserServiceImpl implements UserService {
             if (sysUserDao.queryByEmail(email) != null) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
             }
-
-            //设置密码
-            user.setPassword(encodePassword(user.getPassword()));
             //设置默认头像
             user.setPhoto(defaultPhoto);
             user.setType(OneConstant.USER_TYPE.ADMIN);
-            user.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
+            user.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION);
 
             //设置主账号识别号，用于子用户登录
             MasterIdentifier masterIdentifier = masterIdentifierDao.queryOne();
@@ -277,5 +276,33 @@ public class UserServiceImpl implements UserService {
 
     private void sendEmail() {
 
+    }
+
+    @Override
+    public Resp<String> activateAccount(ActivateAccountDto activateAccountDto) {
+        if (StringUtils.isEmpty(activateAccountDto.getEmail())) {
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
+
+        }
+        //检查数据库是否已存在用户
+        SysUser sysUser = sysUserDao.queryByEmail(activateAccountDto.getEmail());
+        if ( sysUser == null) {
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
+        }
+        if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.REPASSWORD_ERROR.getCode(), SysConstantEnum.REPASSWORD_ERROR.getValue());
+        }
+        PasswordCheckerUtil passwordChecker = new PasswordCheckerUtil();
+        if (!passwordChecker.check(activateAccountDto.getPassword())) {
+            throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
+        }
+        sysUser.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
+        sysUser.setActivitiDate(new Date(System.currentTimeMillis()));
+        sysUser.setPassword(encodePassword(activateAccountDto.getPassword()));
+        if (sysUserDao.update(sysUser) == 0) {
+            throw new BizException(SysConstantEnum.UPDATE_FAILED.getCode(), SysConstantEnum.UPDATE_FAILED.getValue());
+        }
+
+        return new Resp.Builder<String>().buildResult(SysConstantEnum.ACTIVATION_SUCCESS.getCode(), SysConstantEnum.ACTIVATION_SUCCESS.getValue());
     }
 }
