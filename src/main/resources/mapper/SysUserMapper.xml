@@ -181,7 +181,8 @@
                create_time,
                update_time,
                parent_id,
-               identifier
+               identifier,
+               activiti_date
         from oneclick.sys_user
         where email = #{email}
           and del_flag = 0 limit 1

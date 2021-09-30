@@ -91,7 +91,7 @@ public class UserController {
 
     @ApiOperation("忘记密码填写邮箱")
     @PostMapping("forgetThePassword")
-    public Resp<String> forgetThePassword(@RequestBody String email) {
+    public Resp<String> forgetThePassword(@RequestParam String email) {
         return userService.forgetThePassword(email);
     }
 
@@ -101,6 +101,18 @@ public class UserController {
         return userService.forgetThePasswordIn(activateAccountDto);
     }
 
+    @ApiOperation("申请延期填写邮箱")
+    @PostMapping("applyForAnExtension")
+    public Resp<String> applyForAnExtension(@RequestParam String email) {
+        return userService.applyForAnExtension(email);
+    }
+
+
+    @ApiOperation("申请延期输入密码")
+    @PostMapping("applyForAnExtensionIn")
+    public Resp<String> applyForAnExtensionIn(@RequestBody ActivateAccountDto activateAccountDto) {
+        return userService.applyForAnExtensionIn(activateAccountDto);
+    }
 
 
 

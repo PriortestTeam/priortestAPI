@@ -56,7 +56,7 @@ public interface OneConstant {
         //待激活
         Integer ACTIVE_GENERATION = 5;
         //二次激活
-        Integer RE_ACTIVE_GENERATION = 5;
+        Integer RE_ACTIVE_GENERATION = 6;
     }
 
     /**
@@ -86,6 +86,10 @@ public interface OneConstant {
          * 忘记密码
          */
         String FORGETPASSWORD = "FORGETPASSWORD";
+        /**
+         * 申请延期
+         */
+        String APPLY_FOR_AN_EXTENSION = "APPLY_FOR_AN_EXTENSION";
     }
 
 

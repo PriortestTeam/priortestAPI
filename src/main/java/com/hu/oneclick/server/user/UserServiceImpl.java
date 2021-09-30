@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -300,6 +301,20 @@ public class UserServiceImpl implements UserService {
             sysUser.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
             sysUser.setActivitiDate(new Date(System.currentTimeMillis()));
         }
+        if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
+            if (!sysUser.getActiveState().equals(OneConstant.ACTIVE_STATUS.RE_ACTIVE_GENERATION)) {
+                Date activitiDate = sysUser.getActivitiDate();
+                long beginTime = activitiDate.getTime();
+                long endTime = new Date(System.currentTimeMillis()).getTime();
+                long betweenDays = ((endTime - beginTime) / (1000 * 60 * 60 * 24));
+                if (betweenDays > 30) {
+                    sysUser.setActiveState(OneConstant.ACTIVE_STATUS.RE_ACTIVE_GENERATION);
+                    sysUser.setActivitiDate(new Date(System.currentTimeMillis()));
+                }
+            } else {
+                throw new BizException(SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getCode(), SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getValue());
+            }
+        }
         sysUser.setPassword(encodePassword(activateAccountDto.getPassword()));
         if (sysUserDao.update(sysUser) == 0) {
             throw new BizException(SysConstantEnum.UPDATE_FAILED.getCode(), SysConstantEnum.UPDATE_FAILED.getValue());
@@ -317,7 +332,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto) {
 
-        return activateAccount(activateAccountDto,OneConstant.PASSWORD.FORGETPASSWORD);
+        return activateAccount(activateAccountDto, OneConstant.PASSWORD.FORGETPASSWORD);
 
+    }
+
+    @Override
+    public Resp<String> applyForAnExtension(String email) {
+        sendEmail();
+        return null;
+    }
+
+    @Override
+    public Resp<String> applyForAnExtensionIn(ActivateAccountDto activateAccountDto) {
+        return activateAccount(activateAccountDto, OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION);
     }
 }

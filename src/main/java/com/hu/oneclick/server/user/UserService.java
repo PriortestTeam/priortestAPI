@@ -75,4 +75,8 @@ public interface UserService {
     Resp<String> forgetThePassword(String email);
 
     Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto);
+
+    Resp<String> applyForAnExtension(String activateAccountDto);
+
+    Resp<String> applyForAnExtensionIn(ActivateAccountDto activateAccountDto);
 }
