@@ -86,6 +86,22 @@ public class UserController {
     @ApiOperation("激活账户")
     @PostMapping("activateAccount")
     public Resp<String> activateAccount(@RequestBody ActivateAccountDto activateAccountDto) {
-        return userService.activateAccount(activateAccountDto);
+        return userService.activateAccount(activateAccountDto,OneConstant.PASSWORD.ACTIVATION);
     }
+
+    @ApiOperation("忘记密码填写邮箱")
+    @PostMapping("forgetThePassword")
+    public Resp<String> forgetThePassword(@RequestBody String email) {
+        return userService.forgetThePassword(email);
+    }
+
+    @ApiOperation("忘记密码输入密码")
+    @PostMapping("forgetThePasswordIn")
+    public Resp<String> forgetThePasswordIn(@RequestBody ActivateAccountDto activateAccountDto) {
+        return userService.forgetThePasswordIn(activateAccountDto);
+    }
+
+
+
+
 }

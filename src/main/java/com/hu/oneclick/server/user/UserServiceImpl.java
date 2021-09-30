@@ -279,14 +279,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Resp<String> activateAccount(ActivateAccountDto activateAccountDto) {
+    public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
         if (StringUtils.isEmpty(activateAccountDto.getEmail())) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
 
         }
         //检查数据库是否已存在用户
         SysUser sysUser = sysUserDao.queryByEmail(activateAccountDto.getEmail());
-        if ( sysUser == null) {
+        if (sysUser == null) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
         }
         if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
@@ -296,13 +296,28 @@ public class UserServiceImpl implements UserService {
         if (!passwordChecker.check(activateAccountDto.getPassword())) {
             throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
         }
-        sysUser.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
-        sysUser.setActivitiDate(new Date(System.currentTimeMillis()));
+        if (activation.equals(OneConstant.PASSWORD.ACTIVATION)) {
+            sysUser.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
+            sysUser.setActivitiDate(new Date(System.currentTimeMillis()));
+        }
         sysUser.setPassword(encodePassword(activateAccountDto.getPassword()));
         if (sysUserDao.update(sysUser) == 0) {
             throw new BizException(SysConstantEnum.UPDATE_FAILED.getCode(), SysConstantEnum.UPDATE_FAILED.getValue());
         }
 
-        return new Resp.Builder<String>().buildResult(SysConstantEnum.ACTIVATION_SUCCESS.getCode(), SysConstantEnum.ACTIVATION_SUCCESS.getValue());
+        return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+    }
+
+    @Override
+    public Resp<String> forgetThePassword(String email) {
+        sendEmail();
+        return null;
+    }
+
+    @Override
+    public Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto) {
+
+        return activateAccount(activateAccountDto,OneConstant.PASSWORD.FORGETPASSWORD);
+
     }
 }

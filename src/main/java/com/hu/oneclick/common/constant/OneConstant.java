@@ -73,6 +73,20 @@ public interface OneConstant {
 
         String viewScopeDown = "VIEW_SCOPE_DOWN";
     }
+    /**
+     * 密码
+     */
+    interface PASSWORD {
+        /**
+         * 激活账号
+         */
+        String ACTIVATION = "ACTIVATION";
+
+        /**
+         * 忘记密码
+         */
+        String FORGETPASSWORD = "FORGETPASSWORD";
+    }
 
 
     /**

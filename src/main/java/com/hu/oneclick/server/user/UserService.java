@@ -70,5 +70,9 @@ public interface UserService {
 
     Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName);
 
-    Resp<String> activateAccount(ActivateAccountDto activateAccountDto);
+    Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation);
+
+    Resp<String> forgetThePassword(String email);
+
+    Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto);
 }
