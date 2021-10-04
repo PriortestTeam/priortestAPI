@@ -5,20 +5,20 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.DateUtil;
-import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
+import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.TestCycleService;
@@ -77,13 +77,16 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final IssueDao issueDao;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao) {
+    private final MailService mailService;
+
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao, MailService mailService) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
         this.queryFilterService = queryFilterService;
         this.testCycleService = testCycleService;
         this.issueDao = issueDao;
+        this.mailService = mailService;
     }
 
     @Override
@@ -320,7 +323,7 @@ public class ProjectServiceImpl implements ProjectService {
         header.put(row8.getRowNum(), true);
 
         Map<String, List<Map<String, String>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category")));
-        List<Map<String, String>> function = caseCategory.get("功能");
+        List<Map<String, String>> function = caseCategory.get("功能") == null ? new ArrayList<>() : caseCategory.get("功能") ;
 
         HSSFRow row9 = sheet.createRow(9);
         row9.createCell(0).setCellValue("测试用例");
@@ -347,7 +350,7 @@ public class ProjectServiceImpl implements ProjectService {
         sheet.addMergedRegion(region1);
         header.put(row13.getRowNum(), true);
 
-        List<Map<String, String>> performance = caseCategory.get("性能");
+        List<Map<String, String>> performance = caseCategory.get("性能") == null ? new ArrayList<>() : caseCategory.get("性能") ;;
         HSSFRow row14 = sheet.createRow(14);
         row14.createCell(0).setCellValue("测试用例");
         row14.createCell(1).setCellValue(performance.size());
@@ -555,6 +558,9 @@ public class ProjectServiceImpl implements ProjectService {
 
             // 调用方法保存为PDF格式.
             wb.saveToFile(desFilePathd, FileFormat.PDF);
+            //发送邮件
+            AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
+            mailService.sendAttachmentsMail(userLoginInfo.getUsername(),"OneClick验收结果", "请查收验收结果",desFilePathd);
             out.close();//关闭文件流
         } catch (Exception e) {
             e.printStackTrace();
