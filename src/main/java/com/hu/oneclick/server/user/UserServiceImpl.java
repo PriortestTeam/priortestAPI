@@ -16,6 +16,7 @@ import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
+import com.hu.oneclick.server.service.MailService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -26,7 +27,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
     private final RedissonClient redisClient;
 
+    private final MailService mailService;
 
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
@@ -59,11 +60,12 @@ public class UserServiceImpl implements UserService {
     private long secondTime;
 
 
-    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl) {
+    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
         this.jwtUserServiceImpl = jwtUserServiceImpl;
+        this.mailService = mailService;
     }
 
     @Override
@@ -94,6 +96,7 @@ public class UserServiceImpl implements UserService {
             }
             user.setIdentifier(masterIdentifier.getId());
             if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
+                mailService.sendSimpleMail(email,"OneClick激活账号","http://localhost:3307/jihuo.html");
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
@@ -149,36 +152,6 @@ public class UserServiceImpl implements UserService {
         } catch (BizException e) {
             logger.error("class: UserServiceImpl#resetPassword,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
-        }
-    }
-
-
-    @Override
-    public Resp<String> sendEmailCode(String email, String prefix) {
-        try {
-            if (prefix.equals(OneConstant.REDIS_KEY_PREFIX.RESET_PASSWORD)) {
-                SysUser user = sysUserDao.queryByEmail(email);
-                if (user == null) {
-                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(),
-                            SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
-                }
-            }
-            String redisKey = prefix + email;
-            RBucket<String> bucket = redisClient.getBucket(redisKey);
-            String s = bucket.get();
-            if (s != null && !"".equals(s)) {
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.PLEASE_TRY_AGAIN_LATER.getCode(),
-                        SysConstantEnum.PLEASE_TRY_AGAIN_LATER.getValue());
-            }
-            String verifyCode = NumberUtil.getVerifyCode();
-            bucket.set(verifyCode);
-            //设置超时1分钟
-            bucket.expire(1, TimeUnit.MINUTES);
-            sendEmail();
-            return new Resp.Builder<String>().ok();
-        } catch (Exception e) {
-            logger.error("class: UserServiceImpl#sendEmailCode,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue(), e.getMessage());
         }
     }
 
@@ -290,9 +263,6 @@ public class UserServiceImpl implements UserService {
         return jwtUserServiceImpl.encryptPassword(password);
     }
 
-    private void sendEmail() {
-
-    }
 
     @Override
     public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
@@ -350,8 +320,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> forgetThePassword(String email) {
-        sendEmail();
-        return null;
+        mailService.sendSimpleMail(email, "OneClick忘记密码","http://localhost:3307/wangji.html");
+        return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
     @Override
@@ -363,8 +333,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> applyForAnExtension(String email) {
-        sendEmail();
-        return null;
+        mailService.sendSimpleMail(email, "OneClick申请延期","http://localhost:3307/yangqi.html");
+        return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
     @Override

@@ -34,13 +34,7 @@ public interface UserService {
      */
     Resp<String> resetPassword(Map<String, String> args);
 
-    /**
-     * 发送邮箱 验证码
-     * @param email
-     * @param prefix
-     * @return
-     */
-    Resp<String> sendEmailCode(String email,String prefix);
+
 
     /**
      * 查询邮箱是否存在

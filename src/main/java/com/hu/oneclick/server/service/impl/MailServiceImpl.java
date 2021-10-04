@@ -108,4 +108,48 @@ public class MailServiceImpl  implements MailService {
             logger.error("class: MailServiceImpl#sendTemplateMail,error []" + e.getMessage());
         }
     }
+    /**
+     * 简单文本邮件
+     * @param to 接收者邮件
+     * @param subject 邮件主题
+     * @param contnet 邮件内容
+     */
+    @Override
+    public void sendSimpleMail(String to, String subject, String contnet){
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(contnet);
+        message.setFrom(from);
+
+        javaMailSender.send(message);
+    }
+
+    /**
+     * 附件邮件
+     * @param to 接收者邮件
+     * @param subject 邮件主题
+     * @param contnet HTML内容
+     * @param filePath 附件路径
+     * @throws MessagingException
+     */
+    @Override
+    public void sendAttachmentsMail(String to, String subject, String contnet,
+                                    String filePath) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(contnet, true);
+        helper.setFrom(from);
+
+        FileSystemResource file = new FileSystemResource(new File(filePath));
+        String fileName = file.getFilename();
+        helper.addAttachment(fileName, file);
+
+        javaMailSender.send(message);
+    }
+
 }

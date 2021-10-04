@@ -32,11 +32,6 @@ public class UserController {
         return userService.register(registerUser);
     }
 
-    @GetMapping("sendEmailRegisterCode")
-    public Resp<String> sendEmailRegisterCode(@RequestParam String email) {
-        return userService.sendEmailCode(email, OneConstant.REDIS_KEY_PREFIX.REGISTRY);
-    }
-
     @PostMapping("modifyPassword")
     public Resp<String> modifyPassword(@RequestBody Map<String, String> args) {
         return userService.modifyPassword(args);
@@ -47,10 +42,6 @@ public class UserController {
         return userService.resetPassword(args);
     }
 
-    @GetMapping("sendResetPasswordEmailUrl")
-    public Resp<String> sendResetPasswordEmailCode(@RequestParam String email) {
-        return userService.sendEmailCode(email, OneConstant.REDIS_KEY_PREFIX.RESET_PASSWORD);
-    }
 
     @GetMapping("queryEmailDoesItExist")
     public Resp<String> queryEmailDoesItExist(@RequestParam String email) {
