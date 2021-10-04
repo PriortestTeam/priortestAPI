@@ -32,6 +32,9 @@ import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -257,12 +260,12 @@ public class ProjectServiceImpl implements ProjectService {
         HashMap<Integer, Boolean> header = new HashMap<>();
         //边框
         HSSFCellStyle style = workbook.createCellStyle();
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);//上边框
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);//下边框
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);//左边框
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);//右边框
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//水平居中
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直居中
+        style.setBorderTop(BorderStyle.THIN);//上边框
+        style.setBorderBottom(BorderStyle.THIN);//下边框
+        style.setBorderLeft(BorderStyle.THIN);//左边框
+        style.setBorderRight(BorderStyle.THIN);//右边框
+        style.setAlignment(HorizontalAlignment.CENTER);//水平居中
+        style.setVerticalAlignment(VerticalAlignment.CENTER);//垂直居中
         //创建工作表(Sheet)
         HSSFSheet sheet = workbook.createSheet("Test");
         sheet.setDefaultColumnWidth(30);
