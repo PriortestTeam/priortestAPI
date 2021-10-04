@@ -55,8 +55,6 @@ public interface OneConstant {
         Integer ACTIVE_FAILED = 4;
         //待激活
         Integer ACTIVE_GENERATION = 5;
-        //二次激活
-        Integer RE_ACTIVE_GENERATION = 6;
     }
 
     /**

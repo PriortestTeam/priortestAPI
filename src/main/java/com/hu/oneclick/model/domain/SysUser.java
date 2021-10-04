@@ -1,7 +1,6 @@
 package com.hu.oneclick.model.domain;
 
 import com.hu.oneclick.model.base.BaseEntity;
-import org.apache.catalina.User;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -64,7 +63,7 @@ public class SysUser extends BaseEntity implements Serializable {
      */
     private Integer type;
     /**
-     * 激活状态， 1 试用中 3 试用过期 2 激活成功 4 激活失败 5 待激活 6 二次激活
+     * 激活状态， 1 试用中 3 试用过期 2 激活成功 4 激活失败 5 待激活
      */
     private Integer activeState;
     /**
@@ -83,13 +82,18 @@ public class SysUser extends BaseEntity implements Serializable {
      * 是否是管理员， 默认为 0, 1 是管理员（负责后台系统的登录）3 子成员
      */
     private Integer manager;
-
-
-
     /**
      * 激活时间
      */
     private Date activitiDate;
+    /**
+     * 激活次数
+     */
+    private Integer activitiNumber;
+    /**
+     * 过期时间
+     */
+    private Date expireDate;
     /**
      * 0 存在，1 删除
      */
@@ -319,5 +323,21 @@ public class SysUser extends BaseEntity implements Serializable {
 
     public void setActivitiDate(Date activitiDate) {
         this.activitiDate = activitiDate;
+    }
+
+    public Date getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(Date expireDate) {
+        this.expireDate = expireDate;
+    }
+
+    public Integer getActivitiNumber() {
+        return activitiNumber;
+    }
+
+    public void setActivitiNumber(Integer activitiNumber) {
+        this.activitiNumber = activitiNumber;
     }
 }

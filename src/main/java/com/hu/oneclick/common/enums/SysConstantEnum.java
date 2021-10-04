@@ -38,7 +38,7 @@ public enum SysConstantEnum {
     SCOPE_ERROR(SysConstantEnum.NUMBER + "019","scope 异常。"),
     REPASSWORD_ERROR(SysConstantEnum.NUMBER + "020","两次密码不一致"),
     NOUSER_ERROR(SysConstantEnum.NUMBER + "021","没有该用户"),
-    HAS_BEEN_ACTIVATED_ONCE(SysConstantEnum.NUMBER + "022","已经激活过一次"),
+    HAS_BEEN_ACTIVATED_ONCE(SysConstantEnum.NUMBER + "022","激活失败"),
 
     VIEW_ONN_FILTER_IS_REDUNDANT(SysConstantEnum.NUMBER + "030","过滤项不可重复。"),
 

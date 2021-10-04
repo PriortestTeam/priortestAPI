@@ -67,3 +67,7 @@ onclick:
     accountKey: minio
     password: qingyang_minio_ooo
     source: true
+  time:
+    firstTime: 30
+    secondTime: 15
+

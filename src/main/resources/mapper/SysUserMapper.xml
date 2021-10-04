@@ -28,6 +28,8 @@
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="activitiDate" column="activiti_date" jdbcType="TIMESTAMP"/>
+        <result property="activitiNumber" column="activiti_number" jdbcType="INTEGER"/>
+        <result property="expireDate" column="expire_date" jdbcType="TIMESTAMP"/>
         <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
         <result property="sysRoleId" column="sys_role_id" jdbcType="INTEGER"/>
         <result property="identifier" column="identifier" jdbcType="VARCHAR"/>
@@ -182,7 +184,9 @@
                update_time,
                parent_id,
                identifier,
-               activiti_date
+               activiti_number,
+               activiti_date,
+               expire_date
         from oneclick.sys_user
         where email = #{email}
           and del_flag = 0 limit 1
@@ -440,8 +444,14 @@
             <if test="locale != null and locale != ''">
                 locale = #{locale},
             </if>
+            <if test="activitiNumber != null and activitiNumber != ''">
+                activiti_number = #{activitiNumber},
+            </if>
             <if test="activitiDate != null">
                 activiti_date = NOW(),
+            </if>
+            <if test="expireDate != null">
+                expire_date = #{expireDate},
             </if>
             update_time = NOW()
         </set>

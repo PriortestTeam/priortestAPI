@@ -51,6 +51,13 @@ public class UserServiceImpl implements UserService {
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
+    @Value("${onclick.time.firstTime}")
+    private long firstTime;
+
+    @Value("${onclick.time.secondTime}")
+    private long secondTime;
+
+
     public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
@@ -297,19 +304,29 @@ public class UserServiceImpl implements UserService {
         if (!passwordChecker.check(activateAccountDto.getPassword())) {
             throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
         }
+        //激活账号
         if (activation.equals(OneConstant.PASSWORD.ACTIVATION)) {
             sysUser.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
-            sysUser.setActivitiDate(new Date(System.currentTimeMillis()));
+            Date activitiDate = new Date(System.currentTimeMillis());
+            sysUser.setActivitiDate(activitiDate);
+            sysUser.setActivitiNumber(1);
+            long time = activitiDate.getTime() + firstTime * 24 * 60 * 60 * 1000;
+            sysUser.setExpireDate(new Date(time));
         }
+        //申请延期
         if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
-            if (!sysUser.getActiveState().equals(OneConstant.ACTIVE_STATUS.RE_ACTIVE_GENERATION)) {
+            int activitiNumber = sysUser.getActivitiNumber() == null ? 0 : sysUser.getActivitiNumber();
+            if (activitiNumber >= 1 && activitiNumber <= 3) {
                 Date activitiDate = sysUser.getActivitiDate();
-                long beginTime = activitiDate.getTime();
+                long beginTime = sysUser.getExpireDate().getTime();
                 long endTime = new Date(System.currentTimeMillis()).getTime();
-                long betweenDays = ((endTime - beginTime) / (1000 * 60 * 60 * 24));
-                if (betweenDays > 30) {
-                    sysUser.setActiveState(OneConstant.ACTIVE_STATUS.RE_ACTIVE_GENERATION);
-                    sysUser.setActivitiDate(new Date(System.currentTimeMillis()));
+                if (beginTime < endTime) {
+                    sysUser.setActivitiDate(activitiDate);
+                    sysUser.setActivitiNumber(activitiNumber + 1);
+                    long time = activitiDate.getTime() + secondTime * 24 * 60 * 60 * 1000;
+                    sysUser.setExpireDate(new Date(time));
+                } else {
+                    throw new BizException(SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getCode(), SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getValue());
                 }
             } else {
                 throw new BizException(SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getCode(), SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getValue());
