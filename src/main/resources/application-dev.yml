@@ -39,7 +39,12 @@ spring:
     port: 6379
     ssl: false
 #    password: qingyang_redis
-
+  #email 配置
+  mail:
+    host: smtp.163.com
+    username: 15837174334@163.com #发送邮件人的邮箱
+    password: XYJGZXQGSDHZFGLI #这个密码是邮箱设置里SMTP服务生成的授权码
+    default-encoding: UTF-8
 
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml

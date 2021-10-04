@@ -11,6 +11,10 @@ public class ExecuteTestCaseDto {
 
 
     private Integer stepStatus;
+    /**
+     * 实际结果
+     */
+    private String actualResult;
 
     public String getTestCaseId() {
         return testCaseId;
@@ -42,5 +46,13 @@ public class ExecuteTestCaseDto {
 
     public void setStepStatus(Integer stepStatus) {
         this.stepStatus = stepStatus;
+    }
+
+    public String getActualResult() {
+        return actualResult;
+    }
+
+    public void setActualResult(String actualResult) {
+        this.actualResult = actualResult;
     }
 }

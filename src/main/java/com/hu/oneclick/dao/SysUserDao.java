@@ -2,6 +2,7 @@ package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.dto.PlatformUserDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -119,4 +120,23 @@ public interface SysUserDao {
 
     List<SubUserDto> queryByNameSubUsers(@Param("masterId") String masterId,@Param("subUserName") String subUserName);
 
+    /**
+     * 查詢平台用戶
+     * @param platformUserDto
+     * @return
+     */
+    List<PlatformUserDto> queryPlatformUsers(PlatformUserDto platformUserDto);
+
+    /**
+     * 更新平台用户
+     * @param platformUserDto
+     * @return
+     */
+    int updatePlatformUser(PlatformUserDto platformUserDto);
+
+    /**
+     * 根据父id删除
+     * @param parentId 父id
+     */
+    void deleteByParentId(@Param("parentId")String parentId);
 }

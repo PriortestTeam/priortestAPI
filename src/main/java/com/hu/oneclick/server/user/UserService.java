@@ -79,4 +79,13 @@ public interface UserService {
     Resp<String> applyForAnExtension(String activateAccountDto);
 
     Resp<String> applyForAnExtensionIn(ActivateAccountDto activateAccountDto);
+
+    /**
+     * 删除用户
+     * @param id
+     * @return
+     */
+    Resp<String> deleteUserById(String id);
+
+
 }

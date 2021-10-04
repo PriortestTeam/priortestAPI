@@ -256,6 +256,7 @@ public class TestCycleServiceImpl implements TestCycleService {
             testCaseStep.setTestCaseId(executeTestCaseDto.getTestCaseId());
             testCaseStep.setTestDate(date);
             testCaseStep.setStatus(executeTestCaseDto.getStepStatus());
+            testCaseStep.setActualResult(executeTestCaseDto.getActualResult());
             //开始更新
             return Result.updateResult(testCycleDao.update(testCycle),
                     testCaseDao.update(testCase),

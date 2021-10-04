@@ -155,4 +155,11 @@ public interface OneConstant {
         String CHECK_BOX = "CheckBox";
     }
 
+    /**
+     * email
+     */
+    interface EMAIL{
+        String TITLE_IMPORTTESTCASE = "导入测试用例结果提醒";
+        String TEMPLATEHTMLNAME_IMPORTTESTCASE = "importTestCase.html";
+    }
 }

@@ -91,6 +91,16 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
     @Transient
     private String scope = OneConstant.SCOPE.ONE_TEST_CASE;
 
+    /**
+     * 状态
+     */
+    private String status;
+
+    /**
+     *
+     */
+    private String comments;
+
 
     @Override
     public void verify() throws BizException {
@@ -316,4 +326,21 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
     public void setScope(String scope) {
         this.scope = scope;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
 }
