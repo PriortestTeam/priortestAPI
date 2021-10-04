@@ -9,6 +9,7 @@ import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.dao.MasterIdentifierDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.MasterIdentifier;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
@@ -217,6 +218,13 @@ public class UserServiceImpl implements UserService {
     public Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName) {
         List<SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
         return new Resp.Builder<List<SubUserDto>>().setData(subUserDtos).totalSize(subUserDtos.size()).ok();
+    }
+
+    @Override
+    public Resp<String> deleteUserById(String id) {
+        //删除平台用户并删除子用户
+
+        return Result.deleteResult(sysUserDao.deleteById(id));
     }
 
     /**

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="padding: 20px; background-color: #F2F2F2;display: flex; align-items: center; flex-direction: column;">
+        <div style="width: 450px;">
+            <h3 style="color: #405d9c;">PriorTest</h2>
+        </div>
+        <div
+            style="width: 400px; border-top: 5px solid #405d9c;padding: 20px; font-weight: bold; background-color: #fff;">
+            <p>尊敬的客户：</p>
+            <div style="padding-left: 30px;">
+                <p>您好，您在<span th:text="${importDateTime}"></span>导入测试用例记录。</p>
+                <p>导入成功：<span th:text="${successCount}"></span></p>
+                <p>更新成功：<span th:text="${updateCount}"></span></p>
+                <p>导入失败：<span th:text="${errorCount}"></span>（失败原因-导入时返回的错误信息）</p>
+                <br>
+                <a href="" target="_blank" style="text-decoration:none">查看导入记录</a>
+                <br>
+                <br>
+                <hr />
+                <p>温馨提示：此为系统邮件，请勿回复</p>
+            </div>
+        </div>
+        <div style="width: 440px;padding-top: 10px;">
+           <span>收到此邮件是让您了解您的账号执行了重要的操作。假如您没有执行以上导入操作请及时通知管理员</p>
+        </div>
+        <div style="width: 440px;padding-top: 10px; text-align: right; color: #405d9c;">
+            <h4>优测（PriorTest）技术公司 敬上</h3>
+        </div>
+    </div>
+</body>
+
+</html>

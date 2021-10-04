@@ -3,8 +3,10 @@ package com.hu.oneclick.server.service;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.TestCase;
+import com.hu.oneclick.model.domain.dto.ImportTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.TestCaseDto;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,4 +28,12 @@ public interface TestCaseService {
     Resp<String> delete(String id);
 
     Resp<Feature> queryTestNeedByFeatureId(String featureId);
+
+    /**
+     * excel导入测试用例
+     * @param file
+     * @param param
+     * @return
+     */
+    Resp<ImportTestCaseDto> importTestCase(MultipartFile file, String param);
 }
