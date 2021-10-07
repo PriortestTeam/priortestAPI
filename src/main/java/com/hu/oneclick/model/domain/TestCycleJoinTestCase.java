@@ -11,6 +11,51 @@ public class TestCycleJoinTestCase implements Serializable {
 
     private String testCycleId;
     private String testCaseId;
+    private Integer runStatus;
+    private Integer stepStatus;
+    private Integer runDuration;
+    private Integer runCount;
+    private String userId;
+
+    public Integer getRunStatus() {
+        return runStatus;
+    }
+
+    public void setRunStatus(Integer runStatus) {
+        this.runStatus = runStatus;
+    }
+
+    public Integer getStepStatus() {
+        return stepStatus;
+    }
+
+    public void setStepStatus(Integer stepStatus) {
+        this.stepStatus = stepStatus;
+    }
+
+    public Integer getRunDuration() {
+        return runDuration;
+    }
+
+    public void setRunDuration(Integer runDuration) {
+        this.runDuration = runDuration;
+    }
+
+    public Integer getRunCount() {
+        return runCount;
+    }
+
+    public void setRunCount(Integer runCount) {
+        this.runCount = runCount;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     @Transient
     private String executeStatus;

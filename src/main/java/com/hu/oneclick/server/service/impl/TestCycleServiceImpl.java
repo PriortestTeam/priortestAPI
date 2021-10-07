@@ -51,8 +51,10 @@ public class TestCycleServiceImpl implements TestCycleService {
 
     private final QueryFilterService queryFilterService;
 
+    private final TestCaseExcutionDao testCaseExcutionDao;
 
-    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao, QueryFilterService queryFilterService) {
+
+    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao, QueryFilterService queryFilterService, TestCaseExcutionDao testCaseExcutionDao) {
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
         this.testCycleDao = testCycleDao;
@@ -62,6 +64,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
         this.sprintDao = sprintDao;
         this.queryFilterService = queryFilterService;
+        this.testCaseExcutionDao = testCaseExcutionDao;
     }
 
 
@@ -264,6 +267,90 @@ public class TestCycleServiceImpl implements TestCycleService {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }
+//        try {
+//            // 当前用户下，当前测试周期下的当前测试用例前面步骤是否有执行失败的
+//            TestCaseStep testCaseStep = new TestCaseStep();
+//            testCaseStep.setId(executeTestCaseDto.getTestCaseStepId());
+//            testCaseStep.setTestCaseId(executeTestCaseDto.getTestCaseId());
+//            testCaseStep.setUserId(userId);
+//            testCaseStep.setTestCycleId(executeTestCaseDto.getTestCycleId());
+//            int count = 0;
+//            count = testCaseStepDao.queryCount(testCaseStep);
+//            if (count > 0 ) {
+//                throw new BizException("","当前测试用例有执行失败步骤，不可继续执行");
+//            }
+//
+//
+//            // TODO 将该用例此步骤后面的步骤都置为未执行状态 如果返回ccount=1则代表后面还有步骤
+//            int ccount = 0;
+//
+//            // 更新测试周期和测试用例关联信息表
+//            TestCycleJoinTestCase testCycleJoinTestCase = new TestCycleJoinTestCase();
+//            if (flag) {
+//                if (ccount == 1) { // 执行成功但未完成
+//                    testCycleJoinTestCase.setExecuteStatus("1");// 0:未执行 1:未完成  2:执行完成
+//                    testCycleJoinTestCase.setRunStatus("2");// 执行成功 0:未执行 1:执行失败 2:执行成功
+//                } else {// 执行成功且完成
+//                    testCycleJoinTestCase.setExecuteStatus("2");// 0:未执行 1:未完成  2:执行完成
+//                    testCycleJoinTestCase.setRunStatus("2");// 执行成功 0:未执行 1:执行失败 2:执行成功
+//                }
+//            } else {
+//                testCycleJoinTestCase.setExecuteStatus("2");// 0:未执行 1:未完成  2:执行完成
+//                testCycleJoinTestCase.setRunStatus("1");// 执行成功 0:未执行 1:执行失败 2:执行成功
+//            }
+//            //testCycleJoinTestCase.setExecuteStatus(StringUtil.isEmpty(String.valueOf(executeTestCaseDto.getStepStatus())) ? "0" : String.valueOf(executeTestCaseDto.getStepStatus()));
+//            testCycleJoinTestCase.setTestCaseId(executeTestCaseDto.getTestCaseId());
+//            testCycleJoinTestCase.setTestCycleId(executeTestCaseDto.getTestCycleId());
+//            testCycleJoinTestCaseDao.update(testCycleJoinTestCase);
+//
+//            int testCycleRunStatus = 2;// test_cycle默认执行状态为成功 0:未执行 1:执行失败 2:执行成功
+//            int testCycleStatus = 1;// test_cycle默认状态为完成 0:未执行 1:未完成  2:执行完成
+//            // 查询test_cycle_join_test_case表该周期下所有用例的执行状态
+//            testCycleJoinTestCase.setExecuteStatus(null);// 查询条件去掉状态
+//            testCycleJoinTestCase.setTestCaseId(null);
+//            List<TestCycleJoinTestCase> list = testCycleJoinTestCaseDao.queryList(testCycleJoinTestCase);
+//            if (flag) {// 该测试用例当前步骤执行成功
+//                for(TestCycleJoinTestCase testCJTC : list){
+//                    if ("1".equals(testCJTC.getRunStatus())) {// 只要有失败的用例，则该测试周期执行状态为失败
+//                        testCycleRunStatus = 1;// 失败
+//                    }
+//                    if (!"2".equals(testCJTC.getExecuteStatus())) {// 只要有未执行或者未执行完成，测试周期状态为未完成
+//                        testCycleStatus = 1;
+//                    }
+//                }
+//
+//
+//            } else {// 该测试用例当前步骤执行失败
+//                testCycleRunStatus = 1;// 失败
+//                for(TestCycleJoinTestCase testCJTC : list){
+//                    if (!"2".equals(testCJTC.getExecuteStatus())) {// 只要有未执行或者未执行完成，测试周期状态为未完成
+//                        testCycleStatus = 1;
+//                    }
+//                }
+//            }
+//            TestCycle testCycle = new TestCycle();
+//            testCycle.setId(executeTestCaseDto.getTestCycleId());
+//            testCycle.setRunStatus(testCycleRunStatus);
+//            testCycle.setStatus(testCycleStatus);
+//            testCycle.setLastRunDate(date);
+//            testCycle.setUserId(userId);
+//            testCycleDao.update(testCycle);
+//
+//            // 更新测试用例最后执行人，最终执行状态
+//            TestCase testCase = new TestCase();
+//
+//            // 更新测试用例步骤表
+//            testCaseStepDao.update(testCaseStep);
+//
+//
+//
+//            testCaseDao.update(testCase);
+//            testCaseStepDao.update(testCaseStep);
+//        }catch (BizException e) {
+//            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+//            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+//        }
+//        return Result.updateResult();
     }
 
 
@@ -375,5 +462,106 @@ public class TestCycleServiceImpl implements TestCycleService {
                 return  "ped";
         }
         return args;
+    }
+
+    /**
+     * 点击测试周期中某个测试用例前面的run按钮
+     * @param executeTestCaseDto
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<List<Object>> runTestCycleTc(ExecuteTestCaseDto executeTestCaseDto) {
+        String userId = jwtUserService.getMasterId();
+        Date date = new Date();
+        try {
+            TestCycleJoinTestCase testCycleJoinTestCase = new TestCycleJoinTestCase();
+            testCycleJoinTestCase.setTestCaseId(executeTestCaseDto.getTestCaseId());
+            testCycleJoinTestCase.setTestCycleId(executeTestCaseDto.getTestCycleId());
+            List<TestCycleJoinTestCase> list = testCycleJoinTestCaseDao.queryList(testCycleJoinTestCase);
+            TestCycleJoinTestCase resultTestCycleJoinTestCase = list.get(0);
+            int cycleRunCount = resultTestCycleJoinTestCase.getRunCount();
+            if (cycleRunCount == 0) {// 当此测试用例从未执行时，点击run，不做任何改变
+                return null;
+            }
+
+            // 更新测试用例test_case表的状态为not run、执行时间、执行人等
+            TestCase testCase = new TestCase();
+            testCase.setId(executeTestCaseDto.getTestCaseId());
+            testCase.setExecutedDate(date);
+            testCase.setStepStatus(0);// 0:Not Run; 1:PASS; 2:Fail
+            testCase.setRunStatus(0);// 0:Not Run; 1:PASS; 2:Fail; 3:Un_Complete
+            testCase.setUserId(userId);
+            testCaseDao.update(testCase);
+
+            // 更新test_cycle_join_test_case的Run Count +1 , Run Duration =00;
+//            testCycleJoinTestCase.setStepStatus(0);// 0:Not Run; 1:PASS; 2:Fail
+//            testCycleJoinTestCase.setRunStatus(0);// 0:Not Run; 1:PASS; 2:Fail; 3:Un_Complete
+            testCycleJoinTestCase.setRunCount(cycleRunCount + 1);
+            testCycleJoinTestCase.setUserId(userId);
+            testCycleJoinTestCase.setRunDuration(0);
+            testCycleJoinTestCase.setTestCaseId(executeTestCaseDto.getTestCaseId());
+            testCycleJoinTestCase.setTestCycleId(executeTestCaseDto.getTestCycleId());
+//            testCycleJoinTestCaseDao.update(testCycleJoinTestCase);
+
+            // 从test_cycl_Join_Test_Step复制数据到TestCaseExcution表,并将TestCaseExcution全部置为初始状态
+            TestCaseExcution testCaseExcution = new TestCaseExcution();
+            testCaseExcutionDao.createTestCaseExcutionDate();
+
+            // 更新test_cycle
+            TestCycle testCycle = new TestCycle();
+            TestCycleJoinTestCase queryTestCycleJoinTestCase = new TestCycleJoinTestCase();
+            queryTestCycleJoinTestCase.setTestCycleId(executeTestCaseDto.getTestCycleId());
+            List<TestCycleJoinTestCase> testCycleJoinTestCaseList = testCycleJoinTestCaseDao.queryList(queryTestCycleJoinTestCase);// 查询test_cycle_join_test_case表该周期下所有用例的执行状态
+            int count = 0;
+            int count1 = 0;
+            int count2 = 0;
+            for (TestCycleJoinTestCase tcjt : testCycleJoinTestCaseList) {
+                if (tcjt.getRunStatus() == 0) {
+                    count++;
+                } else if (tcjt.getRunStatus() == 1) {
+                    count1++;
+                } else if (tcjt.getRunStatus() == 2) {
+                    count2++;
+                } else if (tcjt.getRunStatus() == 3) {// 只要有Un_Complete的状态，test_cycle的完成结果肯定为Un_Complete
+                    testCycle.setTestResult(3);
+                }
+            }
+            if (count2 != 0) {// 只要有失败的测试用例，则测试周期执行结果为失败
+                testCycle.setRunStatus(2);
+            } else if (count != 0 && count1 != 0 && count2 == 0) {// 有未执行和执行成功且没有执行失败的，执行结果为成功
+                testCycle.setRunStatus(1);
+            }
+
+            if (count != 0 && count != testCycleJoinTestCaseList.size()) {// 有未执行也有执行的，完成结果为未完成un_complete
+                testCycle.setTestResult(3);// un_complete
+            } else if (count == testCycleJoinTestCaseList.size()) {// 全部未执行，执行结果为not run，完成结果为not run
+                testCycle.setTestResult(0);
+                testCycle.setRunStatus(0);
+            } else if (count1 == testCycleJoinTestCaseList.size()) {// 全部成功，执行结果为成功，完成结果为成功
+                testCycle.setTestResult(1);
+                testCycle.setRunStatus(1);
+            } else if (count2 == testCycleJoinTestCaseList.size()) {// 全部失败，执行结果为失败，完成结果为失败
+                testCycle.setTestResult(2);
+//                testCycle.setRunStatus(2);
+            } else if (count1 != 0 && count2 != 0 && (count1 + count2 == testCycleJoinTestCaseList.size())) {// 有成功也有失败，没有未执行，最终完成结果为失败
+                testCycle.setTestResult(2);
+//                testCycle.setRunStatus(2);
+            }
+
+            testCycle.setId(executeTestCaseDto.getTestCycleId());
+            testCycle.setLastRunDate(date);
+            testCycle.setUserId(userId);
+            testCycleDao.update(testCycle);
+
+            List<Object> resultList = new ArrayList<Object>();
+            //TODO 查询test_cycl_Join_Test_Step表添加到resultList
+            //TODO 多表查询出history并将记录添加到resultList
+            return new Resp.Builder< List<Object>>().setData(resultList).total(resultList).ok();
+        }catch (BizException e){
+            logger.error("class: TestCycleServiceImpl#bindCaseDelete,error []" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new Resp.Builder<List<Object>>().buildResult(e.getCode(),e.getMessage());
+        }
     }
 }
