@@ -1,9 +1,8 @@
 package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.domain.SysUserOrder;
-import org.springframework.stereotype.Repository;
 
-@Repository
+
 public interface SysUserOrderDao {
     int deleteByPrimaryKey(Integer id);
 

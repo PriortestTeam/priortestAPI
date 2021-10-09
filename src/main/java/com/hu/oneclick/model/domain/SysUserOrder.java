@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -13,9 +14,12 @@ import lombok.Data;
  * @author 
  */
 @Data
-@Table(name="sys_user_order")
-@ApiModel(value="com.hu.oneclick.model.domain.SysUserOrder")
-public class SysUserOrder extends BaseEntity implements Serializable {
+public class SysUserOrder implements Serializable {
+    /**
+     * 订单表id
+     */
+    @ApiModelProperty(value="订单表id")
+    private Integer id;
 
     /**
      * 用户id
