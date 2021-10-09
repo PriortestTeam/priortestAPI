@@ -26,7 +26,7 @@ public class AdminPayDto {
      */
     private Integer dataStrorage;
     /**
-     * 订阅时间
+     * 订阅时长
      */
     private Integer subScription;
 
