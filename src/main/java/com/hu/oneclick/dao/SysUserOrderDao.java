@@ -2,6 +2,8 @@ package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.domain.SysUserOrder;
 
+import java.util.Date;
+
 
 public interface SysUserOrderDao {
     int deleteByPrimaryKey(Integer id);
@@ -14,5 +16,9 @@ public interface SysUserOrderDao {
 
     int updateByPrimaryKeySelective(SysUserOrder record);
 
+    int updateByUuidSelective(SysUserOrder sysUserOrder);
+
     int updateByPrimaryKey(SysUserOrder record);
+
+    SysUserOrder getOrderOfUserId(String userId);
 }

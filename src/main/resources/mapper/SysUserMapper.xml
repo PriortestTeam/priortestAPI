@@ -593,4 +593,7 @@
              parent_id = #{parentId}
     </delete>
 
+    <select id="getExpireDate" resultType="java.util.Date">
+        select expire_date from sys_user where id = #{userId}
+    </select>
 </mapper>

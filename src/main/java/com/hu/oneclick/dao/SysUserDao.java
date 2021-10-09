@@ -6,6 +6,7 @@ import com.hu.oneclick.model.domain.dto.PlatformUserDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -139,4 +140,6 @@ public interface SysUserDao {
      * @param parentId 父id
      */
     void deleteByParentId(@Param("parentId")String parentId);
+
+    Date getExpireDate(String userId);
 }

@@ -341,4 +341,9 @@ public class UserServiceImpl implements UserService {
     public Resp<String> applyForAnExtensionIn(ActivateAccountDto activateAccountDto) {
         return activateAccount(activateAccountDto, OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION);
     }
+
+    @Override
+    public Date getExpireDate(String id) {
+        return sysUserDao.getExpireDate(id);
+    }
 }

@@ -6,6 +6,8 @@ import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 
+import java.sql.CallableStatement;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -82,5 +84,5 @@ public interface UserService {
     Resp<String> deleteUserById(String id);
 
 
-
+    Date getExpireDate(String id);
 }

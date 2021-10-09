@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserOrder;
 
 /**
@@ -10,4 +11,6 @@ import com.hu.oneclick.model.domain.SysUserOrder;
  */
 public interface UserOrderService {
     Resp<String> insertOrder(SysUserOrder sysUserOrder);
+
+    Resp<String> insertUserDetail(SysUser sysUser);
 }

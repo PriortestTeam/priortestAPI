@@ -1,12 +1,8 @@
 package com.hu.oneclick.model.domain;
 
-import com.hu.oneclick.model.base.BaseEntity;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Table;
 import lombok.Data;
 
 /**
@@ -26,6 +22,12 @@ public class SysUserOrder implements Serializable {
      */
     @ApiModelProperty(value="用户id")
     private Long userId;
+
+    /**
+     * 业务id
+     */
+    @ApiModelProperty(value="业务id")
+    private Long uuid;
 
     /**
      * 支付方式
@@ -55,7 +57,7 @@ public class SysUserOrder implements Serializable {
      * 订阅时长
      */
     @ApiModelProperty(value="订阅时长")
-    private String subScription;
+    private Integer subScription;
 
     /**
      * 创建时间

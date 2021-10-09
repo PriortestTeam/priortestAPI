@@ -9,20 +9,17 @@
         <result column="pay_card" jdbcType="VARCHAR" property="payCard"/>
         <result column="pay_name" jdbcType="VARCHAR" property="payName"/>
         <result column="data_strorage" jdbcType="INTEGER" property="dataStrorage"/>
-        <result column="sub_scription" jdbcType="VARCHAR" property="subScription"/>
+        <result column="sub_scription" jdbcType="INTEGER" property="subScription"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="status" jdbcType="BOOLEAN" property="status"/>
     </resultMap>
     <sql id="Base_Column_List">
-        sys_user_order
-        .
-        id
-        as sys_user_order_id, sys_user_order.user_id as sys_user_order_user_id,
-    sys_user_order.payment_type as sys_user_order_payment_type, sys_user_order.pay_card as sys_user_order_pay_card,
-    sys_user_order.pay_name as sys_user_order_pay_name, sys_user_order.data_strorage as sys_user_order_data_strorage,
-    sys_user_order.sub_scription as sys_user_order_sub_scription, sys_user_order.create_time as sys_user_order_create_time,
-    sys_user_order.update_time as sys_user_order_update_time, sys_user_order.`status` as `sys_user_order_status`
+        sys_user_order.id as id, sys_user_order.user_id,uuid,
+    sys_user_order.payment_type, sys_user_order.pay_card,
+    sys_user_order.pay_name, sys_user_order.data_strorage,
+    sys_user_order.sub_scription, sys_user_order.create_time,
+    sys_user_order.update_time, sys_user_order.`status`
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -30,6 +27,13 @@
         from sys_user_order sys_user_order
         where sys_user_order.id = #{id,jdbcType=INTEGER}
     </select>
+    <select id="getOrderOfUserId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_order where user_id = #{userId} order by create_time desc limit 1
+    </select>
+
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
         from sys_user_order
@@ -158,4 +162,38 @@
             `status`      = #{status,jdbcType=BOOLEAN}
         where id = #{id,jdbcType=INTEGER}
     </update>
+    <update id="updateByUuidSelective"  parameterType="com.hu.oneclick.model.domain.SysUserOrder">
+        update sys_user_order
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="paymentType != null">
+                payment_type = #{paymentType},
+            </if>
+            <if test="payCard != null">
+                pay_card = #{payCard},
+            </if>
+            <if test="payName != null">
+                pay_name = #{payName},
+            </if>
+            <if test="dataStrorage != null">
+                data_strorage = #{dataStrorage},
+            </if>
+            <if test="subScription != null">
+                sub_scription = #{subScription},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+        </set>
+        where uuid = #{uuid}
+    </update>
+
 </mapper>

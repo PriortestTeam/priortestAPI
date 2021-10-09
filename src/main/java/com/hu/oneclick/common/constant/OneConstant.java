@@ -55,6 +55,8 @@ public interface OneConstant {
         Integer ACTIVE_FAILED = 4;
         //待激活
         Integer ACTIVE_GENERATION = 5;
+        //付费用户
+        Integer PAYING_USERS = 6;
     }
 
     /**
