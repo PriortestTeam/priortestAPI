@@ -310,9 +310,6 @@
         delete from user_use_open_project where id  = #{id}
     </delete>
 
-    <select id="getProject" resultType="string">
-        select distinct title from project
-    </select>
 
 
 

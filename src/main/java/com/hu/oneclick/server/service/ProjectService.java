@@ -32,9 +32,6 @@ public interface ProjectService {
 
     Resp<String> getCloseProject(String id, String closeDesc);
 
-    Resp<List<String>> getProject();
-
-
     Resp<String> generate(SignOffDto signOffDto, HttpServletRequest req);
 
     Resp<String> upload(MultipartFile file, HttpServletRequest req);

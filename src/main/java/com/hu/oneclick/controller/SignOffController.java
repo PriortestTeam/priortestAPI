@@ -36,11 +36,6 @@ public class SignOffController {
     @Autowired
     private TestCycleService testCycleService;
 
-    @GetMapping("/getProject")
-    public Resp<List<String>> getProject(){
-        return projectService.getProject();
-    }
-
     @GetMapping("/getProjectEnv")
     public Resp<List<String>> getProjectEnv(@RequestParam String projectId){
         return testCaseService.getProjectEnv(projectId);

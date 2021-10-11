@@ -227,11 +227,6 @@ public class ProjectServiceImpl implements ProjectService {
         return null;
     }
 
-    @Override
-    public Resp<List<String>> getProject() {
-        List<String> project = projectDao.getProject();
-        return new Resp.Builder<List<String>>().setData(project).ok();
-    }
 
     /**
      * 检测生成pdf表

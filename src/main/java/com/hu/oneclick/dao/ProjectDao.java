@@ -116,6 +116,5 @@ public interface ProjectDao {
     int deleteUseOpenProject(@Param("id") String id);
 
 
-    List<String> getProject();
 
 }
