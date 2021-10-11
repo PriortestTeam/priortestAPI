@@ -1,0 +1,44 @@
+package com.hu.oneclick.server.service;
+
+import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.SystemConfig;
+import com.hu.oneclick.model.domain.TestCase;
+
+/**
+ * @author MaSiyi
+ * @version 1.0.0 2021/10/11
+ * @since JDK 1.8.0
+ */
+public interface SystemConfigService {
+    /** 增
+     * @Param: [systemConfig]
+     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.TestCase>
+     * @Author: MaSiyi
+     * @Date: 2021/10/11
+     */
+    Resp<String> insert(SystemConfig systemConfig);
+
+    /** 改
+     * @Param: [systemConfig]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/10/11
+     */
+    Resp<String> update(SystemConfig systemConfig);
+
+    /** 查
+     * @Param: [key]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/10/11
+     */
+    String getData(String key);
+
+    /** 删
+     * @Param: [key]
+     * @return: java.lang.String
+     * @Author: MaSiyi
+     * @Date: 2021/10/11
+     */
+    String delete(String key);
+}
