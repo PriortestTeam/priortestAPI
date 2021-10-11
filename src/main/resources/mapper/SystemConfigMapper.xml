@@ -5,7 +5,7 @@
         <id column="system_config_id" jdbcType="INTEGER" property="id"/>
         <result column="system_config_key" jdbcType="VARCHAR" property="key"/>
         <result column="system_config_value" jdbcType="VARCHAR" property="value"/>
-        <result column="system_config_value1" jdbcType="VARCHAR" property="value1"/>
+        <result column="system_config_group" jdbcType="VARCHAR" property="group"/>
         <result column="system_config_create_time" jdbcType="TIMESTAMP" property="create_time"/>
         <result column="system_config_update_time" jdbcType="TIMESTAMP" property="update_time"/>
     </resultMap>
@@ -14,7 +14,7 @@
         .
         id
         as system_config_id, system_config.`key` as `system_config_key`,
-    system_config.`value` as `system_config_value`, system_config.value1 as system_config_value1, 
+    system_config.`value` as `system_config_value`, system_config.group as system_config_group, 
     system_config.create_time as system_config_create_time, system_config.update_time as system_config_update_time
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -38,9 +38,9 @@
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SystemConfig"
             useGeneratedKeys="true">
-        insert into system_config (`key`, `value`, value1,
+        insert into system_config (`key`, `value`, group,
                                    create_time, update_time)
-        values (#{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, #{value1,jdbcType=VARCHAR},
+        values (#{key,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR}, #{group,jdbcType=VARCHAR},
                 #{create_time,jdbcType=TIMESTAMP}, #{update_time,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
@@ -53,8 +53,8 @@
             <if test="value != null">
                 `value`,
             </if>
-            <if test="value1 != null">
-                value1,
+            <if test="group != null">
+                group,
             </if>
             <if test="create_time != null">
                 create_time,
@@ -70,8 +70,8 @@
             <if test="value != null">
                 #{value,jdbcType=VARCHAR},
             </if>
-            <if test="value1 != null">
-                #{value1,jdbcType=VARCHAR},
+            <if test="group != null">
+                #{group,jdbcType=VARCHAR},
             </if>
             <if test="create_time != null">
                 #{create_time,jdbcType=TIMESTAMP},
@@ -90,8 +90,8 @@
             <if test="value != null">
                 `value` = #{value,jdbcType=VARCHAR},
             </if>
-            <if test="value1 != null">
-                value1 = #{value1,jdbcType=VARCHAR},
+            <if test="group != null">
+                group = #{group,jdbcType=VARCHAR},
             </if>
             <if test="create_time != null">
                 create_time = #{create_time,jdbcType=TIMESTAMP},
@@ -106,7 +106,7 @@
         update system_config
         set `key`       = #{key,jdbcType=VARCHAR},
             `value`     = #{value,jdbcType=VARCHAR},
-            value1      = #{value1,jdbcType=VARCHAR},
+            group      = #{group,jdbcType=VARCHAR},
             create_time = #{create_time,jdbcType=TIMESTAMP},
             update_time = #{update_time,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=INTEGER}

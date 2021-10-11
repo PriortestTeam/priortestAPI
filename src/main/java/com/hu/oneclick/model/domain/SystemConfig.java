@@ -32,10 +32,10 @@ public class SystemConfig implements Serializable {
     private String value;
 
     /**
-     * 拓展value
+     * 组别
      */
-    @ApiModelProperty(value="拓展value")
-    private String value1;
+    @ApiModelProperty(value="组别")
+    private String group;
 
     /**
      * 创建时间

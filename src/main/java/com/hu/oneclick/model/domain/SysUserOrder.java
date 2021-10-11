@@ -57,7 +57,7 @@ public class SysUserOrder implements Serializable {
      * 订阅时长
      */
     @ApiModelProperty(value="订阅时长")
-    private Integer subScription;
+    private String subScription;
 
     /**
      * 创建时间

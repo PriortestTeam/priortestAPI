@@ -9,9 +9,11 @@ import com.hu.oneclick.dao.SysUserOrderDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserOrder;
+import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -26,6 +28,8 @@ public class UserOrderServiceImpl implements UserOrderService {
     private SysUserOrderDao sysUserOrderDao;
     @Autowired
     private UserService userService;
+    @Autowired
+    private SystemConfigService systemConfigService;
 
 
     @Override
@@ -50,24 +54,10 @@ public class UserOrderServiceImpl implements UserOrderService {
         long expireDate = userService.getExpireDate(userId).getTime();
         SysUserOrder orderOfUserId = sysUserOrderDao.getOrderOfUserId(userId);
         //订阅时长
-        Integer subScription = orderOfUserId.getSubScription();
-        long addTime;
-        switch (OrderEnum.toType(subScription)) {
-            case MONTHLU:
-                addTime = OrderEnum.MONTHLU.getKey() * 24 * 60 * 60 * 1000L;
-                break;
-            case QUARTOLY:
-                addTime = OrderEnum.QUARTOLY.getKey() * 24 * 60 * 60 * 1000L;
-                break;
-            case HALFYEAR:
-                addTime = OrderEnum.HALFYEAR.getKey() * 24 * 60 * 60 * 1000L;
-                break;
-            case YEARLY:
-                addTime = OrderEnum.YEARLY.getKey() * 24 * 60 * 60 * 1000L;
-                break;
-            default:
-                addTime = 0;
-        }
+        String subScription = orderOfUserId.getSubScription();
+        String dataTime = systemConfigService.getData(subScription);
+        long addTime = Integer.parseInt(dataTime) * 24 * 60 * 60 * 1000L;
+
         //过期时间
         sysUser.setExpireDate(new Date(expireDate + addTime));
         userService.updateUserInfo(sysUser);
@@ -76,5 +66,15 @@ public class UserOrderServiceImpl implements UserOrderService {
         sysUserOrderDao.updateByUuidSelective(orderOfUserId);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
 
+    }
+    /** 计算金额
+     * @Param:
+     * @return:
+     * @Author: MaSiyi
+     * @Date: 2021/10/11
+     */
+    public BigDecimal calculateTheAmount() {
+
+        return null;
     }
 }

@@ -9,7 +9,7 @@
         <result column="pay_card" jdbcType="VARCHAR" property="payCard"/>
         <result column="pay_name" jdbcType="VARCHAR" property="payName"/>
         <result column="data_strorage" jdbcType="INTEGER" property="dataStrorage"/>
-        <result column="sub_scription" jdbcType="INTEGER" property="subScription"/>
+        <result column="sub_scription" jdbcType="VARCHAR" property="subScription"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="status" jdbcType="BOOLEAN" property="status"/>
