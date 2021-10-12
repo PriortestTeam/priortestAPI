@@ -479,12 +479,12 @@ public class ProjectServiceImpl implements ProjectService {
         sheet.addMergedRegion(region36);
         header.put(row36.getRowNum(), true);
 
-        String[] url = signOffDto.getFileUrl().split("。");
+        String url = signOffDto.getFileUrl();
 
         FileInputStream stream;
         byte[] bytes = null;
         try {
-            stream = new FileInputStream(url[0]);
+            stream = new FileInputStream(url);
             bytes = new byte[(int) stream.getChannel().size()];
             //读取图片到二进制数组
             stream.read(bytes);
@@ -584,7 +584,7 @@ public class ProjectServiceImpl implements ProjectService {
             return new Resp.Builder<String>().setData(e.getMessage()).fail();
         }
 
-        return new Resp.Builder<String>().setData(uri + "。" + imageName).ok();
+        return new Resp.Builder<String>().setData(uri).ok();
     }
 
     private void creatSignExcel(String realPath, String imageName, HSSFWorkbook workbook, HSSFSheet sheet) {
