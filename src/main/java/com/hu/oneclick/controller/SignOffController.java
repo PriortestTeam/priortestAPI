@@ -58,8 +58,8 @@ public class SignOffController {
     }
 
     @PostMapping("/upload")
-    public Resp<String> upload(@RequestBody MultipartFile file, HttpServletRequest req) {
-        return projectService.upload(file,req);
+    public Resp<String> upload(@RequestBody MultipartFile file) {
+        return projectService.upload(file);
     }
 
 

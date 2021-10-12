@@ -72,3 +72,4 @@ onclick:
     accountKey: minio
     password: qingyang_minio_ooo
     source: true
+  dirPath: /usr/oneclick/data/file

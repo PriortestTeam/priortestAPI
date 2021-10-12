@@ -34,5 +34,5 @@ public interface ProjectService {
 
     Resp<String> generate(SignOffDto signOffDto, HttpServletRequest req);
 
-    Resp<String> upload(MultipartFile file, HttpServletRequest req);
+    Resp<String> upload(MultipartFile file);
 }

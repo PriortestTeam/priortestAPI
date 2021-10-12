@@ -39,6 +39,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,7 +64,12 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
+
     private final static Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
+
+    @Value("${onclick.dirPath}")
+    private String dirPath;
+
 
     private final SysPermissionService sysPermissionService;
 
@@ -239,11 +245,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (StringUtils.isEmpty(signOffDto.getProjectId())) {
             return new Resp.Builder<String>().setData("请选择一个项目").fail();
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/");
-        String format = sdf.format(new Date());
-        //文件路径
-//        String realPath = req.getServletContext().getRealPath("/") + format;
-        String realPath = "d:/";
+        String realPath = dirPath;
         File folder = new File(realPath);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -565,11 +567,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Resp<String> upload(MultipartFile file, HttpServletRequest req) {
-        SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd/");
-        String format = sdf.format(new Date());
-//        String realPath = req.getServletContext().getRealPath("/") + format;
-        String realPath = "d:/";
+    public Resp<String> upload(MultipartFile file) {
+        String realPath = dirPath;
         File folder = new File(realPath);
         if (!folder.exists()) {
             folder.mkdirs();
