@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class TestCycleServiceImpl implements TestCycleService {
@@ -79,6 +80,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         TestCycle testCycle = testCycleDao.queryById(id,masterId);
 
         //查询testCase 关联的 feature
+        testCycle = Optional.ofNullable(testCycle).orElse(new TestCycle());
         List<Feature> features = featureDao.queryTitlesByTestCycleId(testCycle.getId());
         testCycle.setFeatures(features);
         //查询sprint 的title
