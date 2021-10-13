@@ -75,5 +75,5 @@ onclick:
   time:
     firstTime: 30
     secondTime: 15
-  dirPath: d:/
+  dirPath: /usr/oneclick/data/file
 
