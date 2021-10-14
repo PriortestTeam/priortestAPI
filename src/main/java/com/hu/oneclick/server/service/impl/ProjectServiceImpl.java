@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -552,7 +553,7 @@ public class ProjectServiceImpl implements ProjectService {
             // 加载Excel文档.
             Workbook wb = new Workbook();
             wb.loadFromFile(sourceFilePath);
-
+            wb.createFont(new Font("宋体", 10, 20));
             // 调用方法保存为PDF格式.
             wb.saveToFile(desFilePathd, FileFormat.PDF);
             //发送邮件
