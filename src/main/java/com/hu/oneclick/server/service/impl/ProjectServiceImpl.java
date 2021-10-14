@@ -588,30 +588,4 @@ public class ProjectServiceImpl implements ProjectService {
         return new Resp.Builder<String>().setData(uri).ok();
     }
 
-    private void creatSignExcel(String realPath, String imageName, HSSFWorkbook workbook, HSSFSheet sheet) {
-
-        FileInputStream stream = null;
-        byte[] bytes = null;
-        try {
-            stream = new FileInputStream(realPath);
-            bytes = new byte[(int) stream.getChannel().size()];
-            //读取图片到二进制数组
-            stream.read(bytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        int pictureIdx = workbook.addPicture(bytes, HSSFWorkbook.PICTURE_TYPE_JPEG);
-        HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
-        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, 0, 0, (short) 0, 0, (short) 5, 5);
-        patriarch.createPicture(anchor, pictureIdx);
-        //保存Excel文件
-        try {
-            FileOutputStream out = new FileOutputStream(realPath.substring(0, realPath.lastIndexOf(File.separatorChar) + 1) + imageName + ".xls");
-            workbook.write(out);
-
-            out.close();//关闭文件流
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

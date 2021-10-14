@@ -60,6 +60,12 @@ public class SysUserOrder implements Serializable {
     private String subScription;
 
     /**
+     * apiCall
+     */
+    @ApiModelProperty(value="apiCall")
+    private String apiCall;
+
+    /**
      * 创建时间
      */
     @ApiModelProperty(value="创建时间")
