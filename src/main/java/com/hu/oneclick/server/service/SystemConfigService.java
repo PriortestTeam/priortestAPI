@@ -2,7 +2,6 @@ package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SystemConfig;
-import com.hu.oneclick.model.domain.TestCase;
 
 /**
  * @author MaSiyi
@@ -41,4 +40,12 @@ public interface SystemConfigService {
      * @Date: 2021/10/11
      */
     String delete(String key);
+
+    /** 根据key和group查询数据
+     * @Param: [valueOf]
+     * @return: java.lang.String
+     * @Author: MaSiyi
+     * @Date: 2021/10/15
+     */
+    String getDateForKeyAndGroup(String key, String group);
 }

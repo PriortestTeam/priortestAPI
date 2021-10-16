@@ -28,6 +28,12 @@
         from system_config
         where `key` = #{key}
     </select>
+    <select id="getDateForKeyAndGroup" resultType="java.lang.String">
+        select value
+        from system_config
+        where `key` = #{key}
+        and `group` = #{group}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
         from system_config

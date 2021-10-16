@@ -19,6 +19,16 @@
     from sys_order_discount
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="getNormalDiscount" resultType="java.math.BigDecimal" parameterType="com.hu.oneclick.model.domain.dto.SysOrderDiscountDto">
+    SELECT
+      normal_discount
+    FROM
+      sys_order_discount
+    WHERE
+      sub_scription = #{subScription}
+      AND data_strorage = #{dataStrorage}
+      AND api_call = #{apiCall}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from sys_order_discount
     where id = #{id,jdbcType=INTEGER}

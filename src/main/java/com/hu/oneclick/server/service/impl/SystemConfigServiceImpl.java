@@ -1,14 +1,10 @@
 package com.hu.oneclick.server.service.impl;
 
-import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.enums.SysStatusEnum;
-import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.dao.SystemConfigDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SystemConfig;
-import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,6 +83,21 @@ public class SystemConfigServiceImpl implements SystemConfigService {
             throw new BizException(SysConstantEnum.DELETE_FAILED.getCode(),SysConstantEnum.DELETE_FAILED.getValue());
         }
         return SysConstantEnum.DELETE_SUCCESS.getValue();
+    }
+
+    /**
+     * 根据key和group查询数据
+     *
+     * @param key
+     * @param group
+     * @Param: [valueOf]
+     * @return: java.lang.String
+     * @Author: MaSiyi
+     * @Date: 2021/10/15
+     */
+    @Override
+    public String getDateForKeyAndGroup(String key, String group) {
+        return systemConfigDao.getDateForKeyAndGroup(key,group);
     }
 }
 

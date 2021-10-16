@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.SysUserReferenceDao">
+  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysUserReference">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="user_id" />
+    <result column="reference_user_id" jdbcType="BIGINT" property="reference_user_id" />
+    <result column="reference_user_email" jdbcType="VARCHAR" property="reference_user_email" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, reference_user_id, reference_user_email
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_user_reference
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getReferenceTime" resultType="java.lang.Integer" parameterType="java.lang.String">
+    SELECT COUNT(1) FROM sys_user_reference WHERE reference_user_id = #{userId}
+  </select>
+
+  <select id="getReferencePersonNo" resultType="java.lang.Integer" parameterType="java.lang.String">
+    SELECT COUNT(1) FROM sys_user_reference WHERE user_id = #{userId}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sys_user_reference
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserReference" useGeneratedKeys="true">
+    insert into sys_user_reference (user_id, reference_user_id, reference_user_email
+      )
+    values (#{user_id,jdbcType=BIGINT}, #{reference_user_id,jdbcType=BIGINT}, #{reference_user_email,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserReference" useGeneratedKeys="true">
+    insert into sys_user_reference
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="user_id != null">
+        user_id,
+      </if>
+      <if test="reference_user_id != null">
+        reference_user_id,
+      </if>
+      <if test="reference_user_email != null">
+        reference_user_email,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="user_id != null">
+        #{user_id,jdbcType=BIGINT},
+      </if>
+      <if test="reference_user_id != null">
+        #{reference_user_id,jdbcType=BIGINT},
+      </if>
+      <if test="reference_user_email != null">
+        #{reference_user_email,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysUserReference">
+    update sys_user_reference
+    <set>
+      <if test="user_id != null">
+        user_id = #{user_id,jdbcType=BIGINT},
+      </if>
+      <if test="reference_user_id != null">
+        reference_user_id = #{reference_user_id,jdbcType=BIGINT},
+      </if>
+      <if test="reference_user_email != null">
+        reference_user_email = #{reference_user_email,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysUserReference">
+    update sys_user_reference
+    set user_id = #{user_id,jdbcType=BIGINT},
+      reference_user_id = #{reference_user_id,jdbcType=BIGINT},
+      reference_user_email = #{reference_user_email,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

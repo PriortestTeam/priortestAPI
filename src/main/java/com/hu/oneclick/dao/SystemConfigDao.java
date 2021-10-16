@@ -21,5 +21,7 @@ public interface SystemConfigDao {
 
     String getDate(String key);
 
+    String getDateForKeyAndGroup(String key,String group);
+
     int deleteByKey(String key);
 }

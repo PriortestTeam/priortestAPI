@@ -2,6 +2,7 @@ package com.hu.oneclick.model.domain;
 
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 
@@ -64,6 +65,17 @@ public class SysUserOrder implements Serializable {
      */
     @ApiModelProperty(value="apiCall")
     private String apiCall;
+
+    /**
+     * 原价
+     */
+    @ApiModelProperty(value="原价")
+    private BigDecimal originalPrice;
+    /**
+     * 现价
+     */
+    @ApiModelProperty(value="现价")
+    private BigDecimal currentPrice;
 
     /**
      * 创建时间

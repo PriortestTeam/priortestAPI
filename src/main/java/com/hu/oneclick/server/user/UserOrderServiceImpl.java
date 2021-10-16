@@ -32,6 +32,7 @@ public class UserOrderServiceImpl implements UserOrderService {
     private SystemConfigService systemConfigService;
 
 
+
     @Override
     public Resp<String> insertOrder(SysUserOrder sysUserOrder) {
         //初始转态为未支付
@@ -67,14 +68,5 @@ public class UserOrderServiceImpl implements UserOrderService {
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
 
     }
-    /** 计算金额
-     * @Param:
-     * @return:
-     * @Author: MaSiyi
-     * @Date: 2021/10/11
-     */
-    public BigDecimal calculateTheAmount() {
 
-        return null;
-    }
 }

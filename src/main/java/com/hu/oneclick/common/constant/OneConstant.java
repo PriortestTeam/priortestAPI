@@ -164,4 +164,9 @@ public interface OneConstant {
         String TITLE_IMPORTTESTCASE = "导入测试用例结果提醒";
         String TEMPLATEHTMLNAME_IMPORTTESTCASE = "importTestCase.html";
     }
+
+    interface SystemConfigGroup {
+        String REFERENCETIME = "ReferenceTime";
+        String REFERENCEPERSONNO = "ReferencePersonNo";
+    }
 }
