@@ -36,7 +36,7 @@ public interface TestCycleService {
 
     Resp<String> executeTestCase(ExecuteTestCaseDto executeTestCaseDto);
 
-    Resp<List<String>> getTestCycleVersion(String projectId);
+    Resp<List<String>> getTestCycleVersion(String projectId, String env, String version);
 
     List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto);
 }

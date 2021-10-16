@@ -242,7 +242,7 @@ public class ProjectServiceImpl implements ProjectService {
      * @return
      */
     @Override
-    public Resp<String> generate(SignOffDto signOffDto, HttpServletRequest req) {
+    public Resp<String> generate(SignOffDto signOffDto) {
         if (StringUtils.isEmpty(signOffDto.getProjectId())) {
             return new Resp.Builder<String>().setData("请选择一个项目").fail();
         }
@@ -251,8 +251,6 @@ public class ProjectServiceImpl implements ProjectService {
         if (!folder.exists()) {
             folder.mkdirs();
         }
-//        String[] split = signOffDto.getFileUrl().split("。");
-//        creatSignExcel(split[0], split[1]);
 
         //创建Excel文件(Workbook)
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -268,7 +266,7 @@ public class ProjectServiceImpl implements ProjectService {
         style.setAlignment(HorizontalAlignment.CENTER);//水平居中
         style.setVerticalAlignment(VerticalAlignment.CENTER);//垂直居中
         //创建工作表(Sheet)
-        HSSFSheet sheet = workbook.createSheet("Test");
+        HSSFSheet sheet = workbook.createSheet("SignOff");
         sheet.setDefaultColumnWidth(30);
         // 创建行,从0开始
         HSSFRow row = sheet.createRow(0);

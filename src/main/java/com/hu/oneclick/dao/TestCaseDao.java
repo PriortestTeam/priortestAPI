@@ -25,7 +25,5 @@ public interface TestCaseDao extends BaseMapper<TestCase> {
     List<TestCase> queryList(TestCase testCase);
 
 
-    List<String> getProjectEnv(String projectId);
-
     List<String> getProjectVersion(String projectId);
 }

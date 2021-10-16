@@ -21,7 +21,7 @@ public interface TestCycleDao extends BaseMapper<TestCycle> {
 
     List<LeftJoinDto> queryTitles(@Param("projectId")String projectId, @Param("title") String title, @Param("masterId") String masterId);
 
-    List<String> getTestCycleVersion(String projectId);
+    List<String> getTestCycleVersion(String projectId, String env, String version);
 
     List<Map<String,String>> getAllTestCycle(String projectId, String version, String env, String testCycleVersion);
 }

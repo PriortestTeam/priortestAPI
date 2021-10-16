@@ -382,8 +382,8 @@ public class TestCycleServiceImpl implements TestCycleService {
     }
 
     @Override
-    public Resp<List<String>> getTestCycleVersion(String projectId) {
-        List<String> cycleVersion = testCycleDao.getTestCycleVersion(projectId);
+    public Resp<List<String>> getTestCycleVersion(String projectId, String env, String version) {
+        List<String> cycleVersion = testCycleDao.getTestCycleVersion(projectId,env,version);
         return new Resp.Builder<List<String>>().setData(cycleVersion).ok();
     }
 

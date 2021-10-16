@@ -48,14 +48,14 @@ public class SignOffController {
     }
 
     @GetMapping("/getTestCycleVersion")
-    public Resp<List<String>> getTestCycleVersion(@RequestParam String projectId){
-        return testCycleService.getTestCycleVersion(projectId);
+    public Resp<List<String>> getTestCycleVersion(@RequestParam String projectId,@RequestParam String env,@RequestParam String version){
+        return testCycleService.getTestCycleVersion(projectId,env,version);
     }
 
     @PostMapping("/generate")
     @ApiOperation("生成pdf文档")
-    public Resp<String> generate(@RequestBody SignOffDto signOffDto, HttpServletRequest req) {
-        return projectService.generate(signOffDto,req);
+    public Resp<String> generate(@RequestBody SignOffDto signOffDto) {
+        return projectService.generate(signOffDto);
     }
 
     @PostMapping("/upload")

@@ -154,9 +154,11 @@
     </update>
 
     <select id="getTestCycleVersion" resultType="string" parameterType="java.lang.String">
-        SELECT DISTINCT version
+        SELECT version
         FROM test_cycle
         WHERE project_id = #{projectId}
+        AND env = #{env}
+        AND version = #{version}
     </select>
 
     <select id="getAllTestCycle" resultType="java.util.Map">
