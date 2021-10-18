@@ -9,6 +9,7 @@ import com.hu.oneclick.dao.AttachmentDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Attachment;
+import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.server.service.AttachmentService;
 import io.minio.MinioClient;
@@ -192,6 +193,18 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     private void verifyFileSize(MultipartFile file, String type) {
 
+    }
+
+    @Override
+    public Resp<List<String>> getUserAttachment() {
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        List<String> list =  attachmentDao.getUserAttachment(sysUser.getId(),OneConstant.AREA_TYPE.SIGNOFFSIGN);
+        return new Resp.Builder<List<String>>().setData(list).ok();
+    }
+
+    @Override
+    public Integer insertAttachment(Attachment attachment) {
+        return attachmentDao.insert(attachment);
     }
 
 }

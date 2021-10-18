@@ -18,4 +18,8 @@ public interface AttachmentService {
     Resp<String> updateAttachment(MultipartFile file, String attachmentId);
 
     Resp<String> deleteAttachment(String attachmentId);
+
+    Resp<List<String>> getUserAttachment();
+
+    Integer insertAttachment(Attachment attachment);
 }

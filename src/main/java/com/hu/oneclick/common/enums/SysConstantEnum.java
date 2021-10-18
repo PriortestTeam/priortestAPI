@@ -41,7 +41,7 @@ public enum SysConstantEnum {
     REPASSWORD_ERROR(SysConstantEnum.NUMBER + "020","两次密码不一致"),
     NOUSER_ERROR(SysConstantEnum.NUMBER + "021","没有该用户"),
     HAS_BEEN_ACTIVATED_ONCE(SysConstantEnum.NUMBER + "022","激活失败"),
-
+    UPDATE_FILE_OUT_COUNT(SysConstantEnum.NUMBER + "023", "上传文件数量过多"),
     VIEW_ONN_FILTER_IS_REDUNDANT(SysConstantEnum.NUMBER + "030","过滤项不可重复。"),
 
     //成功

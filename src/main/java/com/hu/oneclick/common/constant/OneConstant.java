@@ -169,4 +169,8 @@ public interface OneConstant {
         String REFERENCETIME = "ReferenceTime";
         String REFERENCEPERSONNO = "ReferencePersonNo";
     }
+
+    interface AREA_TYPE{
+        String SIGNOFFSIGN = "SignOffSign";
+    }
 }

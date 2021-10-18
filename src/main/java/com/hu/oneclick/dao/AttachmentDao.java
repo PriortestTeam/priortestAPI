@@ -65,4 +65,5 @@ public interface AttachmentDao {
      */
     int deleteById(@Param("id") String id,@Param("masterId") String masterId);
 
+    List<String> getUserAttachment(String userId, String areaType);
 }

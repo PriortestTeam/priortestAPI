@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
@@ -10,6 +11,7 @@ import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.Attachment;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
@@ -18,6 +20,7 @@ import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
+import com.hu.oneclick.server.service.AttachmentService;
 import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.QueryFilterService;
@@ -44,13 +47,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -86,7 +87,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final MailService mailService;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao, MailService mailService) {
+    private final AttachmentService attachmentService;
+
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao, MailService mailService, AttachmentService attachmentService) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
@@ -94,6 +97,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.testCycleService = testCycleService;
         this.issueDao = issueDao;
         this.mailService = mailService;
+        this.attachmentService = attachmentService;
     }
 
     @Override
@@ -319,7 +323,7 @@ public class ProjectServiceImpl implements ProjectService {
         header.put(row8.getRowNum(), true);
 
         Map<String, List<Map<String, String>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category")));
-        List<Map<String, String>> function = caseCategory.get("功能") == null ? new ArrayList<>() : caseCategory.get("功能") ;
+        List<Map<String, String>> function = caseCategory.get("功能") == null ? new ArrayList<>() : caseCategory.get("功能");
 
         HSSFRow row9 = sheet.createRow(9);
         row9.createCell(0).setCellValue("测试用例");
@@ -346,7 +350,8 @@ public class ProjectServiceImpl implements ProjectService {
         sheet.addMergedRegion(region1);
         header.put(row13.getRowNum(), true);
 
-        List<Map<String, String>> performance = caseCategory.get("性能") == null ? new ArrayList<>() : caseCategory.get("性能") ;;
+        List<Map<String, String>> performance = caseCategory.get("性能") == null ? new ArrayList<>() : caseCategory.get("性能");
+        ;
         HSSFRow row14 = sheet.createRow(14);
         row14.createCell(0).setCellValue("测试用例");
         row14.createCell(1).setCellValue(performance.size());
@@ -556,7 +561,7 @@ public class ProjectServiceImpl implements ProjectService {
             wb.saveToFile(desFilePathd, FileFormat.PDF);
             //发送邮件
             AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
-            mailService.sendAttachmentsMail(userLoginInfo.getUsername(),"OneClick验收结果", "请查收验收结果",desFilePathd);
+            mailService.sendAttachmentsMail(userLoginInfo.getUsername(), "OneClick验收结果", "请查收验收结果", desFilePathd);
             out.close();//关闭文件流
         } catch (Exception e) {
             e.printStackTrace();
@@ -567,6 +572,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Resp<String> upload(MultipartFile file) {
+        if (cheakUserSignFile()) {
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.UPDATE_FILE_OUT_COUNT.getCode()
+                    , SysConstantEnum.UPDATE_FILE_OUT_COUNT.getValue());
+        }
         String realPath = dirPath;
         File folder = new File(realPath);
         if (!folder.exists()) {
@@ -576,6 +585,17 @@ public class ProjectServiceImpl implements ProjectService {
         String imageName = UUID.randomUUID().toString();
         String newName = imageName + oldName.substring(oldName.lastIndexOf("."));
         String uri = folder.getPath() + File.separator + newName;
+        //保存文件信息
+        Attachment attachment = new Attachment();
+        attachment.setUserId(jwtUserService.getId());
+        attachment.setUuidFileName(newName);
+        attachment.setFilePath(uri);
+        attachment.setUploadTime(new Date(System.currentTimeMillis()));
+        attachment.setUploader(jwtUserService.getUserLoginInfo().getUsername());
+        attachment.setAreaType(OneConstant.AREA_TYPE.SIGNOFFSIGN);
+        attachment.setFileName(file.getOriginalFilename());
+        attachmentService.insertAttachment(attachment);
+
         try {
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(uri));
         } catch (IOException e) {
@@ -584,6 +604,19 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         return new Resp.Builder<String>().setData(uri).ok();
+    }
+
+    /**
+     * 检查用户签名上传是否超过规定数量
+     *
+     * @Param: []
+     * @return: java.lang.Boolean
+     * @Author: MaSiyi
+     * @Date: 2021/10/18
+     */
+    private Boolean cheakUserSignFile() {
+        List<String> data = attachmentService.getUserAttachment().getData();
+        return data.size() >= 3;
     }
 
 }

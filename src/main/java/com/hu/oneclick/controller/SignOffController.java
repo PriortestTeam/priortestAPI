@@ -3,6 +3,7 @@ package com.hu.oneclick.controller;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
+import com.hu.oneclick.server.service.AttachmentService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleService;
@@ -35,6 +36,8 @@ public class SignOffController {
     private TestCaseService testCaseService;
     @Autowired
     private TestCycleService testCycleService;
+    @Autowired
+    private AttachmentService attachmentService;
 
     @GetMapping("/getProjectEnv")
     public Resp<List<String>> getProjectEnv(@RequestParam String projectId){
@@ -59,8 +62,15 @@ public class SignOffController {
     }
 
     @PostMapping("/upload")
+    @ApiOperation("文件上传")
     public Resp<String> upload(@RequestBody MultipartFile file) {
         return projectService.upload(file);
+    }
+
+    @GetMapping("/getUserAttachmentSign")
+    @ApiOperation("访问用户签名文件路径")
+    public Resp<List<String>> getUserAttachmentSign(){
+        return attachmentService.getUserAttachment();
     }
 
 
