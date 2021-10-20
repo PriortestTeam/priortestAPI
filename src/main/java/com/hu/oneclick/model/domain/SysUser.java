@@ -1,6 +1,7 @@
 package com.hu.oneclick.model.domain;
 
 import com.hu.oneclick.model.base.BaseEntity;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Date;
  * @author makejava
  * @since 2020-11-14 23:32:42
  */
+@Data
 public class SysUser extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -67242942971294342L;
 
@@ -116,228 +118,12 @@ public class SysUser extends BaseEntity implements Serializable {
 
     private UserUseOpenProject userUseOpenProject;
 
-
-    public int getIsUseProject() {
-        return isUseProject;
-    }
-
-    public void setIsUseProject(int isUseProject) {
-        this.isUseProject = isUseProject;
-    }
-
-    public UserUseOpenProject getUserUseOpenProject() {
-        return userUseOpenProject;
-    }
-
-    public void setUserUseOpenProject(UserUseOpenProject userUseOpenProject) {
-        this.userUseOpenProject = userUseOpenProject;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Date getRegisterDate() {
-        return registerDate;
-    }
-
-    public void setRegisterDate(Date registerDate) {
-        this.registerDate = registerDate;
-    }
-
-    public String getContactNo() {
-        return contactNo;
-    }
-
-    public void setContactNo(String contactNo) {
-        this.contactNo = contactNo;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public String getProfession() {
-        return profession;
-    }
-
-    public void setProfession(String profession) {
-        this.profession = profession;
-    }
-
-    public String getIndustry() {
-        return industry;
-    }
-
-    public void setIndustry(String industry) {
-        this.industry = industry;
-    }
-
-    public Date getCloseDate() {
-        return closeDate;
-    }
-
-    public void setCloseDate(Date closeDate) {
-        this.closeDate = closeDate;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public Integer getActiveState() {
-        return activeState;
-    }
-
-    public void setActiveState(Integer activeState) {
-        this.activeState = activeState;
-    }
-
-    public Integer getEnable() {
-        return enable;
-    }
-
-    public void setEnable(Integer enable) {
-        this.enable = enable;
-    }
-
-    public String getTimeZone() {
-        return timeZone;
-    }
-
-    public void setTimeZone(String timeZone) {
-        this.timeZone = timeZone;
-    }
-
-    public String getLocale() {
-        return locale;
-    }
-
-    public void setLocale(String locale) {
-        this.locale = locale;
-    }
-
-    public Integer getManager() {
-        return manager;
-    }
-
-    public void setManager(Integer manager) {
-        this.manager = manager;
-    }
-
-    public Integer getDelFlag() {
-        return delFlag;
-    }
-
-    public void setDelFlag(Integer delFlag) {
-        this.delFlag = delFlag;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
-    }
-
-    public String getSysRoleId() {
-        return sysRoleId;
-    }
-
-    public void setSysRoleId(String sysRoleId) {
-        this.sysRoleId = sysRoleId;
-    }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public Date getActivitiDate() {
-        return activitiDate;
-    }
-
-    public void setActivitiDate(Date activitiDate) {
-        this.activitiDate = activitiDate;
-    }
-
-    public Date getExpireDate() {
-        return expireDate;
-    }
-
-    public void setExpireDate(Date expireDate) {
-        this.expireDate = expireDate;
-    }
-
-    public Integer getActivitiNumber() {
-        return activitiNumber;
-    }
-
-    public void setActivitiNumber(Integer activitiNumber) {
-        this.activitiNumber = activitiNumber;
-    }
+    /**
+     * Trialer,Payed
+     */
+    private String userType;
+    /**
+     * VIP,Classic,Trialer
+     */
+    private String userClass;
 }

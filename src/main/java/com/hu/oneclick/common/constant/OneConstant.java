@@ -168,9 +168,19 @@ public interface OneConstant {
     interface SystemConfigGroup {
         String REFERENCETIME = "ReferenceTime";
         String REFERENCEPERSONNO = "ReferencePersonNo";
+        String SYSTEMCONFIG = "SystemConfig";
+        String SPECICALDISCOUNT = "SpecicalDiscount";
+        String VIP = "VIP";
+        String FLASHDISCOUNT = "FlashDiscount";
+    }
+    interface SystemConfigStatus {
+        String ON = "0";
+        String OFF = "1";
+
     }
 
     interface AREA_TYPE{
+
         String SIGNOFFSIGN = "SignOffSign";
     }
 }

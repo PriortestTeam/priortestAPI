@@ -11,6 +11,7 @@ import com.hu.oneclick.model.domain.dto.SysOrderDiscountDto;
 import com.hu.oneclick.server.service.SysOrderDiscountService;
 import com.hu.oneclick.server.service.SystemConfigService;
 import com.hu.oneclick.server.user.SysUserReferenceService;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.misc.Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
     private JwtUserServiceImpl jwtUserService;
     @Autowired
     private SysUserReferenceService sysUserReferenceService;
+
     /**
      * 计算折扣
      *
@@ -47,7 +49,14 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
     @Override
     public Resp<Map<String, BigDecimal>> calculateOrderPrice(SysOrderDiscountDto sysOrderDiscountDto) {
         //根据所选的选出折扣表里面的基础折扣
-        BigDecimal normalDiscount = sysOrderDiscountDao.getNormalDiscount(sysOrderDiscountDto);
+        String normalDiscountFlag = systemConfigService.getDateForKeyAndGroup("NormalDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
+        //如果基础折扣开关为打开
+        BigDecimal normalDiscount;
+        if (OneConstant.SystemConfigStatus.ON.equals(normalDiscountFlag)) {
+            normalDiscount = sysOrderDiscountDao.getNormalDiscount(sysOrderDiscountDto);
+        } else {
+            normalDiscount = BigDecimal.ZERO;
+        }
         //根据所选的对应系统配置表中选出原始价钱
         String dataStPrice = systemConfigService.getData(sysOrderDiscountDto.getDataStrorage());
         String dataApPrice = systemConfigService.getData(sysOrderDiscountDto.getApiCall());
@@ -56,17 +65,56 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         BigDecimal allPrice = dataApPriceBd.add(dataStPriceBd);
         //根据推荐表里面获取当前的推荐人折扣
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        int referenceTimeCount = sysUserReferenceService.getReferenceTime(sysUser);
-        String referenceTimeCountDiscount = systemConfigService
-                .getDateForKeyAndGroup(String.valueOf(referenceTimeCount), OneConstant.SystemConfigGroup.REFERENCETIME);
-        BigDecimal referenceTimeCountDiscountGg = new BigDecimal(referenceTimeCountDiscount);
-        int referencePersonNoCount = sysUserReferenceService.getReferencePersonNo(sysUser);
-        String referencePersonNoCountDiscount = systemConfigService
-                .getDateForKeyAndGroup(String.valueOf(referencePersonNoCount), OneConstant.SystemConfigGroup.REFERENCEPERSONNO);
-        BigDecimal referencePersonNoCountDiscountBg = new BigDecimal(referencePersonNoCountDiscount);
+        //如果推荐开关为打开
+        String referencedTime = systemConfigService.getDateForKeyAndGroup("ReferencedTime", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
+        BigDecimal referenceTimeCountDiscountGg;
+        if (OneConstant.SystemConfigStatus.ON.equals(referencedTime)) {
+
+            int referenceTimeCount = sysUserReferenceService.getReferenceTime(sysUser);
+            String referenceTimeCountDiscount = systemConfigService
+                    .getDateForKeyAndGroup(String.valueOf(referenceTimeCount), OneConstant.SystemConfigGroup.REFERENCETIME);
+            referenceTimeCountDiscountGg = new BigDecimal(referenceTimeCountDiscount);
+        } else {
+            referenceTimeCountDiscountGg = BigDecimal.ZERO;
+        }
+        //如果引用开关为打开
+        String referencePersonNo = systemConfigService.getDateForKeyAndGroup("ReferencePersonNo", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
+        BigDecimal referencePersonNoCountDiscountBg;
+        if (OneConstant.SystemConfigStatus.ON.equals(referencePersonNo)) {
+            int referencePersonNoCount = sysUserReferenceService.getReferencePersonNo(sysUser);
+            String referencePersonNoCountDiscount = systemConfigService
+                    .getDateForKeyAndGroup(String.valueOf(referencePersonNoCount), OneConstant.SystemConfigGroup.REFERENCEPERSONNO);
+            referencePersonNoCountDiscountBg = new BigDecimal(referencePersonNoCountDiscount);
+        } else {
+            referencePersonNoCountDiscountBg = BigDecimal.ZERO;
+        }
+        //总折扣
         BigDecimal allReferenceDiscount = referenceTimeCountDiscountGg.add(referencePersonNoCountDiscountBg);
         //两个折扣相加，计算出折扣之后的价钱
         BigDecimal addDiscount = normalDiscount.add(allReferenceDiscount);
+        //如果特别折扣开关为打开
+        String specialDiscount = systemConfigService.getDateForKeyAndGroup("SpecialDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
+        if (OneConstant.SystemConfigStatus.ON.equals(specialDiscount)) {
+            String specialDiscountNu = systemConfigService.getDateForKeyAndGroup(sysUser.getEmail(), OneConstant.SystemConfigGroup.SPECICALDISCOUNT);
+            if (StringUtils.isNotEmpty(specialDiscountNu)) {
+                addDiscount = addDiscount.add(new BigDecimal(specialDiscountNu));
+            }
+        }
+        //如果VIP开关为打开
+        String vip = systemConfigService.getDateForKeyAndGroup("VIP", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
+        if (OneConstant.SystemConfigStatus.ON.equals(vip)) {
+            if ("VIP".equals(sysUser.getUserClass())) {
+                //vip折扣力度
+                String vipNu = systemConfigService.getDateForKeyAndGroup("VIP", OneConstant.SystemConfigGroup.VIP);
+                addDiscount = addDiscount.add(new BigDecimal(vipNu));
+            }
+        }
+        //如果节假日折扣开关为打开
+        String flashDiscount = systemConfigService.getDateForKeyAndGroup("FlashDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
+        if (OneConstant.SystemConfigStatus.ON.equals(flashDiscount)) {
+            String flashDiscountNu = systemConfigService.getDateForKeyAndGroup("FlashDiscount", OneConstant.SystemConfigGroup.FLASHDISCOUNT);
+            addDiscount = addDiscount.add(new BigDecimal(flashDiscountNu));
+        }
         BigDecimal currentPrice = allPrice.multiply(addDiscount);
         Map<String, BigDecimal> map = new HashMap<>(3);
         map.put("originalPrice", allPrice);
