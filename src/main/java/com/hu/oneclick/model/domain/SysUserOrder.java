@@ -49,6 +49,12 @@ public class SysUserOrder implements Serializable {
     private String payName;
 
     /**
+     * 服务周期
+     */
+    @ApiModelProperty(value="服务周期")
+    private String servicePlanDuration;
+
+    /**
      * 容量大小
      */
     @ApiModelProperty(value="容量大小")
@@ -94,6 +100,13 @@ public class SysUserOrder implements Serializable {
      */
     @ApiModelProperty(value="状态0未支付1已支付")
     private Boolean status;
+
+    /**
+     * 逻辑删除0未1已
+     */
+    @ApiModelProperty(value="逻辑删除0未1已")
+    private Boolean isDel;
+
 
     private static final long serialVersionUID = 14587454654354644L;
 }

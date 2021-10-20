@@ -3,6 +3,7 @@ package com.hu.oneclick.model.domain;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
+import java.util.Date;
 import lombok.Data;
 
 /**
@@ -35,6 +36,18 @@ public class SysUserReference implements Serializable {
      */
     @ApiModelProperty(value="推荐人邮箱")
     private String reference_user_email;
+
+    /**
+     * 推荐时间
+     */
+    @ApiModelProperty(value="推荐时间")
+    private Date reference_time;
+
+    /**
+     * 逻辑删除
+     */
+    @ApiModelProperty(value="逻辑删除")
+    private Boolean is_del;
 
     private static final long serialVersionUID = 1L;
 }
