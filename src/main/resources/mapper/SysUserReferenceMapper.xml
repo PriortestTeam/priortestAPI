@@ -6,9 +6,11 @@
     <result column="user_id" jdbcType="BIGINT" property="user_id" />
     <result column="reference_user_id" jdbcType="BIGINT" property="reference_user_id" />
     <result column="reference_user_email" jdbcType="VARCHAR" property="reference_user_email" />
+    <result column="reference_time" jdbcType="TIMESTAMP" property="reference_time" />
+    <result column="is_del" jdbcType="BOOLEAN" property="is_del" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, user_id, reference_user_id, reference_user_email
+    id, user_id, reference_user_id, reference_user_email, reference_time, is_del
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -23,16 +25,15 @@
   <select id="getReferencePersonNo" resultType="java.lang.Integer" parameterType="java.lang.String">
     SELECT COUNT(1) FROM sys_user_reference WHERE user_id = #{userId}
   </select>
-
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from sys_user_reference
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserReference" useGeneratedKeys="true">
-    insert into sys_user_reference (user_id, reference_user_id, reference_user_email
-      )
-    values (#{user_id,jdbcType=BIGINT}, #{reference_user_id,jdbcType=BIGINT}, #{reference_user_email,jdbcType=VARCHAR}
-      )
+    insert into sys_user_reference (user_id, reference_user_id, reference_user_email, 
+      reference_time, is_del)
+    values (#{user_id,jdbcType=BIGINT}, #{reference_user_id,jdbcType=BIGINT}, #{reference_user_email,jdbcType=VARCHAR}, 
+      #{reference_time,jdbcType=TIMESTAMP}, #{is_del,jdbcType=BOOLEAN})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserReference" useGeneratedKeys="true">
     insert into sys_user_reference
@@ -46,6 +47,12 @@
       <if test="reference_user_email != null">
         reference_user_email,
       </if>
+      <if test="reference_time != null">
+        reference_time,
+      </if>
+      <if test="is_del != null">
+        is_del,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="user_id != null">
@@ -56,6 +63,12 @@
       </if>
       <if test="reference_user_email != null">
         #{reference_user_email,jdbcType=VARCHAR},
+      </if>
+      <if test="reference_time != null">
+        #{reference_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="is_del != null">
+        #{is_del,jdbcType=BOOLEAN},
       </if>
     </trim>
   </insert>
@@ -71,6 +84,12 @@
       <if test="reference_user_email != null">
         reference_user_email = #{reference_user_email,jdbcType=VARCHAR},
       </if>
+      <if test="reference_time != null">
+        reference_time = #{reference_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="is_del != null">
+        is_del = #{is_del,jdbcType=BOOLEAN},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -78,7 +97,9 @@
     update sys_user_reference
     set user_id = #{user_id,jdbcType=BIGINT},
       reference_user_id = #{reference_user_id,jdbcType=BIGINT},
-      reference_user_email = #{reference_user_email,jdbcType=VARCHAR}
+      reference_user_email = #{reference_user_email,jdbcType=VARCHAR},
+      reference_time = #{reference_time,jdbcType=TIMESTAMP},
+      is_del = #{is_del,jdbcType=BOOLEAN}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

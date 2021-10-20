@@ -18,10 +18,10 @@ public enum OrderEnum {
     FIVEHUNDRED(500, "500GB"),
     TENTHOUSAND(1000, "1000GB"),
 
-    MONTHLU(30, "月"),
-    QUARTOLY(90, "季度"),
-    HALFYEAR(180, "半年"),
-    YEARLY(365, "一年");
+    MONTHLU(1, "月"),
+    QUARTOLY(3, "季度"),
+    HALFYEAR(6, "半年"),
+    YEARLY(12, "一年");
 
     private Integer key;
     private String value;

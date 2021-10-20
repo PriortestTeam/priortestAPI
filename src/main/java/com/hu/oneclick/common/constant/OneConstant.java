@@ -170,8 +170,10 @@ public interface OneConstant {
         String REFERENCEPERSONNO = "ReferencePersonNo";
         String SYSTEMCONFIG = "SystemConfig";
         String SPECICALDISCOUNT = "SpecicalDiscount";
-        String VIP = "VIP";
+        String DATASTRORAGE = "DataStrorage";
         String FLASHDISCOUNT = "FlashDiscount";
+        String APICALL = "APICall";
+        String VIP = "VIP";
     }
     interface SystemConfigStatus {
         String ON = "0";

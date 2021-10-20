@@ -28,7 +28,7 @@ public class SysUserOrder implements Serializable {
      * 业务id
      */
     @ApiModelProperty(value="业务id")
-    private Long uuid;
+    private Long orderId;
 
     /**
      * 支付方式
@@ -52,7 +52,7 @@ public class SysUserOrder implements Serializable {
      * 服务周期
      */
     @ApiModelProperty(value="服务周期")
-    private String servicePlanDuration;
+    private Integer servicePlanDuration;
 
     /**
      * 容量大小

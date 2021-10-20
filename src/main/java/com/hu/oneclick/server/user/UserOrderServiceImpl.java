@@ -3,17 +3,18 @@ package com.hu.oneclick.server.user;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.OrderEnum;
 import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.SysUserOrderDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserOrder;
+import com.hu.oneclick.model.domain.SysUserOrderRecord;
 import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 /**
@@ -30,19 +31,106 @@ public class UserOrderServiceImpl implements UserOrderService {
     private UserService userService;
     @Autowired
     private SystemConfigService systemConfigService;
+    @Autowired
+    private SysUserOrderRecordService sysUserOrderRecordService;
 
 
+    public static void main(String[] args) {
+        BigDecimal bigDecimal = new BigDecimal(12.2);
+        BigDecimal bigDecimal1 = new BigDecimal(3);
+        System.out.println(bigDecimal.divide(bigDecimal1, 2, RoundingMode.HALF_UP));
+
+    }
 
     @Override
     public Resp<String> insertOrder(SysUserOrder sysUserOrder) {
         //初始转态为未支付
         sysUserOrder.setStatus(false);
-        sysUserOrder.setUuid(SnowFlakeUtil.getFlowIdInstance().nextId());
+        long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
+        sysUserOrder.setOrderId(orderId);
+        OrderEnum orderEnum = OrderEnum.toType(sysUserOrder.getServicePlanDuration());
+        switch (orderEnum) {
+            case MONTHLU:
+                for (int i = 0; i < 12; i++) {
+                    SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
+                    SysUserOrderRecord addSysUserOrderRecord = addOrderRecord(sysUserOrderRecord, sysUserOrder);
+                    addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
+                            .divide(new BigDecimal(12), 2, RoundingMode.HALF_UP));
+                    addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
+                            .divide(new BigDecimal(12), 2, RoundingMode.HALF_UP));
+                    addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                    sysUserOrderRecordService.insert(addSysUserOrderRecord);
+                }
+                break;
+            case QUARTOLY:
+                for (int i = 0; i < 4; i++) {
+                    SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
+                    SysUserOrderRecord addSysUserOrderRecord = addOrderRecord(sysUserOrderRecord, sysUserOrder);
+                    addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
+                            .divide(new BigDecimal(4), 2, RoundingMode.HALF_UP));
+                    addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
+                            .divide(new BigDecimal(4), 2, RoundingMode.HALF_UP));
+                    addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                    sysUserOrderRecordService.insert(addSysUserOrderRecord);
+                }
+                break;
+            case HALFYEAR:
+                for (int i = 0; i < 2; i++) {
+                    SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
+                    SysUserOrderRecord addSysUserOrderRecord = addOrderRecord(sysUserOrderRecord, sysUserOrder);
+                    addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
+                            .divide(new BigDecimal(6), 2, RoundingMode.HALF_UP));
+                    addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
+                            .divide(new BigDecimal(6), 2, RoundingMode.HALF_UP));
+                    addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                    sysUserOrderRecordService.insert(addSysUserOrderRecord);
+                }
+                break;
+            case YEARLY:
+                SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
+                SysUserOrderRecord addSysUserOrderRecord = addOrderRecord(sysUserOrderRecord, sysUserOrder);
+                addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice());
+                addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice());
+                addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                sysUserOrderRecordService.insert(addSysUserOrderRecord);
+                break;
+            default:
+
+        }
         if (sysUserOrderDao.insertSelective(sysUserOrder) > 0) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.ADD_SUCCESS.getCode(), SysConstantEnum.ADD_SUCCESS.getValue());
         }
         return new Resp.Builder<String>().buildResult(SysConstantEnum.ADD_FAILED.getCode(), SysConstantEnum.ADD_FAILED.getValue());
 
+    }
+
+    /**
+     * 添加订单记录表
+     *
+     * @Param: [sysUserOrderRecord, sysUserOrder]
+     * @return: com.hu.oneclick.model.domain.SysUserOrderRecord
+     * @Author: MaSiyi
+     * @Date: 2021/10/20
+     */
+    private SysUserOrderRecord addOrderRecord(SysUserOrderRecord sysUserOrderRecord, SysUserOrder sysUserOrder) {
+
+        sysUserOrderRecord.setOrder_id(sysUserOrder.getOrderId());
+        sysUserOrderRecord.setStatus(false);
+        sysUserOrderRecord.setCreate_time(new Date());
+        sysUserOrderRecord.setPayment_type(sysUserOrder.getPaymentType());
+        Integer dataStrorage = sysUserOrder.getDataStrorage();
+        sysUserOrderRecord.setData_strorage(dataStrorage);
+        sysUserOrderRecord.setData_price(new BigDecimal(systemConfigService.getDateForKeyAndGroup(
+                String.valueOf(dataStrorage), OneConstant.SystemConfigGroup.DATASTRORAGE)));
+        String apiCall = sysUserOrder.getApiCall();
+        sysUserOrderRecord.setApi_call(apiCall);
+        sysUserOrderRecord.setApi_call_price(new BigDecimal(systemConfigService.getDateForKeyAndGroup(
+                apiCall, OneConstant.SystemConfigGroup.APICALL)));
+        sysUserOrderRecord.setSub_scription(sysUserOrder.getSubScription());
+        sysUserOrderRecord.setNormal_discount(new BigDecimal("0"));
+        sysUserOrderRecord.setExpenditure(new BigDecimal("0"));
+        sysUserOrderRecord.setInvoice(false);
+        return sysUserOrderRecord;
     }
 
     @Override

@@ -24,7 +24,7 @@ public class SysUserOrderRecord implements Serializable {
      * 订单id
      */
     @ApiModelProperty(value="订单id")
-    private Integer order_id;
+    private Long order_id;
 
     /**
      * 原价
