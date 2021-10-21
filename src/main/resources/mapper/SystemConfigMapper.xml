@@ -33,7 +33,7 @@
         from system_config
         where `key` = #{key}
         and `group` = #{group}
-        and `status` = 1
+        and `status` = 0
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete

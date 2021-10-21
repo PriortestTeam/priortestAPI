@@ -1,5 +1,7 @@
 package com.hu.oneclick.common.constant;
 
+import java.time.Year;
+
 /**
  * @author qingyang
  */
@@ -8,7 +10,7 @@ public interface OneConstant {
     /**
      * 公共参数
      */
-    interface COMMON{
+    interface COMMON {
         //成员用户分隔符
         String SUB_USER_SEPARATOR = "#*&";
 
@@ -26,14 +28,13 @@ public interface OneConstant {
     /**
      * 系统平台用户类型
      */
-    interface PLATEFORM_USER_TYPE{
+    interface PLATEFORM_USER_TYPE {
         Integer ORDINARY = 0;
         Integer MANAGER = 1;
         Integer SUB_USER = 2;
     }
 
     /**
-     *
      * 用户类型
      */
     interface USER_TYPE {
@@ -73,6 +74,7 @@ public interface OneConstant {
 
         String viewScopeDown = "VIEW_SCOPE_DOWN";
     }
+
     /**
      * 密码
      */
@@ -149,7 +151,7 @@ public interface OneConstant {
     /**
      * 自定义字段类型
      */
-    interface CUSTOM_FIELD_TYPE{
+    interface CUSTOM_FIELD_TYPE {
         String RADIO = "radio";
         String TEXT = "text";
         String RICH_TEXT = "RichText";
@@ -160,7 +162,7 @@ public interface OneConstant {
     /**
      * email
      */
-    interface EMAIL{
+    interface EMAIL {
         String TITLE_IMPORTTESTCASE = "导入测试用例结果提醒";
         String TEMPLATEHTMLNAME_IMPORTTESTCASE = "importTestCase.html";
     }
@@ -175,13 +177,14 @@ public interface OneConstant {
         String APICALL = "APICall";
         String VIP = "VIP";
     }
+
     interface SystemConfigStatus {
         String ON = "0";
         String OFF = "1";
 
     }
 
-    interface AREA_TYPE{
+    interface AREA_TYPE {
 
         String SIGNOFFSIGN = "SignOffSign";
     }

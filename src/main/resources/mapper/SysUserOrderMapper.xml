@@ -13,6 +13,10 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="status" jdbcType="BOOLEAN" property="status"/>
+        <result column="original_price" jdbcType="DECIMAL" property="originalPrice" />
+        <result column="current_price" jdbcType="DECIMAL" property="currentPrice" />
+        <result column="api_call" jdbcType="VARCHAR" property="apiCall" />
+        <result column="service_plan_duration" jdbcType="VARCHAR" property="servicePlanDuration" />
     </resultMap>
     <sql id="Base_Column_List">
         sys_user_order.id as id, sys_user_order.user_id,uuid,
@@ -82,6 +86,18 @@
             <if test="status != null">
                 `status`,
             </if>
+            <if test="originalPrice != null">
+                original_price,
+            </if>
+            <if test="currentPrice != null">
+                current_price,
+            </if>
+            <if test="apiCall != null">
+                api_call,
+            </if>
+            <if test="servicePlanDuration != null">
+                service_plan_duration,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null and id != ''">
@@ -112,7 +128,19 @@
                 #{updateTime},
             </if>
             <if test="status != null">
-                #{status}
+                #{status},
+            </if>
+            <if test="originalPrice != null">
+                #{originalPrice},
+            </if>
+            <if test="apiCall != null">
+                #{apiCall},
+            </if>
+            <if test="servicePlanDuration != null">
+                #{servicePlanDuration},
+            </if>
+            <if test="currentPrice != null">
+                #{currentPrice}
             </if>
         </trim>
     </insert>

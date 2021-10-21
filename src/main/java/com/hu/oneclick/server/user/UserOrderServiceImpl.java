@@ -3,6 +3,7 @@ package com.hu.oneclick.server.user;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.OrderEnum;
 import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.SysUserOrderDao;
 import com.hu.oneclick.model.base.Resp;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -34,14 +36,6 @@ public class UserOrderServiceImpl implements UserOrderService {
     @Autowired
     private SysUserOrderRecordService sysUserOrderRecordService;
 
-
-    public static void main(String[] args) {
-        BigDecimal bigDecimal = new BigDecimal(12.2);
-        BigDecimal bigDecimal1 = new BigDecimal(3);
-        System.out.println(bigDecimal.divide(bigDecimal1, 2, RoundingMode.HALF_UP));
-
-    }
-
     @Override
     public Resp<String> insertOrder(SysUserOrder sysUserOrder) {
         //初始转态为未支付
@@ -49,6 +43,8 @@ public class UserOrderServiceImpl implements UserOrderService {
         long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
         sysUserOrder.setOrderId(orderId);
         OrderEnum orderEnum = OrderEnum.toType(sysUserOrder.getServicePlanDuration());
+        //付款时间
+        Calendar instance = Calendar.getInstance();
         switch (orderEnum) {
             case MONTHLU:
                 for (int i = 0; i < 12; i++) {
@@ -59,6 +55,8 @@ public class UserOrderServiceImpl implements UserOrderService {
                     addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
                             .divide(new BigDecimal(12), 2, RoundingMode.HALF_UP));
                     addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                    instance.add(Calendar.MONTH, +1);
+                    addSysUserOrderRecord.setPayment_time(instance.getTime());
                     sysUserOrderRecordService.insert(addSysUserOrderRecord);
                 }
                 break;
@@ -71,6 +69,8 @@ public class UserOrderServiceImpl implements UserOrderService {
                     addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
                             .divide(new BigDecimal(4), 2, RoundingMode.HALF_UP));
                     addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                    instance.add(Calendar.MONTH, +3);
+                    addSysUserOrderRecord.setPayment_time(instance.getTime());
                     sysUserOrderRecordService.insert(addSysUserOrderRecord);
                 }
                 break;
@@ -79,10 +79,12 @@ public class UserOrderServiceImpl implements UserOrderService {
                     SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
                     SysUserOrderRecord addSysUserOrderRecord = addOrderRecord(sysUserOrderRecord, sysUserOrder);
                     addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
-                            .divide(new BigDecimal(6), 2, RoundingMode.HALF_UP));
+                            .divide(new BigDecimal(2), 2, RoundingMode.HALF_UP));
                     addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
-                            .divide(new BigDecimal(6), 2, RoundingMode.HALF_UP));
+                            .divide(new BigDecimal(2), 2, RoundingMode.HALF_UP));
                     addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                    instance.add(Calendar.MONTH, +6);
+                    addSysUserOrderRecord.setPayment_time(instance.getTime());
                     sysUserOrderRecordService.insert(addSysUserOrderRecord);
                 }
                 break;
@@ -92,6 +94,8 @@ public class UserOrderServiceImpl implements UserOrderService {
                 addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice());
                 addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice());
                 addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                instance.add(Calendar.MONDAY, +12);
+                addSysUserOrderRecord.setPayment_time(instance.getTime());
                 sysUserOrderRecordService.insert(addSysUserOrderRecord);
                 break;
             default:
