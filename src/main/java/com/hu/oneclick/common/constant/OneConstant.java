@@ -174,6 +174,7 @@ public interface OneConstant {
         String SPECICALDISCOUNT = "SpecicalDiscount";
         String DATASTRORAGE = "DataStrorage";
         String FLASHDISCOUNT = "FlashDiscount";
+        String PAYMENTTYPE = "PaymentType";
         String APICALL = "APICall";
         String VIP = "VIP";
     }

@@ -18,12 +18,26 @@
     from sys_user_reference
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="getReferenceTime" resultType="java.lang.Integer" parameterType="java.lang.String">
-    SELECT COUNT(1) FROM sys_user_reference WHERE reference_user_id = #{userId}
+  <select id="getReferenceTime" resultType="java.lang.Integer" >
+    SELECT
+      COUNT( 1 )
+    FROM
+      sys_user_reference
+    WHERE
+      reference_user_id = #{param1}
+      AND reference_time BETWEEN #{param2}
+      AND #{param3}
   </select>
 
   <select id="getReferencePersonNo" resultType="java.lang.Integer" parameterType="java.lang.String">
-    SELECT COUNT(1) FROM sys_user_reference WHERE user_id = #{userId}
+    SELECT
+      COUNT( 1 )
+    FROM
+      sys_user_reference
+    WHERE
+      user_id = #{param1}
+      AND reference_time BETWEEN #{param2}
+      AND #{param3}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from sys_user_reference

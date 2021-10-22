@@ -3,6 +3,9 @@ package com.hu.oneclick.dao;
 import com.hu.oneclick.model.domain.SysUserOrderRecord;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+import java.util.List;
+
 @Repository
 public interface SysUserOrderRecordDao {
     int deleteByPrimaryKey(Integer id);
@@ -16,4 +19,10 @@ public interface SysUserOrderRecordDao {
     int updateByPrimaryKeySelective(SysUserOrderRecord record);
 
     int updateByPrimaryKey(SysUserOrderRecord record);
+
+    void payment(String id);
+
+    List<SysUserOrderRecord> getUserOrderRecord(String userId);
+
+    SysUserOrderRecord getOrderRecordForDate(Date startTime, Date endTime, Long orderId);
 }

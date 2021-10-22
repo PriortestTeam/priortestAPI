@@ -105,10 +105,10 @@ public class SysUserOrderRecord implements Serializable {
     private String sub_scription;
 
     /**
-     * 基本折扣
+     * 折扣
      */
-    @ApiModelProperty(value="基本折扣")
-    private BigDecimal normal_discount;
+    @ApiModelProperty(value="折扣")
+    private BigDecimal discount;
 
     /**
      * 实际支付

@@ -3,6 +3,8 @@ package com.hu.oneclick.server.service;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SystemConfig;
 
+import java.util.List;
+
 /**
  * @author MaSiyi
  * @version 1.0.0 2021/10/11
@@ -48,4 +50,12 @@ public interface SystemConfigService {
      * @Date: 2021/10/15
      */
     String getDateForKeyAndGroup(String key, String group);
+
+    /** 根据group获取key
+     * @Param: [group]
+     * @return: java.lang.String
+     * @Author: MaSiyi
+     * @Date: 2021/10/21
+     */
+    List<String> getKeyForGroup(String group);
 }

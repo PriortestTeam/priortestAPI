@@ -9,6 +9,8 @@ import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author MaSiyi
  * @version 1.0.0 2021/10/11
@@ -98,6 +100,20 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     @Override
     public String getDateForKeyAndGroup(String key, String group) {
         return systemConfigDao.getDateForKeyAndGroup(key,group);
+    }
+
+    /**
+     * 根据group获取key
+     *
+     * @param group
+     * @Param: [group]
+     * @return: java.lang.String
+     * @Author: MaSiyi
+     * @Date: 2021/10/21
+     */
+    @Override
+    public List<String> getKeyForGroup(String group) {
+        return systemConfigDao.getKeyForGroup(group);
     }
 }
 

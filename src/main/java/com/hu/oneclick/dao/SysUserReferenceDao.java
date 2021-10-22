@@ -3,6 +3,8 @@ package com.hu.oneclick.dao;
 import com.hu.oneclick.model.domain.SysUserReference;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+
 @Repository
 public interface SysUserReferenceDao {
     int deleteByPrimaryKey(Integer id);
@@ -17,7 +19,7 @@ public interface SysUserReferenceDao {
 
     int updateByPrimaryKey(SysUserReference record);
 
-    int getReferenceTime(String userId);
+    int getReferenceTime(String userId, Date startTime, Date endTime);
 
-    int getReferencePersonNo(String userId);
+    int getReferencePersonNo(String userId, Date startTime, Date endTime);
 }

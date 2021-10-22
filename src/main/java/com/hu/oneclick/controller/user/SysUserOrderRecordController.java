@@ -3,8 +3,8 @@ package com.hu.oneclick.controller.user;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserOrder;
-
 import com.hu.oneclick.model.domain.SysUserOrderRecord;
+import com.hu.oneclick.server.user.SysUserOrderRecordService;
 import com.hu.oneclick.server.user.UserOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,29 +23,22 @@ import java.util.List;
  * @author masiyi
  */
 @RestController
-@RequestMapping("userOrder")
-@Api("订单模块")
-public class UserOrderController {
+@RequestMapping("userOrderRecord")
+@Api("订单详情模块")
+public class SysUserOrderRecordController {
 
     @Autowired
-    private UserOrderService userOrderService;
+    private SysUserOrderRecordService sysUserOrderRecordService;
 
-    @ApiOperation("新增订单")
-    @PostMapping("insertOrder")
-    public Resp<String> insertOrder(@RequestBody SysUserOrder sysUserOrder) {
-        return userOrderService.insertOrder(sysUserOrder);
+    @ApiOperation("付款")
+    @GetMapping("payment")
+    public Resp<String> payment(@RequestParam String id) {
+        return sysUserOrderRecordService.payment(id);
     }
 
-    @ApiOperation("添加详细信息")
-    @PostMapping("insertUserDetail")
-    public Resp<String> insertUserDetail(@RequestBody SysUser sysUser) {
-        return userOrderService.insertUserDetail(sysUser);
+    @ApiOperation("获取用户订单详细")
+    @GetMapping("getUserOrderRecord")
+    public Resp<List<SysUserOrderRecord>> getUserOrderRecord() {
+        return sysUserOrderRecordService.getUserOrderRecord();
     }
-
-    @ApiOperation("查询付款方式")
-    @PostMapping("getPaymentMethod")
-    public Resp<List<String>> getPaymentMethod() {
-        return userOrderService.getPaymentMethod();
-    }
-
 }

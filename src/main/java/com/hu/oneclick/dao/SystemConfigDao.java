@@ -3,6 +3,8 @@ package com.hu.oneclick.dao;
 import com.hu.oneclick.model.domain.SystemConfig;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface SystemConfigDao {
     int deleteByPrimaryKey(Integer id);
@@ -24,4 +26,6 @@ public interface SystemConfigDao {
     String getDateForKeyAndGroup(String key,String group);
 
     int deleteByKey(String key);
+
+    List<String> getKeyForGroup(String group);
 }

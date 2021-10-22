@@ -3,6 +3,7 @@ package com.hu.oneclick.dao;
 import com.hu.oneclick.model.domain.SysUserOrder;
 
 import java.util.Date;
+import java.util.List;
 
 
 public interface SysUserOrderDao {
@@ -21,4 +22,6 @@ public interface SysUserOrderDao {
     int updateByPrimaryKey(SysUserOrder record);
 
     SysUserOrder getOrderOfUserId(String userId);
+
+    List<SysUserOrder> listOrder(String userId);
 }

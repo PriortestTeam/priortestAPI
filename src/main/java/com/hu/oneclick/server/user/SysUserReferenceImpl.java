@@ -5,6 +5,8 @@ import com.hu.oneclick.model.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * @author MaSiyi
  * @version 1.0.0 2021/10/15
@@ -20,29 +22,33 @@ public class SysUserReferenceImpl implements SysUserReferenceService {
      * 推荐人数
      *
      * @param sysUser
+     * @param startTime
+     * @param endTime
      * @Param: [sysUser]
      * @return: int
      * @Author: MaSiyi
      * @Date: 2021/10/15
      */
     @Override
-    public int getReferenceTime(SysUser sysUser) {
+    public int getReferenceTime(SysUser sysUser, Date startTime, Date endTime) {
 
-        return sysUserReferenceDao.getReferenceTime(sysUser.getId());
+        return sysUserReferenceDao.getReferenceTime(sysUser.getId(),startTime,endTime);
     }
 
     /**
      * 引用别人人数
      *
      * @param sysUser
+     * @param startTime
+     * @param endTime
      * @Param: [sysUser]
      * @return: int
      * @Author: MaSiyi
      * @Date: 2021/10/15
      */
     @Override
-    public int getReferencePersonNo(SysUser sysUser) {
-        return sysUserReferenceDao.getReferencePersonNo(sysUser.getId());
+    public int getReferencePersonNo(SysUser sysUser, Date startTime, Date endTime) {
+        return sysUserReferenceDao.getReferencePersonNo(sysUser.getId(),startTime,endTime);
 
     }
 }

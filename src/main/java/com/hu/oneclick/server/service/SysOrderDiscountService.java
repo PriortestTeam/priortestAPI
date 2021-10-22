@@ -1,9 +1,11 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.SysOrderDiscountDto;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -21,4 +23,14 @@ public interface SysOrderDiscountService {
      */
     Resp<Map<String, BigDecimal>> calculateOrderPrice(SysOrderDiscountDto sysOrderDiscountDto);
 
+    /** 计算推荐折扣
+     * @Param:
+     * @return:
+     * @Author: MaSiyi
+     * @Date: 2021/10/22
+     * @param sysUser
+     * @param date
+     * @param date1
+     */
+    BigDecimal getReferenceDiscount(SysUser sysUser, Date date, Date date1);
 }

@@ -3,6 +3,7 @@ package com.hu.oneclick.server.user;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.OrderEnum;
 import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.SysUserOrderDao;
@@ -10,6 +11,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserOrder;
 import com.hu.oneclick.model.domain.SysUserOrderRecord;
+import com.hu.oneclick.server.service.SysOrderDiscountService;
 import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author MaSiyi
@@ -35,6 +41,7 @@ public class UserOrderServiceImpl implements UserOrderService {
     private SystemConfigService systemConfigService;
     @Autowired
     private SysUserOrderRecordService sysUserOrderRecordService;
+
 
     @Override
     public Resp<String> insertOrder(SysUserOrder sysUserOrder) {
@@ -131,7 +138,7 @@ public class UserOrderServiceImpl implements UserOrderService {
         sysUserOrderRecord.setApi_call_price(new BigDecimal(systemConfigService.getDateForKeyAndGroup(
                 apiCall, OneConstant.SystemConfigGroup.APICALL)));
         sysUserOrderRecord.setSub_scription(sysUserOrder.getSubScription());
-        sysUserOrderRecord.setNormal_discount(new BigDecimal("0"));
+        sysUserOrderRecord.setDiscount(new BigDecimal("0"));
         sysUserOrderRecord.setExpenditure(new BigDecimal("0"));
         sysUserOrderRecord.setInvoice(false);
         return sysUserOrderRecord;
@@ -161,4 +168,22 @@ public class UserOrderServiceImpl implements UserOrderService {
 
     }
 
+    /**
+     * 查询付款方式
+     *
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/10/21
+     */
+    @Override
+    public Resp<List<String>> getPaymentMethod() {
+        List<String> keyForGroup = systemConfigService.getKeyForGroup(OneConstant.SystemConfigGroup.PAYMENTTYPE);
+        return new Resp.Builder<List<String>>().setData(keyForGroup).ok();
+    }
+
+    @Override
+    public List<SysUserOrder> listOrder(String userId) {
+        return sysUserOrderDao.listOrder(userId);
+    }
 }

@@ -1,22 +1,21 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.common.constant.OneConstant;
-import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.dao.SysOrderDiscountDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SysOrderDiscountDto;
 import com.hu.oneclick.server.service.SysOrderDiscountService;
 import com.hu.oneclick.server.service.SystemConfigService;
 import com.hu.oneclick.server.user.SysUserReferenceService;
 import org.apache.commons.lang3.StringUtils;
-import org.redisson.misc.Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,31 +64,9 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         BigDecimal allPrice = dataApPriceBd.add(dataStPriceBd);
         //根据推荐表里面获取当前的推荐人折扣
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        //如果推荐开关为打开
-        String referencedTime = systemConfigService.getDateForKeyAndGroup("ReferencedTime", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
-        BigDecimal referenceTimeCountDiscountGg;
-        if (OneConstant.SystemConfigStatus.ON.equals(referencedTime)) {
-
-            int referenceTimeCount = sysUserReferenceService.getReferenceTime(sysUser);
-            String referenceTimeCountDiscount = systemConfigService
-                    .getDateForKeyAndGroup(String.valueOf(referenceTimeCount), OneConstant.SystemConfigGroup.REFERENCETIME);
-            referenceTimeCountDiscountGg = new BigDecimal(referenceTimeCountDiscount);
-        } else {
-            referenceTimeCountDiscountGg = BigDecimal.ZERO;
-        }
-        //如果引用开关为打开
-        String referencePersonNo = systemConfigService.getDateForKeyAndGroup("ReferencePersonNo", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
-        BigDecimal referencePersonNoCountDiscountBg;
-        if (OneConstant.SystemConfigStatus.ON.equals(referencePersonNo)) {
-            int referencePersonNoCount = sysUserReferenceService.getReferencePersonNo(sysUser);
-            String referencePersonNoCountDiscount = systemConfigService
-                    .getDateForKeyAndGroup(String.valueOf(referencePersonNoCount), OneConstant.SystemConfigGroup.REFERENCEPERSONNO);
-            referencePersonNoCountDiscountBg = new BigDecimal(referencePersonNoCountDiscount);
-        } else {
-            referencePersonNoCountDiscountBg = BigDecimal.ZERO;
-        }
+        Date[] monthLimit = DateUtil.getMonthLimit(new Date());
         //总折扣
-        BigDecimal allReferenceDiscount = referenceTimeCountDiscountGg.add(referencePersonNoCountDiscountBg);
+        BigDecimal allReferenceDiscount = this.getReferenceDiscount(sysUser, monthLimit[0], monthLimit[1]);
         //两个折扣相加，计算出折扣之后的价钱
         BigDecimal addDiscount = normalDiscount.add(allReferenceDiscount);
         //如果特别折扣开关为打开
@@ -120,5 +97,39 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         map.put("originalPrice", allPrice);
         map.put("currentPrice", allPrice.subtract(currentPrice));
         return new Resp.Builder<Map<String, BigDecimal>>().setData(map).ok();
+    }
+    /** 计算推荐折扣
+     * @Param:
+     * @return:
+     * @Author: MaSiyi
+     * @Date: 2021/10/22
+     * @param sysUser
+     */
+    @Override
+    public BigDecimal getReferenceDiscount(SysUser sysUser, Date startTime, Date endTime) {
+        //如果推荐开关为打开
+        String referencedTime = systemConfigService.getDateForKeyAndGroup("ReferencedTime", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
+        BigDecimal referenceTimeCountDiscountGg;
+        if (OneConstant.SystemConfigStatus.ON.equals(referencedTime)) {
+
+            int referenceTimeCount = sysUserReferenceService.getReferenceTime(sysUser,startTime,endTime);
+            String referenceTimeCountDiscount = systemConfigService
+                    .getDateForKeyAndGroup(String.valueOf(referenceTimeCount), OneConstant.SystemConfigGroup.REFERENCETIME);
+            referenceTimeCountDiscountGg = new BigDecimal(referenceTimeCountDiscount);
+        } else {
+            referenceTimeCountDiscountGg = BigDecimal.ZERO;
+        }
+        //如果引用开关为打开
+        String referencePersonNo = systemConfigService.getDateForKeyAndGroup("ReferencePersonNo", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
+        BigDecimal referencePersonNoCountDiscountBg;
+        if (OneConstant.SystemConfigStatus.ON.equals(referencePersonNo)) {
+            int referencePersonNoCount = sysUserReferenceService.getReferencePersonNo(sysUser,startTime,endTime);
+            String referencePersonNoCountDiscount = systemConfigService
+                    .getDateForKeyAndGroup(String.valueOf(referencePersonNoCount), OneConstant.SystemConfigGroup.REFERENCEPERSONNO);
+            referencePersonNoCountDiscountBg = new BigDecimal(referencePersonNoCountDiscount);
+        } else {
+            referencePersonNoCountDiscountBg = BigDecimal.ZERO;
+        }
+        return referenceTimeCountDiscountGg.add(referencePersonNoCountDiscountBg);
     }
 }
