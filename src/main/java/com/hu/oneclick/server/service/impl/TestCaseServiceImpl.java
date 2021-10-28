@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -267,7 +268,7 @@ public class TestCaseServiceImpl implements TestCaseService {
             List<String> allowPriority =Arrays.asList("高", "中", "低");
             List<String> allowBrowser = Arrays.asList("Google Chrome", "Fire Fox", "IE");
             List<String> allowPlatform = Arrays.asList("window", "mac");
-            List<String> statusPlatform = Arrays.asList("Ready", "Draft");
+            List<String> statusPlatform = Arrays.asList("待执行", "草稿");
             List<String> moudleMergeValues = sysCustomFieldService.getSysCustomField("moudle").getData().getMergeValues();
             List<String> versionsMergeValues = sysCustomFieldService.getSysCustomField("versions").getData().getMergeValues();
             List<String> testCategoryMergeValues = sysCustomFieldService.getSysCustomField("testCategory").getData().getMergeValues();
@@ -288,9 +289,11 @@ public class TestCaseServiceImpl implements TestCaseService {
                     cellIndexObject, ifIgnorFirstRow);
             List<TestCase> testCases = new ArrayList<>();
             Map<String, List<TestCaseStep>> testCaseStepsMap = new HashMap<>();
+            //jwtUserService.getUserLoginInfo().get
             for (Object o : rowValueArray) {
                 JSONObject rowValue=(JSONObject)o;
                 TestCase testCase = new TestCase();
+                String projectId = "";
                 //处理Feature 故事
                 if (rowValue.containsKey("featureCol")) {
                     JSONObject featureCol = rowValue.getJSONObject("featureCol");
@@ -306,7 +309,8 @@ public class TestCaseServiceImpl implements TestCaseService {
                         buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_NOFEATURE
                                 ,featureCol,null);
                     }else{
-                        testCase.setProjectId(feature.getProjectId());
+                        projectId = feature.getProjectId();
+                        testCase.setProjectId(projectId);
                         testCase.setFeature(feature.getId());
                     }
                 }
@@ -326,6 +330,9 @@ public class TestCaseServiceImpl implements TestCaseService {
                 //Comments 备注
                 setValue(rowValue.getJSONObject("commentsCol"),testCase
                         ,errorTipsMap,"comments",false);
+                //测试数据
+                setValue(rowValue.getJSONObject("preDataCol"),testCase
+                        ,errorTipsMap,"testData",false);
                 //处理固定字典类型
                 // Priority 优先级
                 setSelectValue(rowValue.getJSONObject("priorityCol"),allowPriority,testCase
@@ -370,6 +377,7 @@ public class TestCaseServiceImpl implements TestCaseService {
                     TestCase queryFeaturExternalIDTestCase = new TestCase();
                     queryFeaturExternalIDTestCase.setFeature(testCase.getFeature());
                     queryFeaturExternalIDTestCase.setExternaId(externalId);
+                    queryFeaturExternalIDTestCase.setProjectId(projectId);
                     queryFeaturExternalIDTestCase.setId(null);
                     TestCase featurExternalIDTestCase = this.testCaseDao.selectOne(queryFeaturExternalIDTestCase);
                     if(null!=featurExternalIDTestCase){
@@ -398,9 +406,10 @@ public class TestCaseServiceImpl implements TestCaseService {
                     String cellExpectedResultValue = getCellValue(errorTipsMap,
                             rowValue.getJSONObject("stepExpectResultCol"), true);
                     Boolean ifSplitTestStep = jsonObject.getBoolean("ifSplitTestStep");
+                    String splitTestStep = jsonObject.getString("splitTestStep");
                     //是否分隔
                     if(ifSplitTestStep){
-                        String splitTestStep = jsonObject.getString("splitTestStep");
+
                         String[] steps = setpValue.split(splitTestStep);
                         String[] testDatas = cellTestDataValue.split(splitTestStep);
                         String[] expectedResults = cellExpectedResultValue.split(splitTestStep);
@@ -427,7 +436,7 @@ public class TestCaseServiceImpl implements TestCaseService {
                         }
                     }else{
                         TestCaseStep testCaseStep = new TestCaseStep();
-                        testCaseStep.setTestData(setpValue);
+                        testCaseStep.setStep(setpValue);
                         testCaseStep.setTestData(cellTestDataValue);
                         testCaseStep.setExpectedResult(cellExpectedResultValue);
                         testCaseStep.setStatus(0);
@@ -476,7 +485,7 @@ public class TestCaseServiceImpl implements TestCaseService {
                 }
                 //判断是否创建视图
                 Boolean ifCreateView =jsonObject.getBooleanValue("ifCreateView");
-                if(ifCreateView){
+                if(ifCreateView&&successCount>0){
                     createViewImportTestCase(now);
                 }
             }else{
@@ -484,10 +493,11 @@ public class TestCaseServiceImpl implements TestCaseService {
             }
             //判断是否发送email
             Boolean ifSendEmail =jsonObject.getBooleanValue("ifSendEmail");
+            ImportTestCaseDto importTestCaseDto = buildImportTestCaseDto(errorTipsMap, successCount, updateCount, errorCount);
             if (ifSendEmail) {
-                sendEmailImportTestCase(successCount,updateCount,errorCount);
+                sendEmailImportTestCase(importTestCaseDto);
             }
-            return new Resp.Builder<ImportTestCaseDto>().setData(buildImportTestCaseDto(errorTipsMap, successCount,updateCount,errorCount)).ok();
+            return new Resp.Builder<ImportTestCaseDto>().setData(importTestCaseDto).ok();
         }catch (Exception e){
             logger.error("class: TestCaseServiceImpl#importTestCase,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -497,11 +507,9 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     /**
      * 导入测试用例发送emial
-     * @param successCount
-     * @param updateCount
-     * @param errorCount
+     * @param importTestCaseDto
      */
-    private void sendEmailImportTestCase(int successCount,int updateCount,int errorCount){
+    private void sendEmailImportTestCase(ImportTestCaseDto importTestCaseDto){
         //获取当前登录人的邮箱
         String email = jwtUserService.getUserLoginInfo().getSysUser().getEmail();
         //判断是否子用户，根据分割标识
@@ -514,9 +522,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         mailDto.setTemplateHtmlName(OneConstant.EMAIL.TEMPLATEHTMLNAME_IMPORTTESTCASE);
         Map<String, Object> attachmentMap = new HashMap<>();
         attachmentMap.put("importDateTime", DateUtil.format(new Date(),"yyyy年MM月dd日 HH:mm:ss" ));
-        attachmentMap.put("successCount", successCount);
-        attachmentMap.put("errorCount", errorCount);
-        attachmentMap.put("updateCount", updateCount);
+        attachmentMap.put("importTestCaseDto", importTestCaseDto);
         mailDto.setAttachment(attachmentMap);
         mailService.sendTemplateMail(mailDto);
     }
@@ -605,8 +611,12 @@ public class TestCaseServiceImpl implements TestCaseService {
                 //封装数据
                 for (String colKey : cellIndexObject.keySet()) {
                     JSONObject colValue = new JSONObject();
+
                     Integer colIndex = cellIndexObject.getInteger(colKey);
                     Cell cell = row.getCell(colIndex);
+                    if(null==cell){
+                        continue;
+                    }
                     cell.setCellType(CellType.STRING);
                     String stringCellValue = cell.getStringCellValue();
                     colValue.put("value", stringCellValue);
@@ -797,9 +807,9 @@ public class TestCaseServiceImpl implements TestCaseService {
         //1.取出导入模板json中的属性，以_col结尾的说明为导入字段
         for (String s : templateTestCase.keySet()) {
             if(s.endsWith("Col")){
-                Object o = null;
-                if((o = templateTestCase.get(s))!=null){
-                    res.put(s,letter.indexOf(o.toString()));
+                String o = (String)templateTestCase.get(s);
+                if (StringUtils.isNotBlank(o)) {
+                    res.put(s, letter.indexOf(o.toString()));
                 }
             }
         }

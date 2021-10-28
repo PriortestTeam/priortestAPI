@@ -16,11 +16,34 @@
         <div
             style="width: 400px; border-top: 5px solid #405d9c;padding: 20px; font-weight: bold; background-color: #fff;">
             <p>尊敬的客户：</p>
-            <div style="padding-left: 30px;">
-                <p>您好，您在<span th:text="${importDateTime}"></span>导入测试用例记录。</p>
-                <p>导入成功：<span th:text="${successCount}"></span></p>
-                <p>更新成功：<span th:text="${updateCount}"></span></p>
-                <p>导入失败：<span th:text="${errorCount}"></span>（失败原因-导入时返回的错误信息）</p>
+            <div style="padding-left: 30px;" >
+               <p>您好，您在<span th:text="${importDateTime}"></span>导入测试用例记录。</p>
+               <div th:each="import : ${importTestCaseDto.success}">
+                   <p ><span th:text="${import}"></span></p>
+               </div>
+               <div th:each="import : ${importTestCaseDto.warning}">
+                   <p ><span th:text="${import}"></span></p>
+               </div>
+               <div th:if="${not #lists.isEmpty(importTestCaseDto.error)}" style="color: red">
+                   <p>失败原因:</p>
+                   <div th:each="item:${importTestCaseDto.error}">
+                       <!--<p ><span th:text="${item}"></span></p>-->
+                       <div th:each="entry : ${item}" >
+                           <p ><span th:text="${entry.key}" ></span>:</p>
+                           <div th:each="entry : ${entry.value}">
+                               <p  style="font-size: 10px"><span  th:text="${entry}" ></span></p>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+
+               <!--<p>导入成功：<span th:text="${successCount}"></span></p>
+               <p>更新成功：<span th:text="${updateCount}"></span></p>
+               <p>导入失败：<span th:text="${errorCount}"></span>（失败原因）</p>
+               <div th:each="mapS:${errorTipsMap.error}">
+                   <p th:text="${mapS.key}:"></p>
+                   <p th:text="${mapS.value}"></p>
+               </div>-->
                 <br>
                 <a href="" target="_blank" style="text-decoration:none">查看导入记录</a>
                 <br>

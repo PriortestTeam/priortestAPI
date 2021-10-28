@@ -228,6 +228,10 @@
             <if test="status != null and status != ''">
                 status = #{status},
             </if>
+
+            <if test="comments != null and comments != ''">
+                comments = #{comments},
+            </if>
             update_time=NOW()
         </set>
         where id = #{id}
