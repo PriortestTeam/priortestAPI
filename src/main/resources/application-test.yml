@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://192.168.1.5:3307/oneclick?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false
-    username: root
-    password: password
+    url: jdbc:mysql://124.71.142.223:3306/oneclick?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false
+    username: oneclick
+    password: Oneclick456!
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
@@ -35,7 +35,7 @@ spring:
 
   redis:
     #    host: 192.168.184.10
-    host: localhost
+    host: 124.71.142.223
     port: 6379
     ssl: false
 #    password: qingyang_redis
@@ -53,8 +53,6 @@ logging:
   config: classpath:log4j2.yml
 #  level: info
 
-
-
 onclick:
   config:
     interceptor:
@@ -63,7 +61,7 @@ onclick:
     photo: https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2511150983,4244929698&fm=26&gp=0.jpg
   minioConfig:
     bucketName: oneclick
-    endpoint: http://106.13.39.32:9000
-    accountKey: minio
-    password: qingyang_minio_ooo
+    endpoint: http://124.71.142.223:9000
+    accountKey: admin
+    password: password
     source: true
