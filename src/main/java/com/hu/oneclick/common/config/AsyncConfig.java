@@ -6,12 +6,14 @@ import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * @author xwf
  * @date 2021/9/13 0:23
  * 异步加载
  */
-@EnableAsync//开启异步调用
+
 @Configuration
 public class AsyncConfig {
 
@@ -20,12 +22,12 @@ public class AsyncConfig {
     private static final int CORE_POOL_SIZE = 16;
 
     @Bean("asyncTaskExecutor")
-    public AsyncTaskExecutor asyncTaskExecutor() {
+    public ExecutorService asyncTaskExecutor() {
         ThreadPoolTaskExecutor asyncTaskExecutor = new ThreadPoolTaskExecutor();
         asyncTaskExecutor.setMaxPoolSize(MAX_POOL_SIZE);
         asyncTaskExecutor.setCorePoolSize(CORE_POOL_SIZE);
         asyncTaskExecutor.setThreadNamePrefix("async-task-thread-pool-");
         asyncTaskExecutor.initialize();
-        return asyncTaskExecutor;
+        return asyncTaskExecutor.getThreadPoolExecutor();
     }
 }

@@ -8,6 +8,7 @@ import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.TestCaseDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -35,5 +36,5 @@ public interface TestCaseService {
      * @param param
      * @return
      */
-    Resp<ImportTestCaseDto> importTestCase(MultipartFile file, String param);
+    Resp<ImportTestCaseDto> importTestCase(File file, String param);
 }

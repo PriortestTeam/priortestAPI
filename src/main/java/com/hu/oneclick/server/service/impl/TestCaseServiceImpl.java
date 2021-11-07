@@ -25,7 +25,9 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -35,6 +37,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author qingyang
@@ -44,26 +47,36 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     private final static Logger logger = LoggerFactory.getLogger(TestCaseServiceImpl.class);
 
+    @Autowired
+    private  TestCaseDao testCaseDao;
 
-    private final TestCaseDao testCaseDao;
+    @Autowired
+    private  ModifyRecordsService modifyRecordsService;
 
-    private final ModifyRecordsService modifyRecordsService;
+    @Autowired
+    private  JwtUserServiceImpl jwtUserService;
 
-    private final JwtUserServiceImpl jwtUserService;
+    @Autowired
+    private  QueryFilterService queryFilterService;
 
-    private final QueryFilterService queryFilterService;
+    @Autowired
+    private  FeatureDao featureDao;
 
-    private final FeatureDao featureDao;
+    @Autowired
+    private  SysCustomFieldService sysCustomFieldService;
 
-    private final SysCustomFieldService sysCustomFieldService;
+    @Autowired
+    private  TestCaseStepDao testCaseStepDao;
 
-    private final TestCaseStepDao testCaseStepDao;
+    @Autowired
+    private  MailService mailService;
 
-    private final MailService mailService;
+    @Autowired
+    private  ViewService viewService;
 
-    private final ViewService viewService;
 
-    public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService
+
+    /*public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService
             , QueryFilterService queryFilterService, FeatureDao featureDao,SysCustomFieldService sysCustomFieldService
             , TestCaseStepDao testCaseStepDao,MailService mailService,ViewService viewService) {
         this.testCaseDao = testCaseDao;
@@ -75,7 +88,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         this.testCaseStepDao = testCaseStepDao;
         this.mailService = mailService;
         this.viewService = viewService;
-    }
+    }*/
 
 
     @Override
@@ -242,11 +255,11 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<ImportTestCaseDto> importTestCase(MultipartFile multipartFile, String param) {
+    public Resp<ImportTestCaseDto> importTestCase(File multipartFile, String param) {
         try {
             //1.取出文件并验证文件；
             //原始文件名称
-            String originalFilename = multipartFile.getOriginalFilename();
+            String originalFilename = multipartFile.getName();
             //解析到文件后缀，判断是否合法
             int lastIndexOf = originalFilename.lastIndexOf(".");
             String suffix = null;
@@ -285,7 +298,7 @@ public class TestCaseServiceImpl implements TestCaseService {
             int errorCount = 0;
             int updateCount = 0;
             //判断文件后缀，根据不同后缀操作数据
-            JSONArray rowValueArray = buildRowValueArray(suffix, multipartFile.getInputStream(),
+            JSONArray rowValueArray = buildRowValueArray(suffix,new FileInputStream(multipartFile) ,
                     cellIndexObject, ifIgnorFirstRow);
             List<TestCase> testCases = new ArrayList<>();
             Map<String, List<TestCaseStep>> testCaseStepsMap = new HashMap<>();
@@ -497,11 +510,16 @@ public class TestCaseServiceImpl implements TestCaseService {
             if (ifSendEmail) {
                 sendEmailImportTestCase(importTestCaseDto);
             }
+
             return new Resp.Builder<ImportTestCaseDto>().setData(importTestCaseDto).ok();
         }catch (Exception e){
+            e.printStackTrace();
             logger.error("class: TestCaseServiceImpl#importTestCase,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return new Resp.Builder<ImportTestCaseDto>().buildResult(SysConstantEnum.SYSTEM_BUSY.getCode(),e.getMessage());
+        }finally {
+            //刪除临时文件
+            multipartFile.delete();
         }
     }
 
