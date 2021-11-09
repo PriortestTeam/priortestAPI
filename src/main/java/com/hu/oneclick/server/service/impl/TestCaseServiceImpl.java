@@ -256,6 +256,7 @@ public class TestCaseServiceImpl implements TestCaseService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<ImportTestCaseDto> importTestCase(File multipartFile, String param) {
+        FileInputStream fileInputStream = null;
         try {
             //1.取出文件并验证文件；
             //原始文件名称
@@ -298,7 +299,8 @@ public class TestCaseServiceImpl implements TestCaseService {
             int errorCount = 0;
             int updateCount = 0;
             //判断文件后缀，根据不同后缀操作数据
-            JSONArray rowValueArray = buildRowValueArray(suffix,new FileInputStream(multipartFile) ,
+            fileInputStream = new FileInputStream(multipartFile);
+            JSONArray rowValueArray = buildRowValueArray(suffix,fileInputStream,
                     cellIndexObject, ifIgnorFirstRow);
             List<TestCase> testCases = new ArrayList<>();
             Map<String, List<TestCaseStep>> testCaseStepsMap = new HashMap<>();
@@ -519,7 +521,18 @@ public class TestCaseServiceImpl implements TestCaseService {
             return new Resp.Builder<ImportTestCaseDto>().buildResult(SysConstantEnum.SYSTEM_BUSY.getCode(),e.getMessage());
         }finally {
             //刪除临时文件
-            multipartFile.delete();
+
+            try{
+                if(fileInputStream!=null){
+                    fileInputStream.close();
+                }
+                if (!multipartFile.delete()){
+                    logger.error("删除文件失败");
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         }
     }
 

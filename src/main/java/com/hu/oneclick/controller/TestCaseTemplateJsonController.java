@@ -1,5 +1,7 @@
 package com.hu.oneclick.controller;
 
+import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.util.FileUtil;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCaseTemplateJson;
 import com.hu.oneclick.server.service.TestCaseService;
@@ -13,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -72,18 +76,21 @@ public class TestCaseTemplateJsonController {
      */
     @PostMapping("importTestCase")
     public  Resp<Object> importTestCase(@RequestParam("file") MultipartFile file, @RequestParam("param") String param, HttpServletRequest request) throws IOException {
-//.getStoreLocation().getAbsolutePath();
+
         File path = new File(request.getSession().getServletContext().getRealPath("/") + "/upload/");
         String originalFilename = file.getOriginalFilename();
         if (!path.exists()) {
             path.mkdirs();
         }
-        File newfile = new File(path,originalFilename);
+        File newfile = new File(path, FileUtil.renameFile(originalFilename));
+        if(newfile.exists()){
+            return new Resp.Builder<Object>().buildResult("正在导入中，请稍后重试~");
+        }
         file.transferTo(newfile);
         executorService.submit(() -> {
             testCaseService.importTestCase(newfile, param);
         });
-       return new Resp.Builder<Object>().buildResult("正在导入中，请稍后关注您的邮箱，查看导入结果~");
+       return new Resp.Builder<Object>().buildResult(SysConstantEnum.SUCCESS.getCode(),"正在导入中，请稍后关注您的邮箱，查看导入结果~");
     }
 
 
