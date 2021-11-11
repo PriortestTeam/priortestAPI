@@ -15,6 +15,7 @@ import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
+import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -183,4 +184,20 @@ public class JwtUserServiceImpl implements UserDetailsService {
 		bucket.delete();
 		SecurityContextHolder.clearContext();
 	}
+
+	public String makeToken(AuthLoginUser user, SysUserTokenDto sysUserTokenDto) {
+		//正式开发时可以调用该方法实时生成加密的salt,BCrypt.gensalt
+		String salt = "123456ef";
+		Algorithm algorithm = Algorithm.HMAC256(salt);
+		//设置1小时后过期
+		Date date = sysUserTokenDto.getExpirationTime();
+		//创建token
+		String sign = JWT.create()
+				.withSubject(user.getUsername())
+				.withExpiresAt(date)
+				.withIssuedAt(new Date())
+				.sign(algorithm);
+		return sign;
+	}
+
 }

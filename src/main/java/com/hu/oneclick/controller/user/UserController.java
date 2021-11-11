@@ -3,11 +3,14 @@ package com.hu.oneclick.controller.user;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.SysUserToken;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.RegisterUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
+import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.user.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +21,7 @@ import java.util.Map;
  * @author qingyang
  */
 @RestController
+@Api(tags = "用户管理")
 @RequestMapping("user")
 public class UserController {
 
@@ -77,7 +81,7 @@ public class UserController {
     @ApiOperation("激活账户")
     @PostMapping("activateAccount")
     public Resp<String> activateAccount(@RequestBody ActivateAccountDto activateAccountDto) {
-        return userService.activateAccount(activateAccountDto,OneConstant.PASSWORD.ACTIVATION);
+        return userService.activateAccount(activateAccountDto, OneConstant.PASSWORD.ACTIVATION);
     }
 
     @ApiOperation("忘记密码填写邮箱")
@@ -105,6 +109,25 @@ public class UserController {
         return userService.applyForAnExtensionIn(activateAccountDto);
     }
 
+
+    @ApiOperation("管理员生成token")
+    @PostMapping("makeToken")
+    public Resp<String> makeToken(@RequestBody SysUserTokenDto sysUserTokenDto) {
+        return userService.makeToken(sysUserTokenDto);
+    }
+
+    @ApiOperation("获取生成的token列表")
+    @PostMapping("listTokens")
+    public Resp<List<SysUserToken>> listTokens() {
+        return userService.listTokens();
+    }
+
+
+    @ApiOperation("删除token")
+    @PostMapping("deleteToken")
+    public Resp<String> deleteToken(@RequestParam Integer tokenId) {
+        return userService.deleteToken(tokenId);
+    }
 
 
 }

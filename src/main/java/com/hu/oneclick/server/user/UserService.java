@@ -2,11 +2,12 @@ package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.SysUserToken;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
+import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 
-import java.sql.CallableStatement;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ public interface UserService {
 
     /**
      * 用户注册
+     *
      * @param registerUser
      * @return
      */
@@ -25,21 +27,24 @@ public interface UserService {
 
     /**
      * 修改密码
+     *
      * @param args
      * @return
      */
     Resp<String> modifyPassword(Map<String, String> args);
+
     /**
      * 重置密码
+     *
      * @param args
      * @return
      */
     Resp<String> resetPassword(Map<String, String> args);
 
 
-
     /**
      * 查询邮箱是否存在
+     *
      * @param email
      * @return
      */
@@ -47,6 +52,7 @@ public interface UserService {
 
     /**
      * 更新用户信息
+     *
      * @param sysUser
      * @return
      */
@@ -54,12 +60,14 @@ public interface UserService {
 
     /**
      * 查询用户信息
+     *
      * @return
      */
     Resp<SysUser> queryUserInfo();
 
     /**
      * 查询用户权限
+     *
      * @return
      */
     Resp<List<SysProjectPermissionDto>> queryUserPermissions();
@@ -78,6 +86,7 @@ public interface UserService {
 
     /**
      * 删除用户
+     *
      * @param id
      * @return
      */
@@ -85,4 +94,41 @@ public interface UserService {
 
 
     Date getExpireDate(String id);
+
+    /**
+     * 管理员生成token
+     *
+     * @param sysUserTokenDto
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/10
+     */
+    Resp<String> makeToken(SysUserTokenDto sysUserTokenDto);
+
+    /**
+     * 获取生成的token列表
+     *
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/10
+     */
+    Resp<List<SysUserToken>> listTokens();
+
+    /** 删除token
+     * @Param: [tokenId]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/10
+     */
+    Resp<String> deleteToken(Integer tokenId);
+
+    /** 获取用户账号信息
+     * @Param: [emailId]
+     * @return: void
+     * @Author: MaSiyi
+     * @Date: 2021/11/10
+     */
+    Boolean getUserAccountInfo(String emailId);
 }

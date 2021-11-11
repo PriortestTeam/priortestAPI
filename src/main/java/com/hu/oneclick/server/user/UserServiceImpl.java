@@ -4,18 +4,20 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
-import com.hu.oneclick.common.util.NumberUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.dao.MasterIdentifierDao;
 import com.hu.oneclick.dao.SysUserDao;
+import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.MasterIdentifier;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.SysUserToken;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
+import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.service.MailService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -30,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author qingyang
@@ -50,6 +51,8 @@ public class UserServiceImpl implements UserService {
 
     private final MailService mailService;
 
+    private final SysUserTokenDao sysUserTokenDao;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
@@ -60,12 +63,13 @@ public class UserServiceImpl implements UserService {
     private long secondTime;
 
 
-    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService) {
+    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService, SysUserTokenDao sysUserTokenDao) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.mailService = mailService;
+        this.sysUserTokenDao = sysUserTokenDao;
     }
 
     @Override
@@ -96,7 +100,7 @@ public class UserServiceImpl implements UserService {
             }
             user.setIdentifier(masterIdentifier.getId());
             if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
-                mailService.sendSimpleMail(email,"OneClick激活账号","http://localhost:3307/jihuo.html");
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://localhost:3307/jihuo.html");
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
@@ -320,7 +324,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> forgetThePassword(String email) {
-        mailService.sendSimpleMail(email, "OneClick忘记密码","http://localhost:3307/wangji.html");
+        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://localhost:3307/wangji.html");
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -333,7 +337,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> applyForAnExtension(String email) {
-        mailService.sendSimpleMail(email, "OneClick申请延期","http://localhost:3307/yangqi.html");
+        mailService.sendSimpleMail(email, "OneClick申请延期", "http://localhost:3307/yangqi.html");
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -345,5 +349,98 @@ public class UserServiceImpl implements UserService {
     @Override
     public Date getExpireDate(String id) {
         return sysUserDao.getExpireDate(id);
+    }
+
+    /**
+     * 管理员生成token
+     *
+     * @param sysUserTokenDto
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/10
+     */
+    @Override
+    public Resp<String> makeToken(SysUserTokenDto sysUserTokenDto) {
+        AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
+
+        String token = jwtUserServiceImpl.makeToken(userLoginInfo, sysUserTokenDto);
+        SysUserToken sysUserToken = new SysUserToken();
+        sysUserToken.setUser_id(userLoginInfo.getSysUser().getId());
+        sysUserToken.setToken_name(sysUserTokenDto.getTokenName());
+        sysUserToken.setToken_value(token);
+        sysUserToken.setExpiration_time(sysUserTokenDto.getExpirationTime());
+        sysUserToken.setCreate_time(new Date());
+        sysUserToken.setIs_del(false);
+        sysUserToken.setStatus(false);
+        sysUserToken.setApi_times(0L);
+        sysUserToken.setCreate_id(userLoginInfo.getSysUser().getId());
+
+
+        sysUserTokenDao.insert(sysUserToken);
+        return new Resp.Builder<String>().setData(token).ok();
+    }
+
+    /**
+     * 获取生成的token列表
+     *
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/10
+     */
+    @Override
+    public Resp<List<SysUserToken>> listTokens() {
+        AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
+        List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(userLoginInfo.getSysUser().getId());
+        return new Resp.Builder<List<SysUserToken>>().setData(sysUserTokens).ok();
+    }
+
+    /**
+     * 删除token
+     *
+     * @param tokenId
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/10
+     */
+    @Override
+    public Resp<String> deleteToken(Integer tokenId) {
+        int primaryKey = sysUserTokenDao.deleteByPrimaryKey(tokenId);
+        return new Resp.Builder<String>().setData(primaryKey == 1 ? "删除成功" : "删除失败").ok();
+    }
+
+    /**
+     * 获取用户账号信息
+     *
+     * @param emailId
+     * @Param: [emailId]
+     * @return: void
+     * @Author: MaSiyi
+     * @Date: 2021/11/10
+     */
+    @Override
+    public Boolean getUserAccountInfo(String emailId) {
+        SysUser sysUser = sysUserDao.queryByEmail(emailId);
+
+        String identifier = sysUser.getIdentifier();
+
+        //如果为空，则是子账号
+        if (StringUtils.isEmpty(identifier)) {
+            //查询是否有权限
+            SysUser parentUser = sysUserDao.queryById(sysUser.getParentId());
+            if (sysUserTokenDao.selectByUserId(parentUser.getId()).isEmpty()) {
+                return false;
+            }
+        }
+        //主账号
+        List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(sysUser.getId());
+        for (SysUserToken sysUserToken : sysUserTokens) {
+            if (sysUserToken.getApi_times() > 0) {
+                sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
+            }
+        }
+        return !sysUserTokens.isEmpty();
     }
 }

@@ -5,7 +5,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.server.user.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
@@ -37,6 +39,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final RequestMatcher requiresAuthenticationRequestMatcher;
     private List<RequestMatcher> permissiveRequestMatchers;
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserService userService;
 
 
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
@@ -76,6 +81,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
         try {
             String token = getJwtToken(request);
+
+            //第三方调用api
+            String emailId = request.getHeader("emailId");
+            if (StringUtils.isNotBlank(emailId)) {
+                if (!userService.getUserAccountInfo(emailId)) {
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("权限认证失败")));
+                    return;
+                }
+            }
+
             if (StringUtils.isNotBlank(token)) {
                 JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
                 authResult = this.getAuthenticationManager().authenticate(authToken);
