@@ -104,7 +104,7 @@ public interface UserService {
      * @Author: MaSiyi
      * @Date: 2021/11/10
      */
-    Resp<String> makeToken(SysUserTokenDto sysUserTokenDto);
+    Resp<SysUserToken> makeToken(SysUserTokenDto sysUserTokenDto);
 
     /**
      * 获取生成的token列表

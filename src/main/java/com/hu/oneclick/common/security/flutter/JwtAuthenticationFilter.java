@@ -3,8 +3,13 @@ package com.hu.oneclick.common.security.flutter;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.hu.oneclick.common.security.ApiToken;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
+import com.hu.oneclick.common.security.handler.JsonLoginSuccessHandler;
+import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.SysUserToken;
+import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.server.user.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -29,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -42,6 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private SysUserTokenDao sysUserTokenDao;
 
 
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
@@ -66,21 +75,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        Authentication authResult = null;
-        AuthenticationException failed = null;
-		if (!requiresAuthentication(request, response)) {
-			//过滤不用认证的请求
-			if (permissiveRequest(request)) {
-				filterChain.doFilter(request, response);
-				return;
-			}
-			//否则失败
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("请填写账号密码")));
-            return;
-		}
-        try {
-            String token = getJwtToken(request);
+        String authorization = request.getHeader("Authorization");
+        SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authorization);
+
+        if (!org.springframework.util.StringUtils.isEmpty(sysUserToken)) {
+            Authentication authentication = new ApiToken(true);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
             //第三方调用api
             String emailId = request.getHeader("emailId");
@@ -90,26 +90,49 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("权限认证失败")));
                     return;
                 }
-            }
-
-            if (StringUtils.isNotBlank(token)) {
-                JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
-                authResult = this.getAuthenticationManager().authenticate(authToken);
             } else {
-                failed = new InsufficientAuthenticationException("JWT is Empty");
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("必须填写emailid")));
+                return;
             }
-        } catch (JWTDecodeException e) {
-            failed = new InsufficientAuthenticationException("JWT format error", null);
-        } catch (AuthenticationException e) {
-            failed = e;
-        }
-		if (authResult != null) {
-            successfulAuthentication(request, response, filterChain, authResult);
-        } else if (!permissiveRequest(request)) {
-            unsuccessfulAuthentication(request, response, failed);
-            return;
-        }
+        } else {
+            Authentication authResult = null;
+            AuthenticationException failed = null;
+            if (!requiresAuthentication(request, response)) {
+                //过滤不用认证的请求
+                if (permissiveRequest(request)) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+                //否则失败
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("请填写账号密码")));
+                return;
+            }
+            try {
+                String token = getJwtToken(request);
 
+
+
+                if (StringUtils.isNotBlank(token)) {
+                    JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
+                    authResult = this.getAuthenticationManager().authenticate(authToken);
+                } else {
+                    failed = new InsufficientAuthenticationException("JWT is Empty");
+                }
+            } catch (JWTDecodeException e) {
+                failed = new InsufficientAuthenticationException("JWT format error", null);
+            } catch (AuthenticationException e) {
+                failed = e;
+                logger.error(e);
+            }
+            if (authResult != null) {
+                successfulAuthentication(request, response, filterChain, authResult);
+            } else if (!permissiveRequest(request)) {
+                unsuccessfulAuthentication(request, response, failed);
+                return;
+            }
+        }
         filterChain.doFilter(request, response);
     }
 

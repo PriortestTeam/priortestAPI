@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.user;
 
+import cn.hutool.core.util.RandomUtil;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -361,10 +362,11 @@ public class UserServiceImpl implements UserService {
      * @Date: 2021/11/10
      */
     @Override
-    public Resp<String> makeToken(SysUserTokenDto sysUserTokenDto) {
+    public Resp<SysUserToken> makeToken(SysUserTokenDto sysUserTokenDto) {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
 
-        String token = jwtUserServiceImpl.makeToken(userLoginInfo, sysUserTokenDto);
+        String token = RandomUtil.randomString(50);
+
         SysUserToken sysUserToken = new SysUserToken();
         sysUserToken.setUser_id(userLoginInfo.getSysUser().getId());
         sysUserToken.setToken_name(sysUserTokenDto.getTokenName());
@@ -378,7 +380,7 @@ public class UserServiceImpl implements UserService {
 
 
         sysUserTokenDao.insert(sysUserToken);
-        return new Resp.Builder<String>().setData(token).ok();
+        return new Resp.Builder<SysUserToken>().setData(sysUserToken).ok();
     }
 
     /**

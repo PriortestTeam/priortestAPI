@@ -35,6 +35,12 @@
       from sys_user_token sys_user_token
       where sys_user_token.user_id = #{user_id,jdbcType=VARCHAR}
     </select>
+    <select id="selectByTokenValue" resultType="com.hu.oneclick.model.domain.SysUserToken" parameterType="java.lang.String"  >
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_token sys_user_token
+        where sys_user_token.token_value = #{token_value,jdbcType=VARCHAR}
+    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
         from sys_user_token

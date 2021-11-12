@@ -22,4 +22,6 @@ public interface SysUserTokenDao {
     int updateByPrimaryKey(SysUserToken record);
 
     void decreaseApiTimes(Integer id);
+
+    SysUserToken selectByTokenValue(String tokenVale);
 }

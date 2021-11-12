@@ -112,7 +112,7 @@ public class UserController {
 
     @ApiOperation("管理员生成token")
     @PostMapping("makeToken")
-    public Resp<String> makeToken(@RequestBody SysUserTokenDto sysUserTokenDto) {
+    public Resp<SysUserToken> makeToken(@RequestBody SysUserTokenDto sysUserTokenDto) {
         return userService.makeToken(sysUserTokenDto);
     }
 
