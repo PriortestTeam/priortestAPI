@@ -5,8 +5,6 @@ import com.hu.oneclick.model.domain.SysUserBusiness;
 import com.hu.oneclick.server.service.UserBusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 

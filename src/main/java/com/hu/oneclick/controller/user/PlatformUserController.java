@@ -2,14 +2,15 @@ package com.hu.oneclick.controller.user;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.PlatformUserDto;
-import com.hu.oneclick.model.domain.dto.SubUserDto;
-import com.hu.oneclick.server.service.ProjectService;
-import com.hu.oneclick.server.service.SysRoleService;
 import com.hu.oneclick.server.user.PlatformUserService;
-import com.hu.oneclick.server.user.SubUserService;
 import com.hu.oneclick.server.user.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 

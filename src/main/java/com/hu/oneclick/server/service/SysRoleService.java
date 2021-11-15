@@ -12,4 +12,6 @@ public interface SysRoleService {
 
     Resp<List<SysRole>> queryRoles();
 
+    List<SysRole> findUserRole();
+
 }
