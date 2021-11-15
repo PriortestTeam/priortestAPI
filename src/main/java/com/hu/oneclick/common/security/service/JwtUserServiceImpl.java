@@ -8,6 +8,7 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
+import com.hu.oneclick.common.security.ApiToken;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.dao.ProjectDao;
@@ -21,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -70,11 +72,20 @@ public class JwtUserServiceImpl implements UserDetailsService {
     }
 
     public AuthLoginUser getUserLoginInfo() {
-        DecodedJWT token = ((JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication()).getToken();
-        //Get the userId from token claim.
-        String username = token.getSubject();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name;
+        //管理员的token
+        if (org.springframework.util.StringUtils.isEmpty(authentication.getPrincipal())) {
+            //这里的name为tokenname
+            ApiToken apiToken = (ApiToken) authentication;
+            name = apiToken.getTokenName();
+        } else {
+            DecodedJWT token = ((JwtAuthenticationToken) authentication).getToken();
+            //这里的name为username
+            name = token.getSubject();
+        }
         //将salt放到password字段返回
-        RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + username);
+        RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + name);
         AuthLoginUser authLoginUser = JSONObject.parseObject(bucket.get(), AuthLoginUser.class);
         if (authLoginUser == null) {
             throw new InsufficientAuthenticationException("token invalidation");

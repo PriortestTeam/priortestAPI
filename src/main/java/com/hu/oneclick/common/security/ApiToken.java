@@ -16,12 +16,23 @@ import java.util.Collections;
 public class ApiToken implements Authentication {
 
 	private Boolean isAuth;
+	private String tokenName;
+
 
 	public ApiToken() {
 	}
 
 	public ApiToken(Boolean isAuth) {
 		this.isAuth = isAuth;
+	}
+
+	public ApiToken(Boolean isAuth, String tokenName) {
+		this.isAuth = isAuth;
+		this.tokenName = tokenName;
+	}
+
+	public String getTokenName() {
+		return tokenName;
 	}
 
 	@Override

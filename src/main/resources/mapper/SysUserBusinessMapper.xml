@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.SysUserBusinessDao">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysUserBusiness">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="key_id" jdbcType="VARCHAR" property="keyId"/>
+        <result column="value" jdbcType="VARCHAR" property="value"/>
+        <result column="btn_str" jdbcType="VARCHAR" property="btnStr"/>
+        <result column="tenant_id" jdbcType="BIGINT" property="tenantId"/>
+        <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , `type`, key_id, `value`, btn_str, tenant_id, delete_flag
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_business
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="checkIsValueExist" resultType="com.hu.oneclick.model.domain.SysUserBusiness">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_business
+        where type = #{param1} and key_id = #{param2}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from sys_user_business
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserBusiness"
+            useGeneratedKeys="true">
+        insert into sys_user_business (`type`, key_id, `value`,
+                                       btn_str, tenant_id, delete_flag)
+        values (#{type,jdbcType=VARCHAR}, #{keyId,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR},
+                #{btnStr,jdbcType=VARCHAR}, #{tenantId,jdbcType=BIGINT}, #{deleteFlag,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.hu.oneclick.model.domain.SysUserBusiness" useGeneratedKeys="true">
+        insert into sys_user_business
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="type != null">
+                `type`,
+            </if>
+            <if test="keyId != null">
+                key_id,
+            </if>
+            <if test="value != null">
+                `value`,
+            </if>
+            <if test="btnStr != null">
+                btn_str,
+            </if>
+            <if test="tenantId != null">
+                tenant_id,
+            </if>
+            <if test="deleteFlag != null">
+                delete_flag,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="keyId != null">
+                #{keyId,jdbcType=VARCHAR},
+            </if>
+            <if test="value != null">
+                #{value,jdbcType=VARCHAR},
+            </if>
+            <if test="btnStr != null">
+                #{btnStr,jdbcType=VARCHAR},
+            </if>
+            <if test="tenantId != null">
+                #{tenantId,jdbcType=BIGINT},
+            </if>
+            <if test="deleteFlag != null">
+                #{deleteFlag,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysUserBusiness">
+        update sys_user_business
+        <set>
+            <if test="type != null">
+                `type` = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="keyId != null">
+                key_id = #{keyId,jdbcType=VARCHAR},
+            </if>
+            <if test="value != null">
+                `value` = #{value,jdbcType=VARCHAR},
+            </if>
+            <if test="btnStr != null">
+                btn_str = #{btnStr,jdbcType=VARCHAR},
+            </if>
+            <if test="tenantId != null">
+                tenant_id = #{tenantId,jdbcType=BIGINT},
+            </if>
+            <if test="deleteFlag != null">
+                delete_flag = #{deleteFlag,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysUserBusiness">
+        update sys_user_business
+        set `type`      = #{type,jdbcType=VARCHAR},
+            key_id      = #{keyId,jdbcType=VARCHAR},
+            `value`     = #{value,jdbcType=VARCHAR},
+            btn_str     = #{btnStr,jdbcType=VARCHAR},
+            tenant_id   = #{tenantId,jdbcType=BIGINT},
+            delete_flag = #{deleteFlag,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByExampleSelective">
+        update sys_user_business
+        set btn_str = #{btnStr}
+        where `type` = #{type}
+          and key_id = #{keyId}
+
+    </update>
+</mapper>

@@ -1,10 +1,12 @@
 package com.hu.oneclick.server.user;
 
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.dao.MasterIdentifierDao;
 import com.hu.oneclick.dao.SysUserDao;
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author qingyang
@@ -369,14 +372,26 @@ public class UserServiceImpl implements UserService {
 
         SysUserToken sysUserToken = new SysUserToken();
         sysUserToken.setUser_id(userLoginInfo.getSysUser().getId());
-        sysUserToken.setToken_name(sysUserTokenDto.getTokenName());
+        String tokenName = sysUserTokenDto.getTokenName();
+        sysUserToken.setToken_name(tokenName);
         sysUserToken.setToken_value(token);
-        sysUserToken.setExpiration_time(sysUserTokenDto.getExpirationTime());
-        sysUserToken.setCreate_time(new Date());
+        Date expirationTime = sysUserTokenDto.getExpirationTime();
+        Date nowDate = new Date();
+        long datePoor3 = DateUtil.getDatePoor3(nowDate, expirationTime);
+        sysUserToken.setExpiration_time(expirationTime);
+        sysUserToken.setCreate_time(nowDate);
         sysUserToken.setIs_del(false);
         sysUserToken.setStatus(false);
         sysUserToken.setApi_times(0L);
         sysUserToken.setCreate_id(userLoginInfo.getSysUser().getId());
+
+
+        RBucket<Object> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + tokenName);
+        if (bucket.isExists()) {
+            bucket.delete();
+        }
+        bucket.set(JSONObject.toJSONString(userLoginInfo));
+        bucket.expire(datePoor3, TimeUnit.MINUTES);
 
 
         sysUserTokenDao.insert(sysUserToken);

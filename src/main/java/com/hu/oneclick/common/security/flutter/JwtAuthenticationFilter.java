@@ -79,7 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authorization);
 
         if (!org.springframework.util.StringUtils.isEmpty(sysUserToken)) {
-            Authentication authentication = new ApiToken(true);
+            Authentication authentication = new ApiToken(true,sysUserToken.getToken_name());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             //第三方调用api
