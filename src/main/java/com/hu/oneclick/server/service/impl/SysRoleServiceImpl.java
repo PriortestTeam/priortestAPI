@@ -29,6 +29,7 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public List<SysRole> findUserRole() {
-        return null;
+        Resp<List<SysRole>> listResp = queryRoles();
+        return listResp.getData();
     }
 }

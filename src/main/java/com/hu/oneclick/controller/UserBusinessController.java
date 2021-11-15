@@ -1,27 +1,17 @@
 package com.hu.oneclick.controller;
 
 import com.alibaba.fastjson.JSONObject;
-
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.server.service.UserBusinessService;
-import com.hu.oneclick.server.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -32,7 +22,7 @@ import java.util.Map;
 @Api(tags = "用户角色权限模块")
 public class UserBusinessController {
 
-    @Resource
+    @Autowired
     private UserBusinessService userBusinessService;
     /**
      * 校验存在
