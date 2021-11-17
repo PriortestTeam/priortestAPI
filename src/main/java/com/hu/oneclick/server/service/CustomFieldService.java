@@ -1,7 +1,12 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.*;
+import com.hu.oneclick.model.domain.CustomField;
+import com.hu.oneclick.model.domain.FieldDropDown;
+import com.hu.oneclick.model.domain.FieldRadio;
+import com.hu.oneclick.model.domain.FieldRichText;
+import com.hu.oneclick.model.domain.FieldText;
+import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 
 import java.util.List;
 
@@ -55,6 +60,7 @@ public interface CustomFieldService {
 
     Resp<String> deleteCustomDropDown(String customFieldId);
 
-
     //drop down end
+
+    Resp<List< Object>> getAllCustomField(CustomFieldDto customField);
 }
