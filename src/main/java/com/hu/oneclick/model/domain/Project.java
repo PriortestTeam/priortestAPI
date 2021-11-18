@@ -5,6 +5,7 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -17,7 +18,8 @@ import java.util.List;
  * @author qingyang
  * @since 2020-12-07 20:59:50
  */
-public class Project extends BaseEntity implements VerifyParam , Serializable {
+@Data
+public class Project extends BaseEntity implements VerifyParam, Serializable {
     private static final long serialVersionUID = -54866876049537399L;
 
     /**
@@ -78,179 +80,18 @@ public class Project extends BaseEntity implements VerifyParam , Serializable {
 
     List<SysOperationAuthority> sysOperationAuthorities;
 
+    /**
+     * 项目拓展
+     */
+    private String projectExpand;
+
     @Override
     public void verify() throws BizException {
-        if(StringUtils.isEmpty(title)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目名称" + SysConstantEnum.PARAM_EMPTY.getValue());
+        if (StringUtils.isEmpty(title)) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "项目名称" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
     }
 
 
-    public String getUserId() {
-        return userId;
-    }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getReportToName() {
-        return reportToName;
-    }
-
-    public void setReportToName(String reportToName) {
-        this.reportToName = reportToName;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Date getPlanReleaseDate() {
-        return planReleaseDate;
-    }
-
-    public void setPlanReleaseDate(Date planReleaseDate) {
-        this.planReleaseDate = planReleaseDate;
-    }
-
-    public Integer getDelFlag() {
-        return delFlag;
-    }
-
-    public void setDelFlag(Integer delFlag) {
-        this.delFlag = delFlag;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Date getCloseDate() {
-        return closeDate;
-    }
-
-    public void setCloseDate(Date closeDate) {
-        this.closeDate = closeDate;
-    }
-
-    public String getOperationAuthIds() {
-        return operationAuthIds;
-    }
-
-    public void setOperationAuthIds(String operationAuthIds) {
-        this.operationAuthIds = operationAuthIds;
-    }
-
-    public List<SysOperationAuthority> getSysOperationAuthorities() {
-        return sysOperationAuthorities;
-    }
-
-    public void setSysOperationAuthorities(List<SysOperationAuthority> sysOperationAuthorities) {
-        this.sysOperationAuthorities = sysOperationAuthorities;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
-    public Date getCloseDateBegin() {
-        return closeDateBegin;
-    }
-
-    public void setCloseDateBegin(Date closeDateBegin) {
-        this.closeDateBegin = closeDateBegin;
-    }
-
-    public Date getCloseDateEnd() {
-        return closeDateEnd;
-    }
-
-    public void setCloseDateEnd(Date closeDateEnd) {
-        this.closeDateEnd = closeDateEnd;
-    }
-
-    public Date getPlanReleaseDateBegin() {
-        return planReleaseDateBegin;
-    }
-
-    public void setPlanReleaseDateBegin(Date planReleaseDateBegin) {
-        this.planReleaseDateBegin = planReleaseDateBegin;
-    }
-
-    public Date getPlanReleaseDateEnd() {
-        return planReleaseDateEnd;
-    }
-
-    public void setPlanReleaseDateEnd(Date planReleaseDateEnd) {
-        this.planReleaseDateEnd = planReleaseDateEnd;
-    }
-
-    public String getTestFrame() {
-        return testFrame;
-    }
-
-    public void setTestFrame(String testFrame) {
-        this.testFrame = testFrame;
-    }
-
-    public String getProjectCategory() {
-        return projectCategory;
-    }
-
-    public void setProjectCategory(String projectCategory) {
-        this.projectCategory = projectCategory;
-    }
-
-    public String getCloseDesc() {
-        return closeDesc;
-    }
-
-    public void setCloseDesc(String closeDesc) {
-        this.closeDesc = closeDesc;
-    }
-
-    public String getForeignId() {
-        return foreignId;
-    }
-
-    public void setForeignId(String foreignId) {
-        this.foreignId = foreignId;
-    }
 }

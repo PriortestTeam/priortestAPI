@@ -22,6 +22,8 @@
         <result property="projectCategory" column="project_category" jdbcType="VARCHAR"/>
         <result property="closeDesc" column="close_desc" jdbcType="VARCHAR"/>
         <result property="foreignId" column="foreign_id" jdbcType="VARCHAR"/>
+
+        <result property="projectExpand" column="project_expand" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="queryById" resultMap="ProjectMap">
@@ -39,7 +41,8 @@
                test_frame,
                project_category,
                close_desc,
-               foreign_id
+               foreign_id,
+               project_expand
         from project
         where id = #{id}
     </select>
@@ -170,6 +173,9 @@
             <if test="foreignId != null and foreignId != ''">
                 foreign_id,
             </if>
+            <if test="projectExpand != null and projectExpand != ''">
+                project_expand,
+            </if>
             create_time,
             update_time
 
@@ -204,6 +210,9 @@
             </if>
             <if test="foreignId != null and foreignId != ''">
                 #{foreignId},
+            </if>
+            <if test="projectExpand != null and projectExpand != ''">
+                #{projectExpand},
             </if>
             NOW(),
             NOW()

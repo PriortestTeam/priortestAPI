@@ -341,16 +341,13 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                     list.add(data2);
                     break;
                 case FieldConstant.type.MEMO:
-
                     break;
                 case FieldConstant.type.TEXT:
                     Resp<FieldText> fieldTextResp = this.queryFieldTextById(field.getId());
                     FieldText data3 = fieldTextResp.getData();
                     list.add(data3);
-
                     break;
                 default:
-
                     break;
             }
 
