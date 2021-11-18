@@ -2,9 +2,10 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
-import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
+import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.server.service.AttachmentService;
 import com.hu.oneclick.server.service.ProjectService;
+import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleService;
 import io.swagger.annotations.Api;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -38,21 +38,23 @@ public class SignOffController {
     private TestCycleService testCycleService;
     @Autowired
     private AttachmentService attachmentService;
+    @Autowired
+    private SysCustomFieldService sysCustomFieldService;
 
     @GetMapping("/getProjectEnv")
-    public Resp<List<String>> getProjectEnv(@RequestParam String projectId){
-        return testCaseService.getProjectEnv(projectId);
+    public Resp<SysCustomFieldVo> getProjectEnv() {
+        return sysCustomFieldService.getSysCustomField("test_env");
     }
 
 
     @GetMapping("/getProjectVersion")
-    public Resp<List<String>> getProjectVersion(@RequestParam String projectId){
-        return testCaseService.getProjectVersion(projectId);
+    public Resp<SysCustomFieldVo> getProjectVersion() {
+        return sysCustomFieldService.getSysCustomField("version");
     }
 
     @GetMapping("/getTestCycleVersion")
-    public Resp<List<String>> getTestCycleVersion(@RequestParam String projectId,@RequestParam String env,@RequestParam String version){
-        return testCycleService.getTestCycleVersion(projectId,env,version);
+    public Resp<List<String>> getTestCycleVersion(@RequestParam String projectId, @RequestParam String env, @RequestParam String version) {
+        return testCycleService.getTestCycleVersion(projectId, env, version);
     }
 
     @PostMapping("/generate")
@@ -69,7 +71,7 @@ public class SignOffController {
 
     @GetMapping("/getUserAttachmentSign")
     @ApiOperation("访问用户签名文件路径")
-    public Resp<List<String>> getUserAttachmentSign(){
+    public Resp<List<String>> getUserAttachmentSign() {
         return attachmentService.getUserAttachment();
     }
 

@@ -39,5 +39,5 @@ public interface TestCaseService {
 
     Resp<List<String>> getProjectEnv(String projectId);
 
-    Resp<List<String>> getProjectVersion(String projectId);
+//    Resp<List<String>> getProjectVersion(String projectId);
 }
