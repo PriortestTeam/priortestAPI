@@ -17,6 +17,7 @@
             style="width: 400px; border-top: 5px solid #405d9c;padding: 20px; font-weight: bold; background-color: #fff;">
             <p>尊敬的客户：</p>
             <div style="padding-left: 30px;" >
+                <p>收到此邮件是让您了解您的账号执行了重要的操作。假如您没有执行以上导入操作请及时通知管理员</p>
                <p>您好，您在<span th:text="${importDateTime}"></span>导入测试用例记录。</p>
                <div th:each="import : ${importTestCaseDto.success}">
                    <p ><span th:text="${import}"></span></p>
