@@ -17,12 +17,18 @@ public interface CustomFieldService {
 
     //custom begin
 
+    /** 获取用户定义字段
+     * @Param: [customField]
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List<com.hu.oneclick.model.domain.CustomField>>
+     * @Author: MaSiyi
+     * @Date: 2021/11/18
+     */
     Resp<List<CustomField>> queryCustomList(CustomField customField);
 
     //custom end
 
 
-    //radio begin
+    //radio begin 单选框
 
     Resp<FieldRadio> queryFieldRadioById(String customFieldId);
 
@@ -34,7 +40,7 @@ public interface CustomFieldService {
 
     //radio end
 
-    //text begin
+    //text begin 文本框
 
     Resp<FieldText> queryFieldTextById(String customFieldId);
 
@@ -50,7 +56,7 @@ public interface CustomFieldService {
 
     //text end
 
-    //drop down begin
+    //drop down begin 下拉框
 
     Resp<FieldDropDown> queryFieldDropDownById(String customFieldId);
 
@@ -62,5 +68,11 @@ public interface CustomFieldService {
 
     //drop down end
 
+    /** 新建项目时获取所有用户字段
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/17
+     */
     Resp<List< Object>> getAllCustomField(CustomFieldDto customField);
 }

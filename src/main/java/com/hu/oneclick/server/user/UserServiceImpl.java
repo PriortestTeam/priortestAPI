@@ -334,9 +334,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto) {
-
         return activateAccount(activateAccountDto, OneConstant.PASSWORD.FORGETPASSWORD);
-
     }
 
     @Override
