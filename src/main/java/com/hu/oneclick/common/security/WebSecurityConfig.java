@@ -68,6 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/register").anonymous()
                 .antMatchers("/user/sendEmailCode").anonymous()
                 .antMatchers("/user/sendEmailRegisterCode").anonymous()
+                .antMatchers("/user/activateAccount").anonymous()
                 .antMatchers("/swagger-ui.html").anonymous()
                 .antMatchers("/v2/**").anonymous()
                 .antMatchers("/swagger-resources/**").anonymous()
@@ -91,7 +92,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //设置无权限接口
                 .permissiveRequestUrls("/login","/user/register","/user/sendEmailCode",
                         "/user/sendEmailRegisterCode","/swagger-ui.html","/swagger-resources/**",
-                        "/v2/**","/webjars/springfox-swagger-ui/**","/webjars/springfox-swagger-ui")
+                        "/v2/**","/webjars/springfox-swagger-ui/**","/webjars/springfox-swagger-ui"
+                ,"/user/activateAccount")
                 .and()
                 .logout()
                 .logoutUrl("/logout")
