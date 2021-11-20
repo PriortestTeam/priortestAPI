@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
             }
             user.setIdentifier(masterIdentifier.getId());
             if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?eamil"+email);
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?eamil="+email);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
