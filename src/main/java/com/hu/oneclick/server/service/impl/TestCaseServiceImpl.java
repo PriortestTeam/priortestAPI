@@ -594,9 +594,9 @@ public class TestCaseServiceImpl implements TestCaseService {
                                         JSONObject cellIndexObject,
                                         Integer ifIgnorFirstRow) throws IOException {
         JSONArray rowValueArray = new JSONArray();
+        InputStreamReader is = new InputStreamReader(inputStream, "GBK");
         if(suffix.equals("csv")){
             //编码格式要是用GBK
-            InputStreamReader is = new InputStreamReader(inputStream, "GBK");
             BufferedReader reader=new BufferedReader(is);
             CSVParser parser = CSVFormat.DEFAULT.parse(reader);
             int rownum = 0;
