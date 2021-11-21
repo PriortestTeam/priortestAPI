@@ -129,8 +129,7 @@ public class TestCaseServiceImpl implements TestCaseService {
             //验证参数
             testCase.verify();
             //验证是否存在
-            verifyIsExist(testCase.getTitle(),testCase.getProjectId(),null);
-            verifyIsExistExternaID(testCase.getExternaId(), testCase.getFeature(),null);
+            verifyIsExist(testCase.getFeature(),testCase.getProjectId(),testCase.getExternaId(),null);
             testCase.setUserId(jwtUserService.getMasterId());
             testCase.setAuthorName(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
             //判断创建时间是否传入，如未传入自动生成
@@ -152,8 +151,7 @@ public class TestCaseServiceImpl implements TestCaseService {
     public Resp<String> update(TestCase testCase) {
         try {
             //验证是否存在
-            verifyIsExist(testCase.getTitle(),testCase.getProjectId(),testCase.getId());
-            verifyIsExistExternaID(testCase.getExternaId(), testCase.getFeature(),testCase.getId());
+            verifyIsExist(testCase.getFeature(),testCase.getProjectId(),testCase.getExternaId(),testCase.getId());
             testCase.setUserId(jwtUserService.getMasterId());
             //新增修改字段记录
             modifyRecord(testCase);
@@ -255,8 +253,18 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<ImportTestCaseDto> importTestCase(File multipartFile, String param) {
+    public void importTestCase(File multipartFile, String param) {
+
         FileInputStream fileInputStream = null;
+        Map<SysConstantEnum, Map<String, String>> errorTipsMap = new HashMap<>();
+        //解析excel文件
+        JSONObject jsonObject = JSONObject.parseObject(param);
+        //判断是否发送email
+        Boolean ifSendEmail =jsonObject.getBooleanValue("ifSendEmail");
+        int successCount = 0;
+        int errorCount = 0;
+        int updateCount = 0;
+        ImportTestCaseDto importTestCaseDto = null;
         try {
             //1.取出文件并验证文件；
             //原始文件名称
@@ -273,8 +281,7 @@ public class TestCaseServiceImpl implements TestCaseService {
             if (!allowSuffix.contains(suffix.toLowerCase())) {
                 throw new BizException(SysConstantEnum.UPLOAD_FILE_FAILED.getCode(),"非法的文件，不允许的文件类型:"+suffix);
             }
-            //解析excel文件
-            JSONObject jsonObject = JSONObject.parseObject(param);
+
             //是否忽略第一行表头 1是 0否
             Integer ifIgnorFirstRow = jsonObject.getInteger("ifIgnorFirstRow");
             //构建导入测试模板获取列对应的cell下标
@@ -294,10 +301,7 @@ public class TestCaseServiceImpl implements TestCaseService {
             calendar.setTime(new Date());
             calendar.set(Calendar.MILLISECOND, 0);
             Date now = calendar.getTime();
-            Map<SysConstantEnum, Map<String, String>> errorTipsMap = new HashMap<>();
-            int successCount = 0;
-            int errorCount = 0;
-            int updateCount = 0;
+
             //判断文件后缀，根据不同后缀操作数据
             fileInputStream = new FileInputStream(multipartFile);
             JSONArray rowValueArray = buildRowValueArray(suffix,fileInputStream,
@@ -373,7 +377,7 @@ public class TestCaseServiceImpl implements TestCaseService {
                         ,errorTipsMap,"env",true);
                 //Version
                 setSelectValue(rowValue.getJSONObject("versionCol"),versionsMergeValues,testCase
-                        ,errorTipsMap,"version",true);
+                        ,errorTipsMap,"version",false);
                 //CaseCategory  测试分类
                 setSelectValue(rowValue.getJSONObject("caseCategoryCol"),testCategoryMergeValues,testCase
                         ,errorTipsMap,"caseCategory",true);
@@ -382,27 +386,29 @@ public class TestCaseServiceImpl implements TestCaseService {
                         ,errorTipsMap,"testType",true);
                 //Automation 测试方法
                 setSelectValue(rowValue.getJSONObject("automationCol"),testMethodMergeValues,testCase
-                        ,errorTipsMap,"testMethod",true);
+                        ,errorTipsMap,"testMethod",false);
                 ///判断是否新增或者更新，根据故事ID+ExternalID查询测试用例，如果存在则进行更新；
 
                 //判断ExternalI是否存在，进行判断下一步是否更新
                 if (jsonObject.containsKey("ifUpdateCase")) {
                     JSONObject externalIdCol = rowValue.getJSONObject("externalIdCol");
-                    String externalId = externalIdCol.getString("value");
-                    TestCase queryFeaturExternalIDTestCase = new TestCase();
-                    queryFeaturExternalIDTestCase.setFeature(testCase.getFeature());
-                    queryFeaturExternalIDTestCase.setExternaId(externalId);
-                    queryFeaturExternalIDTestCase.setProjectId(projectId);
-                    queryFeaturExternalIDTestCase.setId(null);
-                    TestCase featurExternalIDTestCase = this.testCaseDao.selectOne(queryFeaturExternalIDTestCase);
-                    if(null!=featurExternalIDTestCase){
-                        Boolean ifUpdateCase =jsonObject.getBooleanValue("ifUpdateCase");
-                        if(ifUpdateCase){           //进行更新
-                            //将已存在ID打上标识，后续判断新增或插入
-                            testCase.setId("UPDATE"+featurExternalIDTestCase.getId());
-                        }else{  //如果存在，并且更新标识为否，提示用户此故事下，已经存在此ExternalID，无法进行插入
-                            buildErrorTips(errorTipsMap, SysConstantEnum.IMPORT_TESTCASE_ERROR_EXIST_FEATURE_EXTERNALID
-                                    ,externalIdCol, null);
+                    if (null!=externalIdCol) {
+                        String externalId = externalIdCol.getString("value");
+                        TestCase queryFeaturExternalIDTestCase = new TestCase();
+                        queryFeaturExternalIDTestCase.setFeature(testCase.getFeature());
+                        queryFeaturExternalIDTestCase.setExternaId(externalId);
+                        queryFeaturExternalIDTestCase.setProjectId(projectId);
+                        queryFeaturExternalIDTestCase.setId(null);
+                        TestCase featurExternalIDTestCase = this.testCaseDao.selectOne(queryFeaturExternalIDTestCase);
+                        if(null!=featurExternalIDTestCase){
+                            Boolean ifUpdateCase =jsonObject.getBooleanValue("ifUpdateCase");
+                            if(ifUpdateCase){           //进行更新
+                                //将已存在ID打上标识，后续判断新增或插入
+                                testCase.setId("UPDATE"+featurExternalIDTestCase.getId());
+                            }else{  //如果存在，并且更新标识为否，提示用户此故事下，已经存在此ExternalID，无法进行插入
+                                buildErrorTips(errorTipsMap, SysConstantEnum.IMPORT_TESTCASE_ERROR_EXIST_FEATURE_EXTERNALID
+                                        ,externalIdCol, null);
+                            }
                         }
                     }
                 }
@@ -411,15 +417,15 @@ public class TestCaseServiceImpl implements TestCaseService {
                 List<TestCaseStep> testCaseSteps = new ArrayList<>();
                 if (cellIndexObject.containsKey("stepCol")) {
                     String setpValue = getCellValue( errorTipsMap,
-                            rowValue.getJSONObject("stepCol"), true);
+                            rowValue.getJSONObject("stepCol"), false);
 
                     //测试数据
                     String cellTestDataValue = getCellValue(errorTipsMap,
-                            rowValue.getJSONObject("stepTestDataCol"),  true);
+                            rowValue.getJSONObject("stepTestDataCol"),  false);
 
                     //Expected Result 预期结果
                     String cellExpectedResultValue = getCellValue(errorTipsMap,
-                            rowValue.getJSONObject("stepExpectResultCol"), true);
+                            rowValue.getJSONObject("stepExpectResultCol"), false);
                     Boolean ifSplitTestStep = jsonObject.getBoolean("ifSplitTestStep");
                     String splitTestStep = jsonObject.getString("splitTestStep");
                     //是否分隔
@@ -458,10 +464,10 @@ public class TestCaseServiceImpl implements TestCaseService {
                         testCaseStep.setCreateTime(now);
                         testCaseSteps.add(testCaseStep);
                     }
-                }else{
+                }/*else{
                     buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
                             ,rowValue.getJSONObject("stepCol"),null);
-                }
+                }*/
                 testCases.add(testCase);
                 testCaseStepsMap.put(testCase.getId().replace("UPDATE",""), testCaseSteps);
             }
@@ -494,8 +500,6 @@ public class TestCaseServiceImpl implements TestCaseService {
                             testCaseStep.setTestCaseId(testCase.getId());
                             testCaseStepDao.insert(testCaseStep);
                         }
-                    }else{
-                        throw new BizException(insertOrUpdate.getCode(),insertOrUpdate.getMsg());
                     }
                 }
                 //判断是否创建视图
@@ -506,22 +510,14 @@ public class TestCaseServiceImpl implements TestCaseService {
             }else{
                 errorCount=rowValueArray.size();
             }
-            //判断是否发送email
-            Boolean ifSendEmail =jsonObject.getBooleanValue("ifSendEmail");
-            ImportTestCaseDto importTestCaseDto = buildImportTestCaseDto(errorTipsMap, successCount, updateCount, errorCount);
-            if (ifSendEmail) {
-                sendEmailImportTestCase(importTestCaseDto);
-            }
-
-            return new Resp.Builder<ImportTestCaseDto>().setData(importTestCaseDto).ok();
         }catch (Exception e){
             e.printStackTrace();
             logger.error("class: TestCaseServiceImpl#importTestCase,error []" + e.getMessage());
+            buildErrorTips(errorTipsMap, SysConstantEnum.OTHER
+                    ,SysConstantEnum.SYSTEM_BUSY.getCode(),e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<ImportTestCaseDto>().buildResult(SysConstantEnum.SYSTEM_BUSY.getCode(),e.getMessage());
         }finally {
             //刪除临时文件
-
             try{
                 if(fileInputStream!=null){
                     fileInputStream.close();
@@ -532,7 +528,10 @@ public class TestCaseServiceImpl implements TestCaseService {
             }catch (Exception e){
                 e.printStackTrace();
             }
-
+            importTestCaseDto=buildImportTestCaseDto(errorTipsMap, successCount, updateCount, errorCount);
+            if (ifSendEmail) {
+                sendEmailImportTestCase(importTestCaseDto);
+            }
         }
     }
 
@@ -645,11 +644,11 @@ public class TestCaseServiceImpl implements TestCaseService {
 
                     Integer colIndex = cellIndexObject.getInteger(colKey);
                     Cell cell = row.getCell(colIndex);
-                    if(null==cell){
-                        continue;
+                    String stringCellValue = "";
+                    if(null!=cell){
+                        cell.setCellType(CellType.STRING);
+                        stringCellValue = cell.getStringCellValue();
                     }
-                    cell.setCellType(CellType.STRING);
-                    String stringCellValue = cell.getStringCellValue();
                     colValue.put("value", stringCellValue);
                     colValue.put("rownum", rownum);
                     colValue.put("colIndex",colIndex);
@@ -690,6 +689,8 @@ public class TestCaseServiceImpl implements TestCaseService {
                 if(sysConstantEnum.equals(SysConstantEnum.IMPORT_TESTCASE_ERROR_NOTSELECT)){//如果是下拉菜单，取出key进行进行分割
                     String[] split = s.split("-");
                     strings.add("列" + split[0] + "的值应该【" + (split.length>=2? split[1]:"")+ "】,错误行:"+stringStringMap.get(s));
+                }else if(sysConstantEnum.equals(SysConstantEnum.OTHER)){
+                    strings.add(stringStringMap.get(s));
                 }else{
                     strings.add("列"+s+",错误行:"+stringStringMap.get(s));
                 }
@@ -767,29 +768,27 @@ public class TestCaseServiceImpl implements TestCaseService {
     private void setSelectValue(JSONObject colValue,
                                 List<String> allow,TestCase testCase,
                       Map<SysConstantEnum, Map<String, String>> errorTipsMap
-                        ,String field,boolean required){
-        try {
-            String value = null;
-            if (null!=colValue && StringUtils.isNotBlank(value = colValue.getString("value"))) {
-                if (StringUtils.isNotBlank(value)) {
-                    if (allow.contains(value)) {
-                        Class<?> fieldType = testCase.getClass().getDeclaredField(field).getType();
-                        testCase.getClass().getMethod("set" + field.substring(0, 1).toUpperCase() + field.substring(1),
-                                fieldType).invoke(testCase,value);
-                    }else {
-                        buildErrorTips(errorTipsMap, SysConstantEnum.IMPORT_TESTCASE_ERROR_NOTSELECT
-                                , colValue, String.join(",",allow));
-                    }
-                }
-            }else{
-                if(required){
-                    buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
-                            ,colValue,null);
+                        ,String field,boolean required) throws Exception {
+
+        String value = null;
+        if (null!=colValue && StringUtils.isNotBlank(value = colValue.getString("value"))) {
+            if (StringUtils.isNotBlank(value)) {
+                if (allow.contains(value)) {
+                    Class<?> fieldType = testCase.getClass().getDeclaredField(field).getType();
+                    testCase.getClass().getMethod("set" + field.substring(0, 1).toUpperCase() + field.substring(1),
+                            fieldType).invoke(testCase,value);
+                }else {
+                    buildErrorTips(errorTipsMap, SysConstantEnum.IMPORT_TESTCASE_ERROR_NOTSELECT
+                            , colValue, String.join(",",allow));
                 }
             }
-        } catch (Exception e) {
-            throw new BizException(e.getMessage());
+        }else{
+            if(required){
+                buildErrorTips(errorTipsMap,SysConstantEnum.IMPORT_TESTCASE_ERROR_REQUIRED
+                        ,colValue,null);
+            }
         }
+
     }
 
 
@@ -823,6 +822,25 @@ public class TestCaseServiceImpl implements TestCaseService {
         } else {
             errorMaps.put(col, errorMaps.get(col)+"," + rownum);
         }
+    }
+
+    /**
+     * 构建其他类型的错误
+     * @param tipsMap 原map
+     * @param sysConstantEnum 错误类型
+     * @param key 错误key
+     * @param value  错误描述
+     */
+    private void buildErrorTips(Map<SysConstantEnum, Map<String,String>> tipsMap,
+                                SysConstantEnum sysConstantEnum,
+                                String key, String value) {
+        Map<String,String> errorMaps = tipsMap.get(sysConstantEnum);
+        //判断此错误类型是否已经添加
+        if (null==errorMaps) {
+            tipsMap.put(sysConstantEnum, new HashMap<>());
+            errorMaps = tipsMap.get(sysConstantEnum);
+        }
+        errorMaps.put(key,value);
     }
 
     /**
@@ -873,22 +891,22 @@ public class TestCaseServiceImpl implements TestCaseService {
 
 
     /**
-     *  查重
+     *  查重,根据projectId+feature+externaId 是否存在 如存在则不能添加
      */
-    private void verifyIsExist(String title,String projectId,String testCaseId){
-        if (StringUtils.isEmpty(title)){
-            return;
-        }
-        TestCase testCase = new TestCase();
-        testCase.setTitle(title);
-        testCase.setProjectId(projectId);
-        testCase.setId(null);
-        TestCase testCaseOne = testCaseDao.selectOne(testCase);
-        //如果testCaseId不为空则判断查询出ID是否与传入ID一致说明不重复
-        if(testCaseId!=null&&testCaseOne!=null&&!testCaseOne.getId().equals(testCaseId)){
-            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),testCase.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
-        }else if (testCaseId==null&&testCaseOne!= null){
-            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),testCase.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
+    private void verifyIsExist(String feature,String projectId,String externaId,String testCaseId){
+        if (StringUtils.isNotBlank(externaId)) {
+            TestCase testCase = new TestCase();
+            testCase.setFeature(feature);
+            testCase.setExternaId(externaId);
+            testCase.setProjectId(projectId);
+            testCase.setId(null);
+            TestCase testCaseOne = testCaseDao.selectOne(testCase);
+            //如果testCaseId不为空则判断查询出ID是否与传入ID一致说明不重复
+            if(testCaseId!=null&&testCaseOne!=null&&!testCaseOne.getId().equals(testCaseId)){
+                throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),testCase.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
+            }else if (testCaseId==null&&testCaseOne!= null){
+                throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),testCase.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
+            }
         }
     }
 

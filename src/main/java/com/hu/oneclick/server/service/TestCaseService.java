@@ -36,5 +36,5 @@ public interface TestCaseService {
      * @param param
      * @return
      */
-    Resp<ImportTestCaseDto> importTestCase(File file, String param);
+    void importTestCase(File file, String param);
 }

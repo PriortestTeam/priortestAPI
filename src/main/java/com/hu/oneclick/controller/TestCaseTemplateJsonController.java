@@ -76,7 +76,9 @@ public class TestCaseTemplateJsonController {
      */
     @PostMapping("importTestCase")
     public  Resp<Object> importTestCase(@RequestParam("file") MultipartFile file, @RequestParam("param") String param, HttpServletRequest request) throws IOException {
-
+        if (file.isEmpty()) {
+            return new Resp.Builder<Object>().buildResult("文件不存在");
+        }
         File path = new File(request.getSession().getServletContext().getRealPath("/") + "/upload/");
         String originalFilename = file.getOriginalFilename();
         if (!path.exists()) {

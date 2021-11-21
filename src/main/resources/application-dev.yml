@@ -32,7 +32,6 @@ spring:
     time-zone: GMT+8 #设置时区
     date-format: yyyy-MM-dd HH:mm:ss #设置返回格式
 
-
   redis:
 #    host: 192.168.184.10
     host: localhost

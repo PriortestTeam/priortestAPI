@@ -56,6 +56,7 @@ public enum SysConstantEnum {
     IMPORT_TESTCASE_ERROR_REQUIRED("REQUIRED","必填项未填写，导入数据必须填写此项"),
     IMPORT_TESTCASE_ERROR_NOFEATURE("NOFEATURE","未找到存在项目中Feature"),
     IMPORT_TESTCASE_ERROR_EXIST_FEATURE_EXTERNALID("EXIST_FEATURE_EXTERNALID","此Feature下已存在ExternaID无法进行新增"),
+    OTHER("OTHER","其他错误"),
     ;
 
 
