@@ -131,4 +131,6 @@ public interface UserService {
      * @Date: 2021/11/10
      */
     Boolean getUserAccountInfo(String emailId);
+
+    Resp<String> verifyLinkString(String linkStr);
 }

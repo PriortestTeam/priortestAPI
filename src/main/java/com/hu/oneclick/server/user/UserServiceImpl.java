@@ -104,7 +104,10 @@ public class UserServiceImpl implements UserService {
             }
             user.setIdentifier(masterIdentifier.getId());
             if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?eamil="+email);
+                String linkStr = RandomUtil.randomString(80);
+                redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?eamil=" + email +
+                        "&linkStr=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
@@ -332,7 +335,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> forgetThePassword(String email) {
-        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://localhost:3307/wangji.html");
+        String linkStr = RandomUtil.randomString(80);
+        redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
+        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/forget?eamil=" + email + "&linkStr=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -343,7 +348,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> applyForAnExtension(String email) {
-        mailService.sendSimpleMail(email, "OneClick申请延期", "http://localhost:3307/yangqi.html");
+        String linkStr = RandomUtil.randomString(80);
+        redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
+        mailService.sendSimpleMail(email, "OneClick申请延期", "http://124.71.142.223/#/toLond?eamil=" + email + "&linkStr=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -463,5 +470,16 @@ public class UserServiceImpl implements UserService {
             }
         }
         return !sysUserTokens.isEmpty();
+    }
+
+    @Override
+    public Resp<String> verifyLinkString(String linkStr) {
+        RBucket<String> bucket = redisClient.getBucket(linkStr);
+        String redisCode = bucket.get();
+        if (redisCode == null || "".equals(redisCode) || !"true".equals(redisCode)) {
+            throw new BizException(SysConstantEnum.LINKSTRERROR.getCode(), SysConstantEnum.LINKSTRERROR.getValue());
+        }
+        bucket.delete();
+        return new Resp.Builder<String>().ok();
     }
 }

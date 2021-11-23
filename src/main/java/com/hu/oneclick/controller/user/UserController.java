@@ -134,4 +134,12 @@ public class UserController {
     }
 
 
+    @ApiOperation("验证链接字符串")
+    @PostMapping("verifyLinkString")
+    public Resp<String> verifyLinkString(@RequestParam String linkStr) {
+        return userService.verifyLinkString(linkStr);
+    }
+
+
+
 }

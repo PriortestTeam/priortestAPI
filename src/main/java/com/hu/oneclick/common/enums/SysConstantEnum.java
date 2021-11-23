@@ -43,6 +43,8 @@ public enum SysConstantEnum {
     HAS_BEEN_ACTIVATED_ONCE(SysConstantEnum.NUMBER + "022","激活失败"),
     UPDATE_FILE_OUT_COUNT(SysConstantEnum.NUMBER + "023", "上传文件数量过多"),
     VIEW_ONN_FILTER_IS_REDUNDANT(SysConstantEnum.NUMBER + "030","过滤项不可重复。"),
+    LINKSTRERROR(SysConstantEnum.NUMBER + "031","链接错误。"),
+
 
     //成功
     SUCCESS(SysConstantEnum.NUMBER,"调用成功。"),
