@@ -134,11 +134,4 @@ public class UserController {
     }
 
 
-    @ApiOperation("删除tokentest")
-    @PostMapping("deleteTokentest")
-    public Resp<String> deleteTokentest(@RequestParam Integer tokenId) {
-        return userService.deleteToken(tokenId);
-    }
-
-
 }

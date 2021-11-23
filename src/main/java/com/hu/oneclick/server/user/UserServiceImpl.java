@@ -283,9 +283,13 @@ public class UserServiceImpl implements UserService {
         if (sysUser == null) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
         }
-        if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.REPASSWORD_ERROR.getCode(), SysConstantEnum.REPASSWORD_ERROR.getValue());
+        //申请延期不提示再次输入密码
+        if (!activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
+            if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.REPASSWORD_ERROR.getCode(), SysConstantEnum.REPASSWORD_ERROR.getValue());
+            }
         }
+
         PasswordCheckerUtil passwordChecker = new PasswordCheckerUtil();
         if (!passwordChecker.check(activateAccountDto.getPassword())) {
             throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
