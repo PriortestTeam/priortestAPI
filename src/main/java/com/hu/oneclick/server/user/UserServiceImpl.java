@@ -337,7 +337,7 @@ public class UserServiceImpl implements UserService {
     public Resp<String> forgetThePassword(String email) {
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/forget?eamil=" + email + "&params=" + linkStr);
+        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?eamil=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -350,7 +350,7 @@ public class UserServiceImpl implements UserService {
     public Resp<String> applyForAnExtension(String email) {
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick申请延期", "http://124.71.142.223/#/toLond?eamil=" + email + "&params=" + linkStr);
+        mailService.sendSimpleMail(email, "OneClick申请延期", "http://124.71.142.223/#/deferred?eamil=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
