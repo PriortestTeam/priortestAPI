@@ -41,10 +41,15 @@ public class PasswordCheckerUtil {
             return false;
         }
 
+        //包含大写
         boolean containUpperCase = false;
+        //包含小写
         boolean containLowerCase = false;
+        //包含字母
         boolean containLetter = false;
+        //包含数字
         boolean containDigit = false;
+        //包含特殊
         boolean containSpecial = true;
 
         for (char ch : password.toCharArray()) {
@@ -81,41 +86,42 @@ public class PasswordCheckerUtil {
         }
         return true;
     }
+
     Set<Character> defaultSpecialCharSet() {
         Set<Character> specialChars = new LinkedHashSet<>();
         // 键盘上能找到的符号
-//            specialChars.add(Character.valueOf('~'));
-//            specialChars.add(Character.valueOf('`'));
-//            specialChars.add(Character.valueOf('!'));
-//            specialChars.add(Character.valueOf('@'));
-//            specialChars.add(Character.valueOf('#'));
-//            specialChars.add(Character.valueOf('$'));
-//            specialChars.add(Character.valueOf('%'));
-//            specialChars.add(Character.valueOf('^'));
-//            specialChars.add(Character.valueOf('&'));
-//            specialChars.add(Character.valueOf('*'));
-//            specialChars.add(Character.valueOf('('));
-//            specialChars.add(Character.valueOf(')'));
-//            specialChars.add('-');
-//            specialChars.add('_');
-//            specialChars.add(Character.valueOf('+'));
-//            specialChars.add(Character.valueOf('='));
-//            specialChars.add(Character.valueOf('{'));
-//            specialChars.add(Character.valueOf('['));
-//            specialChars.add(Character.valueOf('}'));
-//            specialChars.add(Character.valueOf(']'));
-//            specialChars.add(Character.valueOf('|'));
-//            specialChars.add(Character.valueOf('\\'));
-//            specialChars.add(Character.valueOf(':'));
-//            specialChars.add(Character.valueOf(';'));
-//            specialChars.add(Character.valueOf('"'));
-//            specialChars.add(Character.valueOf('\''));
-//            specialChars.add(Character.valueOf('<'));
-//            specialChars.add(Character.valueOf(','));
-//            specialChars.add(Character.valueOf('>'));
-//            specialChars.add(Character.valueOf('.'));
-//            specialChars.add(Character.valueOf('?'));
-//            specialChars.add(Character.valueOf('/'));
+        specialChars.add(Character.valueOf('~'));
+        specialChars.add(Character.valueOf('`'));
+        specialChars.add(Character.valueOf('!'));
+        specialChars.add(Character.valueOf('@'));
+        specialChars.add(Character.valueOf('#'));
+        specialChars.add(Character.valueOf('$'));
+        specialChars.add(Character.valueOf('%'));
+        specialChars.add(Character.valueOf('^'));
+        specialChars.add(Character.valueOf('&'));
+        specialChars.add(Character.valueOf('*'));
+        specialChars.add(Character.valueOf('('));
+        specialChars.add(Character.valueOf(')'));
+        specialChars.add('-');
+        specialChars.add('_');
+        specialChars.add(Character.valueOf('+'));
+        specialChars.add(Character.valueOf('='));
+        specialChars.add(Character.valueOf('{'));
+        specialChars.add(Character.valueOf('['));
+        specialChars.add(Character.valueOf('}'));
+        specialChars.add(Character.valueOf(']'));
+        specialChars.add(Character.valueOf('|'));
+        specialChars.add(Character.valueOf('\\'));
+        specialChars.add(Character.valueOf(':'));
+        specialChars.add(Character.valueOf(';'));
+        specialChars.add(Character.valueOf('"'));
+        specialChars.add(Character.valueOf('\''));
+        specialChars.add(Character.valueOf('<'));
+        specialChars.add(Character.valueOf(','));
+        specialChars.add(Character.valueOf('>'));
+        specialChars.add(Character.valueOf('.'));
+        specialChars.add(Character.valueOf('?'));
+        specialChars.add(Character.valueOf('/'));
         return specialChars;
     }
 }
