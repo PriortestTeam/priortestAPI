@@ -50,7 +50,7 @@ public class PasswordCheckerUtil {
         //包含数字
         boolean containDigit = false;
         //包含特殊
-        boolean containSpecial = true;
+        boolean containSpecial = false;
 
         for (char ch : password.toCharArray()) {
             if (Character.isUpperCase(ch)) {
@@ -62,7 +62,7 @@ public class PasswordCheckerUtil {
             } else if (Character.isDigit(ch)) {
                 containDigit = true;
             } else if (this.specialCharSet.contains(ch)) {
-                containSpecial = false;
+                containSpecial = true;
             } else {
                 // 非法字符
                 return false;
