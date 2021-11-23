@@ -11,6 +11,27 @@ public class ExecuteTestCaseDto {
 
 
     private Integer stepStatus;
+    private Integer step;
+
+    private Integer RunDuration;
+
+    public Integer getRunDuration() {
+        return RunDuration;
+    }
+
+    public void setRunDuration(Integer runDuration) {
+        RunDuration = runDuration;
+    }
+
+    public Integer getStep() {
+        return step;
+    }
+
+    public void setStep(Integer step) {
+        this.step = step;
+    }
+
+
 
     public String getTestCaseId() {
         return testCaseId;
@@ -43,4 +64,5 @@ public class ExecuteTestCaseDto {
     public void setStepStatus(Integer stepStatus) {
         this.stepStatus = stepStatus;
     }
+
 }

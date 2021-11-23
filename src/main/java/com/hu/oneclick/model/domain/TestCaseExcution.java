@@ -17,9 +17,39 @@ public class TestCaseExcution extends BaseEntity implements Serializable {
 
     private Integer stepStatus;
 
+    private Integer runStatus;// 与testCycle中的runStatus一个意思
+
     private Date updateTime;
 
     private Integer runCount;
+
+    private String runner;
+
+    private String issueId;
+
+    public Integer getRunStatus() {
+        return runStatus;
+    }
+
+    public void setRunStatus(Integer runStatus) {
+        this.runStatus = runStatus;
+    }
+
+    public String getRunner() {
+        return runner;
+    }
+
+    public void setRunner(String runner) {
+        this.runner = runner;
+    }
+
+    public String getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(String issueId) {
+        this.issueId = issueId;
+    }
 
     private String userId;
 

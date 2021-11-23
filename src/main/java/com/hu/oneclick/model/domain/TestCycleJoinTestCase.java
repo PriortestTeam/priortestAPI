@@ -2,6 +2,7 @@ package com.hu.oneclick.model.domain;
 
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.Date;
 
 public class TestCycleJoinTestCase implements Serializable {
 
@@ -16,6 +17,15 @@ public class TestCycleJoinTestCase implements Serializable {
     private Integer runDuration;
     private Integer runCount;
     private String userId;
+    private Date updateTime;
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public Integer getRunStatus() {
         return runStatus;
