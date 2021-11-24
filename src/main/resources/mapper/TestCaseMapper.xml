@@ -228,6 +228,14 @@
             <if test="status != null and status != ''">
                 status = #{status},
             </if>
+            <!-- 新增 WJK BEGIN-->
+            <if test="runStatus != null and runStatus != ''">
+                run_status = #{runStatus},
+            </if>
+            <if test="stepStatus != null and stepStatus != ''">
+                step_status = #{stepStatus},
+            </if>
+            <!-- 新增 WJK END-->
             update_time=NOW()
         </set>
         where id = #{id}

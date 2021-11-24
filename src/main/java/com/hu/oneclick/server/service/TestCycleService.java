@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
@@ -36,6 +37,13 @@ public interface TestCycleService {
 
     Resp<String> executeTestCase(ExecuteTestCaseDto executeTestCaseDto);
 
+    Resp<Map<String, Object>> runTestCycleTc(ExecuteTestCaseDto executeTestCaseDto);
+
+    Resp<Map<String, Object>> excute(ExecuteTestCaseDto executeTestCaseDto);
+
+    Resp<Map<String, Object>> queryIssueByIdOrName(Issue issue);
+
+    Resp<String> mergeIssue(Issue issue);
     Resp<List<String>> getTestCycleVersion(String projectId, String env, String version);
 
     List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto);

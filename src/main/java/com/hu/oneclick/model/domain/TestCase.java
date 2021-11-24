@@ -84,6 +84,24 @@ public class TestCase extends BaseEntity implements Serializable, VerifyParam {
     private String testMethod;
 
     private String foreignId;
+    private Integer runStatus;
+    private Integer stepStatus;
+
+    public Integer getRunStatus() {
+        return runStatus;
+    }
+
+    public void setRunStatus(Integer runStatus) {
+        this.runStatus = runStatus;
+    }
+
+    public Integer getStepStatus() {
+        return stepStatus;
+    }
+
+    public void setStepStatus(Integer stepStatus) {
+        this.stepStatus = stepStatus;
+    }
 
     @Transient
     private String featureTitle;

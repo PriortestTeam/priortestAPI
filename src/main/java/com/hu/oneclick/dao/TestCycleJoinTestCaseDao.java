@@ -29,5 +29,8 @@ public interface TestCycleJoinTestCaseDao extends BaseMapper<TestCycleJoinTestCa
     List<String> queryTestCycleStatus(String testCycleId);
 
     List<TestCycleJoinTestCase> queryList(TestCycleJoinTestCase testCycleJoinTestCase);
+    List<TestCycleJoinTestCase> queryAllDate(TestCycleJoinTestCase testCycleJoinTestCase);
+
+    int updateTestCycleJoinTestCase(TestCycleJoinTestCase testCycleJoinTestCase);
 
 }

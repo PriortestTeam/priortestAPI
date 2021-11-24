@@ -70,6 +70,17 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
     private String assignTo;
     private String notifiyList;
 
+    public Integer getTestResult() {
+        return TestResult;
+    }
+
+    public void setTestResult(Integer testResult) {
+        TestResult = testResult;
+    }
+
+    private Integer TestResult;
+
+
 
     @Transient
     private String scope = OneConstant.SCOPE.ONE_TEST_CYCLE;
