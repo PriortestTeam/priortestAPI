@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
             if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?eamil=" + email +
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
                         "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
@@ -337,7 +337,7 @@ public class UserServiceImpl implements UserService {
     public Resp<String> forgetThePassword(String email) {
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?eamil=" + email + "&params=" + linkStr);
+        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?email=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -350,7 +350,7 @@ public class UserServiceImpl implements UserService {
     public Resp<String> applyForAnExtension(String email) {
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick申请延期", "http://124.71.142.223/#/deferred?eamil=" + email + "&params=" + linkStr);
+        mailService.sendSimpleMail(email, "OneClick申请延期", "http://124.71.142.223/#/deferred?email=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
