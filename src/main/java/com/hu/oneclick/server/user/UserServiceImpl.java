@@ -104,7 +104,10 @@ public class UserServiceImpl implements UserService {
             }
             user.setIdentifier(masterIdentifier.getId());
             if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://localhost:3307/jihuo.html");
+                String linkStr = RandomUtil.randomString(80);
+                redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?eamil=" + email +
+                        "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
@@ -283,9 +286,13 @@ public class UserServiceImpl implements UserService {
         if (sysUser == null) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
         }
-        if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.REPASSWORD_ERROR.getCode(), SysConstantEnum.REPASSWORD_ERROR.getValue());
+        //申请延期不提示再次输入密码
+        if (!activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
+            if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.REPASSWORD_ERROR.getCode(), SysConstantEnum.REPASSWORD_ERROR.getValue());
+            }
         }
+
         PasswordCheckerUtil passwordChecker = new PasswordCheckerUtil();
         if (!passwordChecker.check(activateAccountDto.getPassword())) {
             throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
@@ -328,20 +335,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> forgetThePassword(String email) {
-        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://localhost:3307/wangji.html");
+        String linkStr = RandomUtil.randomString(80);
+        redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
+        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?eamil=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
     @Override
     public Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto) {
-
         return activateAccount(activateAccountDto, OneConstant.PASSWORD.FORGETPASSWORD);
-
     }
 
     @Override
     public Resp<String> applyForAnExtension(String email) {
-        mailService.sendSimpleMail(email, "OneClick申请延期", "http://localhost:3307/yangqi.html");
+        String linkStr = RandomUtil.randomString(80);
+        redisClient.getBucket(linkStr).set(true, 30, TimeUnit.MINUTES);
+        mailService.sendSimpleMail(email, "OneClick申请延期", "http://124.71.142.223/#/deferred?eamil=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -461,5 +470,16 @@ public class UserServiceImpl implements UserService {
             }
         }
         return !sysUserTokens.isEmpty();
+    }
+
+    @Override
+    public Resp<String> verifyLinkString(String linkStr) {
+        RBucket<String> bucket = redisClient.getBucket(linkStr);
+        String redisCode = bucket.get();
+        if (redisCode == null || "".equals(redisCode) || !"true".equals(redisCode)) {
+            throw new BizException(SysConstantEnum.LINKSTRERROR.getCode(), SysConstantEnum.LINKSTRERROR.getValue());
+        }
+        bucket.delete();
+        return new Resp.Builder<String>().ok();
     }
 }

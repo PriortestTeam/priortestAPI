@@ -2,24 +2,45 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
+import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
+import com.hu.oneclick.server.service.CustomFieldService;
 import com.hu.oneclick.server.service.ProjectService;
+import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.ViewService;
-import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
  */
 @RestController
 @RequestMapping("project")
+@Api(tags = "项目管理")
 public class ProjectController {
 
     private final ProjectService projectService;
 
-    public ProjectController(ProjectService projectService, ViewService viewService) {
+    private final SysCustomFieldService sysCustomFieldService;
+
+    private final CustomFieldService customFieldService;
+
+    public ProjectController(ProjectService projectService, ViewService viewService, SysCustomFieldService sysCustomFieldService, CustomFieldService customFieldService) {
         this.projectService = projectService;
+        this.sysCustomFieldService = sysCustomFieldService;
+        this.customFieldService = customFieldService;
     }
 
     /**
@@ -70,5 +91,30 @@ public class ProjectController {
     @GetMapping("checkProject/{projectId}")
     public Resp<String> checkProject(@PathVariable String projectId){
         return projectService.checkProject(projectId);
+    }
+
+
+    /** 新建项目时获取所有系统字段
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/17
+     */
+    @GetMapping("getAllSysCustomField")
+    @ApiOperation("新建项目时获取所有系统字段")
+    public Resp<List<SysCustomFieldVo>> getAllSysCustomField() {
+        return sysCustomFieldService.getAllSysCustomField();
+    }
+
+    /** 新建项目时获取所有用户字段
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/17
+     */
+    @PostMapping("getAllCustomField")
+    @ApiOperation("新建项目时获取所有用户字段")
+    public Resp<List< Object>> getAllCustomField(@RequestBody CustomFieldDto customFieldDto) {
+        return customFieldService.getAllCustomField(customFieldDto);
     }
 }

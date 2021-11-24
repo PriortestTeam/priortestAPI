@@ -64,10 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             return;
         }
         http.authorizeRequests()
+                .antMatchers("/user/**").anonymous()
                 .antMatchers("/login").anonymous()
-                .antMatchers("/user/register").anonymous()
-                .antMatchers("/user/sendEmailCode").anonymous()
-                .antMatchers("/user/sendEmailRegisterCode").anonymous()
                 .antMatchers("/swagger-ui.html").anonymous()
                 .antMatchers("/v2/**").anonymous()
                 .antMatchers("/swagger-resources/**").anonymous()
@@ -89,8 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
                 //设置无权限接口
-                .permissiveRequestUrls("/login","/user/register","/user/sendEmailCode",
-                        "/user/sendEmailRegisterCode","/swagger-ui.html","/swagger-resources/**",
+                .permissiveRequestUrls("/user/**","/login","/swagger-ui.html","/swagger-resources/**",
                         "/v2/**","/webjars/springfox-swagger-ui/**","/webjars/springfox-swagger-ui")
                 .and()
                 .logout()

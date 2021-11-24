@@ -18,7 +18,7 @@ public enum SysConstantEnum {
     PARAM_EMPTY( SysConstantEnum.NUMBER + "001","不能为空。"),
     LIST_PARAM_EMPTY( SysConstantEnum.NUMBER + "001","数组必须有至少一个值。"),
     LENGTH_LIMIT_EXCEEDED( SysConstantEnum.NUMBER + "001","超出长度限制。"),
-    PASSWORD_RULES(SysConstantEnum.NUMBER + "001","密码由(数字、小写、大写字母)，最小8位，最大20位字符组成。"),
+    PASSWORD_RULES(SysConstantEnum.NUMBER + "001","密码由(数字、小写、大写字母、特殊字符！@#等)，最小8位，最大20位字符组成。"),
     CREATE_SUB_USER_SUCCESS(SysConstantEnum.NUMBER,"创建成员用户成功。"),
     CREATE_PLATFORM_USER_SUCCESS(SysConstantEnum.NUMBER,"创建平台用户成功。"),
     REGISTER_FAILED(SysConstantEnum.NUMBER + "011","注册失败。"),
@@ -43,6 +43,8 @@ public enum SysConstantEnum {
     HAS_BEEN_ACTIVATED_ONCE(SysConstantEnum.NUMBER + "022","激活失败"),
     UPDATE_FILE_OUT_COUNT(SysConstantEnum.NUMBER + "023", "上传文件数量过多"),
     VIEW_ONN_FILTER_IS_REDUNDANT(SysConstantEnum.NUMBER + "030","过滤项不可重复。"),
+    LINKSTRERROR(SysConstantEnum.NUMBER + "031","链接错误。"),
+
 
     //成功
     SUCCESS(SysConstantEnum.NUMBER,"调用成功。"),

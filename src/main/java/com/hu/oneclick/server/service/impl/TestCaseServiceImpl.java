@@ -932,13 +932,13 @@ public class TestCaseServiceImpl implements TestCaseService {
         return new Resp.Builder<List<String>>().setData(list).ok();
     }
 
-    @Override
-    public Resp<List<String>> getProjectVersion(String projectId) {
-        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        SysCustomFieldExpand versions = sysCustomFieldExpandDao.queryByUserIdAndFieldName("versions", sysUser.getId(), projectId);
-        List<String> list = getCommonList(versions);
-        return new Resp.Builder<List<String>>().setData(list).ok();
-    }
+//    @Override
+//    public Resp<List<String>> getProjectVersion(String projectId) {
+//        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+//        SysCustomFieldExpand versions = sysCustomFieldExpandDao.queryByUserIdAndFieldName("versions", sysUser.getId(), projectId);
+//        List<String> list = getCommonList(versions);
+//        return new Resp.Builder<List<String>>().setData(list).ok();
+//    }
 
     private List<String> getCommonList(SysCustomFieldExpand versions) {
         versions = Optional.ofNullable(versions).orElse(new SysCustomFieldExpand());

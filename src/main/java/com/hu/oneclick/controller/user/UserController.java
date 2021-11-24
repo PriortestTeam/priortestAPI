@@ -5,14 +5,18 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserToken;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
-import com.hu.oneclick.model.domain.dto.RegisterUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -128,6 +132,14 @@ public class UserController {
     public Resp<String> deleteToken(@RequestParam Integer tokenId) {
         return userService.deleteToken(tokenId);
     }
+
+
+    @ApiOperation("验证链接字符串")
+    @PostMapping("verifyLinkString")
+    public Resp<String> verifyLinkString(@RequestParam String params) {
+        return userService.verifyLinkString(params);
+    }
+
 
 
 }
