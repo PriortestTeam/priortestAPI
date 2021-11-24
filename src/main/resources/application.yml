@@ -6,6 +6,6 @@ spring:
 #      enabled: false
 #      additional-paths: src/main/java
 server:
-  port: 8081
+  port: 8082
   servlet:
     context-path: /api
