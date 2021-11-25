@@ -64,8 +64,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             return;
         }
         http.authorizeRequests()
-                .antMatchers("/user/**").anonymous()
                 .antMatchers("/login").anonymous()
+                .antMatchers("/user/register").anonymous()
+                .antMatchers("/user/sendEmailCode").anonymous()
+                .antMatchers("/user/sendEmailRegisterCode").anonymous()
+                .antMatchers("/user/activateAccount").anonymous()
+                .antMatchers("/user/forgetThePassword").anonymous()
+                .antMatchers("/user/forgetThePasswordIn").anonymous()
+                .antMatchers("/user/applyForAnExtension").anonymous()
+                .antMatchers("/user/applyForAnExtensionIn").anonymous()
+                .antMatchers("/user/verifyLinkString").anonymous()
                 .antMatchers("/swagger-ui.html").anonymous()
                 .antMatchers("/v2/**").anonymous()
                 .antMatchers("/swagger-resources/**").anonymous()
@@ -87,7 +95,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
                 //设置无权限接口
-                .permissiveRequestUrls("/user/**","/login","/swagger-ui.html","/swagger-resources/**",
+                .permissiveRequestUrls("/login","/user/register","/user/sendEmailCode",
+                        "/user/sendEmailRegisterCode","/user/activateAccount",
+                        "/user/forgetThePassword","/user/forgetThePasswordIn",
+                        "/user/applyForAnExtension","/user/applyForAnExtensionIn","/user/verifyLinkString",
+                        "/swagger-ui.html","/swagger-resources/**",
                         "/v2/**","/webjars/springfox-swagger-ui/**","/webjars/springfox-swagger-ui")
                 .and()
                 .logout()
