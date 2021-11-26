@@ -1,5 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.exception.BizException;
@@ -8,6 +10,7 @@ import com.hu.oneclick.dao.CustomFieldDao;
 import com.hu.oneclick.dao.FieldDropDownDao;
 import com.hu.oneclick.dao.FieldRadioDao;
 import com.hu.oneclick.dao.FieldTextDao;
+import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.CustomField;
@@ -15,7 +18,9 @@ import com.hu.oneclick.model.domain.FieldDropDown;
 import com.hu.oneclick.model.domain.FieldRadio;
 import com.hu.oneclick.model.domain.FieldRichText;
 import com.hu.oneclick.model.domain.FieldText;
+import com.hu.oneclick.model.domain.ViewDownChildParams;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.server.service.CustomFieldService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,13 +56,16 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
     private final JwtUserServiceImpl jwtUserService;
 
-    public CustomFieldServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, CustomFieldDao customFieldDao, FieldRadioDao fieldRadioDao, FieldTextDao fieldTextDao, FieldDropDownDao fieldDropDownDao, JwtUserServiceImpl jwtUserService) {
+    private final ViewDownChildParamsDao viewDownChildParamsDao;
+
+    public CustomFieldServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, CustomFieldDao customFieldDao, FieldRadioDao fieldRadioDao, FieldTextDao fieldTextDao, FieldDropDownDao fieldDropDownDao, JwtUserServiceImpl jwtUserService, ViewDownChildParamsDao viewDownChildParamsDao) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.customFieldDao = customFieldDao;
         this.fieldRadioDao = fieldRadioDao;
         this.fieldTextDao = fieldTextDao;
         this.fieldDropDownDao = fieldDropDownDao;
         this.jwtUserService = jwtUserService;
+        this.viewDownChildParamsDao = viewDownChildParamsDao;
     }
 
     @Override
@@ -82,8 +92,41 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> addCustomRadio(FieldRadio fieldRadio) {
         try {
             fieldRadio.subVerify();
-            fieldRadio.setUserId(jwtUserServiceImpl.getMasterId());
-            Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(), fieldRadio.getProjectId()), fieldRadio.getFieldName());
+            String masterId = jwtUserServiceImpl.getMasterId();
+            fieldRadio.setUserId(masterId);
+            String projectId = fieldRadio.getProjectId();
+            Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(), projectId), fieldRadio.getFieldName());
+            //masiyi 2021年11月25日17:32:43
+            ViewDownChildParams viewDownChildParams = new ViewDownChildParams();
+            viewDownChildParams.setUserId(masterId);
+            viewDownChildParams.setProjectId(projectId);
+            List<ViewDownChildParams> viewDownChildParams1 = viewDownChildParamsDao.queryList(viewDownChildParams);
+
+            // 设置DefaultValues
+            ViewScopeChildParams viewScopeChildParams = new ViewScopeChildParams();
+            viewScopeChildParams.setType("fString");
+            //设置子选择框
+            ViewScopeChildParams viewScopeChildParams1 = new ViewScopeChildParams();
+            viewScopeChildParams1.setOptionValue(fieldRadio.getDefaultValue());
+            viewScopeChildParams1.setOptionValueCn(fieldRadio.getFieldName());
+
+            if (viewDownChildParams1.isEmpty()) {
+                viewDownChildParams.setScope(fieldRadio.getScope());
+                Date time = new Date();
+                viewDownChildParams.setCreateTime(time);
+                viewScopeChildParams.setSelectChild(Collections.singletonList(viewScopeChildParams1));
+                //对应view_down_child_params表
+
+                viewDownChildParams.setDefaultValues(JSON.toJSONString(viewScopeChildParams));
+                viewDownChildParamsDao.insert(viewDownChildParams);
+            } else if (viewDownChildParams1.size() == 1) {
+                String defaultValues = viewDownChildParams.getDefaultValues();
+                List<ViewScopeChildParams> childParams = JSONArray.parseArray(defaultValues, ViewScopeChildParams.class);
+
+                childParams.add(viewScopeChildParams);
+                viewDownChildParams.setDefaultValues(JSON.toJSONString(childParams));
+                viewDownChildParamsDao.update(viewDownChildParams);
+            }
             return Result.addResult((customFieldDao.insert(fieldRadio) > 0
                     && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
         } catch (BizException e) {

@@ -1,5 +1,7 @@
 package com.hu.oneclick.model.domain;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,6 +11,7 @@ import java.util.Date;
  * @author makejava
  * @since 2021-04-16 16:25:20
  */
+@Data
 public class ViewDownChildParams implements Serializable {
     private static final long serialVersionUID = 848798611045855488L;
 
@@ -26,44 +29,9 @@ public class ViewDownChildParams implements Serializable {
 
     private Date updateTime;
 
+    private String projectId;
 
-    public String getId() {
-        return id;
-    }
+    private String userId;
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
-    public String getDefaultValues() {
-        return defaultValues;
-    }
-
-    public void setDefaultValues(String defaultValues) {
-        this.defaultValues = defaultValues;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
 }

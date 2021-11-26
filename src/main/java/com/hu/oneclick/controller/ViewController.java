@@ -5,6 +5,8 @@ import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.ViewService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("view")
+@Api(tags = "视图管理")
 public class ViewController {
 
     private final ViewService viewService;
@@ -38,6 +41,7 @@ public class ViewController {
     }
 
     @GetMapping("getViewScopeChildParams")
+    @ApiOperation("根据范围搜索所有字段")
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope){
         return viewService.getViewScopeChildParams(scope);
     }

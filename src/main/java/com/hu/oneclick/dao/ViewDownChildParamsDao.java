@@ -39,7 +39,7 @@ public interface ViewDownChildParamsDao {
      * @param viewDownChildParams 实例对象
      * @return 对象列表
      */
-    List<ViewDownChildParams> queryAll(ViewDownChildParams viewDownChildParams);
+    List<ViewDownChildParams> queryList(ViewDownChildParams viewDownChildParams);
 
     /**
      * 新增数据
