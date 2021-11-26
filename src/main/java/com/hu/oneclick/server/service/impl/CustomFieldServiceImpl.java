@@ -180,6 +180,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> updateCustomText(FieldText fieldText) {
         fieldText.subVerify();
         fieldText.setCustomFieldId();
+
         return updateCustomText2(fieldText);
     }
 
@@ -383,13 +384,15 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         return new Resp.Builder<List<Object>>().setData(list).ok();
     }
 
-    /** 添加视图字段集合
+    /**
+     * 添加视图字段集合
+     *
      * @Param: [cla]
      * @return: com.hu.oneclick.model.domain.ViewDownChildParams
      * @Author: MaSiyi
      * @Date: 2021/11/26
      */
-    private <T> ViewDownChildParams addViewDownChildParams(T cla) {
+    private <T> void addViewDownChildParams(T cla) {
 
         ViewDownChildParams viewDownChildParams = new ViewDownChildParams();
         if (cla instanceof CustomField) {
@@ -416,7 +419,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             viewScopeChildParams1.setOptionValue(fieldText.getDefaultValue());
             viewScopeChildParams1.setOptionValueCn(fieldText.getFieldName());
             viewDownChildParams.setScope(fieldText.getScope());
-        }else if (cla instanceof FieldRichText) {
+        } else if (cla instanceof FieldRichText) {
             FieldRichText fieldRichText = (FieldRichText) cla;
             viewScopeChildParams1.setOptionValue(fieldRichText.getDefaultValue());
             viewScopeChildParams1.setOptionValueCn(fieldRichText.getFieldName());
@@ -443,8 +446,24 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             childParams.add(viewScopeChildParams);
             viewDownChildParams.setDefaultValues(JSON.toJSONString(childParams));
             viewDownChildParamsDao.update(viewDownChildParams);
+        } else {
+            throw new BizException("系统异常");
         }
 
-        return viewDownChildParams;
     }
+
+    /** 根据projectid和userid删除视图字段
+     * @Param: [customField]
+     * @return: java.lang.Integer
+     * @Author: MaSiyi
+     * @Date: 2021/11/26
+     */
+    private Integer deleteViewDownChildParams(CustomField customField) {
+       return viewDownChildParamsDao.deleteByProjectAndUserId(customField.getProjectId(), customField.getUserId());
+    }
+
+    private void updateViewDownChildParams() {
+
+    }
+
 }

@@ -33,5 +33,9 @@ public class ViewDownChildParams implements Serializable {
 
     private String userId;
 
+    private Boolean delFlag;
+
+
+
 
 }

@@ -146,5 +146,11 @@
         from oneclick.view_down_child_params
         where id = #{id}
     </delete>
+    <delete id="deleteByProjectAndUserId">
+        delete
+        from oneclick.view_down_child_params
+        where project_id = #{param1}
+        and user_id = #{param2}
+    </delete>
 
 </mapper>

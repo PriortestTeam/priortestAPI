@@ -65,4 +65,5 @@ public interface ViewDownChildParamsDao {
      */
     int deleteById(@Param("id") String id);
 
+    Integer deleteByProjectAndUserId(String projectId, String userId);
 }
