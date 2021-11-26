@@ -96,37 +96,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             fieldRadio.setUserId(masterId);
             String projectId = fieldRadio.getProjectId();
             Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(), projectId), fieldRadio.getFieldName());
-            //masiyi 2021年11月25日17:32:43
-            ViewDownChildParams viewDownChildParams = new ViewDownChildParams();
-            viewDownChildParams.setUserId(masterId);
-            viewDownChildParams.setProjectId(projectId);
-            List<ViewDownChildParams> viewDownChildParams1 = viewDownChildParamsDao.queryList(viewDownChildParams);
 
-            // 设置DefaultValues
-            ViewScopeChildParams viewScopeChildParams = new ViewScopeChildParams();
-            viewScopeChildParams.setType("fString");
-            //设置子选择框
-            ViewScopeChildParams viewScopeChildParams1 = new ViewScopeChildParams();
-            viewScopeChildParams1.setOptionValue(fieldRadio.getDefaultValue());
-            viewScopeChildParams1.setOptionValueCn(fieldRadio.getFieldName());
-
-            if (viewDownChildParams1.isEmpty()) {
-                viewDownChildParams.setScope(fieldRadio.getScope());
-                Date time = new Date();
-                viewDownChildParams.setCreateTime(time);
-                viewScopeChildParams.setSelectChild(Collections.singletonList(viewScopeChildParams1));
-                //对应view_down_child_params表
-
-                viewDownChildParams.setDefaultValues(JSON.toJSONString(viewScopeChildParams));
-                viewDownChildParamsDao.insert(viewDownChildParams);
-            } else if (viewDownChildParams1.size() == 1) {
-                String defaultValues = viewDownChildParams.getDefaultValues();
-                List<ViewScopeChildParams> childParams = JSONArray.parseArray(defaultValues, ViewScopeChildParams.class);
-
-                childParams.add(viewScopeChildParams);
-                viewDownChildParams.setDefaultValues(JSON.toJSONString(childParams));
-                viewDownChildParamsDao.update(viewDownChildParams);
-            }
+            addViewDownChildParams(fieldRadio);
             return Result.addResult((customFieldDao.insert(fieldRadio) > 0
                     && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
         } catch (BizException e) {
@@ -181,10 +152,20 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         return addCustomText2(fieldText);
     }
 
+    /**
+     * 添加文本框
+     *
+     * @Param: [fieldText]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author:
+     * @Date: 2021/11/26
+     */
     private Resp<String> addCustomText2(FieldText fieldText) {
         try {
             fieldText.setUserId(jwtUserServiceImpl.getMasterId());
             Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(), fieldText.getProjectId()), fieldText.getFieldName());
+
+            addViewDownChildParams(fieldText);
             return Result.addResult((customFieldDao.insert(fieldText) > 0
                     && fieldTextDao.insert(fieldText) > 0) ? 1 : 0);
         } catch (BizException e) {
@@ -261,6 +242,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             fieldDropDown.subVerify();
             fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
             Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(), fieldDropDown.getProjectId()), fieldDropDown.getFieldName());
+
+            addViewDownChildParams(fieldDropDown);
             return Result.addResult((customFieldDao.insert(fieldDropDown) > 0
                     && fieldDropDownDao.insert(fieldDropDown) > 0) ? 1 : 0);
         } catch (BizException e) {
@@ -398,5 +381,70 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
 
         return new Resp.Builder<List<Object>>().setData(list).ok();
+    }
+
+    /** 添加视图字段集合
+     * @Param: [cla]
+     * @return: com.hu.oneclick.model.domain.ViewDownChildParams
+     * @Author: MaSiyi
+     * @Date: 2021/11/26
+     */
+    private <T> ViewDownChildParams addViewDownChildParams(T cla) {
+
+        ViewDownChildParams viewDownChildParams = new ViewDownChildParams();
+        if (cla instanceof CustomField) {
+            CustomField customField = (CustomField) cla;
+            viewDownChildParams.setUserId(customField.getUserId());
+            viewDownChildParams.setProjectId(customField.getProjectId());
+        }
+
+
+        List<ViewDownChildParams> viewDownChildParams1 = viewDownChildParamsDao.queryList(viewDownChildParams);
+
+        // 设置DefaultValues
+        ViewScopeChildParams viewScopeChildParams = new ViewScopeChildParams();
+        viewScopeChildParams.setType("fString");
+        //设置子选择框
+        ViewScopeChildParams viewScopeChildParams1 = new ViewScopeChildParams();
+        if (cla instanceof FieldRadio) {
+            FieldRadio fieldRadio = (FieldRadio) cla;
+            viewScopeChildParams1.setOptionValue(fieldRadio.getDefaultValue());
+            viewScopeChildParams1.setOptionValueCn(fieldRadio.getFieldName());
+            viewDownChildParams.setScope(fieldRadio.getScope());
+        } else if (cla instanceof FieldText) {
+            FieldText fieldText = (FieldText) cla;
+            viewScopeChildParams1.setOptionValue(fieldText.getDefaultValue());
+            viewScopeChildParams1.setOptionValueCn(fieldText.getFieldName());
+            viewDownChildParams.setScope(fieldText.getScope());
+        }else if (cla instanceof FieldRichText) {
+            FieldRichText fieldRichText = (FieldRichText) cla;
+            viewScopeChildParams1.setOptionValue(fieldRichText.getDefaultValue());
+            viewScopeChildParams1.setOptionValueCn(fieldRichText.getFieldName());
+            viewDownChildParams.setScope(fieldRichText.getScope());
+        } else if (cla instanceof FieldDropDown) {
+            FieldDropDown fieldDropDown = (FieldDropDown) cla;
+            viewScopeChildParams1.setOptionValue(fieldDropDown.getDefaultValue());
+            viewScopeChildParams1.setOptionValueCn(fieldDropDown.getFieldName());
+            viewDownChildParams.setScope(fieldDropDown.getScope());
+        }
+
+        if (viewDownChildParams1.isEmpty()) {
+            Date time = new Date();
+            viewDownChildParams.setCreateTime(time);
+            viewScopeChildParams.setSelectChild(Collections.singletonList(viewScopeChildParams1));
+            //对应view_down_child_params表
+
+            viewDownChildParams.setDefaultValues(JSON.toJSONString(viewScopeChildParams));
+            viewDownChildParamsDao.insert(viewDownChildParams);
+        } else if (viewDownChildParams1.size() == 1) {
+            String defaultValues = viewDownChildParams.getDefaultValues();
+            List<ViewScopeChildParams> childParams = JSONArray.parseArray(defaultValues, ViewScopeChildParams.class);
+
+            childParams.add(viewScopeChildParams);
+            viewDownChildParams.setDefaultValues(JSON.toJSONString(childParams));
+            viewDownChildParamsDao.update(viewDownChildParams);
+        }
+
+        return viewDownChildParams;
     }
 }
