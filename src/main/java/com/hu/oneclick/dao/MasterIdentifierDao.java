@@ -4,7 +4,6 @@ import com.hu.oneclick.model.domain.MasterIdentifier;
 import org.apache.ibatis.annotations.Param;
 
 
-
 /**
  * 主账号id 库(MasterIdentifier)表数据库访问层
  *
@@ -22,7 +21,9 @@ public interface MasterIdentifierDao {
      * @param id 实例对象
      * @return 影响行数
      */
-    int update(@Param("id") String id );
+    int update(@Param("id") String id);
+
+    void insert(MasterIdentifier masterIdentifier);
 
 
 }

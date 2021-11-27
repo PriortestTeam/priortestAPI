@@ -68,9 +68,9 @@ onclick:
     photo:
   minioConfig:
     bucketName: oneclick
-    endpoint: http://106.13.39.32:9000
-    accountKey: minio
-    password: qingyang_minio_ooo
+    endpoint: http://124.71.142.223:9000
+    accountKey: admin
+    password: password
     source: true
   time:
     firstTime: 30

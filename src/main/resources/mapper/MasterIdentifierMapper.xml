@@ -7,6 +7,10 @@
         <result property="flag" column="flag" jdbcType="INTEGER"/>
     </resultMap>
 
+    <insert id="insert" parameterType="com.hu.oneclick.model.domain.MasterIdentifier">
+        INSERT into master_identifier values (#{id},#{flag})
+    </insert>
+
     <select id="queryOne" resultType="com.hu.oneclick.model.domain.MasterIdentifier">
         select id, flag from master_identifier where flag = 0 limit 1
     </select>

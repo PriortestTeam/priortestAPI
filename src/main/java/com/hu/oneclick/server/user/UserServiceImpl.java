@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -99,13 +100,17 @@ public class UserServiceImpl implements UserService {
 
             //设置主账号识别号，用于子用户登录
             MasterIdentifier masterIdentifier = masterIdentifierDao.queryOne();
-            if (masterIdentifier == null) {
-                throw new BizException(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue());
+            masterIdentifier= Optional.ofNullable(masterIdentifier).orElse(new MasterIdentifier());
+            if (StringUtils.isEmpty(masterIdentifier.getId())) {
+                masterIdentifier.setId(RandomUtil.randomNumbers(8));
+                masterIdentifier.setFlag(0);
+                masterIdentifierDao.insert(masterIdentifier);
             }
             user.setIdentifier(masterIdentifier.getId());
             if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+
                 mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
                         "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
