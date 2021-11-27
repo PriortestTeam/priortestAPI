@@ -115,6 +115,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             fieldRadio.setUserId(jwtUserServiceImpl.getMasterId());
             fieldRadio.setCustomFieldId();
             Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(), fieldRadio.getProjectId()), fieldRadio.getFieldName());
+            //masiyi 2021年11月27日10:39:52 更新视图字段
+            updateViewDownChildParams(fieldRadio);
             return Result.updateResult((customFieldDao.update(fieldRadio) > 0
                     && fieldRadioDao.update(fieldRadio) > 0) ? 1 : 0);
         } catch (BizException e) {
@@ -180,7 +182,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<String> updateCustomText(FieldText fieldText) {
         fieldText.subVerify();
         fieldText.setCustomFieldId();
-
+        //masiyi 2021年11月27日10:39:52 更新视图字段
+        updateViewDownChildParams(fieldText);
         return updateCustomText2(fieldText);
     }
 
@@ -226,6 +229,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         fieldRichText.subVerify();
         FieldText fieldText = new FieldText();
         BeanUtils.copyProperties(fieldRichText, fieldText);
+        //masiyi 2021年11月27日10:39:52 更新视图字段
+        updateViewDownChildParams(fieldRichText);
         return updateCustomText2(fieldText);
     }
 
@@ -261,6 +266,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             fieldDropDown.subVerify();
             fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
             Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(), fieldDropDown.getProjectId()), fieldDropDown.getFieldName());
+            //masiyi 2021年11月27日10:39:52 更新视图字段
+            updateViewDownChildParams(fieldDropDown);
             return Result.updateResult((customFieldDao.update(fieldDropDown) > 0
                     && fieldDropDownDao.update(fieldDropDown) > 0) ? 1 : 0);
         } catch (BizException e) {
@@ -452,18 +459,34 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
     }
 
-    /** 根据projectid和userid删除视图字段
+    /**
+     * 根据projectid和userid删除视图字段
+     *
      * @Param: [customField]
      * @return: java.lang.Integer
      * @Author: MaSiyi
      * @Date: 2021/11/26
      */
     private Integer deleteViewDownChildParams(CustomField customField) {
-       return viewDownChildParamsDao.deleteByProjectAndUserId(customField.getProjectId(), customField.getUserId());
+        return viewDownChildParamsDao.deleteByProjectAndUserId(customField.getProjectId(), customField.getUserId());
     }
 
-    private void updateViewDownChildParams() {
-
+    /**
+     * 更新视图字段
+     *
+     * @Param: []
+     * @return: void
+     * @Author: MaSiyi
+     * @Date: 2021/11/27
+     */
+    private <T> void updateViewDownChildParams(T cla) {
+        CustomField customField = new CustomField();
+        if (cla instanceof CustomField) {
+            customField = (CustomField) cla;
+        }
+        if (deleteViewDownChildParams(customField) > 0) {
+            addViewDownChildParams(cla);
+        }
     }
 
 }
