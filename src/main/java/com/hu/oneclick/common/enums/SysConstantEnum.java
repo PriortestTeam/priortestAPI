@@ -19,7 +19,7 @@ public enum SysConstantEnum {
     LIST_PARAM_EMPTY( SysConstantEnum.NUMBER + "001","数组必须有至少一个值。"),
     LENGTH_LIMIT_EXCEEDED( SysConstantEnum.NUMBER + "001","超出长度限制。"),
     PASSWORD_RULES(SysConstantEnum.NUMBER + "001","密码由(数字、小写、大写字母、特殊字符！@#等)，最小8位，最大20位字符组成。"),
-    CREATE_SUB_USER_SUCCESS(SysConstantEnum.NUMBER,"创建成员用户成功。"),
+    CREATE_SUB_USER_SUCCESS(SysConstantEnum.NUMBER,"创建成员用户成功。请提醒成员去邮箱激活账号"),
     CREATE_PLATFORM_USER_SUCCESS(SysConstantEnum.NUMBER,"创建平台用户成功。"),
     REGISTER_FAILED(SysConstantEnum.NUMBER + "011","注册失败。"),
     CREATE_SUB_USER_FAILED(SysConstantEnum.NUMBER + "011","创建成员用户失败。"),

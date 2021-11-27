@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.user;
 
+import cn.hutool.core.util.RandomUtil;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -14,7 +15,9 @@ import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
+import com.hu.oneclick.server.service.MailService;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author qingyang
@@ -40,14 +44,20 @@ public class SubUserServiceImpl implements SubUserService{
 
     private final ProjectDao projectDao;
 
+    private final MailService mailService;
+
+    private final RedissonClient redisClient;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
-    public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, SubUserProjectDao subUserProjectDao, ProjectDao projectDao) {
+    public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, SubUserProjectDao subUserProjectDao, ProjectDao projectDao, MailService mailService, RedissonClient redisClient) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.sysUserDao = sysUserDao;
         this.subUserProjectDao = subUserProjectDao;
         this.projectDao = projectDao;
+        this.mailService = mailService;
+        this.redisClient = redisClient;
     }
 
     @Override
@@ -95,7 +105,12 @@ public class SubUserServiceImpl implements SubUserService{
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> createSubUser(SubUserDto sysUser) {
         try {
-            sysUser.verify();
+//            sysUser.verify();
+            if (StringUtils.isEmpty(sysUser.getEmail())){
+                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"邮箱" + SysConstantEnum.PARAM_EMPTY.getValue());
+            } else if (StringUtils.isEmpty(sysUser.getUserName())){
+                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"用户名" + SysConstantEnum.PARAM_EMPTY.getValue());
+            }
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
 
             if(StringUtils.isEmpty(masterUser.getIdentifier())){
@@ -109,7 +124,7 @@ public class SubUserServiceImpl implements SubUserService{
             verifySubEmailExists(subEmail);
 
             sysUser.setEmail(subEmail);
-            sysUser.setPassword(encodePassword(sysUser.getPassword()));
+//            sysUser.setPassword(encodePassword(sysUser.getPassword()));
             //设置默认头像
             sysUser.setPhoto(defaultPhoto);
             sysUser.setType(OneConstant.USER_TYPE.SUB_USER);
@@ -123,6 +138,11 @@ public class SubUserServiceImpl implements SubUserService{
 
             if (sysUserDao.insert(sysUser) > 0
                     && subUserProjectDao.insert(subUserProject) > 0){
+                String linkStr = RandomUtil.randomString(80);
+                redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+                String email = sysUser.getEmail();
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+                        "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),
                         SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue());
             }
