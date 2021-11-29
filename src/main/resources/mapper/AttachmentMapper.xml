@@ -74,7 +74,6 @@
     <select id="getUserAttachment" resultType="java.lang.String" parameterType="java.lang.String">
         SELECT file_path FROM attachment WHERE user_id = #{userId} AND area_type = #{areaType}
     </select>
-
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into oneclick.attachment

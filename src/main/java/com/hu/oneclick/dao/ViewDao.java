@@ -92,4 +92,6 @@ public interface ViewDao {
                                           @Param("scope") String scope);
 
     List<ViewTreeDto> queryViewTreeById(@Param("masterId") String masterId,@Param("viewId") String viewId);
+
+    List<Object> sql(@Param("sqlen")String sqlen);
 }

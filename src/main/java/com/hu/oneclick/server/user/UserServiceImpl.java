@@ -90,8 +90,15 @@ public class UserServiceImpl implements UserService {
             SysUser user = new SysUser();
             BeanUtils.copyProperties(registerUser, user);
             //检查数据库是否已存在用户
-            if (sysUserDao.queryByEmail(email) != null) {
+            SysUser sysUser = sysUserDao.queryByEmail(email);
+            if (sysUser != null && !OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
+            } else if (sysUser != null && OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
+                String linkStr = RandomUtil.randomString(80);
+                redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+                        "&params=" + linkStr);
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
             }
             //设置默认头像
             user.setPhoto(defaultPhoto);

@@ -57,6 +57,11 @@ public class ViewController {
     private Resp<String> addView(@RequestBody View view){
         return viewService.addView(view);
     }
+    @PostMapping("addViewRE")
+    @ApiOperation("添加视图(新)")
+    private Resp<String> addViewRE(@RequestBody View view){
+        return viewService.addViewRE(view);
+    }
 
     @PostMapping("updateView")
     private Resp<String> updateView(@RequestBody View view){
@@ -79,4 +84,9 @@ public class ViewController {
         return viewService.queryViewTrees(scope);
     }
 
+    @PostMapping("sql")
+    @ApiOperation("执行sql")
+    public Resp<String> sql(@RequestBody String sql){
+        return viewService.sql(sql);
+    }
 }

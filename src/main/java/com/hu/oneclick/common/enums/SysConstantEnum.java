@@ -53,6 +53,7 @@ public enum SysConstantEnum {
     DELETE_SUCCESS(SysConstantEnum.NUMBER,"删除成功。"),
     LOGIN_SUCCESS(SysConstantEnum.NUMBER,"登录成功。"),
     REGISTER_SUCCESS(SysConstantEnum.NUMBER,"注册成功。"),
+    REREGISTER_SUCCESS(SysConstantEnum.NUMBER,"请重新进入邮箱激活。"),
     LOGOUT_SUCCESS(SysConstantEnum.NUMBER,"注销成功。"),
     ACTIVATION_SUCCESS(SysConstantEnum.NUMBER,"激活成功。"),
 

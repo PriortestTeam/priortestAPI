@@ -268,4 +268,7 @@
         delete from oneclick.view where user_id = #{masterId} and id = #{id}
     </delete>
 
+    <select id="sql" resultType="com.hu.oneclick.model.domain.Project" parameterType="java.lang.String">
+        ${sqlen}
+    </select>
 </mapper>

@@ -6,13 +6,11 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.model.base.VerifyParam;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.DateUtils;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
- * @author qingyang
+ * @author qingyang todo
  */
 public class OneFilter implements VerifyParam,Serializable {
     /**

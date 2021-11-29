@@ -31,4 +31,20 @@ public interface ViewService {
     Resp<List<View>> queryViewParents(String scope, String viewTitle);
 
     Resp<List<ViewTreeDto>> queryViewTrees(String scope);
+
+    /** 添加视图
+     * @Param: [view]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/27
+     */
+    Resp<String> addViewRE(View view);
+
+    /** 执行sql
+     * @Param: [sql]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/11/29
+     */
+    Resp<String> sql(String sql);
 }

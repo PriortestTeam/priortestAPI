@@ -5,12 +5,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * sys_order_discount
- * @author 
+ * @author masiyi
  */
 @ApiModel(value="折扣表")
 @Data
