@@ -2,6 +2,7 @@ package com.hu.oneclick.server.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.hu.oneclick.common.constant.ActionConstant;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -961,5 +962,39 @@ public class TestCaseServiceImpl implements TestCaseService {
         }
 
         return new Resp.Builder<String>().ok();
+    }
+
+    /**
+     * 更新action
+     *
+     * @param testCaseId
+     * @param actionType
+     * @param testCycleId
+     * @Param: [testCaseId]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/1
+     */
+    @Override
+    public Resp<List<TestCase>> updateAction(List<String> testCaseId, String actionType, String testCycleId) {
+        String masterId = jwtUserService.getMasterId();
+        ArrayList<TestCase> testCases = new ArrayList<>();
+        if (actionType.equals(ActionConstant.RELOAD)) {
+            for (String id : testCaseId) {
+                TestCase testCase = testCaseDao.queryById(id, masterId);
+                testCases.add(testCase);
+            }
+            //如果是刷新就返回数据给前端
+            return new Resp.Builder<List<TestCase>>().setData(testCases).ok();
+        } else if (actionType.equals(ActionConstant.REMOVE)) {
+            for (String id : testCaseId) {
+                TestCycleJoinTestCase tc = new TestCycleJoinTestCase();
+                tc.setTestCycleId(testCycleId);
+                tc.setTestCaseId(id);
+                //如果是remove就删除
+                testCycleJoinTestCaseDao.delete(tc);
+            }
+        }
+        return new Resp.Builder<List<TestCase>>().fail();
     }
 }

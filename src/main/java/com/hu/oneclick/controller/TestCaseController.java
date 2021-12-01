@@ -6,6 +6,7 @@ import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.TestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.server.service.TestCaseService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,7 +68,15 @@ public class TestCaseController {
     }
 
     @PostMapping("addTestCase")
+    @ApiOperation("添加测试用例")
     public Resp<String> addTestCase(@RequestBody TestCycleDto testCycleDto) {
         return testCaseService.addTestCase(testCycleDto);
+    }
+
+    @PostMapping("updateAction")
+    @ApiOperation("更新action")
+    public Resp<List<TestCase>> updateAction(@RequestBody List<String> testCaseId,@RequestParam String actionType
+            ,@RequestParam String testCycleId) {
+        return testCaseService.updateAction(testCaseId,actionType,testCycleId);
     }
 }
