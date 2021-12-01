@@ -11,6 +11,7 @@ import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.SysCustomFieldExpandDao;
 import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.dao.TestCaseStepDao;
+import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
@@ -64,9 +65,11 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     private final SysCustomFieldExpandDao sysCustomFieldExpandDao;
 
+    private final TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
+
     public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService
             , QueryFilterService queryFilterService, FeatureDao featureDao, SysCustomFieldService sysCustomFieldService
-            , TestCaseStepDao testCaseStepDao, MailService mailService, ViewService viewService, SysCustomFieldExpandDao sysCustomFieldExpandDao) {
+            , TestCaseStepDao testCaseStepDao, MailService mailService, ViewService viewService, SysCustomFieldExpandDao sysCustomFieldExpandDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao) {
         this.testCaseDao = testCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
@@ -77,6 +80,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         this.mailService = mailService;
         this.viewService = viewService;
         this.sysCustomFieldExpandDao = sysCustomFieldExpandDao;
+        this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
     }
 
 
@@ -924,21 +928,6 @@ public class TestCaseServiceImpl implements TestCaseService {
         return args;
     }
 
-    @Override
-    public Resp<List<String>> getProjectEnv(String projectId) {
-        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        SysCustomFieldExpand testEnv = sysCustomFieldExpandDao.queryByUserIdAndFieldName("test_env", sysUser.getId(), projectId);
-        List<String> list = getCommonList(testEnv);
-        return new Resp.Builder<List<String>>().setData(list).ok();
-    }
-
-//    @Override
-//    public Resp<List<String>> getProjectVersion(String projectId) {
-//        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-//        SysCustomFieldExpand versions = sysCustomFieldExpandDao.queryByUserIdAndFieldName("versions", sysUser.getId(), projectId);
-//        List<String> list = getCommonList(versions);
-//        return new Resp.Builder<List<String>>().setData(list).ok();
-//    }
 
     private List<String> getCommonList(SysCustomFieldExpand versions) {
         versions = Optional.ofNullable(versions).orElse(new SysCustomFieldExpand());
@@ -951,4 +940,26 @@ public class TestCaseServiceImpl implements TestCaseService {
         return list;
     }
 
+    /**
+     * 添加测试用例
+     *
+     * @param testCase
+     * @Param: [testCase]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/1
+     */
+    @Override
+    public Resp<String> addTestCase(TestCycleDto testCase) {
+        List<TestCase> testCases = testCase.getTestCases();
+
+        for (TestCase aCase : testCases) {
+            TestCycleJoinTestCase tc = new TestCycleJoinTestCase();
+            tc.setTestCycleId(testCase.getId());
+            tc.setTestCaseId(aCase.getId());
+            testCycleJoinTestCaseDao.insert(tc);
+        }
+
+        return new Resp.Builder<String>().ok();
+    }
 }

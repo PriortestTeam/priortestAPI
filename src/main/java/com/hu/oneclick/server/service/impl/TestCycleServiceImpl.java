@@ -515,7 +515,6 @@ public class TestCycleServiceImpl implements TestCycleService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<Map<String, Object>> runTestCycleTc(ExecuteTestCaseDto executeTestCaseDto) {
 //        logger.error("class: TestCycleServiceImpl#runTestCycleTc,error []" );
-        System.out.println("adsadasd");
         String userId = jwtUserService.getMasterId();
         Date date = new Date();
         int cycleRunCount = 0;

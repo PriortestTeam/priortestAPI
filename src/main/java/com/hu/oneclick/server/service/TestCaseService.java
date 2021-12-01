@@ -6,6 +6,7 @@ import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.ImportTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.TestCaseDto;
+import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -37,7 +38,12 @@ public interface TestCaseService {
      */
     Resp<ImportTestCaseDto> importTestCase(MultipartFile file, String param);
 
-    Resp<List<String>> getProjectEnv(String projectId);
-
-//    Resp<List<String>> getProjectVersion(String projectId);
+    /** 添加测试用例
+     * @Param: [testCase]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/1
+     * @param testCase
+     */
+    Resp<String> addTestCase(TestCycleDto testCase);
 }

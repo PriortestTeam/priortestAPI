@@ -4,8 +4,16 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.TestCaseDto;
+import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.server.service.TestCaseService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -18,7 +26,7 @@ public class TestCaseController {
 
     private final TestCaseService testCaseService;
 
-    public TestCaseController( TestCaseService testCaseService) {
+    public TestCaseController(TestCaseService testCaseService) {
         this.testCaseService = testCaseService;
     }
 
@@ -54,8 +62,12 @@ public class TestCaseController {
      * 根据选择的故事id查询testcase 的需要的值
      */
     @GetMapping("queryTestNeedByFeatureId")
-    public Resp<Feature> queryTestNeedByFeatureId(@RequestParam String featureId){
+    public Resp<Feature> queryTestNeedByFeatureId(@RequestParam String featureId) {
         return testCaseService.queryTestNeedByFeatureId(featureId);
     }
 
+    @PostMapping("addTestCase")
+    public Resp<String> addTestCase(@RequestBody TestCycleDto testCycleDto) {
+        return testCaseService.addTestCase(testCycleDto);
+    }
 }
