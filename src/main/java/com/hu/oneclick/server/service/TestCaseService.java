@@ -43,9 +43,9 @@ public interface TestCaseService {
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
      * @Date: 2021/12/1
-     * @param testCase
+     * @param testCycleDto
      */
-    Resp<String> addTestCase(TestCycleDto testCase);
+    Resp<String> addTestCase(TestCycleDto testCycleDto);
 
     /** 更新action
      * @Param: [testCaseId]

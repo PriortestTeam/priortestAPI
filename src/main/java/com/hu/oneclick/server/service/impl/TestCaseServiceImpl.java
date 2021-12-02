@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -68,9 +69,11 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     private final TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
 
+    private final TestCycleService testCycleService;
+
     public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService
             , QueryFilterService queryFilterService, FeatureDao featureDao, SysCustomFieldService sysCustomFieldService
-            , TestCaseStepDao testCaseStepDao, MailService mailService, ViewService viewService, SysCustomFieldExpandDao sysCustomFieldExpandDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao) {
+            , TestCaseStepDao testCaseStepDao, MailService mailService, ViewService viewService, SysCustomFieldExpandDao sysCustomFieldExpandDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, TestCycleService testCycleService) {
         this.testCaseDao = testCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
@@ -82,6 +85,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         this.viewService = viewService;
         this.sysCustomFieldExpandDao = sysCustomFieldExpandDao;
         this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
+        this.testCycleService = testCycleService;
     }
 
 
@@ -944,19 +948,30 @@ public class TestCaseServiceImpl implements TestCaseService {
     /**
      * 添加测试用例
      *
-     * @param testCase
+     * @param testCycleDto
      * @Param: [testCase]
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
      * @Date: 2021/12/1
      */
     @Override
-    public Resp<String> addTestCase(TestCycleDto testCase) {
-        List<TestCase> testCases = testCase.getTestCases();
+    public Resp<String> addTestCase(TestCycleDto testCycleDto) {
+        String testCycleId = testCycleDto.getId();
 
+        //查询testcycle是否存在
+        Resp<TestCycle> testCycleResp = testCycleService.queryById(testCycleId);
+        TestCycle data = testCycleResp.getData();
+        //如果为空，则说明先选择的testcase一起添加
+        if (ObjectUtils.isEmpty(data)) {
+            data = new TestCycle();
+            data.setTitle("新建测试周期" + DateUtil.getCurrDate());
+            testCycleService.insert(data);
+        }
+        //已存在的testCycle添加testcase
+        List<TestCase> testCases = testCycleDto.getTestCases();
         for (TestCase aCase : testCases) {
             TestCycleJoinTestCase tc = new TestCycleJoinTestCase();
-            tc.setTestCycleId(testCase.getId());
+            tc.setTestCycleId(testCycleId);
             tc.setTestCaseId(aCase.getId());
             testCycleJoinTestCaseDao.insert(tc);
         }
