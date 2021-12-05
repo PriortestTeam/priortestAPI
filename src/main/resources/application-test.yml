@@ -59,6 +59,7 @@ onclick:
       enable: true
   default:
     photo: https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2511150983,4244929698&fm=26&gp=0.jpg
+    frontUrl: http://127.0.0.1:9528          #前端地址 可用于发送邮件中默认调整前端的地址
   minioConfig:
     bucketName: oneclick
     endpoint: http://106.13.39.32:9000

@@ -45,7 +45,7 @@
                    <p th:text="${mapS.value}"></p>
                </div>-->
                 <br>
-                <a href="" target="_blank" style="text-decoration:none">查看导入记录</a>
+                <a th:if="${importTestCaseDto.success[0]!='导入成功0条测试用例'}" target="_blank" style="text-decoration:none" th:href="${frontUrl}">查看导入记录</a>
                 <br>
                 <br>
                 <hr />

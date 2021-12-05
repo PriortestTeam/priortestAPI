@@ -21,4 +21,12 @@ public class ImportTestCaseDto  implements Serializable {
 
     private List<Object> success;
 
+
+    private String projectId;
+
+    /**
+     * 视图id
+     */
+    private String viewTreeDtoId;
+
 }
