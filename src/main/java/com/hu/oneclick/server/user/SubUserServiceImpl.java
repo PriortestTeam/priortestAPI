@@ -118,7 +118,8 @@ public class SubUserServiceImpl implements SubUserService{
             }
 
             //拼接成员用户邮箱
-            String subEmail = masterUser.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
+            String oldEmail = sysUser.getEmail();
+            String subEmail = masterUser.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + oldEmail;
 
             //验证用户是否存在
             verifySubEmailExists(subEmail);
@@ -140,8 +141,8 @@ public class SubUserServiceImpl implements SubUserService{
                     && subUserProjectDao.insert(subUserProject) > 0){
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-                String email = sysUser.getEmail();
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+
+                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + oldEmail +
                         "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),
                         SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue());
