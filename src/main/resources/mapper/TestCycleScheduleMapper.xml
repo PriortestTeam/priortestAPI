@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.TestCycleScheduleDao">
+  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.TestCycleSchedule">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="schedule_model_id" jdbcType="INTEGER" property="scheduleModelId" />
+    <result column="run time" jdbcType="TIMESTAMP" property="runTime" />
+    <result column="run_status" jdbcType="VARCHAR" property="runStatus" />
+    <result column="test_cycle_id" jdbcType="INTEGER" property="testCycleId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, schedule_model_id, `run time`, run_status, test_cycle_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from test_cycle_schedule
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from test_cycle_schedule
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from test_cycle_schedule
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule" useGeneratedKeys="true">
+    insert into test_cycle_schedule (schedule_model_id, `run time`, run_status, 
+      test_cycle_id)
+    values (#{scheduleModelId,jdbcType=INTEGER}, #{runTime,jdbcType=TIMESTAMP}, #{runStatus,jdbcType=VARCHAR}, 
+      #{testCycleId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule" useGeneratedKeys="true">
+    insert into test_cycle_schedule
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="scheduleModelId != null">
+        schedule_model_id,
+      </if>
+      <if test="runTime != null">
+        `run time`,
+      </if>
+      <if test="runStatus != null">
+        run_status,
+      </if>
+      <if test="testCycleId != null">
+        test_cycle_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="scheduleModelId != null">
+        #{scheduleModelId,jdbcType=INTEGER},
+      </if>
+      <if test="runTime != null">
+        #{runTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="runStatus != null">
+        #{runStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="testCycleId != null">
+        #{testCycleId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule">
+    update test_cycle_schedule
+    <set>
+      <if test="scheduleModelId != null">
+        schedule_model_id = #{scheduleModelId,jdbcType=INTEGER},
+      </if>
+      <if test="runTime != null">
+        `run time` = #{runTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="runStatus != null">
+        run_status = #{runStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="testCycleId != null">
+        test_cycle_id = #{testCycleId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule">
+    update test_cycle_schedule
+    set schedule_model_id = #{scheduleModelId,jdbcType=INTEGER},
+      `run time` = #{runTime,jdbcType=TIMESTAMP},
+      run_status = #{runStatus,jdbcType=VARCHAR},
+      test_cycle_id = #{testCycleId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
