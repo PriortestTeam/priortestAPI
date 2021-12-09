@@ -1,5 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -13,6 +15,8 @@ import com.hu.oneclick.dao.TestCaseStepDao;
 import com.hu.oneclick.dao.TestCycleDao;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleJoinTestStepDao;
+import com.hu.oneclick.dao.TestCycleScheduleDao;
+import com.hu.oneclick.dao.TestCycleScheduleModelDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Feature;
@@ -25,6 +29,8 @@ import com.hu.oneclick.model.domain.TestCaseStep;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestStep;
+import com.hu.oneclick.model.domain.TestCycleSchedule;
+import com.hu.oneclick.model.domain.TestCycleScheduleModel;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
@@ -38,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -78,8 +85,12 @@ public class TestCycleServiceImpl implements TestCycleService {
 
     private final IssueDao issueDao;
 
+    private final TestCycleScheduleModelDao testCycleScheduleModelDao;
 
-    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao, QueryFilterService queryFilterService, TestCaseExcutionDao testCaseExcutionDao, TestCycleJoinTestStepDao testCycleJoinTestStepDao, IssueDao issueDao) {
+    private final TestCycleScheduleDao testCycleScheduleDao;
+
+
+    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao, QueryFilterService queryFilterService, TestCaseExcutionDao testCaseExcutionDao, TestCycleJoinTestStepDao testCycleJoinTestStepDao, IssueDao issueDao, TestCycleScheduleModelDao testCycleScheduleModelDao, TestCycleScheduleDao testCycleScheduleDao) {
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
         this.testCycleDao = testCycleDao;
@@ -92,6 +103,8 @@ public class TestCycleServiceImpl implements TestCycleService {
         this.testCaseExcutionDao = testCaseExcutionDao;
         this.testCycleJoinTestStepDao = testCycleJoinTestStepDao;
         this.issueDao = issueDao;
+        this.testCycleScheduleModelDao = testCycleScheduleModelDao;
+        this.testCycleScheduleDao = testCycleScheduleDao;
     }
 
 
@@ -820,4 +833,37 @@ public class TestCycleServiceImpl implements TestCycleService {
         logger.error("class: IssueServiceImpl#update,error []");
     }
 
+    /**
+     * 添加计划
+     *
+     * @param model
+     * @Param: [model]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/9
+     */
+    @Override
+    public Resp<String> addSchedule(TestCycleScheduleModel model) {
+        testCycleScheduleModelDao.insert(model);
+        //计算运行时间
+        Date startTimeDate = model.getStartTimeDate();
+        Integer startTimeWeek = model.getStartTimeWeek();
+        Date endTime = model.getEndTime();
+        //重复方式
+        String frequency = model.getFrequency();
+        if (!ObjectUtils.isEmpty(startTimeDate)&&!ObjectUtils.isEmpty(startTimeWeek)) {
+            return new Resp.Builder<String>().buildResult("只能选择一个开始方式");
+        }
+        if (!ObjectUtils.isEmpty(startTimeDate)) {
+            long firstTime = startTimeDate.getTime() + model.getRunTime().getTime();
+            Date firstDate = new Date(firstTime);
+            long betweenDay = DateUtil.between(firstDate, endTime, DateUnit.DAY);
+
+            TestCycleSchedule testCycleSchedule = new TestCycleSchedule();
+
+        }
+
+
+        return null;
+    }
 }

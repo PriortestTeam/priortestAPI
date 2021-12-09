@@ -5,6 +5,7 @@ import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.TestCycleScheduleModel;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
@@ -47,4 +48,12 @@ public interface TestCycleService {
     Resp<List<String>> getTestCycleVersion(String projectId, String env, String version);
 
     List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto);
+
+    /** 添加计划
+     * @Param: [model]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/9
+     */
+    Resp<String> addSchedule(TestCycleScheduleModel model);
 }

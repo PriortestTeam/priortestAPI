@@ -6,9 +6,12 @@ import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.TestCycleScheduleModel;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.server.service.TestCycleService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("testCycle")
+@Api(tags = "测试周期")
 public class TestCycleController {
 
     private final TestCycleService testCycleService;
@@ -96,4 +100,12 @@ public class TestCycleController {
         return testCycleService.queryIssueByIdOrName(issue);
     }
     /* WJK新增 END*/
+
+    @PostMapping("addSchedule")
+    @ApiModelProperty("添加计划")
+    public Resp<String> addSchedule(@RequestBody TestCycleScheduleModel model) {
+        return testCycleService.addSchedule(model);
+    }
+
+
 }
