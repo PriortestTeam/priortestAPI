@@ -2,9 +2,10 @@ package com.hu.oneclick.model.domain;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * test_cycle_schedule_model
@@ -26,12 +27,6 @@ public class TestCycleScheduleModel implements Serializable {
      */
     @ApiModelProperty(value="开始时间天")
     private Date startTimeDate;
-
-    /**
-     * 开始时间星期
-     */
-    @ApiModelProperty(value="开始时间星期")
-    private Integer startTimeWeek;
 
     /**
      * 开始时间时分秒

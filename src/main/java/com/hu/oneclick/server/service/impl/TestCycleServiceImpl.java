@@ -852,7 +852,6 @@ public class TestCycleServiceImpl implements TestCycleService {
         testCycleScheduleModelDao.insert(model);
         //计算运行时间
         Date startTimeDate = model.getStartTimeDate();
-        Integer startTimeWeek = model.getStartTimeWeek();
         Date endTime = model.getEndTime();
         //重复方式每日，每月，每年，不重复
         String frequency = model.getFrequency();
@@ -860,9 +859,6 @@ public class TestCycleServiceImpl implements TestCycleService {
             return new Resp.Builder<String>().buildResult("请选择重复方式");
         }
 
-        if (!ObjectUtils.isEmpty(startTimeDate) && !ObjectUtils.isEmpty(startTimeWeek)) {
-            return new Resp.Builder<String>().buildResult("只能选择一个开始方式");
-        }
         if (!ObjectUtils.isEmpty(startTimeDate)) {
 
             Date runTime = model.getRunTime();
@@ -922,7 +918,6 @@ public class TestCycleServiceImpl implements TestCycleService {
 
         }
 
-
-        return null;
+        return new Resp.Builder<String>().ok();
     }
 }
