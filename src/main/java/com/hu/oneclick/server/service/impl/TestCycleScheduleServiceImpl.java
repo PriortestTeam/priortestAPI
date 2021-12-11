@@ -4,7 +4,9 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import com.hu.oneclick.common.constant.JenkinsRunConstant;
 import com.hu.oneclick.dao.TestCycleScheduleDao;
+import com.hu.oneclick.dao.TestCycleScheduleModelDao;
 import com.hu.oneclick.model.domain.TestCycleSchedule;
+import com.hu.oneclick.model.domain.TestCycleScheduleModel;
 import com.hu.oneclick.server.service.TestCycleScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,10 +29,12 @@ public class TestCycleScheduleServiceImpl implements TestCycleScheduleService {
 
     @Autowired
     private TestCycleScheduleDao testCycleScheduleDao;
+    @Autowired
+    private TestCycleScheduleModelDao testCycleScheduleModelDao;
 
     @Scheduled(fixedDelay = 1000 * 60)
     public void jenkinsSchedule() {
-        List<TestCycleSchedule> testCycleSchedules = testCycleScheduleDao.selectAll();
+        List<TestCycleSchedule> testCycleSchedules = testCycleScheduleDao.selectAllByRuntime(new Date());
         for (TestCycleSchedule testCycleSchedule : testCycleSchedules) {
             //当前时间
             Date date = new Date();
@@ -38,11 +42,11 @@ public class TestCycleScheduleServiceImpl implements TestCycleScheduleService {
             long between = DateUtil.between(date, runTime, DateUnit.MS);
 
             if (between <= 1000 * 60L) {
-                testCycleSchedule.getScheduleModelId();
-                String JENKINS_URL = "http://user:gNouIkl2ca1t@54.226.181.123/job/RemoteTriggerExample/build?token=abc-123";
+                Integer scheduleModelId = testCycleSchedule.getScheduleModelId();
+                TestCycleScheduleModel testCycleScheduleModel = testCycleScheduleModelDao.selectByPrimaryKey(scheduleModelId);
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(JENKINS_URL)).build();
+                        .uri(URI.create(testCycleScheduleModel.getJenkinsUrl())).build();
                 HttpResponse<String> response = null;
                 try {
                     response = client.send(request, HttpResponse.BodyHandlers.ofString());

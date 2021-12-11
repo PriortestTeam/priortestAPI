@@ -4,15 +4,15 @@
   <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.TestCycleSchedule">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="schedule_model_id" jdbcType="INTEGER" property="scheduleModelId" />
-    <result column="run time" jdbcType="TIMESTAMP" property="runTime" />
+    <result column="run_time" jdbcType="TIMESTAMP" property="runTime" />
     <result column="run_status" jdbcType="VARCHAR" property="runStatus" />
     <result column="test_cycle_id" jdbcType="INTEGER" property="testCycleId" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, schedule_model_id, `run time`, run_status, test_cycle_id
+    id, schedule_model_id, `run_time`, run_status, test_cycle_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from test_cycle_schedule
     where id = #{id,jdbcType=INTEGER}
@@ -22,14 +22,20 @@
     <include refid="Base_Column_List" />
     from test_cycle_schedule
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <select id="selectAllByRuntime" resultMap="BaseResultMap" parameterType="java.util.Date">
+      select
+      <include refid="Base_Column_List" />
+      from test_cycle_schedule
+      where run_time &lt;= #{date} and run_status = 0
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from test_cycle_schedule
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule" useGeneratedKeys="true">
-    insert into test_cycle_schedule (schedule_model_id, `run time`, run_status, 
+    insert into test_cycle_schedule (schedule_model_id, `run time`, run_status,
       test_cycle_id)
-    values (#{scheduleModelId,jdbcType=INTEGER}, #{runTime,jdbcType=TIMESTAMP}, #{runStatus,jdbcType=VARCHAR}, 
+    values (#{scheduleModelId,jdbcType=INTEGER}, #{runTime,jdbcType=TIMESTAMP}, #{runStatus,jdbcType=VARCHAR},
       #{testCycleId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule" useGeneratedKeys="true">

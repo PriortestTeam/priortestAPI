@@ -37,6 +37,7 @@ import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
+import com.hu.oneclick.server.service.SystemConfigService;
 import com.hu.oneclick.server.service.TestCycleService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -89,8 +90,10 @@ public class TestCycleServiceImpl implements TestCycleService {
 
     private final TestCycleScheduleDao testCycleScheduleDao;
 
+    private final SystemConfigService systemConfigService;
 
-    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao, QueryFilterService queryFilterService, TestCaseExcutionDao testCaseExcutionDao, TestCycleJoinTestStepDao testCycleJoinTestStepDao, IssueDao issueDao, TestCycleScheduleModelDao testCycleScheduleModelDao, TestCycleScheduleDao testCycleScheduleDao) {
+
+    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao, QueryFilterService queryFilterService, TestCaseExcutionDao testCaseExcutionDao, TestCycleJoinTestStepDao testCycleJoinTestStepDao, IssueDao issueDao, TestCycleScheduleModelDao testCycleScheduleModelDao, TestCycleScheduleDao testCycleScheduleDao, SystemConfigService systemConfigService) {
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
         this.testCycleDao = testCycleDao;
@@ -105,12 +108,13 @@ public class TestCycleServiceImpl implements TestCycleService {
         this.issueDao = issueDao;
         this.testCycleScheduleModelDao = testCycleScheduleModelDao;
         this.testCycleScheduleDao = testCycleScheduleDao;
+        this.systemConfigService = systemConfigService;
     }
 
 
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
-        List<LeftJoinDto> select = testCycleDao.queryTitles(projectId,title,jwtUserService.getMasterId());
+        List<LeftJoinDto> select = testCycleDao.queryTitles(projectId, title, jwtUserService.getMasterId());
         return new Resp.Builder<List<LeftJoinDto>>().setData(select).total(select.size()).ok();
     }
 
@@ -118,14 +122,14 @@ public class TestCycleServiceImpl implements TestCycleService {
     @Override
     public Resp<TestCycle> queryById(String id) {
         String masterId = jwtUserService.getMasterId();
-        TestCycle testCycle = testCycleDao.queryById(id,masterId);
+        TestCycle testCycle = testCycleDao.queryById(id, masterId);
 
         //查询testCase 关联的 feature
         testCycle = Optional.ofNullable(testCycle).orElse(new TestCycle());
         List<Feature> features = featureDao.queryTitlesByTestCycleId(testCycle.getId());
         testCycle.setFeatures(features);
         //查询sprint 的title
-        if (features!=null && features.size() > 0){
+        if (features != null && features.size() > 0) {
             List<Sprint> sprints = sprintDao.queryTitlesInFeatureId(features);
             testCycle.setSprints(sprints);
         }
@@ -138,7 +142,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         String masterId = jwtUserService.getMasterId();
         testCycle.setUserId(masterId);
 
-        testCycle.setFilter(queryFilterService.mysqlFilterProcess(testCycle.getViewTreeDto(),masterId));
+        testCycle.setFilter(queryFilterService.mysqlFilterProcess(testCycle.getViewTreeDto(), masterId));
 
         List<TestCycle> select = testCycleDao.queryAll(testCycle);
         return new Resp.Builder<List<TestCycle>>().setData(select).total(select).ok();
@@ -151,17 +155,17 @@ public class TestCycleServiceImpl implements TestCycleService {
             //验证参数
             testCycle.verify();
             //验证是否存在
-            verifyIsExist(testCycle.getTitle(),testCycle.getProjectId());
+            verifyIsExist(testCycle.getTitle(), testCycle.getProjectId());
             testCycle.setUserId(jwtUserService.getMasterId());
             testCycle.setAuthorName(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
             Date date = new Date();
             testCycle.setCreateTime(date);
             testCycle.setUpdateTime(date);
             return Result.addResult(testCycleDao.insert(testCycle));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#insert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -170,18 +174,17 @@ public class TestCycleServiceImpl implements TestCycleService {
     public Resp<String> update(TestCycle testCycle) {
         try {
             //验证是否存在
-            verifyIsExist(testCycle.getTitle(),testCycle.getProjectId());
+            verifyIsExist(testCycle.getTitle(), testCycle.getProjectId());
             testCycle.setUserId(jwtUserService.getMasterId());
             //新增修改字段记录
             modifyRecord(testCycle);
             return Result.updateResult(testCycleDao.update(testCycle));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#update,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
-
 
 
     @Override
@@ -191,21 +194,18 @@ public class TestCycleServiceImpl implements TestCycleService {
             TestCycle testCycle = new TestCycle();
             testCycle.setId(id);
             return Result.deleteResult(testCycleDao.delete(testCycle));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#delete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
-
-
-
 
 
     @Override
     public Resp<List<TestCase>> queryBindCaseList(String testCycleId) {
         List<TestCase> select = testCycleJoinTestCaseDao.queryBindCaseList(testCycleId);
-        return new Resp.Builder< List<TestCase>>().setData(select).total(select).ok();
+        return new Resp.Builder<List<TestCase>>().setData(select).total(select).ok();
     }
 
     @Override
@@ -213,25 +213,25 @@ public class TestCycleServiceImpl implements TestCycleService {
     public Resp<String> bindCaseInsert(TestCycleJoinTestCase testCycleJoinTestCase) {
         try {
             List<TestCycleJoinTestCase> select = testCycleJoinTestCaseDao.queryList(testCycleJoinTestCase);
-            if (select != null && select.size() > 0){
-                throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),"测试用例" + SysConstantEnum.DATE_EXIST.getValue());
+            if (select != null && select.size() > 0) {
+                throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), "测试用例" + SysConstantEnum.DATE_EXIST.getValue());
             }
             int count = 0; //计数
             TestCycle testCycle = new TestCycle();
             List<String> strings = testCycleJoinTestCaseDao.queryTestCycleStatus(testCycleJoinTestCase.getTestCycleId());
             for (String s : strings) {
-                if ("0".equals(s)){
+                if ("0".equals(s)) {
                     count++;
                 }
             }
             //如果全部为0 表示都没运行，所以记录 未运行状态，1 已执行但为执行外状态
             testCycle.setStatus(count == strings.size() ? 0 : 1);
             testCycle.setId(testCycleJoinTestCase.getTestCycleId());
-            return Result.updateResult(testCycleJoinTestCaseDao.insert(testCycleJoinTestCase),testCycleDao.update(testCycle));
-        }catch (BizException e){
+            return Result.updateResult(testCycleJoinTestCaseDao.insert(testCycleJoinTestCase), testCycleDao.update(testCycle));
+        } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#bindCaseInsert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -240,10 +240,10 @@ public class TestCycleServiceImpl implements TestCycleService {
     public Resp<String> bindCaseDelete(String testCaseId) {
         try {
             return Result.deleteResult(testCycleJoinTestCaseDao.bindCaseDelete(testCaseId));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#bindCaseDelete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -264,16 +264,16 @@ public class TestCycleServiceImpl implements TestCycleService {
             testCase.setExecutedDate(date);
             testCase.setUserId(userId);
             //2 判断是否所有的test case 都被执行过，全部执行过后修改 test cycle 的status 为 complete
-            List<Map<String,String>> select = testCycleJoinTestCaseDao.queryBindCaseRunStatus(executeTestCaseDto.getTestCycleId());
+            List<Map<String, String>> select = testCycleJoinTestCaseDao.queryBindCaseRunStatus(executeTestCaseDto.getTestCycleId());
             for (Map<String, String> map : select) {
                 //查看执行状态,1 为已运行，为 1 计数加1 count 数等于 list 查询结果数则表示全部已执行过
                 if ("1".equals(map.get("executeStatus"))) {
                     count++;
                 }
                 //3 判断test cycle 下边的 testcase 是否都执行成功，凡有一个失败 则状态为失败
-                if (flag){
+                if (flag) {
                     String runStatus = map.get("runStatus");
-                    if (runStatus != null){
+                    if (runStatus != null) {
                         String[] split = runStatus.split(",");
                         for (String s : split) {
                             if (!"2".equals(s)) {
@@ -304,10 +304,10 @@ public class TestCycleServiceImpl implements TestCycleService {
             return Result.updateResult(testCycleDao.update(testCycle),
                     testCaseDao.update(testCase),
                     testCaseStepDao.update(testCaseStep));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#executeTestCase,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
 //        try {
 //            // 当前用户下，当前测试周期下的当前测试用例前面步骤是否有执行失败的
@@ -397,28 +397,30 @@ public class TestCycleServiceImpl implements TestCycleService {
 
 
     /**
-     *  查重
+     * 查重
      */
-    private void verifyIsExist(String title,String projectId){
-        if (StringUtils.isEmpty(title)){
+    private void verifyIsExist(String title, String projectId) {
+        if (StringUtils.isEmpty(title)) {
             return;
         }
         TestCycle testCycle = new TestCycle();
         testCycle.setTitle(title);
         testCycle.setProjectId(projectId);
         testCycle.setId(null);
-        if (testCycleDao.selectOne(testCycle) != null){
-            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),testCycle.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
+        if (testCycleDao.selectOne(testCycle) != null) {
+            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), testCycle.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
         }
     }
+
     /**
      * 修改字段，进行记录
+     *
      * @param testCycle
      */
     private void modifyRecord(TestCycle testCycle) {
         try {
             TestCycle query = testCycleDao.queryById(testCycle.getId(), testCycle.getUserId());
-            if (query == null){
+            if (query == null) {
                 throw new RuntimeException();
             }
 
@@ -432,7 +434,7 @@ public class TestCycleServiceImpl implements TestCycleService {
                 fields[i].setAccessible(true);
                 fields2[i].setAccessible(true);
 
-                if(field.equals("id")
+                if (field.equals("id")
                         || field.equals("projectId")
                         || field.equals("userId")
                         || field.equals("updateTime")
@@ -465,50 +467,51 @@ public class TestCycleServiceImpl implements TestCycleService {
                     modifyRecords.add(mr);
                 }
             }
-            if (modifyRecords.size() <= 0){
+            if (modifyRecords.size() <= 0) {
                 return;
             }
             modifyRecordsService.insert(modifyRecords);
         } catch (IllegalAccessException e) {
-            throw new BizException(SysConstantEnum.ADD_FAILED.getCode(),"修改字段新增失败！");
+            throw new BizException(SysConstantEnum.ADD_FAILED.getCode(), "修改字段新增失败！");
         }
     }
 
 
     /**
      * 获取字段对应中文字义
+     *
      * @param args
      * @return
      */
-    private String getCnField(String args){
+    private String getCnField(String args) {
         switch (args) {
             case "title":
-                return  "名称";
+                return "名称";
             case "runStatus":
                 return "运行状态";
             case "feature":
                 return "故事";
             case "status":
-                return  "状态";
+                return "状态";
             case "lastRunDate":
                 return "最后一次运行时间";
             case "lastModify":
                 return "最后修改时间";
             case "featureId":
-                return  "关联故事";
+                return "关联故事";
             case "sprintId":
-                return  "关联迭代";
+                return "关联迭代";
             case "version":
-                return  "版本";
+                return "版本";
             case "ped":
-                return  "ped";
+                return "ped";
         }
         return args;
     }
 
     @Override
     public Resp<List<String>> getTestCycleVersion(String projectId, String env, String version) {
-        List<String> cycleVersion = testCycleDao.getTestCycleVersion(projectId,env,version);
+        List<String> cycleVersion = testCycleDao.getTestCycleVersion(projectId, env, version);
         return new Resp.Builder<List<String>>().setData(cycleVersion).ok();
     }
 
@@ -521,6 +524,7 @@ public class TestCycleServiceImpl implements TestCycleService {
 
     /**
      * 点击测试周期中某个测试用例前面的run按钮
+     *
      * @param executeTestCaseDto
      * @return
      */
@@ -538,16 +542,16 @@ public class TestCycleServiceImpl implements TestCycleService {
         testCycleJoinTestStep.setTestCycleId(executeTestCaseDto.getTestCycleId());
 
         try {
-            List<TestCycleJoinTestCase> list =  queryTestCycleJoinTestCaseList(executeTestCaseDto);
+            List<TestCycleJoinTestCase> list = queryTestCycleJoinTestCaseList(executeTestCaseDto);
             if (list == null || list.size() == 0) {
-                throw new BizException("","未查询到当前测试用例执行记录");
+                throw new BizException("", "未查询到当前测试用例执行记录");
             }
             TestCycleJoinTestCase resultTestCycleJoinTestCase = list.get(0);
             cycleRunCount = resultTestCycleJoinTestCase.getRunCount();
             if (cycleRunCount == 0) {// 当此测试用例从未执行时，点击run，不做任何改变,只返回當前測試用例步驟
                 List<TestCycleJoinTestStep> testCycleJoinTestStepList = testCycleJoinTestStepDao.queryList(testCycleJoinTestStep);
                 resultMap.put("testCycleJoinTestStepList", testCycleJoinTestStepList);
-                return new Resp.Builder< Map<String, Object>>().setData(resultMap).total(resultMap).ok();
+                return new Resp.Builder<Map<String, Object>>().setData(resultMap).total(resultMap).ok();
             }
 
             // 更新test_cycle_join_test_case的Run Count +1 , Run Duration =00;不更新执行状态和运行状态，否则之前执行过的步骤会作废
@@ -587,22 +591,23 @@ public class TestCycleServiceImpl implements TestCycleService {
             List<TestCaseExcution> excutions = testCaseExcutionDao.queryHistoryByTestCaseId(testCaseExcution);
             resultMap.put("testCycleJoinTestStepList", testCycleJoinTestStepList2);
             resultMap.put("history", excutions);
-            return new Resp.Builder< Map<String, Object>>().setData(resultMap).total(resultMap).ok();
-        }catch (BizException e){
+            return new Resp.Builder<Map<String, Object>>().setData(resultMap).total(resultMap).ok();
+        } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#runTestCycleTc,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<Map<String, Object>>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<Map<String, Object>>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
     /**
      * 执行当前测试周期下某个测试用例的步骤
+     *
      * @param executeTestCaseDto
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<Map<String, Object>> excute(ExecuteTestCaseDto executeTestCaseDto){
+    public Resp<Map<String, Object>> excute(ExecuteTestCaseDto executeTestCaseDto) {
         String userId = jwtUserService.getMasterId();
         Date date = new Date();
         try {
@@ -612,21 +617,21 @@ public class TestCycleServiceImpl implements TestCycleService {
             testCycleJoinTestStep.setTestCycleId(executeTestCaseDto.getTestCycleId());
             List<TestCycleJoinTestStep> testCycleJoinTestStepList = testCycleJoinTestStepDao.queryList(testCycleJoinTestStep);
             if (testCycleJoinTestStepList == null || testCycleJoinTestStepList.size() <= 0) {
-                throw new BizException("","当前测试用例无内容");
+                throw new BizException("", "当前测试用例无内容");
             }
             for (TestCycleJoinTestStep tcjts : testCycleJoinTestStepList) {
-                if (Integer.valueOf((String)tcjts.getStep()) < executeTestCaseDto.getStep()) {
+                if (Integer.valueOf((String) tcjts.getStep()) < executeTestCaseDto.getStep()) {
                     if (tcjts.getStepStatus() == 2) {// 0:Not Run; 1:PASS; 2:Fail
-                        throw new BizException("","当前测试用例有执行失败步骤，不可继续执行");
+                        throw new BizException("", "当前测试用例有执行失败步骤，不可继续执行");
                     }
 
                 }
             }
 
             int cycleRunCount = 0;
-            List<TestCycleJoinTestCase> list =  queryTestCycleJoinTestCaseList(executeTestCaseDto);
+            List<TestCycleJoinTestCase> list = queryTestCycleJoinTestCaseList(executeTestCaseDto);
             if (list == null || list.size() == 0) {
-                throw new BizException("","为查询到当前测试用例执行记录");
+                throw new BizException("", "为查询到当前测试用例执行记录");
             }
 
             TestCase testCase = new TestCase();
@@ -704,11 +709,11 @@ public class TestCycleServiceImpl implements TestCycleService {
             List<TestCaseExcution> excutions = testCaseExcutionDao.queryHistoryByTestCaseId(testCaseExcution);
             Map<String, Object> resultMap = new HashMap<String, Object>();
             resultMap.put("history", excutions);// testCaseExcution
-            return new Resp.Builder< Map<String, Object>>().setData(resultMap).total(resultMap).ok();
-        }catch (BizException e){
+            return new Resp.Builder<Map<String, Object>>().setData(resultMap).total(resultMap).ok();
+        } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#runTestCycleTc,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<Map<String, Object>>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<Map<String, Object>>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -721,10 +726,10 @@ public class TestCycleServiceImpl implements TestCycleService {
             Map<String, Object> resultMap = new HashMap<String, Object>();
             resultMap.put("issueList", list);
             return new Resp.Builder<Map<String, Object>>().setData(resultMap).total(resultMap).ok();
-        } catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#runTestCycleTc,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<Map<String, Object>>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<Map<String, Object>>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -736,10 +741,10 @@ public class TestCycleServiceImpl implements TestCycleService {
             //验证是否存在
             issue.setUserId(jwtUserService.getMasterId());
             return Result.updateResult(testCaseExcutionDao.mergeIssue(issue));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: IssueServiceImpl#update,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -751,7 +756,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         return list;
     }
 
-    public Integer updateTestCycle (ExecuteTestCaseDto executeTestCaseDto, String userId) {
+    public Integer updateTestCycle(ExecuteTestCaseDto executeTestCaseDto, String userId) {
         Date date = new Date();
         // 更新test_cycle
         TestCycle testCycle = new TestCycle();
@@ -803,7 +808,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         return testCycle.getRunStatus();
     }
 
-    public String getRandom(int num){
+    public String getRandom(int num) {
         Calendar cal = Calendar.getInstance();
         String year = String.valueOf(cal.get(Calendar.YEAR));
         String month = String.valueOf(cal.get(Calendar.MONTH) + 1);
@@ -811,14 +816,14 @@ public class TestCycleServiceImpl implements TestCycleService {
         String hour = String.valueOf(cal.get(Calendar.HOUR));
         String min = String.valueOf(cal.get(Calendar.MINUTE));
         String sec = String.valueOf(cal.get(Calendar.SECOND));
-        String random = String.valueOf((int)((Math.random()*9+1) * num));
+        String random = String.valueOf((int) ((Math.random() * 9 + 1) * num));
         return random;
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 //        System.out.println((int)((Math.random()*9+1)*100000));
 //        System.out.println(Math.random()*9+1);
-        int a =1;
+        int a = 1;
         Calendar cal = Calendar.getInstance();
         String year = String.valueOf(cal.get(Calendar.YEAR));
         String month = String.valueOf(cal.get(Calendar.MONTH) + 1);
@@ -826,7 +831,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         String hour = String.valueOf(cal.get(Calendar.HOUR));
         String min = String.valueOf(cal.get(Calendar.MINUTE));
         String sec = String.valueOf(cal.get(Calendar.SECOND));
-        String random = String.valueOf((int)((Math.random()*9+1)*100000));
+        String random = String.valueOf((int) ((Math.random() * 9 + 1) * 100000));
 
 //        issueId = year + month + day + hour + min + sec + random;//  生成issueId
         System.out.println(year + month + day + hour + min + sec + random);
@@ -849,17 +854,71 @@ public class TestCycleServiceImpl implements TestCycleService {
         Date startTimeDate = model.getStartTimeDate();
         Integer startTimeWeek = model.getStartTimeWeek();
         Date endTime = model.getEndTime();
-        //重复方式
+        //重复方式每日，每月，每年，不重复
         String frequency = model.getFrequency();
-        if (!ObjectUtils.isEmpty(startTimeDate)&&!ObjectUtils.isEmpty(startTimeWeek)) {
+        if (StringUtils.isEmpty(frequency)) {
+            return new Resp.Builder<String>().buildResult("请选择重复方式");
+        }
+
+        if (!ObjectUtils.isEmpty(startTimeDate) && !ObjectUtils.isEmpty(startTimeWeek)) {
             return new Resp.Builder<String>().buildResult("只能选择一个开始方式");
         }
         if (!ObjectUtils.isEmpty(startTimeDate)) {
-            long firstTime = startTimeDate.getTime() + model.getRunTime().getTime();
-            Date firstDate = new Date(firstTime);
-            long betweenDay = DateUtil.between(firstDate, endTime, DateUnit.DAY);
 
-            TestCycleSchedule testCycleSchedule = new TestCycleSchedule();
+            Date runTime = model.getRunTime();
+
+            if ("1".equals(frequency)) {
+                long betweenDay = DateUtil.between(startTimeDate, endTime, DateUnit.DAY);
+                int i;
+                if (startTimeDate.before(runTime)) {
+                    i = 0;
+                } else {
+                    i = 1;
+                }
+                for (; i <= betweenDay; i++) {
+                    TestCycleSchedule testCycleSchedule = new TestCycleSchedule();
+                    testCycleSchedule.setRunTime(new Date(runTime.getTime() + i * 24 * 60 * 60 * 1000L));
+                    testCycleSchedule.setRunStatus("0");
+                    testCycleSchedule.setTestCycleId(model.getTestCycleId());
+                    testCycleSchedule.setScheduleModelId(model.getId());
+                    testCycleScheduleDao.insert(testCycleSchedule);
+                }
+            } else if ("7".equals(frequency)) {
+                int i;
+                if (startTimeDate.before(runTime)) {
+                    i = 0;
+                } else {
+                    i = 1;
+                }
+                long betweenWeek = DateUtil.between(startTimeDate, endTime, DateUnit.WEEK);
+
+                for (; i <= betweenWeek; i++) {
+                    TestCycleSchedule testCycleSchedule = new TestCycleSchedule();
+                    testCycleSchedule.setRunTime(new Date(runTime.getTime() + i * 7 * 24 * 60 * 60 * 1000L));
+                    testCycleSchedule.setRunStatus("0");
+                    testCycleSchedule.setTestCycleId(model.getTestCycleId());
+                    testCycleSchedule.setScheduleModelId(model.getId());
+                    testCycleScheduleDao.insert(testCycleSchedule);
+                }
+            } else if ("30".equals(frequency)) {
+                int i;
+                if (startTimeDate.before(runTime)) {
+                    i = 0;
+                } else {
+                    i = 1;
+                }
+                long betweenMoon = (endTime.getTime() - startTimeDate.getTime()) / 30 / 24 / 60 / 60 / 1000;
+
+                for (; i <= betweenMoon; i++) {
+                    TestCycleSchedule testCycleSchedule = new TestCycleSchedule();
+                    testCycleSchedule.setRunTime(new Date(runTime.getTime() + i * 30 * 24 * 60 * 60 * 1000L));
+                    testCycleSchedule.setRunStatus("0");
+                    testCycleSchedule.setTestCycleId(model.getTestCycleId());
+                    testCycleSchedule.setScheduleModelId(model.getId());
+                    testCycleScheduleDao.insert(testCycleSchedule);
+                }
+            }
+
 
         }
 
