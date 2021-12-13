@@ -116,7 +116,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Resp<List<Project>> queryForProjects(ProjectDto project) {
+    public Resp<List<Project>> queryFoProjects(ProjectDto project) {
         String masterId = jwtUserService.getMasterId();
         project.setUserId(masterId);
 
