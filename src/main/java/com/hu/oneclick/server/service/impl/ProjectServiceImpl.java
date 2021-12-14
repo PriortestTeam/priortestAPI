@@ -211,7 +211,7 @@ public class ProjectServiceImpl implements ProjectService {
             Project project = new Project();
             project.setUserId(jwtUserService.getMasterId());
             project.setId(id);
-            project.setStatus(1);
+            project.setStatus("关闭");
             project.setCloseDate(new Date());
             project.setCloseDesc(closeDesc);
             return Result.updateResult(projectDao.update(project));

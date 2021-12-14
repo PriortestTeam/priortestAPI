@@ -37,7 +37,7 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
     /**
      * 项目状态: 默认 Progress，1 Closed 关闭、2 Plan 计划、3 Progress 开发中
      */
-    private Integer status;
+    private String status;
     /**
      * 描述
      */
