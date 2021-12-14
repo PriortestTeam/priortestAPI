@@ -453,6 +453,9 @@
             <if test="expireDate != null">
                 expire_date = #{expireDate},
             </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
             update_time = NOW()
         </set>
         where
