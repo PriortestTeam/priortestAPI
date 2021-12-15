@@ -133,4 +133,12 @@ public interface UserService {
     Boolean getUserAccountInfo(String emailId);
 
     Resp<String> verifyLinkString(String linkStr);
+
+    /** 查询用户和子用户
+     * @Param: [masterId]
+     * @return: java.util.List<com.hu.oneclick.model.domain.SysUser>
+     * @Author: MaSiyi
+     * @Date: 2021/12/15
+     */
+    List<SysUser> queryByUserIdAndParentId(String masterId);
 }

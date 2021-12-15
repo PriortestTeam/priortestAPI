@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
 
             //设置主账号识别号，用于子用户登录
             MasterIdentifier masterIdentifier = masterIdentifierDao.queryOne();
-            masterIdentifier= Optional.ofNullable(masterIdentifier).orElse(new MasterIdentifier());
+            masterIdentifier = Optional.ofNullable(masterIdentifier).orElse(new MasterIdentifier());
             if (StringUtils.isEmpty(masterIdentifier.getId())) {
                 masterIdentifier.setId(RandomUtil.randomNumbers(8));
                 masterIdentifier.setFlag(0);
@@ -494,5 +494,24 @@ public class UserServiceImpl implements UserService {
         }
         bucket.delete();
         return new Resp.Builder<String>().ok();
+    }
+
+    /**
+     * 查询用户和子用户
+     *
+     * @param masterId
+     * @Param: [masterId]
+     * @return: java.util.List<com.hu.oneclick.model.domain.SysUser>
+     * @Author: MaSiyi
+     * @Date: 2021/12/15
+     */
+    @Override
+    public List<SysUser> queryByUserIdAndParentId(String masterId) {
+        SysUser sysUser = new SysUser();
+        sysUser.setId(masterId);
+        sysUser.setParentId(masterId);
+
+
+        return sysUserDao.queryAllIdOrParentId(sysUser);
     }
 }

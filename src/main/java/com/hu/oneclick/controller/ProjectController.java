@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author qingyang
@@ -116,5 +115,11 @@ public class ProjectController {
     @ApiOperation("新建项目时获取所有用户字段")
     public Resp<List< Object>> getAllCustomField(@RequestBody CustomFieldDto customFieldDto) {
         return customFieldService.getAllCustomField(customFieldDto);
+    }
+
+    @GetMapping("getThePersonInCharge")
+    @ApiOperation("获取负责人")
+    public Resp<List<String>> getThePersonInCharge() {
+        return sysCustomFieldService.getThePersonInCharge();
     }
 }

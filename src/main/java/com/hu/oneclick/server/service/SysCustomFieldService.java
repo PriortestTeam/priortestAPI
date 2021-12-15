@@ -37,6 +37,12 @@ public interface SysCustomFieldService {
     Resp<List<SysCustomFieldVo>> getAllSysCustomField();
 
 
+    /** 获取项目负责人
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List<java.lang.String>>
+     * @Author: MaSiyi
+     * @Date: 2021/12/15
+     */
+    Resp<List<String>> getThePersonInCharge();
     
-
 }

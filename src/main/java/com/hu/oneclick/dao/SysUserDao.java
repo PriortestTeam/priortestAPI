@@ -43,6 +43,7 @@ public interface SysUserDao {
      */
     List<SysUser> queryAll(SysUser sysUser);
 
+    List<SysUser> queryAllIdOrParentId(SysUser sysUser);
     /**
      * 根据用户邮箱查询
      * @param email

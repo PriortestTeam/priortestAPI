@@ -158,6 +158,26 @@
             <if test="delFlag != null">
                 and del_flag = #{delFlag}
             </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+        </where>
+    </select>
+    <select id="queryAllIdOrParentId" resultMap="SysUserMap">
+        select
+        id, email, user_name,
+        password, photo, status,
+        register_date, contact_no, company,
+        profession, industry, close_date, `type`, active_state,
+        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier
+        from oneclick.sys_user
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="parentId != null">
+                or parent_id = #{parentId}
+            </if>
         </where>
     </select>
     <select id="queryByEmail" resultMap="SysUserMap">

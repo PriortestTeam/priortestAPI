@@ -13,8 +13,10 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.SysCustomField;
 import com.hu.oneclick.model.domain.SysCustomFieldExpand;
+import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.server.service.SysCustomFieldService;
+import com.hu.oneclick.server.user.UserService;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -41,11 +43,14 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
 
     private final SysCustomFieldExpandDao sysCustomFieldExpandDao;
 
-    public SysCustomFieldServiceImpl(JwtUserServiceImpl jwtUserService, RedissonClient redisClient, SysCustomFieldDao sysCustomFieldDao, SysCustomFieldExpandDao sysCustomFieldExpandDao) {
+    private final UserService userService;
+
+    public SysCustomFieldServiceImpl(JwtUserServiceImpl jwtUserService, RedissonClient redisClient, SysCustomFieldDao sysCustomFieldDao, SysCustomFieldExpandDao sysCustomFieldExpandDao, UserService userService) {
         this.jwtUserService = jwtUserService;
         this.redisClient = redisClient;
         this.sysCustomFieldDao = sysCustomFieldDao;
         this.sysCustomFieldExpandDao = sysCustomFieldExpandDao;
+        this.userService = userService;
     }
 
     @Override
@@ -63,7 +68,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
                 return new Resp.Builder<List<SysCustomFieldVo>>().setData(result).totalSize(result.size()).ok();
             }
             //缓存没有查数据库
-            List<SysCustomFieldVo> sysCustomFieldVos = queryAll(masterId,projectId);
+            List<SysCustomFieldVo> sysCustomFieldVos = queryAll(masterId, projectId);
             bucket.set(JSONObject.toJSONString(sysCustomFieldVos), 24, TimeUnit.HOURS);
             return new Resp.Builder<List<SysCustomFieldVo>>().setData(sysCustomFieldVos).totalSize(sysCustomFieldVos.size()).ok();
         } catch (BizException e) {
@@ -92,10 +97,10 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
 
             if (sysDefaultValues == null) {
                 saveValues.addAll(requestValues);
-            }else{
+            } else {
                 for (String requestValue : requestValues) {
                     //检查是否为空,为空代表没有默认值
-                    if (sysDefaultValues.contains(requestValue)){
+                    if (sysDefaultValues.contains(requestValue)) {
                         continue;
                     }
                     saveValues.add(requestValue.trim());
@@ -112,9 +117,9 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
                             projectId);
             int flag;
             String s = saveValues.toString();
-            s = s.replace("[","");
-            s = s.replace("]","");
-            s = s.replace(", ",",");
+            s = s.replace("[", "");
+            s = s.replace("]", "");
+            s = s.replace(", ", ",");
             //有更新
             if (querySysCustomFieldExpand != null) {
                 querySysCustomFieldExpand.setValues(s);
@@ -143,7 +148,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
         } catch (BizException e) {
             logger.error("class: SysCustomFieldServiceImpl#updateSysCustomFields,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -151,8 +156,8 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
     public Resp<SysCustomFieldVo> getSysCustomField(String fieldName) {
         try {
             //做一下驼峰转下划线
-            if (!StringUtils.isEmpty(fieldName)){
-                fieldName =  CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
+            if (!StringUtils.isEmpty(fieldName)) {
+                fieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
             }
             List<SysCustomFieldVo> result;
             String masterId = jwtUserService.getMasterId();
@@ -163,7 +168,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             String s = bucket.get();
             if (s != null) {
                 result = JSONObject.parseArray(s, SysCustomFieldVo.class);
-            }else {
+            } else {
                 result = queryAll(masterId, projectId);
             }
             //循环获取值
@@ -181,7 +186,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
     }
 
 
-    private List<SysCustomFieldVo> queryAll(String masterId,String projectId) {
+    private List<SysCustomFieldVo> queryAll(String masterId, String projectId) {
         //查询系统字段
         List<SysCustomField> sysCustomFields = sysCustomFieldDao.queryAll();
         //查询当前项目所使用所有字段
@@ -199,10 +204,10 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             int flag = 0;
             for (SysCustomFieldExpand customFieldExpand : sysCustomFieldExpands) {
                 if (customField.getFieldName().equals(customFieldExpand.getLinkSysCustomField())) {
-                    if (!"".equals(defaultValues.toString()) && flag == 0){
+                    if (!"".equals(defaultValues.toString()) && flag == 0) {
                         defaultValues.append(",");
                     }
-                    flag ++;
+                    flag++;
                     //取扩展值
                     String values = StringUtils.isEmpty(customFieldExpand.getValues()) ? "" : customFieldExpand.getValues();
                     //合并
@@ -234,5 +239,34 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
     @Override
     public Resp<List<SysCustomFieldVo>> getAllSysCustomField() {
         return this.querySysCustomFields();
+    }
+
+    /**
+     * 获取项目负责人
+     *
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List < java.lang.String>>
+     * @Author: MaSiyi
+     * @Date: 2021/12/15
+     */
+    @Override
+    public Resp<List<String>> getThePersonInCharge() {
+        List<String> list = new ArrayList<>();
+        //系统字段
+        SysCustomField report_name = sysCustomFieldDao.queryByFieldName("report_name");
+        String defaultValues = report_name.getDefaultValues();
+        if (!StringUtils.isEmpty(defaultValues)) {
+            String[] split = defaultValues.split(",");
+            for (String s : split) {
+                list.add(s);
+            }
+        }
+        //主账户和子账户
+        String masterId = jwtUserService.getMasterId();
+        List<SysUser> listPsn = userService.queryByUserIdAndParentId(masterId);
+        for (SysUser sysUser : listPsn) {
+            list.add(sysUser.getUserName());
+        }
+        return new Resp.Builder<List<String>>().setData(list).ok();
     }
 }
