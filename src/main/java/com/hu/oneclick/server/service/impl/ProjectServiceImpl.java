@@ -619,4 +619,23 @@ public class ProjectServiceImpl implements ProjectService {
         return data.size() >= 3;
     }
 
+    /**
+     * 初始化仓库
+     *
+     * @Param: []
+     * @return: java.lang.Integer
+     * @Author: MaSiyi
+     * @Date: 2021/12/16
+     */
+    @Override
+    public Integer initProject(Project project,UserUseOpenProject userUseOpenProject) {
+        projectDao.insertUseOpenProject(userUseOpenProject);
+        project.setUserId(userUseOpenProject.getUserId());
+        project.setTitle(userUseOpenProject.getTitle());
+        project.setStatus("3");
+        project.setDelFlag(0);
+        project.setUpdateTime(new Date());
+        project.setReportToName("无");
+        return projectDao.initProject(project);
+    }
 }

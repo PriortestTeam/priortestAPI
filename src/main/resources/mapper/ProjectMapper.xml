@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.ProjectDao">
     <!--开启缓存-->
-    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
+    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
 
     <resultMap type="com.hu.oneclick.model.domain.Project" id="ProjectMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
@@ -49,23 +49,31 @@
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProjectMap">
-        select
-          id, user_id, title, report_to_name, status, description,
-          plan_release_date, del_flag, create_time, update_time,
-          close_date,test_frame,
-               project_category,foreign_id
-        from oneclick.project
-        limit #{offset}, #{limit}
+        select id,
+               user_id,
+               title,
+               report_to_name,
+               status,
+               description,
+               plan_release_date,
+               del_flag,
+               create_time,
+               update_time,
+               close_date,
+               test_frame,
+               project_category,
+               foreign_id
+        from oneclick.project limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ProjectMap">
         select
         id, user_id, title,
-         report_to_name, status,
-         description, plan_release_date ,
-          del_flag, create_time,
-          update_time,close_date,test_frame,
+        report_to_name, status,
+        description, plan_release_date ,
+        del_flag, create_time,
+        update_time,close_date,test_frame,
         project_category,foreign_id
         from oneclick.project
         <where>
@@ -103,26 +111,26 @@
         </where>
     </select>
     <select id="queryByTitle" resultType="java.lang.Integer">
-         select
-            count(1)
+        select count(1)
         from project
-        where
-        user_id = #{masterId}
-        and title = #{title}
+        where user_id = #{masterId}
+          and title = #{title}
     </select>
     <select id="queryAllProjects" resultMap="ProjectMap">
-        select id,title from project where user_id = #{masterId} order by create_time
+        select id, title
+        from project
+        where user_id = #{masterId}
+        order by create_time
     </select>
 
     <select id="queryAllProjectsAndPermission" resultMap="ProjectMap">
-        select
-        p.id,
-        p.title,
-        group_concat(s.operation_auth_id) as operation_auth_ids
+        select p.id,
+               p.title,
+               group_concat(s.operation_auth_id) as operation_auth_ids
         from project p
-        left join sys_project_permission s on p.id = s.project_id
-         where p.user_id = #{masterId}
-         group by p.id
+                 left join sys_project_permission s on p.id = s.project_id
+        where p.user_id = #{masterId}
+        group by p.id
         order by p.create_time
     </select>
     <select id="queryInProjectIdsAndPermission" resultMap="ProjectMap">
@@ -220,7 +228,6 @@
     </insert>
 
 
-
     <!--通过主键修改数据-->
     <update id="update">
         update project
@@ -265,40 +272,37 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from oneclick.project where id  = #{id}
+        delete
+        from oneclick.project
+        where id = #{id}
     </delete>
-
 
 
     <!--用户操作已打开的项目-->
     <select id="queryUseOpenProject" parameterType="java.lang.String"
             resultType="com.hu.oneclick.model.domain.UserUseOpenProject">
-        select
-          uuop.id as id,
-          uuop.user_id as userId,
-          uuop.project_id as projectId,
-          p.title as title
+        select uuop.id         as id,
+               uuop.user_id    as userId,
+               uuop.project_id as projectId,
+               p.title         as title
         from user_use_open_project uuop
-        join project p on uuop.project_id = p.id
-        join sys_user su on uuop.user_id = su.id
-        where
-        su.id = #{userId}
-        limit 1
+                 join project p on uuop.project_id = p.id
+                 join sys_user su on uuop.user_id = su.id
+        where su.id = #{userId} limit 1
     </select>
     <select id="queryProjectAndPermissionByProjectId"
             parameterType="java.lang.String"
             resultType="com.hu.oneclick.model.domain.Project">
-       select
-        p.id,
-        p.title,
-        group_concat(s.operation_auth_id) as operationAuthIds
+        select p.id,
+               p.title,
+               group_concat(s.operation_auth_id) as operationAuthIds
         from project p
-        left join sys_project_permission s on p.id = s.project_id
-         where p.user_id = #{masterId} and p.id = #{projectId}
-         group by p.id
+                 left join sys_project_permission s on p.id = s.project_id
+        where p.user_id = #{masterId}
+          and p.id = #{projectId}
+        group by p.id
         order by p.create_time
     </select>
-
 
 
     <insert id="insertUseOpenProject">
@@ -316,11 +320,90 @@
     </insert>
 
     <delete id="deleteUseOpenProject">
-        delete from user_use_open_project where id  = #{id}
+        delete
+        from user_use_open_project
+        where id = #{id}
     </delete>
 
 
+    <insert id="initProject">
+        insert into oneclick.project
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                id,
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id,
+            </if>
+            <if test="title != null and title != ''">
+                title,
+            </if>
+            <if test="reportToName != null and reportToName != ''">
+                report_to_name,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="description != null and description != ''">
+                description,
+            </if>
+            <if test="planReleaseDate != null">
+                plan_release_date,
+            </if>
+            <if test="testFrame != null and testFrame != ''">
+                test_frame,
+            </if>
+            <if test="projectCategory != null and projectCategory != ''">
+                project_category,
+            </if>
+            <if test="foreignId != null and foreignId != ''">
+                foreign_id,
+            </if>
+            <if test="projectExpand != null and projectExpand != ''">
+                project_expand,
+            </if>
+            create_time,
+            update_time
 
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">
+                #{id},
+            </if>
+            <if test="userId != null and userId != ''">
+                #{userId},
+            </if>
+            <if test="title != null and title != ''">
+                #{title},
+            </if>
+            <if test="reportToName != null and reportToName != ''">
+                #{reportToName},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="description != null and description != ''">
+                #{description},
+            </if>
+            <if test="planReleaseDate != null">
+                #{planReleaseDate},
+            </if>
+            <if test="testFrame != null and testFrame != ''">
+                #{testFrame},
+            </if>
+            <if test="projectCategory != null and projectCategory != ''">
+                #{projectCategory},
+            </if>
+            <if test="foreignId != null and foreignId != ''">
+                #{foreignId},
+            </if>
+            <if test="projectExpand != null and projectExpand != ''">
+                #{projectExpand},
+            </if>
+            NOW(),
+            NOW()
+        </trim>
+    </insert>
 
 
 </mapper>

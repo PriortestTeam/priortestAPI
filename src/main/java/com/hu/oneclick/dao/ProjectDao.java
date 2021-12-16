@@ -116,5 +116,7 @@ public interface ProjectDao {
     int deleteUseOpenProject(@Param("id") String id);
 
 
+    Integer initProject(Project project);
+
 
 }

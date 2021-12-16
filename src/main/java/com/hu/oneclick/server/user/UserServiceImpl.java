@@ -14,14 +14,17 @@ import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.MasterIdentifier;
+import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserToken;
+import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.service.MailService;
+import com.hu.oneclick.server.service.ProjectService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -58,6 +61,8 @@ public class UserServiceImpl implements UserService {
 
     private final SysUserTokenDao sysUserTokenDao;
 
+    private final ProjectService projectService;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
@@ -68,13 +73,14 @@ public class UserServiceImpl implements UserService {
     private long secondTime;
 
 
-    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService, SysUserTokenDao sysUserTokenDao) {
+    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.mailService = mailService;
         this.sysUserTokenDao = sysUserTokenDao;
+        this.projectService = projectService;
     }
 
     @Override
@@ -318,6 +324,12 @@ public class UserServiceImpl implements UserService {
             sysUser.setActivitiNumber(1);
             long time = activitiDate.getTime() + firstTime * 24 * 60 * 60 * 1000;
             sysUser.setExpireDate(new Date(time));
+            Project project = new Project();
+            UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
+            userUseOpenProject.setProjectId(project.getId());
+            userUseOpenProject.setUserId(sysUser.getId());
+            userUseOpenProject.setTitle("初始化项目");
+            projectService.initProject(project,userUseOpenProject);
         }
         //申请延期
         if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {

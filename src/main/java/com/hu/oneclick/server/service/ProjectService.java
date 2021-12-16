@@ -2,11 +2,11 @@ package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -35,4 +35,12 @@ public interface ProjectService {
     Resp<String> generate(SignOffDto signOffDto);
 
     Resp<String> upload(MultipartFile file);
+
+    /** 初始化仓库
+     * @Param: []
+     * @return: java.lang.Integer
+     * @Author: MaSiyi
+     * @Date: 2021/12/16
+     */
+    Integer initProject(Project project, UserUseOpenProject userUseOpenProject);
 }
