@@ -630,12 +630,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Integer initProject(Project project,UserUseOpenProject userUseOpenProject) {
         projectDao.insertUseOpenProject(userUseOpenProject);
-        project.setUserId(userUseOpenProject.getUserId());
-        project.setTitle(userUseOpenProject.getTitle());
-        project.setStatus("3");
-        project.setDelFlag(0);
-        project.setUpdateTime(new Date());
-        project.setReportToName("无");
+
         return projectDao.initProject(project);
     }
 }

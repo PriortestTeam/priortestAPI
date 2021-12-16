@@ -329,6 +329,12 @@ public class UserServiceImpl implements UserService {
             userUseOpenProject.setProjectId(project.getId());
             userUseOpenProject.setUserId(sysUser.getId());
             userUseOpenProject.setTitle("初始化项目");
+            project.setUserId(userUseOpenProject.getUserId());
+            project.setTitle(userUseOpenProject.getTitle());
+            project.setStatus("开发中");
+            project.setDelFlag(0);
+            project.setUpdateTime(new Date());
+            project.setReportToName(sysUser.getUserName());
             projectService.initProject(project,userUseOpenProject);
         }
         //申请延期
