@@ -449,7 +449,9 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         } else if (viewDownChildParams1.size() == 1) {
             String defaultValues = viewDownChildParams.getDefaultValues();
             List<ViewScopeChildParams> childParams = JSONArray.parseArray(defaultValues, ViewScopeChildParams.class);
-
+            if (childParams == null) {
+                childParams = new ArrayList<>();
+            }
             childParams.add(viewScopeChildParams);
             viewDownChildParams.setDefaultValues(JSON.toJSONString(childParams));
             viewDownChildParamsDao.update(viewDownChildParams);
