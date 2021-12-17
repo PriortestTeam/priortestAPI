@@ -62,6 +62,8 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
 
     private String closeDesc;
 
+    private String customer;
+
     private String scope = OneConstant.SCOPE.ONE_PROJECT;
 
 

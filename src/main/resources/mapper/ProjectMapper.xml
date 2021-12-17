@@ -22,6 +22,7 @@
         <result property="projectCategory" column="project_category" jdbcType="VARCHAR"/>
         <result property="closeDesc" column="close_desc" jdbcType="VARCHAR"/>
         <result property="foreignId" column="foreign_id" jdbcType="VARCHAR"/>
+        <result property="customer" column="customer" jdbcType="VARCHAR"/>
 
         <result property="projectExpand" column="project_expand" jdbcType="VARCHAR"/>
     </resultMap>
@@ -42,7 +43,8 @@
                project_category,
                close_desc,
                foreign_id,
-               project_expand
+               project_expand,
+               customer
         from project
         where id = #{id}
     </select>
@@ -62,7 +64,8 @@
                close_date,
                test_frame,
                project_category,
-               foreign_id
+               foreign_id,
+               customer
         from oneclick.project limit #{offset}, #{limit}
     </select>
 
@@ -74,7 +77,7 @@
         description, plan_release_date ,
         del_flag, create_time,
         update_time,close_date,test_frame,
-        project_category,foreign_id
+        project_category,foreign_id,customer
         from oneclick.project
         <where>
             user_id = #{userId}
@@ -184,6 +187,9 @@
             <if test="projectExpand != null and projectExpand != ''">
                 project_expand,
             </if>
+            <if test="customer != null and customer != ''">
+                customer,
+            </if>
             create_time,
             update_time
 
@@ -221,6 +227,9 @@
             </if>
             <if test="projectExpand != null and projectExpand != ''">
                 #{projectExpand},
+            </if>
+            <if test="customer != null and customer != ''">
+                #{customer},
             </if>
             NOW(),
             NOW()
@@ -264,6 +273,9 @@
             </if>
             <if test="closeDesc != null and closeDesc != ''">
                 close_desc = #{closeDesc},
+            </if>
+            <if test="customer != null and customer != ''">
+                customer = #{customer},
             </if>
             update_time = NOW()
         </set>
@@ -362,6 +374,9 @@
             <if test="projectExpand != null and projectExpand != ''">
                 project_expand,
             </if>
+            <if test="customer != null and customer != ''">
+                customer,
+            </if>
             create_time,
             update_time
 
@@ -399,6 +414,9 @@
             </if>
             <if test="projectExpand != null and projectExpand != ''">
                 #{projectExpand},
+            </if>
+            <if test="customer != null and customer != ''">
+                #{customer},
             </if>
             NOW(),
             NOW()
