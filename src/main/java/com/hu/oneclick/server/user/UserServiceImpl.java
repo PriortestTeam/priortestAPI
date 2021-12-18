@@ -34,6 +34,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -96,7 +97,7 @@ public class UserServiceImpl implements UserService {
             SysUser user = new SysUser();
             BeanUtils.copyProperties(registerUser, user);
             //检查数据库是否已存在用户
-            SysUser sysUser = sysUserDao.queryByEmail(email);
+            SysUser sysUser = sysUserDao.queryByLikeEmail(email);
             if (sysUser != null && !OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
             } else if (sysUser != null && OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
@@ -335,7 +336,7 @@ public class UserServiceImpl implements UserService {
             project.setDelFlag(0);
             project.setUpdateTime(new Date());
             project.setReportToName(sysUser.getUserName());
-            projectService.initProject(project,userUseOpenProject);
+            projectService.initProject(project, userUseOpenProject);
         }
         //申请延期
         if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
@@ -366,6 +367,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> forgetThePassword(String email) {
+        SysUser sysUser = sysUserDao.queryByLikeEmail(email);
+        if (ObjectUtils.isEmpty(sysUser)) {
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
+        }
+        Integer activeState = sysUser.getActiveState();
+        if (OneConstant.ACTIVE_STATUS.TRIAL_EXPIRED.equals(activeState)) {
+            return new Resp.Builder<String>().buildResult("400", "账户试用已过期");
+
+        } else if (OneConstant.ACTIVE_STATUS.ACTIVE_FAILED.equals(activeState) || OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(activeState)) {
+            return new Resp.Builder<String>().buildResult("400", "请先去激活账户");
+        }
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
         mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?email=" + email + "&params=" + linkStr);
@@ -531,5 +543,20 @@ public class UserServiceImpl implements UserService {
 
 
         return sysUserDao.queryAllIdOrParentId(sysUser);
+    }
+
+    /**
+     * 返回用户的激活次数
+     *
+     * @param email
+     * @Param: [email]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/18
+     */
+    @Override
+    public Resp<String> getUserActivNumber(String email) {
+        SysUser sysUser = sysUserDao.queryByEmail(email);
+        return new Resp.Builder<String>().setData(String.valueOf(sysUser.getActivitiNumber())).ok();
     }
 }

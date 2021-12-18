@@ -619,4 +619,35 @@
     <select id="getExpireDate" resultType="java.util.Date">
         select expire_date from sys_user where id = #{userId}
     </select>
+    <select id="queryByLikeEmail"  resultMap="SysUserMap">
+        select id,
+               email,
+               user_name,
+               password,
+               photo,
+               status,
+               register_date,
+               contact_no,
+               company,
+               profession,
+               industry,
+               close_date,
+               `type`,
+               active_state,
+               enable,
+               time_zone,
+               locale,
+               manager,
+               del_flag,
+               create_time,
+               update_time,
+               parent_id,
+               identifier,
+               activiti_number,
+               activiti_date,
+               expire_date
+        from oneclick.sys_user
+        where email like #{email}
+          and del_flag = 0 limit 1
+    </select>
 </mapper>

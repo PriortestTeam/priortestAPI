@@ -141,4 +141,13 @@ public interface UserService {
      * @Date: 2021/12/15
      */
     List<SysUser> queryByUserIdAndParentId(String masterId);
+
+    /** 返回用户的激活次数
+     * @Param: [email]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/18
+     */
+    Resp<String> getUserActivNumber(String email);
+
 }

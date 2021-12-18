@@ -143,4 +143,11 @@ public interface SysUserDao {
     void deleteByParentId(@Param("parentId")String parentId);
 
     Date getExpireDate(String userId);
+
+    /**
+     * 根据用户邮箱模糊查询
+     * @param email
+     * @return
+     */
+    SysUser queryByLikeEmail(@Param("email") String email);
 }

@@ -106,6 +106,12 @@ public class UserController {
         return userService.applyForAnExtension(email);
     }
 
+    @ApiOperation("返回用户的激活次数")
+    @PostMapping("getUserActivNumber")
+    public Resp<String> getUserActivNumber(@RequestParam String email) {
+        return userService.getUserActivNumber(email);
+    }
+
 
     @ApiOperation("申请延期输入密码")
     @PostMapping("applyForAnExtensionIn")
