@@ -647,7 +647,7 @@
                activiti_date,
                expire_date
         from oneclick.sys_user
-        where email like #{email}
-          and del_flag = 0 limit 1
+        where email like CONCAT('%',#{email})
+          and del_flag = 0
     </select>
 </mapper>
