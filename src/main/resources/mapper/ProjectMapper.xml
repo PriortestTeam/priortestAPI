@@ -77,7 +77,7 @@
         description, plan_release_date ,
         del_flag, create_time,
         update_time,close_date,test_frame,
-        project_category,foreign_id,customer
+        project_category,foreign_id,customer,close_desc
         from oneclick.project
         <where>
             user_id = #{userId}

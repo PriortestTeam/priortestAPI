@@ -119,8 +119,8 @@ public class SubUserServiceImpl implements SubUserService{
 
             //拼接成员用户邮箱
             String oldEmail = sysUser.getEmail();
-            SysUser sysUser1 = sysUserDao.queryByLikeEmail(oldEmail);
-            if (sysUser1 != null) {
+            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(oldEmail);
+            if (!sysUsers.isEmpty()) {
                 throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),"邮箱" + SysConstantEnum.DATE_EXIST.getValue());
             }
             String subEmail = masterUser.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + oldEmail;

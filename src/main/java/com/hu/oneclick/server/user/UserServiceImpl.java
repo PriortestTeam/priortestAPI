@@ -34,7 +34,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -97,17 +96,23 @@ public class UserServiceImpl implements UserService {
             SysUser user = new SysUser();
             BeanUtils.copyProperties(registerUser, user);
             //检查数据库是否已存在用户
-            SysUser sysUser = sysUserDao.queryByLikeEmail(email);
-            if (sysUser != null && !OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
+            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+            if (sysUsers.size() > 1) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
-            } else if (sysUser != null && OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
-                //邮箱链接失效
-                String linkStr = RandomUtil.randomString(80);
-                redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
-                        "&params=" + linkStr);
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
             }
+            for (SysUser sysUser : sysUsers) {
+                if (!OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
+                } else if ( OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
+                    //邮箱链接失效
+                    String linkStr = RandomUtil.randomString(80);
+                    redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+                            "&params=" + linkStr);
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
+                }
+            }
+
             //设置默认头像
             user.setPhoto(defaultPhoto);
             user.setType(OneConstant.USER_TYPE.ADMIN);
@@ -302,10 +307,12 @@ public class UserServiceImpl implements UserService {
 
         }
         //检查数据库是否已存在用户
-        SysUser sysUser = sysUserDao.queryByEmail(activateAccountDto.getEmail());
-        if (sysUser == null) {
+        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail());
+
+        if (sysUsers.isEmpty()) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
         }
+        SysUser sysUser = sysUsers.get(0);
         //申请延期不提示再次输入密码
         if (!activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
             if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
@@ -367,10 +374,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> forgetThePassword(String email) {
-        SysUser sysUser = sysUserDao.queryByLikeEmail(email);
-        if (ObjectUtils.isEmpty(sysUser)) {
+        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+        if (sysUsers.isEmpty()) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
         }
+        SysUser sysUser = sysUsers.get(0);
         Integer activeState = sysUser.getActiveState();
         if (OneConstant.ACTIVE_STATUS.TRIAL_EXPIRED.equals(activeState)) {
             return new Resp.Builder<String>().buildResult("400", "账户试用已过期");

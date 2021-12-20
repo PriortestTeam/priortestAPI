@@ -149,5 +149,5 @@ public interface SysUserDao {
      * @param email
      * @return
      */
-    SysUser queryByLikeEmail(@Param("email") String email);
+    List<SysUser> queryByLikeEmail(@Param("email") String email);
 }
