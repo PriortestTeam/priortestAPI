@@ -57,6 +57,8 @@ public class ViewController {
     private Resp<String> addView(@RequestBody View view){
         return viewService.addView(view);
     }
+
+
     @PostMapping("addViewRE")
     @ApiOperation("添加视图(新)")
     private Resp<String> addViewRE(@RequestBody View view){

@@ -198,15 +198,64 @@ public class ViewServiceImpl implements ViewService {
         stringBuilder.append("user_id = ").append(view.getUserId()).append(" and ");
         stringBuilder.append("project_id = ").append(view.getUserId());
         for (OneFilter filter : oneFilter) {
+            //format字符串
+            filter.verify();
+
             String andOr = filter.getAndOr();
             if ("and".equals(andOr)) {
                 stringBuilder.append(" and ");
             } else {
                 stringBuilder.append(" or ");
             }
-            stringBuilder.append(OneClickUtil.humpToLine(filter.getFieldName())).append(" = ");
+            String condition = filter.getCondition();
+            /**
+             *  Is 等于
+             *   IsNot 不等于
+             *   IsEmpty 为空
+             *   IsNotEmpty 不为空
+             *   MoreThan 大于
+             *   LessThan 小于
+             *   Include 包含
+             *   Exclude 不包含
+             */
+            stringBuilder.append(OneClickUtil.humpToLine(filter.getFieldName()));
+            switch (condition) {
+                case "Is":
+                    stringBuilder.append(" = ");
+                    stringBuilder.append(filter.getTextVal());
+                    break;
+                case "IsNot":
+                    stringBuilder.append(" != ");
+                    stringBuilder.append(filter.getTextVal());
+                    break;
+                case "IsEmpty":
+                    stringBuilder.append(" is null ");
+                    break;
+                case "IsNotEmpty":
+                    stringBuilder.append(" is not null ");
+                    break;
+                case "MoreThan":
+                    stringBuilder.append(" > ");
+                    stringBuilder.append(filter.getIntVal());
+                    break;
+                case "LessThan":
+                    stringBuilder.append(" < ");
+                    stringBuilder.append(filter.getIntVal());
+                    break;
+                case "Include":
+                    stringBuilder.append("  in ( ");
+                    //todo 待和前端商讨传数据的格式
+                    stringBuilder.append(filter.getTextVal());
+                    stringBuilder.append("  ) ");
+                    break;
+                case "Exclude":
+                    stringBuilder.append(" not in ( ");
+                    stringBuilder.append(filter.getTextVal());
+                    stringBuilder.append("  ) ");
+                    break;
 
-            stringBuilder.append(filter.getTextVal());
+            }
+
 
         }
         return stringBuilder.toString();
@@ -395,6 +444,7 @@ public class ViewServiceImpl implements ViewService {
             view.setUserId(masterId);
             view.setProjectId(projectId);
             view.setOwner(sysUser.getUserName());
+            //设置sql
             String sql = appendSql(oneFilter, view);
             view.setSql(sql);
             return Result.addResult(viewDao.insert(view));
