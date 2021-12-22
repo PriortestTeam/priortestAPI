@@ -29,6 +29,14 @@
         where id = #{id} and user_id = #{masterId}
     </select>
 
+    <!--查询单个-->
+    <select id="queryOnlyById" resultMap="ViewMap">
+        select
+            id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id,`level`
+        from oneclick.view
+        where id = #{id}
+    </select>
+
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ViewMap">
         select

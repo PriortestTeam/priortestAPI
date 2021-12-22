@@ -253,7 +253,7 @@ public class ViewServiceImpl implements ViewService {
                     stringBuilder.append(filter.getTextVal());
                     stringBuilder.append("  ) ");
                     break;
-
+                default:
             }
 
 
@@ -455,10 +455,32 @@ public class ViewServiceImpl implements ViewService {
 
     }
 
-    @Override
-    public Resp<String> sql(String sql) {
-        List<Object> ob = viewDao.sql(sql);
-        return new Resp.Builder<String>().setData(JSONObject.toJSONString(ob)).ok();
+    /**
+     * 执行sql
+     *
+     * @Param: [sql]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/22
+     */
+
+    private List<Object> sql(String sql) {
+        return viewDao.sql(sql);
     }
 
+    /**
+     * 渲染视图
+     *
+     * @param viewId
+     * @Param: [viewId]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/22
+     */
+    @Override
+    public Resp<String> renderingView(String viewId) {
+        View view = viewDao.queryOnlyById(viewId);
+        List<Object> sql = this.sql(view.getSql());
+        return new Resp.Builder<String>().setData(JSONObject.toJSONString(sql)).ok();
+    }
 }

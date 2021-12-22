@@ -88,9 +88,9 @@ public class ViewController {
         return viewService.queryViewTrees(scope);
     }
 
-    @PostMapping("sql")
-    @ApiOperation("执行sql")
-    public Resp<String> sql(@RequestBody String sql){
-        return viewService.sql(sql);
+    @PostMapping("renderingView")
+    @ApiOperation("渲染视图")
+    public Resp<String> renderingView(@RequestBody String viewId){
+        return viewService.renderingView(viewId);
     }
 }

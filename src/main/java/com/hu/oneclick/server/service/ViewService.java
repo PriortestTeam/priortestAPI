@@ -40,11 +40,11 @@ public interface ViewService {
      */
     Resp<String> addViewRE(View view);
 
-    /** 执行sql
-     * @Param: [sql]
+    /** 渲染视图
+     * @Param: [viewId]
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
-     * @Date: 2021/11/29
+     * @Date: 2021/12/22
      */
-    Resp<String> sql(String sql);
+    Resp<String> renderingView(String viewId);
 }

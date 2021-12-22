@@ -94,4 +94,12 @@ public interface ViewDao {
     List<ViewTreeDto> queryViewTreeById(@Param("masterId") String masterId,@Param("viewId") String viewId);
 
     List<Object> sql(@Param("sqlen")String sqlen);
+
+    /** 通过ID查询单条数据
+     * @Param: [id, masterId]
+     * @return: com.hu.oneclick.model.domain.View
+     * @Author: MaSiyi
+     * @Date: 2021/12/22
+     */
+    View queryOnlyById(@Param("id") String id);
 }
