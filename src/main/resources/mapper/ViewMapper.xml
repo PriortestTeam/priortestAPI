@@ -87,9 +87,8 @@
             and project_id = #{projectId}
             and scope = #{scope}
             and parent_id is null
+            and is_private = 0
         </where>
-        order by id
-        limit 0,10
     </select>
     <select id="queryTitleByParentId" resultType="java.lang.String">
         select
