@@ -325,13 +325,12 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public Resp<List<View>> queryViewParents(String scope, String viewTitle) {
+    public Resp<List<View>> queryViewParents(String scope, String projectId) {
         if (StringUtils.isEmpty(scope)) {
             return new Resp.Builder<List<View>>().buildResult("scope" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
         String masterId = jwtUserService.getMasterId();
-        String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
-        List<View> result = viewDao.queryViewParents(masterId, scope, viewTitle, projectId);
+        List<View> result = viewDao.queryViewParents(masterId, scope, projectId);
         return new Resp.Builder<List<View>>().setData(result).totalSize(result.size()).ok();
     }
 

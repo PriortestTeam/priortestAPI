@@ -78,8 +78,8 @@ public class ViewController {
 
     @GetMapping("queryViewParents")
     @ApiOperation("查询父视图")
-    private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String viewTitle){
-        return viewService.queryViewParents(scope,viewTitle);
+    private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String projectId){
+        return viewService.queryViewParents(scope,projectId);
     }
 
     @GetMapping("queryViewTrees")

@@ -87,7 +87,6 @@
             and project_id = #{projectId}
             and scope = #{scope}
             and parent_id is null
-            <if test="title != null and title != ''">and title like concat('%',#{title},'%')</if>
         </where>
         order by id
         limit 0,10

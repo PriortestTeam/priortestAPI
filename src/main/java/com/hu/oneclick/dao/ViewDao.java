@@ -82,7 +82,6 @@ public interface ViewDao {
 
     List<View> queryViewParents(@Param("masterId") String masterId,
                                 @Param("scope") String scope,
-                                @Param("title")  String title,
                                 @Param("projectId") String projectId);
 
     String queryTitleByParentId(@Param("parentId") String parentId);

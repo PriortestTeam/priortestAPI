@@ -28,7 +28,7 @@ public interface ViewService {
 
     Resp<List<ViewScopeChildParams>> getViewScopeChildParams(String scope);
 
-    Resp<List<View>> queryViewParents(String scope, String viewTitle);
+    Resp<List<View>> queryViewParents(String scope, String projectId);
 
     Resp<List<ViewTreeDto>> queryViewTrees(String scope);
 
