@@ -47,4 +47,13 @@ public interface ViewService {
      * @Date: 2021/12/22
      */
     Resp<String> renderingView(String viewId);
+
+    /** 获取filter字段
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.Object>
+     * @Author: MaSiyi
+     * @Date: 2021/12/23
+     */
+    Resp<Object> getViewFilter();
+
 }

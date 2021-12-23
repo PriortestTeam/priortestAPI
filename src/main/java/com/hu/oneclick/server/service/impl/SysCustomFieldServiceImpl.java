@@ -219,14 +219,19 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             }
             //置位空
             customField.setDefaultValues("");
-            List<String> mergeValues = StringUtils.isEmpty(defaultValues.toString()) ? new ArrayList<>()
+            List<String> mergeValues;
+
+            mergeValues = StringUtils.isEmpty(defaultValues.toString()) ? new ArrayList<>()
                     : Arrays.asList(defaultValues.toString().split(","));
+
             sysCustomFieldVo.setSysCustomField(customField);
             sysCustomFieldVo.setMergeValues(mergeValues);
             result.add(sysCustomFieldVo);
         }
         return result;
     }
+
+
 
     /**
      * 新建项目时获取所有系统字段

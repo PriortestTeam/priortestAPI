@@ -1,7 +1,5 @@
 package com.hu.oneclick.common.constant;
 
-import java.time.Year;
-
 /**
  * @author qingyang
  */
@@ -152,11 +150,17 @@ public interface OneConstant {
      * 自定义字段类型
      */
     interface CUSTOM_FIELD_TYPE {
-        String RADIO = "radio";
-        String TEXT = "text";
-        String RICH_TEXT = "RichText";
-        String DROP_DOWN = "DropDown";
-        String CHECK_BOX = "CheckBox";
+        /** masiyi 于备注
+         * @Param:
+         * @return:
+         * @Author: MaSiyi
+         * @Date: 2021/12/22
+         */
+        String RADIO = "radio";//单选
+        String TEXT = "text";//文本
+        String RICH_TEXT = "RichText";//备注
+        String DROP_DOWN = "DropDown";//下拉框
+        String CHECK_BOX = "CheckBox";//复选框
     }
 
     /**

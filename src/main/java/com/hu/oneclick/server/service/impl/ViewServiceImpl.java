@@ -18,8 +18,10 @@ import com.hu.oneclick.model.domain.OneFilter;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.ViewDownChildParams;
+import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
+import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.ViewService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -52,12 +54,15 @@ public class ViewServiceImpl implements ViewService {
 
     private final RedissonClient redissonClient;
 
-    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient) {
+    private final SysCustomFieldService sysCustomFieldService;
+
+    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService) {
         this.viewDao = v;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
         this.viewDownChildParamsDao = viewDownChildParamsDao;
         this.redissonClient = redissonClient;
+        this.sysCustomFieldService = sysCustomFieldService;
     }
 
     @Override
@@ -481,5 +486,72 @@ public class ViewServiceImpl implements ViewService {
         View view = viewDao.queryOnlyById(viewId);
         List<Object> sql = this.sql(view.getSql());
         return new Resp.Builder<String>().setData(JSONObject.toJSONString(sql)).ok();
+    }
+
+    /**
+     * 获取filter字段
+     *
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.Object>
+     * @Author: MaSiyi
+     * @Date: 2021/12/23
+     */
+    @Override
+    public Resp<Object> getViewFilter() {
+        Resp<SysCustomFieldVo> filter = sysCustomFieldService.getSysCustomField("filter");
+        SysCustomFieldVo data = filter.getData();
+        List<String> mergeValues = data.getMergeValues();
+        return new Resp.Builder<>().setData(filterFormat(mergeValues)).ok();
+    }
+    /**
+     * format filter
+     *
+     * @Param: [defaultValues]
+     * @return: java.lang.Object
+     * @Author: MaSiyi
+     * @Date: 2021/12/23
+     */
+    private List<String> filterFormat(List<String> defaultValues) {
+        for (int i = 0; i < defaultValues.size(); i++) {
+            String def = defaultValues.get(i);
+            /**
+             *      * Is 等于
+             *      * IsNot 不等于
+             *      * IsEmpty 为空
+             *      * IsNotEmpty 不为空
+             *      * MoreThan 大于
+             *      * LessThan 小于
+             *      * Include 包含
+             *      * Exclude 不包含
+             */
+            switch (def.trim()) {
+                case "等于":
+                    defaultValues.set(i,def + ",Is");
+                    break;
+                case "不等于":
+                    defaultValues.set(i,def +  ",IsNot");
+                    break;
+                case "为空":
+                    defaultValues.set(i,def +  ",IsEmpty");
+                    break;
+                case "不为空":
+                    defaultValues.set(i,def +  ",IsNotEmpty");
+                    break;
+                case "大于":
+                    defaultValues.set(i,def + ",MoreThan");
+                    break;
+                case "小于":
+                    defaultValues.set(i,def +  ",LessThan");
+                    break;
+                case "包含":
+                    defaultValues.set(i,def + ",Include");
+                    break;
+                case "不包含":
+                    defaultValues.set(i,def + ",Exclude");
+                    break;
+                default:
+            }
+        }
+        return defaultValues;
     }
 }
