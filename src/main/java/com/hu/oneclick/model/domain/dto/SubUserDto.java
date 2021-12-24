@@ -5,6 +5,7 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.model.base.VerifyParam;
 import com.hu.oneclick.model.domain.SysUser;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 /**
  * @author qingyang
  */
+@Data
 public class SubUserDto extends SysUser implements VerifyParam, Serializable {
 
     private static final long serialVersionUID = 1993189923318507589L;
@@ -30,6 +32,14 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
      * 项目1 ； 项目2 。。。。
      */
     private String projectsSts;
+
+    /** 默认打开项目
+     * @Param: []
+     * @return: void
+     * @Author: MaSiyi
+     * @Date: 2021/12/24
+     */
+    private String openProjectByDefaultId;
 
 
     @Override
@@ -60,29 +70,4 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
         return ",";
     }
 
-    public String getProjectsSts() {
-        return projectsSts;
-    }
-
-    public void setProjectsSts(String projectsSts) {
-        this.projectsSts = projectsSts;
-    }
-
-    public String getProjectIdStr() {
-        return projectIdStr;
-    }
-
-    public void setProjectIdStr(String projectIdStr) {
-        this.projectIdStr = projectIdStr;
-    }
-
-
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
 }
