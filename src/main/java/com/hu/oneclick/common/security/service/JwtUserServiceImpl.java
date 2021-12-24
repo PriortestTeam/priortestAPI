@@ -6,18 +6,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
-import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.ApiToken;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
-import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.SysProjectPermissionDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
-import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -31,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -156,11 +153,13 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
     @Override
     public AuthLoginUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        SysUser user = sysUserDao.queryByEmail(username);
+        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(username);
+
         AuthLoginUser authLoginUser = new AuthLoginUser();
-        if (user == null) {
+        if (sysUsers.isEmpty()) {
             throw new RuntimeException();
         }
+        SysUser user = sysUsers.get(0);
         //子用户需要查询权限列表,并且需要裁剪邮箱用户名
         if (user.getManager().equals(OneConstant.USER_TYPE.SUB_USER)) {
             user.setEmail(TwoConstant.subUserNameCrop(user.getEmail()));

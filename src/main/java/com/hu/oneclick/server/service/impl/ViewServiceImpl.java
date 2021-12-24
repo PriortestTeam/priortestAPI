@@ -503,6 +503,7 @@ public class ViewServiceImpl implements ViewService {
         List<String> mergeValues = data.getMergeValues();
         return new Resp.Builder<>().setData(filterFormat(mergeValues)).ok();
     }
+
     /**
      * format filter
      *
@@ -526,28 +527,28 @@ public class ViewServiceImpl implements ViewService {
              */
             switch (def.trim()) {
                 case "等于":
-                    defaultValues.set(i,def + ",Is");
+                    defaultValues.set(i, def + ",Is");
                     break;
                 case "不等于":
-                    defaultValues.set(i,def +  ",IsNot");
+                    defaultValues.set(i, def + ",IsNot");
                     break;
                 case "为空":
-                    defaultValues.set(i,def +  ",IsEmpty");
+                    defaultValues.set(i, def + ",IsEmpty");
                     break;
                 case "不为空":
-                    defaultValues.set(i,def +  ",IsNotEmpty");
+                    defaultValues.set(i, def + ",IsNotEmpty");
                     break;
                 case "大于":
-                    defaultValues.set(i,def + ",MoreThan");
+                    defaultValues.set(i, def + ",MoreThan");
                     break;
                 case "小于":
-                    defaultValues.set(i,def +  ",LessThan");
+                    defaultValues.set(i, def + ",LessThan");
                     break;
                 case "包含":
-                    defaultValues.set(i,def + ",Include");
+                    defaultValues.set(i, def + ",Include");
                     break;
                 case "不包含":
-                    defaultValues.set(i,def + ",Exclude");
+                    defaultValues.set(i, def + ",Exclude");
                     break;
                 default:
             }
