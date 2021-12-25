@@ -9,12 +9,14 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.dao.MasterIdentifierDao;
+import com.hu.oneclick.dao.SubUserProjectDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.MasterIdentifier;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserToken;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
@@ -63,6 +65,8 @@ public class UserServiceImpl implements UserService {
 
     private final ProjectService projectService;
 
+    private final SubUserProjectDao subUserProjectDao;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
@@ -73,7 +77,7 @@ public class UserServiceImpl implements UserService {
     private long secondTime;
 
 
-    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService) {
+    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService, SubUserProjectDao subUserProjectDao) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
@@ -81,6 +85,7 @@ public class UserServiceImpl implements UserService {
         this.mailService = mailService;
         this.sysUserTokenDao = sysUserTokenDao;
         this.projectService = projectService;
+        this.subUserProjectDao = subUserProjectDao;
     }
 
     @Override
@@ -103,7 +108,7 @@ public class UserServiceImpl implements UserService {
             for (SysUser sysUser : sysUsers) {
                 if (!OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
                     return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
-                } else if ( OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
+                } else if (OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
                     //邮箱链接失效
                     String linkStr = RandomUtil.randomString(80);
                     redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
@@ -332,18 +337,30 @@ public class UserServiceImpl implements UserService {
             sysUser.setActivitiNumber(1);
             long time = activitiDate.getTime() + firstTime * 24 * 60 * 60 * 1000;
             sysUser.setExpireDate(new Date(time));
-            Project project = new Project();
-            UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
-            userUseOpenProject.setProjectId(project.getId());
-            userUseOpenProject.setUserId(sysUser.getId());
-            userUseOpenProject.setTitle("初始化项目");
-            project.setUserId(userUseOpenProject.getUserId());
-            project.setTitle(userUseOpenProject.getTitle());
-            project.setStatus("开发中");
-            project.setDelFlag(0);
-            project.setUpdateTime(new Date());
-            project.setReportToName(sysUser.getUserName());
-            projectService.initProject(project, userUseOpenProject);
+            //如果是子账户激活则使用主账户设置默认的打开项目
+            String userId = sysUser.getId();
+            if (sysUser.getType().equals(OneConstant.USER_TYPE.ADMIN)) {
+                Project project = new Project();
+                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
+                userUseOpenProject.setProjectId(project.getId());
+                userUseOpenProject.setUserId(userId);
+                userUseOpenProject.setTitle("初始化项目");
+                project.setUserId(userUseOpenProject.getUserId());
+                project.setTitle(userUseOpenProject.getTitle());
+                project.setStatus("开发中");
+                project.setDelFlag(0);
+                project.setUpdateTime(new Date());
+                project.setReportToName(sysUser.getUserName());
+                projectService.initProject(project, userUseOpenProject);
+            } else {
+                SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
+                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
+                userUseOpenProject.setUserId(userId);
+                userUseOpenProject.setProjectId(subUserProject.getOpenProjectByDefaultId());
+                projectService.insertUseOpenProject(userUseOpenProject);
+            }
+
+
         }
         //申请延期
         if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {

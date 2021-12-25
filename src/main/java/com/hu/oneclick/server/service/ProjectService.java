@@ -43,4 +43,12 @@ public interface ProjectService {
      * @Date: 2021/12/16
      */
     Integer initProject(Project project, UserUseOpenProject userUseOpenProject);
+
+    /** 插入用户默认打开项目
+     * @Param: [userUseOpenProject]
+     * @return: int
+     * @Author: MaSiyi
+     * @Date: 2021/12/25
+     */
+    Integer insertUseOpenProject(UserUseOpenProject userUseOpenProject);
 }

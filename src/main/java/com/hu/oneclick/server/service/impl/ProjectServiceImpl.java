@@ -637,4 +637,18 @@ public class ProjectServiceImpl implements ProjectService {
 
         return projectDao.initProject(project);
     }
+
+    /**
+     * 插入用户默认打开项目
+     *
+     * @param userUseOpenProject
+     * @Param: [userUseOpenProject]
+     * @return: int
+     * @Author: MaSiyi
+     * @Date: 2021/12/25
+     */
+    @Override
+    public Integer insertUseOpenProject(UserUseOpenProject userUseOpenProject) {
+        return projectDao.insertUseOpenProject(userUseOpenProject);
+    }
 }

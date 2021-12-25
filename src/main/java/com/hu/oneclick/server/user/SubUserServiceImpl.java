@@ -140,6 +140,7 @@ public class SubUserServiceImpl implements SubUserService{
             SubUserProject subUserProject = new SubUserProject();
             subUserProject.setUserId(sysUser.getId());
             subUserProject.setProjectId(sysUser.getProjectIdStr());
+            subUserProject.setOpenProjectByDefaultId(sysUser.getOpenProjectByDefaultId());
 
             if (sysUserDao.insert(sysUser) > 0
                     && subUserProjectDao.insert(subUserProject) > 0){

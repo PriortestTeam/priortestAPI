@@ -17,12 +17,14 @@
     <insert id="insert" keyProperty="" useGeneratedKeys="true">
         insert into sub_user_project
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                user_id,
-                project_id
+            user_id,
+            project_id,
+            open_project_by_default_id
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-                #{userId},
-                #{projectId}
+            #{userId},
+            #{projectId}
+            #{openProjectByDefaultId}
         </trim>
     </insert>
 
