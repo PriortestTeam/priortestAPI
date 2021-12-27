@@ -23,7 +23,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             #{userId},
-            #{projectId}
+            #{projectId},
             #{openProjectByDefaultId}
         </trim>
     </insert>

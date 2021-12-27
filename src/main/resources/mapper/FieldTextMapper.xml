@@ -50,7 +50,7 @@
     </select>
     <select id="queryFieldTextById" resultType="com.hu.oneclick.model.domain.FieldText">
         select
-               cf.custom_field_id as customFieldId,
+               t.custom_field_id as customFieldId,
                cf.id           as id,
                cf.type         as type,
                cf.create_time  as createTime,

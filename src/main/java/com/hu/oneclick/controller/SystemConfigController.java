@@ -45,14 +45,14 @@ public class SystemConfigController {
     @ApiOperation("查")
     public Resp<String> getData(@RequestParam String key) {
         String data = systemConfigService.getData(key);
-        return new Resp.Builder().setData(data).ok();
+        return new Resp.Builder<String>().setData(data).ok();
     }
 
     @DeleteMapping("/delete")
     @ApiOperation("删")
     public Resp<String> delete(@RequestParam String key) {
         String data = systemConfigService.delete(key);
-        return new Resp.Builder().setData(data).ok();
+        return new Resp.Builder<String>().setData(data).ok();
     }
 
 
@@ -60,14 +60,14 @@ public class SystemConfigController {
     @ApiOperation("查ui")
     public Resp<SystemConfig> getDataUi(@RequestParam String key) {
         SystemConfig data = systemConfigService.getDataUI(key);
-        return new Resp.Builder().setData(data).ok();
+        return new Resp.Builder<SystemConfig>().setData(data).ok();
     }
 
     @GetMapping("getAllUi")
     @ApiOperation("查所有ui")
     public Resp<List<SystemConfig>> getAllUi() {
         List<SystemConfig> data = systemConfigService.getAllUi();
-        return new Resp.Builder().setData(data).ok();
+        return new Resp.Builder<List<SystemConfig>>().setData(data).ok();
     }
 
 }
