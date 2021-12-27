@@ -11,18 +11,21 @@
 
     <!--查询单个-->
     <select id="queryById" resultMap="FieldDropDownMap">
-        select
-          custom_field_id, default_value, drop_down_list, `length`
+        select custom_field_id,
+               default_value,
+               drop_down_list,
+               `length`
         from oneclick.field_drop_down
         where custom_field_id = #{customFieldId}
     </select>
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="FieldDropDownMap">
-        select
-          custom_field_id, default_value, drop_down_list, `length`
-        from oneclick.field_drop_down
-        limit #{offset}, #{limit}
+        select custom_field_id,
+               default_value,
+               drop_down_list,
+               `length`
+        from oneclick.field_drop_down limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
@@ -46,24 +49,22 @@
         </where>
     </select>
     <select id="queryFieldTextById" resultType="com.hu.oneclick.model.domain.FieldDropDown">
-         select
-            cf.id as id,
-               cf.type as type,
-               cf.create_time as createTime,
-               cf.update_time as updateTime,
-               cf.user_id as userId,
-               cf.field_name as fieldName,
-               cf.scope as scope,
-               cf.mandatory as mandatory,
-               cf.project_id as projectId,
-               dd.default_value as defaultValue,
-               dd.drop_down_list as dropDownList,
-               dd.`length` as `length`
+        select dd.custom_field_id as customFieldId,
+               cf.type            as type,
+               cf.create_time     as createTime,
+               cf.update_time     as updateTime,
+               cf.user_id         as userId,
+               cf.field_name      as fieldName,
+               cf.scope           as scope,
+               cf.mandatory       as mandatory,
+               cf.project_id      as projectId,
+               dd.default_value   as defaultValue,
+               dd.drop_down_list  as dropDownList,
+               dd.`length`        as `length`
         from field_drop_down dd
-        join custom_field cf on dd.custom_field_id = cf.id
-        where
-        cf.id = #{customFieldId}
-        and cf.user_id = #{masterId}
+                 join custom_field cf on dd.custom_field_id = cf.id
+        where cf.id = #{customFieldId}
+          and cf.user_id = #{masterId}
     </select>
 
     <!--新增所有列-->
@@ -123,7 +124,9 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from oneclick.field_drop_down where custom_field_id = #{customFieldId}
+        delete
+        from oneclick.field_drop_down
+        where custom_field_id = #{customFieldId}
     </delete>
 
 </mapper>

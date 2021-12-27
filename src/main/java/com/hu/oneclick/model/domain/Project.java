@@ -82,6 +82,8 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
 
     List<SysOperationAuthority> sysOperationAuthorities;
 
+    private List<CustomFieldData> customFieldDatas;
+
     @Override
     public void verify() throws BizException {
         if (StringUtils.isEmpty(title)) {

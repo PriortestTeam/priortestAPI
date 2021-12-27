@@ -21,13 +21,13 @@ public class CustomFieldData implements Serializable {
      * 用户id
      */
     @ApiModelProperty(value="用户id")
-    private Long userId;
+    private String userId;
 
     /**
      * 项目id
      */
     @ApiModelProperty(value="项目id")
-    private Long projectId;
+    private String projectId;
 
     /**
      * 自定义字段id
@@ -69,7 +69,7 @@ public class CustomFieldData implements Serializable {
      * 创建用户id
      */
     @ApiModelProperty(value="创建用户id")
-    private Long createUserId;
+    private String createUserId;
 
     private static final long serialVersionUID = 1L;
 }

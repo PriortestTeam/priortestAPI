@@ -12,6 +12,7 @@ import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Attachment;
+import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
@@ -21,6 +22,7 @@ import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.server.service.AttachmentService;
+import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.QueryFilterService;
@@ -89,7 +91,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final AttachmentService attachmentService;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao, MailService mailService, AttachmentService attachmentService) {
+    private final CustomFieldDataService customFieldDataService;
+
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao, MailService mailService, AttachmentService attachmentService, CustomFieldDataService customFieldDataService) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
@@ -98,6 +102,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.issueDao = issueDao;
         this.mailService = mailService;
         this.attachmentService = attachmentService;
+        this.customFieldDataService = customFieldDataService;
     }
 
     @Override
@@ -132,6 +137,14 @@ public class ProjectServiceImpl implements ProjectService {
         return new Resp.Builder<List<Project>>().setData(projects).totalSize(projects.size()).ok();
     }
 
+    /**
+     * update自定义字段
+     *
+     * @Param: [project]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/27
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> addProject(Project project) {
@@ -140,7 +153,13 @@ public class ProjectServiceImpl implements ProjectService {
                     OneConstant.PERMISSION.ADD, project.getId());
             Result.verifyDoesExist(queryByTitle(project.getTitle()), project.getTitle());
             project.setUserId(jwtUserService.getMasterId());
-            return Result.addResult(projectDao.insert(project));
+            int insert = projectDao.insert(project);
+            if (insert > 0) {
+                //插入用户自定义值
+                List<CustomFieldData> customFieldDatas = project.getCustomFieldDatas();
+                insert = customFieldDataService.insertProjectCustomData(customFieldDatas, project);
+            }
+            return Result.addResult(insert);
         } catch (BizException e) {
             logger.error("class: ProjectServiceImpl#addProject,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
@@ -632,7 +651,7 @@ public class ProjectServiceImpl implements ProjectService {
      * @Date: 2021/12/16
      */
     @Override
-    public Integer initProject(Project project,UserUseOpenProject userUseOpenProject) {
+    public Integer initProject(Project project, UserUseOpenProject userUseOpenProject) {
         projectDao.insertUseOpenProject(userUseOpenProject);
 
         return projectDao.initProject(project);

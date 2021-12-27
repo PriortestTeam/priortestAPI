@@ -33,6 +33,8 @@
         <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
         <result property="sysRoleId" column="sys_role_id" jdbcType="INTEGER"/>
         <result property="identifier" column="identifier" jdbcType="VARCHAR"/>
+        <result property="userType" column="user_type" jdbcType="VARCHAR"/>
+        <result property="userClass" column="user_class" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
@@ -645,7 +647,9 @@
                identifier,
                activiti_number,
                activiti_date,
-               expire_date
+               expire_date,
+               user_type,
+               user_class
         from oneclick.sys_user
         where email like CONCAT('%',#{email})
           and del_flag = 0

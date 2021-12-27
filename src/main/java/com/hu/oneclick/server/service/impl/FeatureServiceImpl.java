@@ -11,11 +11,13 @@ import com.hu.oneclick.dao.FeatureJoinSprintDao;
 import com.hu.oneclick.dao.SprintDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.FeatureJoinSprint;
 import com.hu.oneclick.model.domain.Sprint;
 import com.hu.oneclick.model.domain.dto.FeatureDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.FeatureService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import org.apache.commons.lang3.StringUtils;
@@ -48,15 +50,17 @@ public class FeatureServiceImpl implements FeatureService {
 
     private final QueryFilterService queryFilterService;
 
+    private final CustomFieldDataService customFieldDataService;
 
 
-    public FeatureServiceImpl(FeatureDao featureDao, FeatureJoinSprintDao featureJoinSprintDao, SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService) {
+    public FeatureServiceImpl(FeatureDao featureDao, FeatureJoinSprintDao featureJoinSprintDao, SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService, CustomFieldDataService customFieldDataService) {
         this.featureDao = featureDao;
         this.featureJoinSprintDao = featureJoinSprintDao;
         this.sprintDao = sprintDao;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
         this.queryFilterService = queryFilterService;
+        this.customFieldDataService = customFieldDataService;
     }
 
 
@@ -113,17 +117,17 @@ public class FeatureServiceImpl implements FeatureService {
 
         if (beginDate == null
                 || endDate == null
-                || !DateUtil.compareDate(endDate,date)){
+                || !DateUtil.compareDate(endDate, date)) {
             //关闭状态：结束日期< 当前日期
             return 0;
         }
         //计划中状态：当前日期大于起始日期，小于结束日期
-        if (DateUtil.compareDate(date,beginDate)
-                && !DateUtil.compareDate(date,endDate)){
+        if (DateUtil.compareDate(date, beginDate)
+                && !DateUtil.compareDate(date, endDate)) {
             return 2;
         }
         //1 开发中状态：起始日期=当前日期
-        if (DateUtil.comparisonEqualDate(date,beginDate)){
+        if (DateUtil.comparisonEqualDate(date, beginDate)) {
             return 1;
         }
         return 0;
@@ -135,18 +139,27 @@ public class FeatureServiceImpl implements FeatureService {
         String masterId = jwtUserService.getMasterId();
         feature.setUserId(masterId);
 
-        feature.setFilter(queryFilterService.mysqlFilterProcess(feature.getViewTreeDto(),masterId));
+        feature.setFilter(queryFilterService.mysqlFilterProcess(feature.getViewTreeDto(), masterId));
 
         List<Feature> select = featureDao.queryList(feature);
         select.forEach(this::accept);
         return new Resp.Builder<List<Feature>>().setData(select).total(select).ok();
     }
+
     private void accept(Feature feature) {
         List<Sprint> sprints = queryBindSprintList(feature.getId());
         feature.setSprints(sprints);
         feature.setStatus(analysisStatus(sprints));
     }
 
+    /**
+     * update customField
+     *
+     * @Param: [feature]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/27
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> insert(Feature feature) {
@@ -162,7 +175,12 @@ public class FeatureServiceImpl implements FeatureService {
             feature.setCreateTime(date);
             feature.setUpdateTime(date);
             updateFeatureJoinSprint(feature);
-            return Result.addResult(featureDao.insert(feature));
+            int insertFlag = featureDao.insert(feature);
+            if (insertFlag > 0) {
+                List<CustomFieldData> customFieldDatas = feature.getCustomFieldDatas();
+                insertFlag = customFieldDataService.insertFeatureCustomData(customFieldDatas, feature);
+            }
+            return Result.addResult(insertFlag);
         } catch (BizException e) {
             logger.error("class: FeatureServiceImpl#insert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -189,12 +207,13 @@ public class FeatureServiceImpl implements FeatureService {
 
     /**
      * 更新关联的迭代表
+     *
      * @param feature
      */
-    private void updateFeatureJoinSprint(Feature feature){
+    private void updateFeatureJoinSprint(Feature feature) {
         featureJoinSprintDao.deleteByFeatureId(feature.getId());
 
-        if (feature.getSprints() == null || feature.getSprints().size() <= 0){
+        if (feature.getSprints() == null || feature.getSprints().size() <= 0) {
             return;
         }
 
@@ -203,7 +222,7 @@ public class FeatureServiceImpl implements FeatureService {
 
         Set<String> strings = new HashSet<>(sprints.size());
         for (Sprint sprint : sprints) {
-            if (strings.contains(sprint.getId())){
+            if (strings.contains(sprint.getId())) {
                 continue;
             }
             strings.add(sprint.getId());
@@ -287,7 +306,7 @@ public class FeatureServiceImpl implements FeatureService {
     @Override
     public Resp<List<Sprint>> querySprintList(String title) {
         String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
-        List<Sprint> selects = sprintDao.querySprintList(title,projectId);
+        List<Sprint> selects = sprintDao.querySprintList(title, projectId);
         return new Resp.Builder<List<Sprint>>().setData(selects).totalSize(selects.size()).ok();
     }
 
