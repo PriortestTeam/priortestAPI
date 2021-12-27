@@ -18,7 +18,7 @@
         .
         id
         as id, sys_user_token.user_id as user_id,
-    sys_user_token.token_name as token_name, sys_user_token.token_value as stoken_value,
+    sys_user_token.token_name as token_name, sys_user_token.token_value as token_value,
     sys_user_token.expiration_time as expiration_time, sys_user_token.create_time as create_time,
     sys_user_token.is_del as is_del, sys_user_token.`status` as `status`,
     sys_user_token.api_times as api_times, sys_user_token.create_id as create_id

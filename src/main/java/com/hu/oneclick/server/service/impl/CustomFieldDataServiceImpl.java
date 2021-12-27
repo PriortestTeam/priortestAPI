@@ -31,7 +31,9 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      */
     @Override
     public Integer insertProjectCustomData(List<CustomFieldData> customFieldDatas) {
-//        customFieldDatas.f
+//        for (CustomFieldData customFieldData : customFieldDatas) {
+//            customFieldData.
+//        }
 //        customFieldDataDao.insert();
         return null;
     }
