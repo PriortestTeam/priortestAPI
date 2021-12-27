@@ -128,5 +128,18 @@ public class SystemConfigServiceImpl implements SystemConfigService {
         return systemConfigDao.getDataUI(key);
     }
 
+    /**
+     * 查所有ui
+     *
+     * @Param: []
+     * @return: java.util.List<com.hu.oneclick.model.domain.SystemConfig>
+     * @Author: MaSiyi
+     * @Date: 2021/12/27
+     */
+    @Override
+    public List<SystemConfig> getAllUi() {
+
+        return systemConfigDao.getAllUi();
+    }
 }
 

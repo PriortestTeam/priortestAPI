@@ -1,7 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.dao.CustomFieldDataDao;
-import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      * @Date: 2021/12/27
      */
     @Override
-    public Boolean insertProjectCustomData(Project project) {
+    public Integer insertProjectCustomData(JSONObject project) {
 
         return null;
     }

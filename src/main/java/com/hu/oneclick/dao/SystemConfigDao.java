@@ -30,4 +30,7 @@ public interface SystemConfigDao {
     List<String> getKeyForGroup(String group);
 
     SystemConfig getDataUI(String key);
+
+    List<SystemConfig> getAllUi();
+
 }
