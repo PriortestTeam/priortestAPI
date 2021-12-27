@@ -9,7 +9,7 @@
 
 
     <select id="queryByUserId" resultType="com.hu.oneclick.model.domain.SubUserProject">
-        select user_id as userId, project_id as projectId where user_id = #{userId}
+        select user_id as userId, project_id as projectId , open_project_by_default_id as openProjectByDefaultId FROM sub_user_project where user_id = #{userId}
     </select>
 
 

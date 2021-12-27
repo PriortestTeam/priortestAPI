@@ -1,8 +1,8 @@
 package com.hu.oneclick.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author MaSiyi
@@ -27,9 +29,9 @@ public class CustomFieldDataController {
 
     @ApiOperation("添加项目自定义值")
     @PostMapping("insertProjectCustomData")
-    public Resp<String> insertProjectCustomData(@RequestBody JSONObject jsonObject) {
-        
-        return Result.addResult(customFieldDataService.insertProjectCustomData(jsonObject));
+    public Resp<String> insertProjectCustomData(@RequestBody List<CustomFieldData> customFieldDatas) {
+
+        return Result.addResult(customFieldDataService.insertProjectCustomData(customFieldDatas));
 
     }
 

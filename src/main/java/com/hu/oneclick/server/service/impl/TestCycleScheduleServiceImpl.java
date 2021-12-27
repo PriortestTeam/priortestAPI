@@ -32,7 +32,7 @@ public class TestCycleScheduleServiceImpl implements TestCycleScheduleService {
     @Autowired
     private TestCycleScheduleModelDao testCycleScheduleModelDao;
 
-    @Scheduled(fixedDelay = 1000 * 60)
+//    @Scheduled(fixedDelay = 1000 * 60)
     public void jenkinsSchedule() {
         List<TestCycleSchedule> testCycleSchedules = testCycleScheduleDao.selectAllByRuntime(new Date());
         for (TestCycleSchedule testCycleSchedule : testCycleSchedules) {

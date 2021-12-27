@@ -1,6 +1,8 @@
 package com.hu.oneclick.server.service;
 
-import com.alibaba.fastjson.JSONObject;
+import com.hu.oneclick.model.domain.CustomFieldData;
+
+import java.util.List;
 
 /**
  * @author MaSiyi
@@ -15,9 +17,9 @@ public interface CustomFieldDataService {
      * @return: java.lang.Boolean
      * @Author: MaSiyi
      * @Date: 2021/12/27
-     * @param project
+     * @param customFieldDatas
      */
-    Integer insertProjectCustomData(JSONObject project);
+    Integer insertProjectCustomData(List<CustomFieldData> customFieldDatas);
 
 
 }

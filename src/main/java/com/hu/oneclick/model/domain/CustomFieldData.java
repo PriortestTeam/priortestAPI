@@ -2,9 +2,10 @@ package com.hu.oneclick.model.domain;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * custom_field_data
@@ -13,6 +14,7 @@ import lombok.Data;
 @ApiModel(value="com.hu.oneclick.model.domain.CustomFieldData")
 @Data
 public class CustomFieldData implements Serializable {
+
     private Integer id;
 
     /**
