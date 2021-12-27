@@ -82,11 +82,6 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
 
     List<SysOperationAuthority> sysOperationAuthorities;
 
-    /**
-     * 项目拓展
-     */
-    private String projectExpand;
-
     @Override
     public void verify() throws BizException {
         if (StringUtils.isEmpty(title)) {

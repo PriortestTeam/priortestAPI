@@ -44,41 +44,44 @@ public class ProjectController {
 
     /**
      * 关闭项目
+     *
      * @param id,closeDesc
      * @return
      */
     @GetMapping("getCloseProject")
     public Resp<String> getCloseProject(@RequestParam String id, @RequestParam String closeDesc) {
-        return projectService.getCloseProject(id,closeDesc);
+        return projectService.getCloseProject(id, closeDesc);
     }
+
     @GetMapping("queryDoesExistByTitle")
     public Resp<String> queryDoesExistByTitle(@RequestParam String title) {
         return projectService.queryDoesExistByTitle(title);
     }
 
     @GetMapping("queryById/{id}")
-    private Resp<Project> queryById(@PathVariable String id){
+    private Resp<Project> queryById(@PathVariable String id) {
         return projectService.queryById(id);
     }
 
 
     @PostMapping("queryForProjects")
-    private Resp<List<Project>> queryForProjects(@RequestBody ProjectDto project){
+    private Resp<List<Project>> queryForProjects(@RequestBody ProjectDto project) {
         return projectService.queryForProjects(project);
     }
 
     @PostMapping("addProject")
-    private Resp<String> addProject(@RequestBody Project project){
+    @ApiOperation("添加项目")
+    private Resp<String> addProject(@RequestBody Project project) {
         return projectService.addProject(project);
     }
 
     @PostMapping("updateProject")
-    private Resp<String> updateProject(@RequestBody Project project){
+    private Resp<String> updateProject(@RequestBody Project project) {
         return projectService.updateProject(project);
     }
 
     @DeleteMapping("deleteProject/{projectId}")
-    private Resp<String> deleteProject(@PathVariable String projectId){
+    private Resp<String> deleteProject(@PathVariable String projectId) {
         return projectService.deleteProject(projectId);
     }
 
@@ -88,12 +91,14 @@ public class ProjectController {
      * 选择项目
      */
     @GetMapping("checkProject/{projectId}")
-    public Resp<String> checkProject(@PathVariable String projectId){
+    public Resp<String> checkProject(@PathVariable String projectId) {
         return projectService.checkProject(projectId);
     }
 
 
-    /** 新建项目时获取所有系统字段
+    /**
+     * 新建项目时获取所有系统字段
+     *
      * @Param: []
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
@@ -105,7 +110,9 @@ public class ProjectController {
         return sysCustomFieldService.getAllSysCustomField();
     }
 
-    /** 新建项目时获取所有用户字段
+    /**
+     * 新建项目时获取所有用户字段
+     *
      * @Param: []
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
@@ -113,7 +120,7 @@ public class ProjectController {
      */
     @PostMapping("getAllCustomField")
     @ApiOperation("新建项目时获取所有用户字段")
-    public Resp<List< Object>> getAllCustomField(@RequestBody CustomFieldDto customFieldDto) {
+    public Resp<List<Object>> getAllCustomField(@RequestBody CustomFieldDto customFieldDto) {
         return customFieldService.getAllCustomField(customFieldDto);
     }
 
