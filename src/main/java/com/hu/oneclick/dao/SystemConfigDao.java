@@ -28,4 +28,6 @@ public interface SystemConfigDao {
     int deleteByKey(String key);
 
     List<String> getKeyForGroup(String group);
+
+    String getDataUI(String key);
 }

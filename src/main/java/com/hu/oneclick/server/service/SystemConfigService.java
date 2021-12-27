@@ -58,4 +58,12 @@ public interface SystemConfigService {
      * @Date: 2021/10/21
      */
     List<String> getKeyForGroup(String group);
+
+    /** 查UI
+     * @Param: [key]
+     * @return: java.lang.String
+     * @Author: MaSiyi
+     * @Date: 2021/12/27
+     */
+    String getDataUI(String key);
 }

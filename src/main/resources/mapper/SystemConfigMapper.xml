@@ -7,7 +7,8 @@
         <result column="system_config_value" jdbcType="VARCHAR" property="value"/>
         <result column="system_config_group" jdbcType="VARCHAR" property="group"/>
         <result column="system_config_create_time" jdbcType="TIMESTAMP" property="create_time"/>
-        <result column="system_config_update_time" jdbcType="TIMESTAMP" property="update_time"/>
+        <result column="system_config_uiDisplay" jdbcType="INTEGER" property="uiDisplay"/>
+        <result column="system_config_groupLabelCN" jdbcType="VARCHAR" property="groupLabelCN"/>
     </resultMap>
     <sql id="Base_Column_List">
         system_config
@@ -15,7 +16,8 @@
         id
         as system_config_id, system_config.`key` as `system_config_key`,
     system_config.`value` as `system_config_value`, system_config.group as system_config_group, 
-    system_config.create_time as system_config_create_time, system_config.update_time as system_config_update_time
+    system_config.create_time as system_config_create_time, system_config.update_time as system_config_update_time,
+    system_config.uiDisplay as system_config_uiDisplay,system_config.groupLabelCN as system_config_groupLabelCN
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -32,14 +34,20 @@
         select value
         from system_config
         where `key` = #{key}
-        and `group` = #{group}
-        and `status` = 0
+          and `group` = #{group}
+          and `status` = 0
     </select>
     <select id="getKeyForGroup" resultType="java.lang.String">
         select `key`
         from system_config
         where `group` = #{group}
-        and `status` = 0
+          and `status` = 0
+    </select>
+    <select id="getDataUI" resultType="java.lang.String">
+        select value
+        from system_config
+        where `key` = #{key}
+        and uiDisplay = 0
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
@@ -47,7 +55,9 @@
         where id = #{id,jdbcType=INTEGER}
     </delete>
     <delete id="deleteByKey">
-        delete from system_config where `key` =#{key}
+        delete
+        from system_config
+        where `key` = #{key}
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SystemConfig"
             useGeneratedKeys="true">
@@ -119,7 +129,7 @@
         update system_config
         set `key`       = #{key,jdbcType=VARCHAR},
             `value`     = #{value,jdbcType=VARCHAR},
-            group      = #{group,jdbcType=VARCHAR},
+            group       = #{group,jdbcType=VARCHAR},
             create_time = #{create_time,jdbcType=TIMESTAMP},
             update_time = #{update_time,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=INTEGER}

@@ -2,9 +2,10 @@ package com.hu.oneclick.model.domain;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * system_config
@@ -48,6 +49,20 @@ public class SystemConfig implements Serializable {
      */
     @ApiModelProperty(value="修改时间")
     private Date update_time;
+
+    /**
+     * ui显示
+     */
+    @ApiModelProperty(value="ui显示0显示1不显示")
+    private Integer uiDisplay;
+
+    /**
+     * 分组中文名
+     */
+    @ApiModelProperty(value="分组中文名")
+    private String groupLabelCN;
+
+
 
     private static final long serialVersionUID = 1L;
 }

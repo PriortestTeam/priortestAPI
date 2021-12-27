@@ -115,5 +115,18 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     public List<String> getKeyForGroup(String group) {
         return systemConfigDao.getKeyForGroup(group);
     }
+
+
+    /** 查UI
+     * @Param: [key]
+     * @return: java.lang.String
+     * @Author: MaSiyi
+     * @Date: 2021/12/27
+     */
+    @Override
+    public String getDataUI(String key) {
+        return systemConfigDao.getDataUI(key);
+    }
+
 }
 
