@@ -19,6 +19,7 @@ import com.hu.oneclick.dao.TestCycleScheduleDao;
 import com.hu.oneclick.dao.TestCycleScheduleModelDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.ModifyRecord;
@@ -35,6 +36,7 @@ import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.TestCycleDto;
+import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.SystemConfigService;
@@ -92,8 +94,17 @@ public class TestCycleServiceImpl implements TestCycleService {
 
     private final SystemConfigService systemConfigService;
 
+    private final CustomFieldDataService customFieldDataService;
 
-    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService, TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao, FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, SprintDao sprintDao, QueryFilterService queryFilterService, TestCaseExcutionDao testCaseExcutionDao, TestCycleJoinTestStepDao testCycleJoinTestStepDao, IssueDao issueDao, TestCycleScheduleModelDao testCycleScheduleModelDao, TestCycleScheduleDao testCycleScheduleDao, SystemConfigService systemConfigService) {
+
+    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService,
+                                TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao,
+                                FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao,
+                                SprintDao sprintDao, QueryFilterService queryFilterService,
+                                TestCaseExcutionDao testCaseExcutionDao, TestCycleJoinTestStepDao testCycleJoinTestStepDao,
+                                IssueDao issueDao, TestCycleScheduleModelDao testCycleScheduleModelDao,
+                                TestCycleScheduleDao testCycleScheduleDao, SystemConfigService systemConfigService,
+                                CustomFieldDataService customFieldDataService) {
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
         this.testCycleDao = testCycleDao;
@@ -109,6 +120,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         this.testCycleScheduleModelDao = testCycleScheduleModelDao;
         this.testCycleScheduleDao = testCycleScheduleDao;
         this.systemConfigService = systemConfigService;
+        this.customFieldDataService = customFieldDataService;
     }
 
 
@@ -148,6 +160,14 @@ public class TestCycleServiceImpl implements TestCycleService {
         return new Resp.Builder<List<TestCycle>>().setData(select).total(select).ok();
     }
 
+    /**
+     * update customfiled
+     *
+     * @Param: [testCycle]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/27
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> insert(TestCycle testCycle) {
@@ -161,7 +181,12 @@ public class TestCycleServiceImpl implements TestCycleService {
             Date date = new Date();
             testCycle.setCreateTime(date);
             testCycle.setUpdateTime(date);
-            return Result.addResult(testCycleDao.insert(testCycle));
+            int insertFlag = testCycleDao.insert(testCycle);
+            if (insertFlag > 0) {
+                List<CustomFieldData> customFieldDatas = testCycle.getCustomFieldDatas();
+                insertFlag = customFieldDataService.insertTestCycleCustomData(customFieldDatas, testCycle);
+            }
+            return Result.addResult(insertFlag);
         } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#insert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

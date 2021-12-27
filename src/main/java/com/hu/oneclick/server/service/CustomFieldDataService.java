@@ -3,6 +3,7 @@ package com.hu.oneclick.server.service;
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.TestCycle;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 public interface CustomFieldDataService {
 
 
-    /** 插入项目自定义组件数据
+    /** 插入项目自定义字段数据
      * @Param: [project]
      * @return: java.lang.Boolean
      * @Author: MaSiyi
@@ -31,4 +32,12 @@ public interface CustomFieldDataService {
      * @Date: 2021/12/27
      */
     Integer insertFeatureCustomData(List<CustomFieldData> customFieldDatas, Feature feature);
+
+    /** 插入测试周期自定义字段数据
+     * @Param: [customFieldDatas, testCycle]
+     * @return: java.lang.Integer
+     * @Author: MaSiyi
+     * @Date: 2021/12/27
+     */
+    Integer insertTestCycleCustomData(List<CustomFieldData> customFieldDatas, TestCycle testCycle);
 }

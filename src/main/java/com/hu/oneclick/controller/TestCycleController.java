@@ -12,6 +12,7 @@ import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.server.service.TestCycleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,6 +42,7 @@ public class TestCycleController {
     }
 
     @PostMapping("insert")
+    @ApiOperation("测试周期")
     public Resp<String> insert(@RequestBody TestCycle testCycle) {
         return testCycleService.insert(testCycle);
     }

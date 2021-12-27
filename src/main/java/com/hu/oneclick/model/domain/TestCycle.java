@@ -5,6 +5,7 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Transient;
@@ -18,6 +19,7 @@ import java.util.List;
  * @author makejava
  * @since 2021-02-16 15:39:36
  */
+@Data
 public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
     private static final long serialVersionUID = -99559444962908046L;
 
@@ -92,6 +94,11 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
     @Transient
     private List<Sprint> sprints;
 
+    /**
+     * 自定义字段值
+     */
+    private List<CustomFieldData> customFieldDatas;
+
     @Override
     public void verify() throws BizException {
         if(StringUtils.isEmpty(projectId)){
@@ -109,147 +116,5 @@ public class TestCycle extends BaseEntity implements Serializable, VerifyParam {
     }
 
 
-    public String getUserId() {
-        return userId;
-    }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Integer getRunStatus() {
-        return runStatus;
-    }
-
-    public void setRunStatus(Integer runStatus) {
-        this.runStatus = runStatus;
-    }
-
-    public Date getLastRunDate() {
-        return lastRunDate;
-    }
-
-    public void setLastRunDate(Date lastRunDate) {
-        this.lastRunDate = lastRunDate;
-    }
-
-    public Date getLastModify() {
-        return lastModify;
-    }
-
-    public void setLastModify(Date lastModify) {
-        this.lastModify = lastModify;
-    }
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Date getPed() {
-        return ped;
-    }
-
-    public void setPed(Date ped) {
-        this.ped = ped;
-    }
-
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
-
-    public String getScope() {
-        return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
-
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getAssignTo() {
-        return assignTo;
-    }
-
-    public void setAssignTo(String assignTo) {
-        this.assignTo = assignTo;
-    }
-
-    public String getNotifiyList() {
-        return notifiyList;
-    }
-
-    public void setNotifiyList(String notifiyList) {
-        this.notifiyList = notifiyList;
-    }
-
-    public List<Feature> getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(List<Feature> features) {
-        this.features = features;
-    }
-
-    public List<Sprint> getSprints() {
-        return sprints;
-    }
-
-    public void setSprints(List<Sprint> sprints) {
-        this.sprints = sprints;
-    }
 }

@@ -7,6 +7,7 @@ import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,37 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
             fieldData.setProjectId(projectId);
             fieldData.setScopeId(feature.getId());
             fieldData.setScope(FieldConstant.FEATURE);
+
+            insertFlag = customFieldDataDao.insert(fieldData);
+
+        }
+        return insertFlag;
+    }
+
+    /**
+     * 插入测试周期自定义字段数据
+     *
+     * @param customFieldDatas
+     * @param testCycle
+     * @Param: [customFieldDatas, testCycle]
+     * @return: java.lang.Integer
+     * @Author: MaSiyi
+     * @Date: 2021/12/27
+     */
+    @Override
+    public Integer insertTestCycleCustomData(List<CustomFieldData> customFieldDatas, TestCycle testCycle) {
+        AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
+        SysUser sysUser = userLoginInfo.getSysUser();
+
+        int insertFlag = 0;
+        for (CustomFieldData customFieldData : customFieldDatas) {
+
+            CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
+
+            String projectId = testCycle.getProjectId();
+            fieldData.setProjectId(projectId);
+            fieldData.setScopeId(testCycle.getId());
+            fieldData.setScope(FieldConstant.TESTCYCLE);
 
             insertFlag = customFieldDataDao.insert(fieldData);
 

@@ -82,6 +82,9 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
 
     List<SysOperationAuthority> sysOperationAuthorities;
 
+    /**
+     * 自定义字段值
+     */
     private List<CustomFieldData> customFieldDatas;
 
     @Override
