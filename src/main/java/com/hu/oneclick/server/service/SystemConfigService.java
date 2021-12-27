@@ -65,5 +65,5 @@ public interface SystemConfigService {
      * @Author: MaSiyi
      * @Date: 2021/12/27
      */
-    String getDataUI(String key);
+    SystemConfig getDataUI(String key);
 }

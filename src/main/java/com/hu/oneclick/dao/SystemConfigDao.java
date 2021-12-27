@@ -29,5 +29,5 @@ public interface SystemConfigDao {
 
     List<String> getKeyForGroup(String group);
 
-    String getDataUI(String key);
+    SystemConfig getDataUI(String key);
 }

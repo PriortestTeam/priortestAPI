@@ -55,8 +55,8 @@ public class SystemConfigController {
 
     @PostMapping("/getDataUi")
     @ApiOperation("查ui")
-    public Resp<String> getDataUi(@RequestParam String key) {
-        String data = systemConfigService.getDataUI(key);
+    public Resp<SystemConfig> getDataUi(@RequestParam String key) {
+        SystemConfig data = systemConfigService.getDataUI(key);
         return new Resp.Builder().setData(data).ok();
     }
 

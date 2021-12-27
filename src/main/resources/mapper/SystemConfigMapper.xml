@@ -43,8 +43,9 @@
         where `group` = #{group}
           and `status` = 0
     </select>
-    <select id="getDataUI" resultType="java.lang.String">
-        select value
+    <select id="getDataUI" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
         from system_config
         where `key` = #{key}
         and uiDisplay = 0

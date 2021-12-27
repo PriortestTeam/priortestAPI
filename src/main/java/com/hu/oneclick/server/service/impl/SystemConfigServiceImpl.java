@@ -124,7 +124,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
      * @Date: 2021/12/27
      */
     @Override
-    public String getDataUI(String key) {
+    public SystemConfig getDataUI(String key) {
         return systemConfigDao.getDataUI(key);
     }
 
