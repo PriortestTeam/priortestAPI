@@ -9,10 +9,12 @@ import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.dao.IssueJoinTestCaseDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.IssueJoinTestCase;
 import com.hu.oneclick.model.domain.ModifyRecord;
 import com.hu.oneclick.model.domain.dto.IssueDto;
+import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.IssueService;
 import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
@@ -45,22 +47,24 @@ public class IssueServiceImpl implements IssueService {
 
     private final QueryFilterService queryFilterService;
 
+    private final CustomFieldDataService customFieldDataService;
 
 
-    public IssueServiceImpl(IssueDao issueDao, JwtUserServiceImpl jwtUserService, IssueJoinTestCaseDao issueJoinTestCaseDao, ModifyRecordsService modifyRecordsService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService) {
+    public IssueServiceImpl(IssueDao issueDao, JwtUserServiceImpl jwtUserService, IssueJoinTestCaseDao issueJoinTestCaseDao, ModifyRecordsService modifyRecordsService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService, CustomFieldDataService customFieldDataService) {
         this.issueDao = issueDao;
         this.jwtUserService = jwtUserService;
         this.issueJoinTestCaseDao = issueJoinTestCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.sysPermissionService = sysPermissionService;
         this.queryFilterService = queryFilterService;
+        this.customFieldDataService = customFieldDataService;
     }
 
 
     @Override
     public Resp<Issue> queryById(String id) {
         String masterId = jwtUserService.getMasterId();
-        Issue issue =  issueDao.queryById(id,masterId);
+        Issue issue = issueDao.queryById(id, masterId);
         return new Resp.Builder<Issue>().setData(issue).ok();
     }
 
@@ -70,7 +74,7 @@ public class IssueServiceImpl implements IssueService {
         String masterId = jwtUserService.getMasterId();
         issue.setUserId(masterId);
 
-        issue.setFilter(queryFilterService.mysqlFilterProcess(issue.getViewTreeDto(),masterId));
+        issue.setFilter(queryFilterService.mysqlFilterProcess(issue.getViewTreeDto(), masterId));
 
         List<Issue> select = issueDao.queryList(issue);
         return new Resp.Builder<List<Issue>>().setData(select).total(select).ok();
@@ -83,17 +87,22 @@ public class IssueServiceImpl implements IssueService {
             //验证参数
             issue.verify();
             //验证是否存在
-            verifyIsExist(issue.getTitle(),issue.getProjectId());
+            verifyIsExist(issue.getTitle(), issue.getProjectId());
             issue.setUserId(jwtUserService.getMasterId());
             issue.setAuthor(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
             Date date = new Date();
             issue.setCreateTime(date);
             issue.setUpdateTime(date);
-            return Result.addResult(issueDao.insert(issue));
-        }catch (BizException e){
+            int insertFlag = issueDao.insert(issue);
+            if (insertFlag > 0) {
+                List<CustomFieldData> customFieldDatas = issue.getCustomFieldDatas();
+                insertFlag = customFieldDataService.insertIssueCustomData(customFieldDatas, issue);
+            }
+            return Result.addResult(insertFlag);
+        } catch (BizException e) {
             logger.error("class: IssueServiceImpl#insert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -102,15 +111,15 @@ public class IssueServiceImpl implements IssueService {
     public Resp<String> update(Issue issue) {
         try {
             //验证是否存在
-            verifyIsExist(issue.getTitle(),issue.getProjectId());
+            verifyIsExist(issue.getTitle(), issue.getProjectId());
             issue.setUserId(jwtUserService.getMasterId());
             //新增修改字段记录
             modifyRecord(issue);
             return Result.updateResult(issueDao.update(issue));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: IssueServiceImpl#update,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -121,17 +130,17 @@ public class IssueServiceImpl implements IssueService {
             Issue issue = new Issue();
             issue.setId(id);
             return Result.deleteResult(issueDao.delete(issue));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: IssueServiceImpl#delete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
     @Override
     public Resp<List<Issue>> queryBindCaseList(String issueId) {
         List<Issue> select = issueJoinTestCaseDao.queryBindCaseList(issueId);
-        return new Resp.Builder< List<Issue>>().setData(select).total(select).ok();
+        return new Resp.Builder<List<Issue>>().setData(select).total(select).ok();
     }
 
     @Override
@@ -139,10 +148,10 @@ public class IssueServiceImpl implements IssueService {
     public Resp<String> bindCaseInsert(IssueJoinTestCase issueJoinTestCase) {
         try {
             return Result.addResult(issueJoinTestCaseDao.insert(issueJoinTestCase));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: IssueServiceImpl#bindCaseInsert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
@@ -151,22 +160,23 @@ public class IssueServiceImpl implements IssueService {
     public Resp<String> bindCaseDelete(String testCaseId) {
         try {
             return Result.deleteResult(issueJoinTestCaseDao.bindCaseDelete(testCaseId));
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: IssueServiceImpl#bindCaseDelete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
 
     /**
      * 修改字段，进行记录
+     *
      * @param issue
      */
     private void modifyRecord(Issue issue) {
         try {
             Issue query = issueDao.queryById(issue.getId(), issue.getUserId());
-            if (query == null){
+            if (query == null) {
                 throw new RuntimeException();
             }
 
@@ -180,7 +190,7 @@ public class IssueServiceImpl implements IssueService {
                 fields[i].setAccessible(true);
                 fields2[i].setAccessible(true);
 
-                if(field.equals("id")
+                if (field.equals("id")
                         || field.equals("projectId")
                         || field.equals("userId")
                         || field.equals("updateTime")
@@ -213,66 +223,67 @@ public class IssueServiceImpl implements IssueService {
                     modifyRecords.add(mr);
                 }
             }
-            if (modifyRecords.size() <= 0){
+            if (modifyRecords.size() <= 0) {
                 return;
             }
             modifyRecordsService.insert(modifyRecords);
         } catch (IllegalAccessException e) {
-            throw new BizException(SysConstantEnum.ADD_FAILED.getCode(),"修改字段新增失败！");
+            throw new BizException(SysConstantEnum.ADD_FAILED.getCode(), "修改字段新增失败！");
         }
     }
 
 
     /**
      * 获取字段对应中文字义
+     *
      * @param args
      * @return
      */
-    private String getCnField(String args){
+    private String getCnField(String args) {
         switch (args) {
             case "title":
-                return  "名称";
+                return "名称";
             case "author":
                 return "创建人";
             case "plannedReleaseDate":
                 return "计划发行日期";
             case "status":
-                return  "状态";
+                return "状态";
             case "closeDate":
                 return "关闭日期";
             case "testCase":
                 return "关联测试用例";
             case "testCycle":
-                return  "关联测试周期";
+                return "关联测试周期";
             case "priority":
-                return  "优先级";
+                return "优先级";
             case "version":
-                return  "版本";
+                return "版本";
             case "env":
-                return  "环境";
+                return "环境";
             case "browser":
-                return  "浏览器";
+                return "浏览器";
             case "platform":
-                return  "平台";
+                return "平台";
             case "caseCategory":
-                return  "用例分类";
+                return "用例分类";
         }
         return args;
     }
 
     /**
-     *  查重
+     * 查重
      */
-    private void verifyIsExist(String title,String projectId){
-        if (StringUtils.isEmpty(title)){
+    private void verifyIsExist(String title, String projectId) {
+        if (StringUtils.isEmpty(title)) {
             return;
         }
         Issue issue = new Issue();
         issue.setTitle(title);
         issue.setProjectId(projectId);
         issue.setId(null);
-        if (issueDao.selectOne(issue) != null){
-            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),issue.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
+        if (issueDao.selectOne(issue) != null) {
+            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), issue.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
         }
     }
 }

@@ -5,6 +5,7 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.CustomFieldDataDao;
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.TestCase;
@@ -150,6 +151,37 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
             customFieldDataDao.insert(fieldData);
 
         }
+    }
+
+    /**
+     * 插入缺陷自定义字段数据
+     *
+     * @param customFieldDatas
+     * @param issue
+     * @Param: [customFieldDatas, issue]
+     * @return: java.lang.Integer
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    @Override
+    public Integer insertIssueCustomData(List<CustomFieldData> customFieldDatas, Issue issue) {
+        AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
+        SysUser sysUser = userLoginInfo.getSysUser();
+
+        int insertFlag = 0;
+        for (CustomFieldData customFieldData : customFieldDatas) {
+
+            CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
+
+            String projectId = issue.getProjectId();
+            fieldData.setProjectId(projectId);
+            fieldData.setScopeId(issue.getId());
+            fieldData.setScope(FieldConstant.ISSUE);
+
+            insertFlag = customFieldDataDao.insert(fieldData);
+
+        }
+        return insertFlag;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
@@ -49,4 +50,12 @@ public interface CustomFieldDataService {
      * @Date: 2021/12/28
      */
     void insertTestCaseCustomData(List<CustomFieldData> customFieldDatas, List<TestCase> testCases);
+
+    /** 插入缺陷自定义字段数据
+     * @Param: [customFieldDatas, issue]
+     * @return: java.lang.Integer
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    Integer insertIssueCustomData(List<CustomFieldData> customFieldDatas, Issue issue);
 }
