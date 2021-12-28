@@ -3,6 +3,7 @@ package com.hu.oneclick.server.service;
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 
 import java.util.List;
@@ -40,4 +41,12 @@ public interface CustomFieldDataService {
      * @Date: 2021/12/27
      */
     Integer insertTestCycleCustomData(List<CustomFieldData> customFieldDatas, TestCycle testCycle);
+
+    /** 插入测试用例自定义字段数据
+     * @Param: [customFieldDatas, testCases]
+     * @return: void
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    void insertTestCaseCustomData(List<CustomFieldData> customFieldDatas, List<TestCase> testCases);
 }

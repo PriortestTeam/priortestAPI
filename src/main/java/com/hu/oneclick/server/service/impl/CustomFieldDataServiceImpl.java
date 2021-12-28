@@ -7,6 +7,7 @@ import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.server.service.CustomFieldDataService;
@@ -121,6 +122,34 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
         }
         return insertFlag;
+    }
+
+    /**
+     * 插入测试用例自定义字段数据
+     *
+     * @param customFieldDatas
+     * @param testCases
+     * @Param: [customFieldDatas, testCases]
+     * @return: void
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    @Override
+    public void insertTestCaseCustomData(List<CustomFieldData> customFieldDatas, List<TestCase> testCases) {
+        AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
+        SysUser sysUser = userLoginInfo.getSysUser();
+        for (CustomFieldData customFieldData : customFieldDatas) {
+            CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
+            for (TestCase testCase : testCases) {
+                String projectId = testCase.getProjectId();
+                fieldData.setProjectId(projectId);
+                fieldData.setScopeId(testCase.getId());
+                fieldData.setScope(FieldConstant.TESTCASE);
+            }
+
+            customFieldDataDao.insert(fieldData);
+
+        }
     }
 
     /**

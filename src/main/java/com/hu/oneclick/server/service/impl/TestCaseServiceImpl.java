@@ -71,9 +71,11 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     private final TestCycleService testCycleService;
 
+    private final CustomFieldDataService customFieldDataService;
+
     public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService
             , QueryFilterService queryFilterService, FeatureDao featureDao, SysCustomFieldService sysCustomFieldService
-            , TestCaseStepDao testCaseStepDao, MailService mailService, ViewService viewService, SysCustomFieldExpandDao sysCustomFieldExpandDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, TestCycleService testCycleService) {
+            , TestCaseStepDao testCaseStepDao, MailService mailService, ViewService viewService, SysCustomFieldExpandDao sysCustomFieldExpandDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, TestCycleService testCycleService, CustomFieldDataService customFieldDataService) {
         this.testCaseDao = testCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
@@ -86,6 +88,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         this.sysCustomFieldExpandDao = sysCustomFieldExpandDao;
         this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
         this.testCycleService = testCycleService;
+        this.customFieldDataService = customFieldDataService;
     }
 
 
@@ -976,6 +979,9 @@ public class TestCaseServiceImpl implements TestCaseService {
             testCycleJoinTestCaseDao.insert(tc);
         }
 
+        //插入自定义字段值
+        List<CustomFieldData> customFieldDatas = testCycleDto.getCustomFieldDatas();
+        customFieldDataService.insertTestCaseCustomData(customFieldDatas, testCases);
         return new Resp.Builder<String>().ok();
     }
 

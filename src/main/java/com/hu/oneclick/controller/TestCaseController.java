@@ -43,10 +43,10 @@ public class TestCaseController {
         return testCaseService.queryList(testCase);
     }
 
-    @PostMapping("insert")
-    public Resp<String> insert(@RequestBody TestCase testCase) {
-        return testCaseService.insert(testCase);
-    }
+//    @PostMapping("insert")
+//    public Resp<String> insert(@RequestBody TestCase testCase) {
+//        return testCaseService.insert(testCase);
+//    }
 
     @PostMapping("update")
     public Resp<String> update(@RequestBody TestCase testCase) {
