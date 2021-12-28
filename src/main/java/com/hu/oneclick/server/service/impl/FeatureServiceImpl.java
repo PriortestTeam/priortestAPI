@@ -71,13 +71,23 @@ public class FeatureServiceImpl implements FeatureService {
     }
 
 
+    /** update feature custom
+     * @Param: [id]
+     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.Feature>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
     @Override
     public Resp<Feature> queryById(String id) {
         String masterId = jwtUserService.getMasterId();
         Feature feature = featureDao.queryById(id, masterId);
+
+        //查询自定义数据
+        List<CustomFieldData> customFieldData = customFieldDataService.featureRenderingCustom(id);
         List<Sprint> sprints = queryBindSprintList(id);
         feature.setSprints(sprints);
         feature.setStatus(analysisStatus(sprints));
+        feature.setCustomFieldDatas(customFieldData);
         return new Resp.Builder<Feature>().setData(feature).ok();
     }
 

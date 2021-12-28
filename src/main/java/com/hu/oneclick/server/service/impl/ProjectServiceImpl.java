@@ -105,9 +105,18 @@ public class ProjectServiceImpl implements ProjectService {
         this.customFieldDataService = customFieldDataService;
     }
 
+    /** update project customdata
+     * @Param: [id]
+     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.Project>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
     @Override
     public Resp<Project> queryById(String id) {
-        return new Resp.Builder<Project>().setData(projectDao.queryById(id)).ok();
+        Project project = projectDao.queryById(id);
+        List<CustomFieldData> customFieldData = customFieldDataService.projectRenderingCustom(project.getId());
+        project.setCustomFieldDatas(customFieldData);
+        return new Resp.Builder<Project>().setData(project).ok();
     }
 
     @Override

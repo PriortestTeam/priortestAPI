@@ -59,6 +59,7 @@ public class ProjectController {
     }
 
     @GetMapping("queryById/{id}")
+    @ApiOperation("查询项目详细")
     private Resp<Project> queryById(@PathVariable String id) {
         return projectService.queryById(id);
     }

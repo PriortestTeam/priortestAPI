@@ -2,6 +2,8 @@ package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.domain.CustomFieldData;
 
+import java.util.List;
+
 public interface CustomFieldDataDao {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +16,6 @@ public interface CustomFieldDataDao {
     int updateByPrimaryKeySelective(CustomFieldData record);
 
     int updateByPrimaryKey(CustomFieldData record);
+
+    List<CustomFieldData> getAllByScopeIdAndScope(String scope, String scopeId);
 }

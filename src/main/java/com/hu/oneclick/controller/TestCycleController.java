@@ -31,6 +31,7 @@ public class TestCycleController {
 
 
     @GetMapping("queryById/{id}")
+    @ApiOperation("查询测试周期")
     public Resp<TestCycle> queryById(@PathVariable String id) {
         return testCycleService.queryById(id);
     }

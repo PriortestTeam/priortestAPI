@@ -6,6 +6,7 @@ import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.TestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.server.service.TestCaseService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("testCase")
+@Api(tags = "测试用例")
 public class TestCaseController {
 
     private final TestCaseService testCaseService;
@@ -33,6 +35,7 @@ public class TestCaseController {
 
 
     @GetMapping("queryById/{id}")
+    @ApiOperation("查询测试用例")
     public Resp<TestCase> queryById(@PathVariable String id) {
         return testCaseService.queryById(id);
     }

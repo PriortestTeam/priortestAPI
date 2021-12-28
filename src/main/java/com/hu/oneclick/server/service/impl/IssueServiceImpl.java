@@ -61,10 +61,20 @@ public class IssueServiceImpl implements IssueService {
     }
 
 
+    /**
+     * update issue custom
+     *
+     * @Param: [id]
+     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.Issue>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
     @Override
     public Resp<Issue> queryById(String id) {
         String masterId = jwtUserService.getMasterId();
         Issue issue = issueDao.queryById(id, masterId);
+
+        issue.setCustomFieldDatas(customFieldDataService.issueRenderingCustom(id));
         return new Resp.Builder<Issue>().setData(issue).ok();
     }
 

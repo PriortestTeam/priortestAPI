@@ -26,6 +26,7 @@ public class FeatureController {
     }
 
     @GetMapping("queryById/{id}")
+    @ApiOperation("查询故事")
     public Resp<Feature> queryById(@PathVariable String id) {
         return featureService.queryById(id);
     }

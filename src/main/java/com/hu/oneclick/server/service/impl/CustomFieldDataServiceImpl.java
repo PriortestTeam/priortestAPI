@@ -184,6 +184,77 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
         return insertFlag;
     }
 
+
+    /**
+     * 点击项目渲染自定义数据
+     *
+     * @Param:
+     * @return:
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     * @param scopeId
+     */
+    @Override
+    public List<CustomFieldData> projectRenderingCustom(String scopeId) {
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.PROJECT,scopeId);
+    }
+
+    /**
+     * 点击故事渲染自定义数据
+     *
+     * @param id
+     * @Param: [id]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    @Override
+    public List<CustomFieldData> featureRenderingCustom(String id) {
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.FEATURE,id);
+    }
+
+    /**
+     * 点击测试周期渲染自定义数据
+     *
+     * @param id
+     * @Param: [id]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    @Override
+    public List<CustomFieldData> testCycleRenderingCustom(String id) {
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.TESTCYCLE,id);
+    }
+
+    /**
+     * 点击测试用例渲染自定义数据
+     *
+     * @param id
+     * @Param: [id]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    @Override
+    public List<CustomFieldData> testCaseRenderingCustom(String id) {
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.TESTCASE,id);
+    }
+
+    /**
+     * 点击缺陷渲染自定义数据
+     *
+     * @param id
+     * @Param: [id]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    @Override
+    public List<CustomFieldData> issueRenderingCustom(String id) {
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.ISSUE,id);
+    }
+
     /**
      * 插入公共值
      *
@@ -208,5 +279,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
         return fieldData;
 
     }
+
+
 
 }

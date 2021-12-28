@@ -24,6 +24,7 @@ public class IssueController {
     }
 
     @GetMapping("queryById/{id}")
+    @ApiOperation("查询缺陷")
     public Resp<Issue> queryById(@PathVariable String id) {
         return issueService.queryById(id);
     }

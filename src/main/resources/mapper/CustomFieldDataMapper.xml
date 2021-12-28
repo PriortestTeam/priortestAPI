@@ -23,6 +23,13 @@
     from custom_field_data
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="getAllByScopeIdAndScope" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from custom_field_data
+    where `scope` = #{scope}
+    and scope_id = #{scopeId}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from custom_field_data
     where id = #{id,jdbcType=INTEGER}

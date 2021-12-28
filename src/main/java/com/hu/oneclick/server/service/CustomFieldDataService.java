@@ -58,4 +58,47 @@ public interface CustomFieldDataService {
      * @Date: 2021/12/28
      */
     Integer insertIssueCustomData(List<CustomFieldData> customFieldDatas, Issue issue);
+
+    /**
+     * 点击项目渲染自定义数据
+     *
+     * @Param:
+     * @return:
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     * @param scopeId
+     */
+    List<CustomFieldData> projectRenderingCustom(String scopeId);
+
+    /** 点击故事渲染自定义数据
+     * @Param: [id]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    List<CustomFieldData> featureRenderingCustom(String id);
+
+    /** 点击测试周期渲染自定义数据
+     * @Param: [id]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    List<CustomFieldData> testCycleRenderingCustom(String id);
+
+    /** 点击测试用例渲染自定义数据
+     * @Param: [id]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    List<CustomFieldData> testCaseRenderingCustom(String id);
+
+    /** 点击缺陷渲染自定义数据
+     * @Param: [id]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
+    List<CustomFieldData> issueRenderingCustom(String id);
 }

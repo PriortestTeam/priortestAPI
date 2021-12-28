@@ -99,10 +99,17 @@ public class TestCaseServiceImpl implements TestCaseService {
     }
 
 
+    /** update testcase custom
+     * @Param: [id]
+     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.TestCase>
+     * @Author: MaSiyi
+     * @Date: 2021/12/28
+     */
     @Override
     public Resp<TestCase> queryById(String id) {
         String masterId = jwtUserService.getMasterId();
         TestCase testCase = testCaseDao.queryById(id, masterId);
+        testCase.setCustomFieldDatas(customFieldDataService.testCaseRenderingCustom(id));
         return new Resp.Builder<TestCase>().setData(testCase).ok();
     }
 

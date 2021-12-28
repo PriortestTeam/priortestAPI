@@ -145,6 +145,8 @@ public class TestCycleServiceImpl implements TestCycleService {
             List<Sprint> sprints = sprintDao.queryTitlesInFeatureId(features);
             testCycle.setSprints(sprints);
         }
+
+        testCycle.setCustomFieldDatas(customFieldDataService.testCycleRenderingCustom(id));
         return new Resp.Builder<TestCycle>().setData(testCycle).ok();
     }
 
