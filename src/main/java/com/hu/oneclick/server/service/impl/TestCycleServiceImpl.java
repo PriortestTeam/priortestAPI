@@ -44,6 +44,7 @@ import com.hu.oneclick.server.service.TestCycleService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -64,64 +65,40 @@ public class TestCycleServiceImpl implements TestCycleService {
     private final static Logger logger = LoggerFactory.getLogger(TestCycleServiceImpl.class);
 
 
-    private final ModifyRecordsService modifyRecordsService;
+    @Autowired
+    private ModifyRecordsService modifyRecordsService;
+    @Autowired
+    private JwtUserServiceImpl jwtUserService;
+    @Autowired
+    private TestCycleDao testCycleDao;
+    @Autowired
+    private TestCaseDao testCaseDao;
+    @Autowired
+    private TestCaseStepDao testCaseStepDao;
+    @Autowired
+    private FeatureDao featureDao;
+    @Autowired
+    private TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
+    @Autowired
+    private SprintDao sprintDao;
+    @Autowired
+    private QueryFilterService queryFilterService;
+    @Autowired
+    private TestCaseExcutionDao testCaseExcutionDao;
+    @Autowired
+    private TestCycleJoinTestStepDao testCycleJoinTestStepDao;
+    @Autowired
+    private IssueDao issueDao;
+    @Autowired
+    private TestCycleScheduleModelDao testCycleScheduleModelDao;
+    @Autowired
+    private TestCycleScheduleDao testCycleScheduleDao;
+    @Autowired
+    private SystemConfigService systemConfigService;
+    @Autowired
+    private CustomFieldDataService customFieldDataService;
 
-    private final JwtUserServiceImpl jwtUserService;
 
-    private final TestCycleDao testCycleDao;
-
-    private final TestCaseDao testCaseDao;
-
-    private final TestCaseStepDao testCaseStepDao;
-
-    private final FeatureDao featureDao;
-
-    private final TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
-
-    private final SprintDao sprintDao;
-
-    private final QueryFilterService queryFilterService;
-
-    private final TestCaseExcutionDao testCaseExcutionDao;
-
-    private final TestCycleJoinTestStepDao testCycleJoinTestStepDao;
-
-    private final IssueDao issueDao;
-
-    private final TestCycleScheduleModelDao testCycleScheduleModelDao;
-
-    private final TestCycleScheduleDao testCycleScheduleDao;
-
-    private final SystemConfigService systemConfigService;
-
-    private final CustomFieldDataService customFieldDataService;
-
-
-    public TestCycleServiceImpl(ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService,
-                                TestCycleDao testCycleDao, TestCaseDao testCaseDao, TestCaseStepDao testCaseStepDao,
-                                FeatureDao featureDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao,
-                                SprintDao sprintDao, QueryFilterService queryFilterService,
-                                TestCaseExcutionDao testCaseExcutionDao, TestCycleJoinTestStepDao testCycleJoinTestStepDao,
-                                IssueDao issueDao, TestCycleScheduleModelDao testCycleScheduleModelDao,
-                                TestCycleScheduleDao testCycleScheduleDao, SystemConfigService systemConfigService,
-                                CustomFieldDataService customFieldDataService) {
-        this.modifyRecordsService = modifyRecordsService;
-        this.jwtUserService = jwtUserService;
-        this.testCycleDao = testCycleDao;
-        this.testCaseDao = testCaseDao;
-        this.testCaseStepDao = testCaseStepDao;
-        this.featureDao = featureDao;
-        this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
-        this.sprintDao = sprintDao;
-        this.queryFilterService = queryFilterService;
-        this.testCaseExcutionDao = testCaseExcutionDao;
-        this.testCycleJoinTestStepDao = testCycleJoinTestStepDao;
-        this.issueDao = issueDao;
-        this.testCycleScheduleModelDao = testCycleScheduleModelDao;
-        this.testCycleScheduleDao = testCycleScheduleDao;
-        this.systemConfigService = systemConfigService;
-        this.customFieldDataService = customFieldDataService;
-    }
 
 
     @Override
