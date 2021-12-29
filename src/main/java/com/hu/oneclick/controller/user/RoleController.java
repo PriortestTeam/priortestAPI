@@ -22,7 +22,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/role")
-@Api(tags = {"角色管理"})
+@Api(tags = "角色管理")
 public class RoleController {
 
     @Autowired
