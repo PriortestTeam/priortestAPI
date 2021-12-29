@@ -81,4 +81,5 @@ public interface SysCustomFieldDao {
     int deleteById(String id);
 
 
+    List<SysCustomField> getAllSysCustomFieldByScope(String scope);
 }

@@ -7,7 +7,14 @@
         <result property="fieldName" column="field_name" jdbcType="VARCHAR"/>
         <result property="fieldNameCn" column="field_name_cn" jdbcType="VARCHAR"/>
         <result property="defaultValues" column="default_values" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="scope" column="scope" jdbcType="VARCHAR"/>
+
     </resultMap>
+
+    <sql id="Base_Column_List">
+        id, field_name, field_name_cn, default_values, `type`, `scope`
+    </sql>
 
     <!--查询单个-->
     <select id="queryById" resultMap="SysCustomFieldMap">
@@ -40,6 +47,12 @@
         id, field_name, field_name_cn, default_values
         from sys_custom_field
         where field_name = #{fieldName}
+    </select>
+    <select id="getAllSysCustomFieldByScope" resultMap="SysCustomFieldMap">
+        select
+         <include refid="Base_Column_List" />
+        from sys_custom_field
+        where scope like CONCAT('%',#{scope},'%')
     </select>
 
     <!--新增所有列-->

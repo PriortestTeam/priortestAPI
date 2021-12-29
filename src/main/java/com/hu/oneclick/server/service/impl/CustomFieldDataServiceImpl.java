@@ -3,11 +3,13 @@ package com.hu.oneclick.server.service.impl;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.CustomFieldDataDao;
+import com.hu.oneclick.dao.SysCustomFieldDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.SysCustomField;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
@@ -15,7 +17,6 @@ import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.CustomFieldService;
-import com.hu.oneclick.server.service.SysCustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,13 +37,8 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
     private JwtUserServiceImpl jwtUserService;
     @Autowired
     private CustomFieldService customFieldService;
-
-    private SysCustomFieldService sysCustomFieldService;
-
     @Autowired
-    public void setSysCustomFieldService(SysCustomFieldService sysCustomFieldService) {
-        this.sysCustomFieldService = sysCustomFieldService;
-    }
+    private SysCustomFieldDao sysCustomFieldDao;
 
     /**
      * 插入项目自定义组件数据
@@ -200,15 +196,15 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
     /**
      * 点击项目渲染自定义数据
      *
+     * @param scopeId
      * @Param:
      * @return:
      * @Author: MaSiyi
      * @Date: 2021/12/28
-     * @param scopeId
      */
     @Override
     public List<CustomFieldData> projectRenderingCustom(String scopeId) {
-        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.PROJECT,scopeId);
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.PROJECT, scopeId);
     }
 
     /**
@@ -222,7 +218,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      */
     @Override
     public List<CustomFieldData> featureRenderingCustom(String id) {
-        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.FEATURE,id);
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.FEATURE, id);
     }
 
     /**
@@ -236,7 +232,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      */
     @Override
     public List<CustomFieldData> testCycleRenderingCustom(String id) {
-        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.TESTCYCLE,id);
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.TESTCYCLE, id);
     }
 
     /**
@@ -250,7 +246,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      */
     @Override
     public List<CustomFieldData> testCaseRenderingCustom(String id) {
-        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.TESTCASE,id);
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.TESTCASE, id);
     }
 
     /**
@@ -264,7 +260,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      */
     @Override
     public List<CustomFieldData> issueRenderingCustom(String id) {
-        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.ISSUE,id);
+        return customFieldDataDao.getAllByScopeIdAndScope(FieldConstant.ISSUE, id);
     }
 
     /**
@@ -310,16 +306,16 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
     /**
      * 新建时获取所有系统字段
      *
+     * @param scope
      * @Param: []
      * @return: com.hu.oneclick.model.base.Resp<java.util.List < java.lang.Object>>
      * @Author: MaSiyi
      * @Date: 2021/12/29
-     * @param scope
      */
     @Override
     public Resp<List<Object>> getAllSysCustomField(String scope) {
         //获取
-//        sysCustomFieldService.getAllSysCustomFieldByScope(scope);
+        List<SysCustomField> sysCustomFields = sysCustomFieldDao.getAllSysCustomFieldByScope(scope);
         return null;
     }
 }
