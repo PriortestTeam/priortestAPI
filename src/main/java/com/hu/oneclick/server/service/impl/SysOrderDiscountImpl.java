@@ -57,8 +57,8 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
             normalDiscount = BigDecimal.ZERO;
         }
         //根据所选的对应系统配置表中选出原始价钱
-        String dataStPrice = systemConfigService.getData(sysOrderDiscountDto.getDataStrorage());
-        String dataApPrice = systemConfigService.getData(sysOrderDiscountDto.getApiCall());
+        String dataStPrice = systemConfigService.getDateForKeyAndGroup(sysOrderDiscountDto.getDataStrorage(),OneConstant.SystemConfigGroup.SYSTEMCONFIG);
+        String dataApPrice = systemConfigService.getDateForKeyAndGroup(sysOrderDiscountDto.getApiCall(),OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         BigDecimal dataStPriceBd = new BigDecimal(dataStPrice);
         BigDecimal dataApPriceBd = new BigDecimal(dataApPrice);
         BigDecimal allPrice = dataApPriceBd.add(dataStPriceBd);

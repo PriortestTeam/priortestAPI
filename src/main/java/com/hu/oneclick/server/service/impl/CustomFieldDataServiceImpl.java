@@ -4,6 +4,7 @@ import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.CustomFieldDataDao;
 import com.hu.oneclick.dao.SysCustomFieldDao;
+import com.hu.oneclick.dao.SysCustomFieldExpandDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
@@ -39,6 +40,8 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
     private CustomFieldService customFieldService;
     @Autowired
     private SysCustomFieldDao sysCustomFieldDao;
+    @Autowired
+    private SysCustomFieldExpandDao sysCustomFieldExpandDao;
 
     /**
      * 插入项目自定义组件数据
@@ -314,8 +317,9 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      */
     @Override
     public Resp<List<Object>> getAllSysCustomField(String scope) {
-        //获取
+        //获取系统固定字段
         List<SysCustomField> sysCustomFields = sysCustomFieldDao.getAllSysCustomFieldByScope(scope);
+        //获取用户自己添加的自定义系统字段
         return null;
     }
 }
