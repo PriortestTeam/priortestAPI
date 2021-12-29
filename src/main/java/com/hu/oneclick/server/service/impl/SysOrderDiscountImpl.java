@@ -47,6 +47,8 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
      */
     @Override
     public Resp<Map<String, BigDecimal>> calculateOrderPrice(SysOrderDiscountDto sysOrderDiscountDto) {
+
+        sysOrderDiscountDto.verify();
         //根据所选的选出折扣表里面的基础折扣
         String normalDiscountFlag = systemConfigService.getDateForKeyAndGroup("NormalDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         //如果基础折扣开关为打开
