@@ -15,6 +15,7 @@ import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.CustomFieldService;
+import com.hu.oneclick.server.service.SysCustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,8 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
     private JwtUserServiceImpl jwtUserService;
     @Autowired
     private CustomFieldService customFieldService;
+    @Autowired
+    private SysCustomFieldService sysCustomFieldService;
 
 
     /**
@@ -300,4 +303,19 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
     }
 
 
+    /**
+     * 新建时获取所有系统字段
+     *
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List < java.lang.Object>>
+     * @Author: MaSiyi
+     * @Date: 2021/12/29
+     * @param scope
+     */
+    @Override
+    public Resp<List<Object>> getAllSysCustomField(String scope) {
+        //获取
+//        sysCustomFieldService.getAllSysCustomFieldByScope(scope);
+        return null;
+    }
 }

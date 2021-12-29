@@ -93,21 +93,6 @@ public class ProjectController {
     }
 
 
-    /**
-     * 新建项目时获取所有系统字段
-     *
-     * @Param: []
-     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
-     * @Author: MaSiyi
-     * @Date: 2021/11/17
-     */
-    @GetMapping("getAllSysCustomField")
-    @ApiOperation("新建项目时获取所有系统字段")
-    public Resp<List<SysCustomFieldVo>> getAllSysCustomField() {
-        return sysCustomFieldService.getAllSysCustomField();
-    }
-
-
     @GetMapping("getThePersonInCharge")
     @ApiOperation("获取负责人")
     public Resp<List<String>> getThePersonInCharge() {

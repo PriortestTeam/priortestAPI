@@ -567,7 +567,9 @@ public class ViewServiceImpl implements ViewService {
      */
     @Override
     public Resp<List<Object>> getViewScope(String scope) {
+        //搜索所有系统字段
 
+        //搜索所有用户字段
         return null;
     }
 }

@@ -14,6 +14,7 @@ public interface SysCustomFieldService {
      * @Author:
      * @Date: 2021/11/18
      */
+    @Deprecated
     Resp<List<SysCustomFieldVo>> querySysCustomFields();
 
     Resp<String> updateSysCustomFields(SysCustomFieldVo sysCustomFieldVo);

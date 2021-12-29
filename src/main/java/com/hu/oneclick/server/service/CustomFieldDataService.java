@@ -132,4 +132,13 @@ public interface CustomFieldDataService {
      * @Date: 2021/12/29
      */
     Resp<List<Object>> getAllCustomField(CustomFieldDto customFieldDto);
+
+    /** 新建时获取所有系统字段
+     * @Param: []
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List<java.lang.Object>>
+     * @Author: MaSiyi
+     * @Date: 2021/12/29
+     * @param scope
+     */
+    Resp<List<Object>> getAllSysCustomField(String scope);
 }
