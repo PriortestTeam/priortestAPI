@@ -21,6 +21,7 @@ import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -36,22 +37,21 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
 
     private final static Logger logger = LoggerFactory.getLogger(SysCustomFieldServiceImpl.class);
 
-    private final JwtUserServiceImpl jwtUserService;
-    private final RedissonClient redisClient;
+    @Autowired
+    private  JwtUserServiceImpl jwtUserService;
 
-    private final SysCustomFieldDao sysCustomFieldDao;
+    @Autowired
+    private  RedissonClient redisClient;
 
-    private final SysCustomFieldExpandDao sysCustomFieldExpandDao;
+    @Autowired
+    private  SysCustomFieldDao sysCustomFieldDao;
 
-    private final UserService userService;
+    @Autowired
+    private  SysCustomFieldExpandDao sysCustomFieldExpandDao;
 
-    public SysCustomFieldServiceImpl(JwtUserServiceImpl jwtUserService, RedissonClient redisClient, SysCustomFieldDao sysCustomFieldDao, SysCustomFieldExpandDao sysCustomFieldExpandDao, UserService userService) {
-        this.jwtUserService = jwtUserService;
-        this.redisClient = redisClient;
-        this.sysCustomFieldDao = sysCustomFieldDao;
-        this.sysCustomFieldExpandDao = sysCustomFieldExpandDao;
-        this.userService = userService;
-    }
+    @Autowired
+    private  UserService userService;
+
 
     @Override
     public Resp<List<SysCustomFieldVo>> querySysCustomFields() {
