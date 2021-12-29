@@ -3,6 +3,7 @@ package com.hu.oneclick.server.service.impl;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.CustomFieldDataDao;
+import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Issue;
@@ -11,7 +12,9 @@ import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
+import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.server.service.CustomFieldDataService;
+import com.hu.oneclick.server.service.CustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,8 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
     private CustomFieldDataDao customFieldDataDao;
     @Autowired
     private JwtUserServiceImpl jwtUserService;
+    @Autowired
+    private CustomFieldService customFieldService;
 
 
     /**
@@ -280,6 +285,19 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
     }
 
+    /**
+     * 新建时获取所有用户字段
+     *
+     * @param customFieldDto
+     * @Param: [customFieldDto]
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List < java.lang.Object>>
+     * @Author: MaSiyi
+     * @Date: 2021/12/29
+     */
+    @Override
+    public Resp<List<Object>> getAllCustomField(CustomFieldDto customFieldDto) {
+        return customFieldService.getAllCustomField(customFieldDto);
+    }
 
 
 }

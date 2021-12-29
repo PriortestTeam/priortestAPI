@@ -41,10 +41,18 @@ public class ViewController {
     }
 
     @GetMapping("getViewScopeChildParams")
-    @ApiOperation("根据范围搜索所有字段")
+    @ApiOperation("根据范围搜索所有字段(弃用)")
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope){
         return viewService.getViewScopeChildParams(scope);
     }
+
+
+    @GetMapping("getViewScope")
+    @ApiOperation("根据范围搜索所有字段")
+    public Resp<List<Object>> getViewScope(@RequestParam String scope){
+        return viewService.getViewScope(scope);
+    }
+
 
 
     @PostMapping("queryViews")

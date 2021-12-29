@@ -68,7 +68,7 @@ public interface CustomFieldService {
 
     //drop down end
 
-    /** 新建项目时获取所有用户字段
+    /** 新建时获取所有用户字段
      * @Param: []
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi

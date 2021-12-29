@@ -26,7 +26,9 @@ public interface ViewService {
 
     Resp<String> deleteView(String id);
 
+    @Deprecated
     Resp<List<ViewScopeChildParams>> getViewScopeChildParams(String scope);
+
 
     Resp<List<View>> queryViewParents(String scope, String projectId);
 
@@ -56,4 +58,11 @@ public interface ViewService {
      */
     Resp<Object> getViewFilter();
 
+    /** 根据范围搜索所有字段
+     * @Param: [scope]
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List<java.lang.Object>>
+     * @Author: MaSiyi
+     * @Date: 2021/12/29
+     */
+    Resp<List<Object>> getViewScope(String scope);
 }

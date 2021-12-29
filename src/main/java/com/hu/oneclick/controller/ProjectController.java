@@ -2,10 +2,8 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
-import com.hu.oneclick.server.service.CustomFieldService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.ViewService;
@@ -34,12 +32,10 @@ public class ProjectController {
 
     private final SysCustomFieldService sysCustomFieldService;
 
-    private final CustomFieldService customFieldService;
 
-    public ProjectController(ProjectService projectService, ViewService viewService, SysCustomFieldService sysCustomFieldService, CustomFieldService customFieldService) {
+    public ProjectController(ProjectService projectService, ViewService viewService, SysCustomFieldService sysCustomFieldService) {
         this.projectService = projectService;
         this.sysCustomFieldService = sysCustomFieldService;
-        this.customFieldService = customFieldService;
     }
 
     /**
@@ -111,19 +107,6 @@ public class ProjectController {
         return sysCustomFieldService.getAllSysCustomField();
     }
 
-    /**
-     * 新建项目时获取所有用户字段
-     *
-     * @Param: []
-     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
-     * @Author: MaSiyi
-     * @Date: 2021/11/17
-     */
-    @PostMapping("getAllCustomField")
-    @ApiOperation("新建项目时获取所有用户字段")
-    public Resp<List<Object>> getAllCustomField(@RequestBody CustomFieldDto customFieldDto) {
-        return customFieldService.getAllCustomField(customFieldDto);
-    }
 
     @GetMapping("getThePersonInCharge")
     @ApiOperation("获取负责人")

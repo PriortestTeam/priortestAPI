@@ -555,4 +555,19 @@ public class ViewServiceImpl implements ViewService {
         }
         return defaultValues;
     }
+
+    /**
+     * 根据范围搜索所有字段
+     *
+     * @param scope
+     * @Param: [scope]
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List < java.lang.Object>>
+     * @Author: MaSiyi
+     * @Date: 2021/12/29
+     */
+    @Override
+    public Resp<List<Object>> getViewScope(String scope) {
+
+        return null;
+    }
 }
