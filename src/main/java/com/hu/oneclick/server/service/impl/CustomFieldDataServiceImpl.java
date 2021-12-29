@@ -36,9 +36,13 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
     private JwtUserServiceImpl jwtUserService;
     @Autowired
     private CustomFieldService customFieldService;
-    @Autowired
+
     private SysCustomFieldService sysCustomFieldService;
 
+    @Autowired
+    public void setSysCustomFieldService(SysCustomFieldService sysCustomFieldService) {
+        this.sysCustomFieldService = sysCustomFieldService;
+    }
 
     /**
      * 插入项目自定义组件数据
