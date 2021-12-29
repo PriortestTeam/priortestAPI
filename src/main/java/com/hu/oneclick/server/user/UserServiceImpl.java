@@ -49,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class UserServiceImpl implements UserService {
 
+
     private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final SysUserDao sysUserDao;
