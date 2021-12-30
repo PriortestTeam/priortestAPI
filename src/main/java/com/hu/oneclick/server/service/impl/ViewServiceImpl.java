@@ -169,102 +169,6 @@ public class ViewServiceImpl implements ViewService {
         }
     }
 
-    /**
-     * 设置sql
-     *
-     * @Param: [oneFilter, view]
-     * @return: java.lang.String
-     * @Author: MaSiyi
-     * @Date: 2021/11/29
-     */
-    private String appendSql(List<OneFilter> oneFilter, View view) {
-        StringBuilder stringBuilder = new StringBuilder("select * from ");
-        String scope = view.getScope();
-        switch (scope) {
-            case FieldConstant.PROJECT:
-                stringBuilder.append("project ");
-                break;
-            case FieldConstant.FEATURE:
-                stringBuilder.append("feature ");
-                break;
-            case FieldConstant.TESTCYCLE:
-                stringBuilder.append("test_cycle ");
-                break;
-            case FieldConstant.TESTCASE:
-                stringBuilder.append("test_case ");
-                break;
-            case FieldConstant.ISSUE:
-                stringBuilder.append("issue ");
-                break;
-            default:
-
-        }
-        stringBuilder.append("where ");
-        stringBuilder.append("user_id = ").append(view.getUserId()).append(" and ");
-        stringBuilder.append("project_id = ").append(view.getUserId());
-        for (OneFilter filter : oneFilter) {
-            //format字符串
-            filter.verify();
-
-            String andOr = filter.getAndOr();
-            if ("and".equals(andOr)) {
-                stringBuilder.append(" and ");
-            } else {
-                stringBuilder.append(" or ");
-            }
-            String condition = filter.getCondition();
-            /**
-             *  Is 等于
-             *   IsNot 不等于
-             *   IsEmpty 为空
-             *   IsNotEmpty 不为空
-             *   MoreThan 大于
-             *   LessThan 小于
-             *   Include 包含
-             *   Exclude 不包含
-             */
-            stringBuilder.append(OneClickUtil.humpToLine(filter.getFieldName()));
-            switch (condition) {
-                case "Is":
-                    stringBuilder.append(" = ");
-                    stringBuilder.append(filter.getTextVal());
-                    break;
-                case "IsNot":
-                    stringBuilder.append(" != ");
-                    stringBuilder.append(filter.getTextVal());
-                    break;
-                case "IsEmpty":
-                    stringBuilder.append(" is null ");
-                    break;
-                case "IsNotEmpty":
-                    stringBuilder.append(" is not null ");
-                    break;
-                case "MoreThan":
-                    stringBuilder.append(" > ");
-                    stringBuilder.append(filter.getIntVal());
-                    break;
-                case "LessThan":
-                    stringBuilder.append(" < ");
-                    stringBuilder.append(filter.getIntVal());
-                    break;
-                case "Include":
-                    stringBuilder.append("  in ( ");
-                    //todo 待和前端商讨传数据的格式
-                    stringBuilder.append(filter.getTextVal());
-                    stringBuilder.append("  ) ");
-                    break;
-                case "Exclude":
-                    stringBuilder.append(" not in ( ");
-                    stringBuilder.append(filter.getTextVal());
-                    stringBuilder.append("  ) ");
-                    break;
-                default:
-            }
-
-
-        }
-        return stringBuilder.toString();
-    }
 
 
     @Override
@@ -458,6 +362,103 @@ public class ViewServiceImpl implements ViewService {
         }
 
     }
+    /**
+     * 设置sql
+     *
+     * @Param: [oneFilter, view]
+     * @return: java.lang.String
+     * @Author: MaSiyi
+     * @Date: 2021/11/29
+     */
+    private String appendSql(List<OneFilter> oneFilter, View view) {
+        StringBuilder stringBuilder = new StringBuilder("select * from ");
+        String scope = view.getScope();
+        switch (scope) {
+            case FieldConstant.PROJECT:
+                stringBuilder.append("project ");
+                break;
+            case FieldConstant.FEATURE:
+                stringBuilder.append("feature ");
+                break;
+            case FieldConstant.TESTCYCLE:
+                stringBuilder.append("test_cycle ");
+                break;
+            case FieldConstant.TESTCASE:
+                stringBuilder.append("test_case ");
+                break;
+            case FieldConstant.ISSUE:
+                stringBuilder.append("issue ");
+                break;
+            default:
+
+        }
+        stringBuilder.append("where ");
+        stringBuilder.append("user_id = ").append(view.getUserId()).append(" and ");
+        stringBuilder.append("project_id = ").append(view.getUserId());
+        for (OneFilter filter : oneFilter) {
+            //format字符串
+            filter.verify();
+
+            String andOr = filter.getAndOr();
+            if ("and".equals(andOr)) {
+                stringBuilder.append(" and ");
+            } else {
+                stringBuilder.append(" or ");
+            }
+            String condition = filter.getCondition();
+            /**
+             *  Is 等于
+             *   IsNot 不等于
+             *   IsEmpty 为空
+             *   IsNotEmpty 不为空
+             *   MoreThan 大于
+             *   LessThan 小于
+             *   Include 包含
+             *   Exclude 不包含
+             */
+            stringBuilder.append(OneClickUtil.humpToLine(filter.getFieldName()));
+            switch (condition) {
+                case "Is":
+                    stringBuilder.append(" = ");
+                    stringBuilder.append(filter.getTextVal());
+                    break;
+                case "IsNot":
+                    stringBuilder.append(" != ");
+                    stringBuilder.append(filter.getTextVal());
+                    break;
+                case "IsEmpty":
+                    stringBuilder.append(" is null ");
+                    break;
+                case "IsNotEmpty":
+                    stringBuilder.append(" is not null ");
+                    break;
+                case "MoreThan":
+                    stringBuilder.append(" > ");
+                    stringBuilder.append(filter.getIntVal());
+                    break;
+                case "LessThan":
+                    stringBuilder.append(" < ");
+                    stringBuilder.append(filter.getIntVal());
+                    break;
+                case "Include":
+                    stringBuilder.append("  in ( ");
+                    //todo 待和前端商讨传数据的格式
+                    stringBuilder.append(filter.getTextVal());
+                    stringBuilder.append("  ) ");
+                    break;
+                case "Exclude":
+                    stringBuilder.append(" not in ( ");
+                    stringBuilder.append(filter.getTextVal());
+                    stringBuilder.append("  ) ");
+                    break;
+                default:
+            }
+
+
+        }
+        return stringBuilder.toString();
+    }
+
 
     /**
      * 执行sql

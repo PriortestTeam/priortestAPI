@@ -75,14 +75,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Authorization");
         SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authorization);
 
-        Date expirationTime = sysUserToken.getExpiration_time();
-        if (expirationTime.before(new Date())) {
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("token已过期")));
-            return;
-        }
+
         if (!org.springframework.util.StringUtils.isEmpty(sysUserToken)) {
-            Authentication authentication = new ApiToken(true,sysUserToken.getToken_name());
+            Date expirationTime = sysUserToken.getExpiration_time();
+            if (expirationTime.before(new Date())) {
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("token已过期")));
+                return;
+            }
+            Authentication authentication = new ApiToken(true, sysUserToken.getToken_name());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             //第三方调用api
@@ -114,7 +115,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             try {
                 String token = getJwtToken(request);
-
 
 
                 if (StringUtils.isNotBlank(token)) {

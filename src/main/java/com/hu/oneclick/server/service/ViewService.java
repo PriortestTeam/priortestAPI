@@ -20,6 +20,7 @@ public interface ViewService {
 
     Resp<String> queryDoesExistByTitle(String projectId,String title,String scope);
 
+    @Deprecated
     Resp<String> addView(View view);
 
     Resp<String> updateView(View view);
