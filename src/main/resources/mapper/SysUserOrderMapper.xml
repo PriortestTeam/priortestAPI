@@ -17,7 +17,7 @@
         <result column="original_price" jdbcType="DECIMAL" property="originalPrice" />
         <result column="current_price" jdbcType="DECIMAL" property="currentPrice" />
         <result column="api_call" jdbcType="VARCHAR" property="apiCall" />
-        <result column="service_plan_duration" jdbcType="VARCHAR" property="servicePlanDuration" />
+        <result column="service_plan_duration" jdbcType="VARCHAR" property="serviceDuration" />
     </resultMap>
     <sql id="Base_Column_List">
         sys_user_order.id as id, sys_user_order.user_id, sys_user_order.order_id,
@@ -104,7 +104,7 @@
             <if test="apiCall != null">
                 api_call,
             </if>
-            <if test="servicePlanDuration != null">
+            <if test="serviceDuration != null">
                 service_plan_duration,
             </if>
         </trim>
@@ -148,8 +148,8 @@
             <if test="apiCall != null">
                 #{apiCall},
             </if>
-            <if test="servicePlanDuration != null">
-                #{servicePlanDuration},
+            <if test="serviceDuration != null">
+                #{serviceDuration},
             </if>
             <if test="currentPrice != null">
                 #{currentPrice}

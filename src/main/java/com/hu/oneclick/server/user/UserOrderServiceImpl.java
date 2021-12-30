@@ -3,15 +3,12 @@ package com.hu.oneclick.server.user;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.OrderEnum;
 import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
-import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.SysUserOrderDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserOrder;
 import com.hu.oneclick.model.domain.SysUserOrderRecord;
-import com.hu.oneclick.server.service.SysOrderDiscountService;
 import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +18,6 @@ import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author MaSiyi
@@ -49,7 +43,7 @@ public class UserOrderServiceImpl implements UserOrderService {
         sysUserOrder.setStatus(false);
         long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
         sysUserOrder.setOrderId(orderId);
-        OrderEnum orderEnum = OrderEnum.toType(sysUserOrder.getServicePlanDuration());
+        OrderEnum orderEnum = OrderEnum.toType(sysUserOrder.getServiceDuration());
         //付款时间
         Calendar instance = Calendar.getInstance();
         switch (orderEnum) {

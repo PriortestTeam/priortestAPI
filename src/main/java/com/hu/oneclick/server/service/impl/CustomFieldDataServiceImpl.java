@@ -333,14 +333,14 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
         List<SysCustomFieldExpand> filterSysCustomFieldExpand = sysCustomFieldExpands.stream().filter(f -> collect.contains(f.getLinkSysCustomField())).collect(Collectors.toList());
         //拼装拓展值
         ArrayList<SysCustomField> newSysCustomFields = new ArrayList<>();
-        for (SysCustomFieldExpand sysCustomFieldExpand : filterSysCustomFieldExpand) {
-            for (SysCustomField sysCustomField : sysCustomFields) {
+        for (SysCustomField sysCustomField : sysCustomFields) {
+            for (SysCustomFieldExpand sysCustomFieldExpand : filterSysCustomFieldExpand) {
                 if (sysCustomField.getFieldName().equals(sysCustomFieldExpand.getLinkSysCustomField())) {
 
-                    sysCustomField.setFieldName(sysCustomField.getDefaultValues() + sysCustomFieldExpand.getValues());
+                    sysCustomField.setFieldName(sysCustomField.getDefaultValues() + "," + sysCustomFieldExpand.getValues());
                 }
-                newSysCustomFields.add(sysCustomField);
             }
+            newSysCustomFields.add(sysCustomField);
         }
         return new Resp.Builder<List<SysCustomField>>().setData(newSysCustomFields).ok();
     }

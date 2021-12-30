@@ -580,6 +580,7 @@ public class ViewServiceImpl implements ViewService {
         HashMap<String, Object> map = new HashMap<>(3);
         Resp<List<SysCustomField>> allSysCustomField = customFieldDataService.getAllSysCustomField(scope);
         List<SysCustomField> sysCustomFieldData = allSysCustomField.getData();
+
         map.put("sysCustomField", sysCustomFieldData);
 
         //搜索所有用户字段

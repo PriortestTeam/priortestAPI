@@ -48,6 +48,12 @@ public class CustomFieldData implements Serializable {
     private String scope;
 
     /**
+     * 字段名
+     */
+    @ApiModelProperty(value="字段名")
+    private String fieldName;
+
+    /**
      * 自定义存储字段的值
      */
     @ApiModelProperty(value="自定义存储字段的值")

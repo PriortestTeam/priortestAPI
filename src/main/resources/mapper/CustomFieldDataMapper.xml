@@ -8,6 +8,7 @@
     <result column="custom_field_id" jdbcType="VARCHAR" property="customFieldId" />
     <result column="scope_id" jdbcType="VARCHAR" property="scopeId" />
     <result column="scope" jdbcType="VARCHAR" property="scope" />
+    <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
     <result column="value_data" jdbcType="VARCHAR" property="valueData" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="is_del" jdbcType="BOOLEAN" property="isDel" />
@@ -36,11 +37,11 @@
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.CustomFieldData" useGeneratedKeys="true">
     insert into custom_field_data (user_id, project_id, custom_field_id, 
-      scope_id, `scope`, value_data, 
+      scope_id, `scope`,field_name, value_data,
       create_time, is_del, create_user_id
       )
     values (#{userId,jdbcType=BIGINT}, #{projectId,jdbcType=BIGINT}, #{customFieldId,jdbcType=VARCHAR}, 
-      #{scopeId,jdbcType=VARCHAR}, #{scope,jdbcType=VARCHAR}, #{valueData,jdbcType=VARCHAR}, 
+      #{scopeId,jdbcType=VARCHAR}, #{scope,jdbcType=VARCHAR},#{fieldName,jdbcType=VARCHAR},  #{valueData,jdbcType=VARCHAR},
       #{createTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=BOOLEAN}, #{createUserId,jdbcType=BIGINT}
       )
   </insert>

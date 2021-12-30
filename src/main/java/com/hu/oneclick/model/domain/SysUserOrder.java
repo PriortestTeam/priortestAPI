@@ -1,10 +1,11 @@
 package com.hu.oneclick.model.domain;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * sys_user_order
@@ -52,7 +53,7 @@ public class SysUserOrder implements Serializable {
      * 服务周期
      */
     @ApiModelProperty(value="服务周期")
-    private Integer servicePlanDuration;
+    private Integer serviceDuration;
 
     /**
      * 容量大小
