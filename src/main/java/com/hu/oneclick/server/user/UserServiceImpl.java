@@ -517,10 +517,12 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Boolean getUserAccountInfo(String emailId) {
-        SysUser sysUser = sysUserDao.queryByEmail(emailId);
-        if (org.springframework.util.StringUtils.isEmpty(sysUser)) {
+        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(emailId);
+        SysUser sysUser;
+        if (sysUsers.isEmpty()) {
             return false;
         }
+        sysUser = sysUsers.get(0);
         String identifier = sysUser.getIdentifier();
 
         //如果为空，则是子账号
