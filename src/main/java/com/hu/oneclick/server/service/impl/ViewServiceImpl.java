@@ -15,12 +15,15 @@ import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.OneFilter;
+import com.hu.oneclick.model.domain.SysCustomField;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.ViewDownChildParams;
+import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
+import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.ViewService;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -56,13 +61,16 @@ public class ViewServiceImpl implements ViewService {
 
     private final SysCustomFieldService sysCustomFieldService;
 
-    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService) {
+    private final CustomFieldDataService customFieldDataService;
+
+    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService, CustomFieldDataService customFieldDataService) {
         this.viewDao = v;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
         this.viewDownChildParamsDao = viewDownChildParamsDao;
         this.redissonClient = redissonClient;
         this.sysCustomFieldService = sysCustomFieldService;
+        this.customFieldDataService = customFieldDataService;
     }
 
     @Override
@@ -567,10 +575,22 @@ public class ViewServiceImpl implements ViewService {
      * @Date: 2021/12/29
      */
     @Override
-    public Resp<List<Object>> getViewScope(String scope) {
+    public Resp<Map<String,Object>> getViewScope(String scope) {
         //搜索所有系统字段
+        HashMap<String, Object> map = new HashMap<>(3);
+        Resp<List<SysCustomField>> allSysCustomField = customFieldDataService.getAllSysCustomField(scope);
+        List<SysCustomField> sysCustomFieldData = allSysCustomField.getData();
+        map.put("sysCustomField", sysCustomFieldData);
 
         //搜索所有用户字段
-        return null;
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        CustomFieldDto customFieldDto = new CustomFieldDto();
+        customFieldDto.setScope(scope);
+        customFieldDto.setProjectId(sysUser.getUserUseOpenProject().getProjectId());
+        Resp<List<Object>> allCustomField = customFieldDataService.getAllCustomField(customFieldDto);
+        List<Object> customField = allCustomField.getData();
+        map.put("customField", customField);
+
+        return new Resp.Builder<Map<String,Object>>().setData(map).ok();
     }
 }

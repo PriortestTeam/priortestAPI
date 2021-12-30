@@ -29,15 +29,6 @@ public interface SysCustomFieldService {
     Resp<SysCustomFieldVo> getSysCustomField(String fieldName);
 
 
-    /** 新建项目时获取所有系统字段
-     * @Param: []
-     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
-     * @Author: MaSiyi
-     * @Date: 2021/11/17
-     */
-    Resp<List<SysCustomFieldVo>> getAllSysCustomField();
-
-
     /** 获取项目负责人
      * @Param: []
      * @return: com.hu.oneclick.model.base.Resp<java.util.List<java.lang.String>>

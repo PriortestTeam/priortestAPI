@@ -6,6 +6,7 @@ import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -65,5 +66,5 @@ public interface ViewService {
      * @Author: MaSiyi
      * @Date: 2021/12/29
      */
-    Resp<List<Object>> getViewScope(String scope);
+    Resp<Map<String,Object>> getViewScope(String scope);
 }

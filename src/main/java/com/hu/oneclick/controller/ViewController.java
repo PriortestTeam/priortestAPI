@@ -7,9 +7,17 @@ import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.ViewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -41,15 +49,20 @@ public class ViewController {
     }
 
     @GetMapping("getViewScopeChildParams")
-    @ApiOperation("根据范围搜索所有字段(弃用)")
+    @ApiOperation("根据范围搜索所有字段(弃用)请使用getViewScope")
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope){
         return viewService.getViewScopeChildParams(scope);
     }
 
-
+    /**
+     * @Param: [scope]
+     * @return: com.hu.oneclick.model.base.Resp<java.util.Map<java.lang.String,java.lang.Object>>
+     * @Author: MaSiyi
+     * @Date: 2021/12/29
+     */
     @GetMapping("getViewScope")
     @ApiOperation("根据范围搜索所有字段")
-    public Resp<List<Object>> getViewScope(@RequestParam String scope){
+    public Resp<Map<String,Object>> getViewScope(@RequestParam String scope){
         return viewService.getViewScope(scope);
     }
 
