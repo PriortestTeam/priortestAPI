@@ -12,6 +12,15 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <sql id="base_sql">
+        id,
+          user_id,
+          project_id,
+          link_sys_custom_field,
+          `values`,
+          create_time,
+          update_time
+    </sql>
     <!--查询单个-->
     <select id="queryById" resultMap="SysCustomFieldExpandMap">
         select
@@ -69,6 +78,12 @@
         where user_id = #{masterId}
         and link_sys_custom_field = #{fieldName}
         and project_id = #{projectId}
+    </select>
+    <select id="getAllSysCustomFieldExpand"  resultMap="SysCustomFieldExpandMap">
+        select
+        <include refid="base_sql"></include>
+        from sys_custom_field_expand
+        where user_id = #{userId} AND project_id = #{projectId}
     </select>
 
     <!--新增所有列-->

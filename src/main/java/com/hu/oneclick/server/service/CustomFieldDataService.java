@@ -5,6 +5,7 @@ import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.SysCustomField;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
@@ -140,5 +141,5 @@ public interface CustomFieldDataService {
      * @Date: 2021/12/29
      * @param scope
      */
-    Resp<List<Object>> getAllSysCustomField(String scope);
+    Resp<List<SysCustomField>> getAllSysCustomField(String scope);
 }

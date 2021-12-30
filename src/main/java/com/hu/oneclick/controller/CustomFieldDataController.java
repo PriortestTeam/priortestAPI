@@ -1,6 +1,7 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.SysCustomField;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import io.swagger.annotations.Api;
@@ -51,7 +52,7 @@ public class CustomFieldDataController {
      */
     @GetMapping("getAllSysCustomField")
     @ApiOperation("新建时获取所有系统字段")
-    public Resp<List<Object>> getAllSysCustomField(@RequestParam String scope) {
+    public Resp<List<SysCustomField>> getAllSysCustomField(@RequestParam String scope) {
         return customFieldDataService.getAllSysCustomField(scope);
     }
 

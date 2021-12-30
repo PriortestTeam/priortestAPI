@@ -11,6 +11,7 @@ import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysCustomField;
+import com.hu.oneclick.model.domain.SysCustomFieldExpand;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
@@ -21,8 +22,10 @@ import com.hu.oneclick.server.service.CustomFieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author MaSiyi
@@ -316,10 +319,29 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      * @Date: 2021/12/29
      */
     @Override
-    public Resp<List<Object>> getAllSysCustomField(String scope) {
+    public Resp<List<SysCustomField>> getAllSysCustomField(String scope) {
         //获取系统固定字段
         List<SysCustomField> sysCustomFields = sysCustomFieldDao.getAllSysCustomFieldByScope(scope);
+        //将字段名称单独拿出来成为一个list
+        List<String> collect = sysCustomFields.stream().map(SysCustomField::getFieldName).collect(Collectors.toList());
         //获取用户自己添加的自定义系统字段
-        return null;
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        String userId = sysUser.getId();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
+        List<SysCustomFieldExpand> sysCustomFieldExpands = sysCustomFieldExpandDao.getAllSysCustomFieldExpand(userId, projectId);
+        //将拓展表中字段名与系统表中匹配的值拿出来
+        List<SysCustomFieldExpand> filterSysCustomFieldExpand = sysCustomFieldExpands.stream().filter(f -> collect.contains(f.getLinkSysCustomField())).collect(Collectors.toList());
+        //拼装拓展值
+        ArrayList<SysCustomField> newSysCustomFields = new ArrayList<>();
+        for (SysCustomFieldExpand sysCustomFieldExpand : filterSysCustomFieldExpand) {
+            for (SysCustomField sysCustomField : sysCustomFields) {
+                if (sysCustomField.getFieldName().equals(sysCustomFieldExpand.getLinkSysCustomField())) {
+
+                    sysCustomField.setFieldName(sysCustomField.getDefaultValues() + sysCustomFieldExpand.getValues());
+                }
+                newSysCustomFields.add(sysCustomField);
+            }
+        }
+        return new Resp.Builder<List<SysCustomField>>().setData(newSysCustomFields).ok();
     }
 }

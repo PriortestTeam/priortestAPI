@@ -82,4 +82,11 @@ public interface SysCustomFieldExpandDao {
      */
     int deleteById(String id);
 
+    /** 获取用户自己添加的自定义系统字段
+     * @Param: [userId, projectId]
+     * @return: java.util.List<com.hu.oneclick.model.domain.SysCustomFieldExpand>
+     * @Author: MaSiyi
+     * @Date: 2021/12/30
+     */
+    List<SysCustomFieldExpand> getAllSysCustomFieldExpand(String userId, String projectId);
 }
