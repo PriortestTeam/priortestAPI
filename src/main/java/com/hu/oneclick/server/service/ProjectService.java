@@ -51,4 +51,12 @@ public interface ProjectService {
      * @Date: 2021/12/25
      */
     Integer insertUseOpenProject(UserUseOpenProject userUseOpenProject);
+
+    /** 根据条件查询project
+     * @Param: [project]
+     * @return: java.util.List<com.hu.oneclick.model.domain.Project>
+     * @Author: MaSiyi
+     * @Date: 2021/12/31
+     */
+    List<Project> findAllByProject(Project project);
 }

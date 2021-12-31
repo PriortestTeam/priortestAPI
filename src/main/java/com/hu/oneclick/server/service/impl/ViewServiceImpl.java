@@ -15,6 +15,7 @@ import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.OneFilter;
+import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysCustomField;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.View;
@@ -24,6 +25,7 @@ import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.CustomFieldDataService;
+import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.ViewService;
 import org.apache.commons.lang3.StringUtils;
@@ -63,7 +65,9 @@ public class ViewServiceImpl implements ViewService {
 
     private final CustomFieldDataService customFieldDataService;
 
-    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService, CustomFieldDataService customFieldDataService) {
+    private final ProjectService projectService;
+
+    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService, CustomFieldDataService customFieldDataService, ProjectService projectService) {
         this.viewDao = v;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
@@ -71,6 +75,7 @@ public class ViewServiceImpl implements ViewService {
         this.redissonClient = redissonClient;
         this.sysCustomFieldService = sysCustomFieldService;
         this.customFieldDataService = customFieldDataService;
+        this.projectService = projectService;
     }
 
     @Override
@@ -361,8 +366,8 @@ public class ViewServiceImpl implements ViewService {
             view.setProjectId(projectId);
             view.setOwner(sysUser.getUserName());
             //设置sql
-            String sql = appendSql(oneFilter, view);
-            view.setSql(sql);
+//            String sql = appendSql(oneFilter, view);
+//            view.setSql(sql);
             return Result.addResult(viewDao.insert(view));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#addView,error []" + e.getMessage());
@@ -378,6 +383,7 @@ public class ViewServiceImpl implements ViewService {
      * @Author: MaSiyi
      * @Date: 2021/11/29
      */
+    @Deprecated
     private String appendSql(List<OneFilter> oneFilter, View view) {
         StringBuilder stringBuilder = new StringBuilder("select * from ");
         String scope = view.getScope();
@@ -476,7 +482,7 @@ public class ViewServiceImpl implements ViewService {
      * @Author: MaSiyi
      * @Date: 2021/12/22
      */
-
+    @Deprecated
     private List<Object> sql(String sql) {
         return viewDao.sql(sql);
     }
@@ -493,9 +499,42 @@ public class ViewServiceImpl implements ViewService {
     @Override
     public Resp<String> renderingView(String viewId) {
         View view = viewDao.queryOnlyById(viewId);
-        List<Object> sql = this.sql(view.getSql());
-        return new Resp.Builder<String>().setData(JSONObject.toJSONString(sql)).ok();
+//        List<Object> sql = this.sql(view.getSql());
+        String filter = view.getFilter();
+        String scope = view.getScope();
+        switch (scope) {
+            case FieldConstant.PROJECT:
+                List<OneFilter> oneFilter = JSONArray.parseArray(filter, OneFilter.class);
+                for (OneFilter oneFilter1 : oneFilter) {
+                    String customType = oneFilter1.getCustomType();
+                    if (customType.equals("sys")) {
+                        String fieldName = oneFilter1.getFieldName();
+                        Project project = new Project();
+                        projectService.findAllByProject(project);
+                    }
+                }
+                break;
+            case FieldConstant.FEATURE:
+
+                break;
+            case FieldConstant.TESTCYCLE:
+
+                break;
+            case FieldConstant.TESTCASE:
+
+                break;
+            case FieldConstant.ISSUE:
+
+                break;
+            default:
+
+        }
+
+
+        return new Resp.Builder<String>().setData(JSONObject.toJSONString("")).ok();
     }
+
+
 
     /**
      * 获取filter字段

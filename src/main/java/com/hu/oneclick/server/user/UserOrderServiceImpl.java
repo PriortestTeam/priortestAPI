@@ -119,6 +119,7 @@ public class UserOrderServiceImpl implements UserOrderService {
      */
     private SysUserOrderRecord addOrderRecord(SysUserOrderRecord sysUserOrderRecord, SysUserOrder sysUserOrder) {
 
+        //todo 而在提交的订单的时候，来判断用户身份的改变
         sysUserOrderRecord.setOrder_id(sysUserOrder.getOrderId());
         sysUserOrderRecord.setStatus(false);
         sysUserOrderRecord.setCreate_time(new Date());

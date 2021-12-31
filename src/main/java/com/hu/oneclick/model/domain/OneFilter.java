@@ -68,6 +68,15 @@ public class OneFilter implements VerifyParam, Serializable {
     private String condition;
 
 
+    /** 字段类型 系统字段 sys 用户字段 user
+     * @Param:
+     * @return:
+     * @Author: MaSiyi
+     * @Date: 2021/12/31
+     */
+    private String customType;
+
+
     @Override
     public void verify() throws BizException {
         if (StringUtils.isEmpty(this.type)) {

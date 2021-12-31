@@ -679,4 +679,18 @@ public class ProjectServiceImpl implements ProjectService {
     public Integer insertUseOpenProject(UserUseOpenProject userUseOpenProject) {
         return projectDao.insertUseOpenProject(userUseOpenProject);
     }
+
+    /**
+     * 根据条件查询project
+     *
+     * @param project
+     * @Param: [project]
+     * @return: java.util.List<com.hu.oneclick.model.domain.Project>
+     * @Author: MaSiyi
+     * @Date: 2021/12/31
+     */
+    @Override
+    public List<Project> findAllByProject(Project project) {
+        return null;
+    }
 }
