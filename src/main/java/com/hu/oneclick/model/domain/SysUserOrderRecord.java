@@ -2,10 +2,11 @@ package com.hu.oneclick.model.domain;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * sys_user_order_record
@@ -66,7 +67,7 @@ public class SysUserOrderRecord implements Serializable {
      * 支付方式
      */
     @ApiModelProperty(value="支付方式")
-    private Integer payment_type;
+    private String payment_type;
 
     /**
      * 服务周期

@@ -35,7 +35,7 @@ public class SysUserOrder implements Serializable {
      * 支付方式
      */
     @ApiModelProperty(value="支付方式")
-    private Integer paymentType;
+    private String paymentType;
 
     /**
      * 支付账号
