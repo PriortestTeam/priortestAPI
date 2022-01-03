@@ -4,6 +4,7 @@ import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.dto.PlatformUserDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
+import com.hu.oneclick.model.domain.dto.SysUserRoleDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -150,4 +151,6 @@ public interface SysUserDao {
      * @return
      */
     List<SysUser> queryByLikeEmail(@Param("email") String email);
+
+    List<SysUserRoleDto> getAccountRole(String userId, String roleId);
 }

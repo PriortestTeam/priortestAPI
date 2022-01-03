@@ -9,11 +9,11 @@ package com.hu.oneclick.common.constant;
 public interface FieldConstant {
 
     //scope
-    String PROJECT = "project";
-    String FEATURE = "feature";
-    String TESTCYCLE = "testCycle";
-    String TESTCASE = "testCase";
-    String ISSUE = "issue";
+    String PROJECT = "Project";
+    String FEATURE = "Feature";
+    String TESTCYCLE = "TestCycle";
+    String TESTCASE = "TestCase";
+    String ISSUE = "Issue";
 
     //type
     interface type {

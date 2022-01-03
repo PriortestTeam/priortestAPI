@@ -37,6 +37,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -497,7 +499,7 @@ public class ViewServiceImpl implements ViewService {
      * @Date: 2021/12/22
      */
     @Override
-    public Resp<String> renderingView(String viewId) {
+    public Resp<String> renderingView(String viewId) throws NoSuchFieldException, IllegalAccessException {
         View view = viewDao.queryOnlyById(viewId);
 //        List<Object> sql = this.sql(view.getSql());
         String filter = view.getFilter();
@@ -510,6 +512,13 @@ public class ViewServiceImpl implements ViewService {
                     if (customType.equals("sys")) {
                         String fieldName = oneFilter1.getFieldName();
                         Project project = new Project();
+                        Class<? extends Project> aClass = project.getClass();
+                        try {
+                            Method getTitle = aClass.getMethod("setTitle",String.class);
+                             getTitle.invoke(project, "sss");
+                        } catch (NoSuchMethodException | InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
                         projectService.findAllByProject(project);
                     }
                 }

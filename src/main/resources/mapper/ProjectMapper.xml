@@ -409,5 +409,49 @@
         </trim>
     </insert>
 
+    <!--通过实体作为筛选条件查询-->
+    <select id="findAllByProject" resultMap="ProjectMap">
+        select
+        id, user_id, title,
+        report_to_name, status,
+        description, plan_release_date ,
+        del_flag, create_time,
+        update_time,close_date,test_frame,
+        project_category,foreign_id,customer,close_desc
+        from oneclick.project
+        <where>
+            user_id = #{userId}
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="reportToName != null and reportToName != ''">
+                and report_to_name = #{reportToName}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="planReleaseDateBegin != null and planReleaseDateEnd != ''">
+                and plan_release_date &gt; #{planReleaseDateBegin}
+                and plan_release_date &lt; #{planReleaseDateEnd}
+            </if>
+
+            <if test="closeDateBegin != null and closeDateEnd != ''">
+                and close_date &gt; #{closeDateBegin}
+                and close_date &lt; #{closeDateEnd}
+            </if>
+
+
+            <if test="filter != null and filter != ''">
+                ${filter}
+            </if>
+
+
+            and del_flag = 0
+            order by create_time desc
+        </where>
+    </select>
 
 </mapper>

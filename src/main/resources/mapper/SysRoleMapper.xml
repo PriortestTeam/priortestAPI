@@ -98,4 +98,14 @@
         delete from oneclick.sys_role where id = #{id}
     </delete>
 
+    <select id="queryByRoleName" resultMap="SysRoleMap">
+        select
+        id, role_name, sort, role_desc
+        from oneclick.sys_role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                and role_name = #{roleName}
+            </if>
+        </where>
+    </select>
 </mapper>

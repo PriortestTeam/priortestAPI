@@ -119,4 +119,12 @@ public interface ProjectDao {
     Integer initProject(Project project);
 
 
+    /** 查询项目
+     * @Param: [project]
+     * @return: java.util.List<com.hu.oneclick.model.domain.Project>
+     * @Author: MaSiyi
+     * @Date: 2022/1/3
+     */
+    List<Project> findAllByProject(Project project);
+
 }

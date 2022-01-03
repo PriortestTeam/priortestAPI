@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysRole;
+import com.hu.oneclick.model.domain.dto.SysUserRoleDto;
 import com.hu.oneclick.server.service.SysRoleService;
 import com.hu.oneclick.server.service.UserBusinessService;
 import io.swagger.annotations.Api;
@@ -36,7 +37,7 @@ public class RoleController {
      * @return
      */
     @GetMapping(value = "/findUserRole")
-    @ApiOperation(value = "查询用户的角色")
+    @ApiOperation(value = "角色对应应用显示")
     public JSONArray findUserRole(@RequestParam("UBType") String type, @RequestParam("UBKeyId") String keyId){
         JSONArray arr = new JSONArray();
         try {
@@ -66,4 +67,12 @@ public class RoleController {
     public Resp<List<SysRole>> allList() {
         return sysRoleService.queryRoles();
     }
+
+    @GetMapping(value = "/getAccountRole")
+    @ApiOperation(value = "查询全部角色为该角色的用户")
+    public Resp<List<SysUserRoleDto>> getAccountRole(@RequestParam  String roleName) {
+        return sysRoleService.getAccountRole(roleName);
+    }
+
+
 }

@@ -105,7 +105,9 @@ public class ProjectServiceImpl implements ProjectService {
         this.customFieldDataService = customFieldDataService;
     }
 
-    /** update project customdata
+    /**
+     * update project customdata
+     *
      * @Param: [id]
      * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.Project>
      * @Author: MaSiyi
@@ -691,6 +693,7 @@ public class ProjectServiceImpl implements ProjectService {
      */
     @Override
     public List<Project> findAllByProject(Project project) {
-        return null;
+
+        return projectDao.findAllByProject(project);
     }
 }

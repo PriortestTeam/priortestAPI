@@ -112,7 +112,14 @@ public class ViewController {
     @PostMapping("renderingView")
     @ApiOperation("渲染视图")
     public Resp<String> renderingView(@RequestBody String viewId){
-        return viewService.renderingView(viewId);
+        try {
+            return viewService.renderingView(viewId);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
