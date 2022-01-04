@@ -529,18 +529,31 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isEmpty(identifier)) {
             //查询是否有权限
             SysUser parentUser = sysUserDao.queryById(sysUser.getParentId());
-            if (sysUserTokenDao.selectByUserId(parentUser.getId()).isEmpty()) {
+            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId());
+            if (sysUserTokens.isEmpty()) {
                 return false;
             }
-        }
-        //主账号
-        List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(sysUser.getId());
-        for (SysUserToken sysUserToken : sysUserTokens) {
-            if (sysUserToken.getApi_times() > 0) {
-                sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
+            for (SysUserToken sysUserToken : sysUserTokens) {
+
+                if (sysUserToken.getApi_times() > 0) {
+                    sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
+                }
+
+            }
+            return true;
+        } else {
+            //主账号
+            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(sysUser.getId());
+            if (sysUserTokens.isEmpty()) {
+                return false;
+            }
+            for (SysUserToken sysUserToken : sysUserTokens) {
+                if (sysUserToken.getApi_times() > 0) {
+                    sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
+                }
             }
         }
-        return !sysUserTokens.isEmpty();
+        return true;
     }
 
     @Override
