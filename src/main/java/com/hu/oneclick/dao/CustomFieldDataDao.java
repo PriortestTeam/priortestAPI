@@ -18,4 +18,6 @@ public interface CustomFieldDataDao {
     int updateByPrimaryKey(CustomFieldData record);
 
     List<CustomFieldData> getAllByScopeIdAndScope(String scope, String scopeId);
+
+    List<CustomFieldData> findAllByUserIdAndScope(String projectId, String userId, String scope, String fieldName);
 }

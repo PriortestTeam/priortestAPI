@@ -345,4 +345,22 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
         return new Resp.Builder<List<SysCustomField>>().setData(newSysCustomFields).ok();
     }
 
+    /**
+     * 查询该用户下的该项目数据
+     *
+     * @param scope
+     * @param fieldName
+     * @Param: [scope]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomField>
+     * @Author: MaSiyi
+     * @Date: 2022/1/4
+     */
+    @Override
+    public List<CustomFieldData> findAllByUserIdAndScope(String scope, String fieldName) {
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
+        String userId = sysUser.getId();
+
+        return  customFieldDataDao.findAllByUserIdAndScope(projectId, userId, scope,fieldName);
+    }
 }

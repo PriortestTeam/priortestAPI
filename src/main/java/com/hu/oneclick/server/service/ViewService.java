@@ -50,7 +50,7 @@ public interface ViewService {
      * @Author: MaSiyi
      * @Date: 2021/12/22
      */
-    Resp<String> renderingView(String viewId) throws NoSuchFieldException, IllegalAccessException;
+    Resp<String> renderingView(String viewId) throws Exception;
 
     /** 获取filter字段
      * @Param: []

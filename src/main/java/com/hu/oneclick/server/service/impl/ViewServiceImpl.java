@@ -14,6 +14,7 @@ import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.OneFilter;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysCustomField;
@@ -42,8 +43,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author qingyang
@@ -183,7 +186,6 @@ public class ViewServiceImpl implements ViewService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
-
 
 
     @Override
@@ -377,6 +379,7 @@ public class ViewServiceImpl implements ViewService {
         }
 
     }
+
     /**
      * 设置sql
      *
@@ -492,34 +495,97 @@ public class ViewServiceImpl implements ViewService {
     /**
      * 渲染视图
      *
-     * @param viewId
      * @Param: [viewId]
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
-     * @Date: 2021/12/22
+     * @Date: 2022/1/3
      */
     @Override
-    public Resp<String> renderingView(String viewId) throws NoSuchFieldException, IllegalAccessException {
+    public Resp<String> renderingView(String viewId) throws Exception {
         View view = viewDao.queryOnlyById(viewId);
 //        List<Object> sql = this.sql(view.getSql());
         String filter = view.getFilter();
         String scope = view.getScope();
         switch (scope) {
             case FieldConstant.PROJECT:
-                List<OneFilter> oneFilter = JSONArray.parseArray(filter, OneFilter.class);
-                for (OneFilter oneFilter1 : oneFilter) {
-                    String customType = oneFilter1.getCustomType();
-                    if (customType.equals("sys")) {
-                        String fieldName = oneFilter1.getFieldName();
+                List<Project> projects = new ArrayList<>();
+                List<OneFilter> oneFilters = JSONArray.parseArray(filter, OneFilter.class);
+                HashMap<String, String> stringStringHashMap = new HashMap<>();
+                //放置用户自定义查询的projecid
+                Set<String> projectIdSet = new HashSet<>();
+                for (int i = 0; i < oneFilters.size(); i++) {
+                    OneFilter oneFilter = oneFilters.get(i);
+
+                    String andOr = oneFilter.getAndOr();
+                    String fieldName = oneFilter.getFieldName();
+
+                    if (andOr.equals("or")) {
                         Project project = new Project();
                         Class<? extends Project> aClass = project.getClass();
-                        try {
-                            Method getTitle = aClass.getMethod("setTitle",String.class);
-                             getTitle.invoke(project, "sss");
-                        } catch (NoSuchMethodException | InvocationTargetException e) {
-                            e.printStackTrace();
+                        String customType = oneFilter.getCustomType();
+                        if ("sys".equals(customType)) {
+                            List<Project> allByProject;
+                            try {
+                                //赋值方法
+                                oneFilter.verify();
+                                if ("fString".equals(oneFilter.getType())) {
+                                    Method getTitle = aClass.getMethod("set" + fieldName, String.class);
+                                    getTitle.invoke(project, oneFilter.getTextVal());
+                                } else if ("fInteger".equals(oneFilter.getType())) {
+                                    Method getTitle = aClass.getMethod("set" + fieldName, Integer.class);
+                                    getTitle.invoke(project, oneFilter.getIntVal());
+                                } else if ("fDateTime".equals(oneFilter.getType())) {
+
+                                }
+
+                            } catch (NoSuchMethodException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                            allByProject = projectService.findAllByProject(project);
+                            projects.addAll(allByProject);
+                        } else if ("user".equals(customType)) {
+                            //查询该用户下的该项目数据
+                            List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, oneFilter.getFieldName());
+
+                            for (CustomFieldData customFieldData : customFieldDatas) {
+                                oneFilter.verify();
+                                if ("fString".equals(oneFilter.getType())) {
+                                    if (customFieldData.getValueData().equals(oneFilter.getTextVal())) {
+                                        projectIdSet.add(customFieldData.getScopeId());
+                                    }
+                                } else if ("fInteger".equals(oneFilter.getType())) {
+                                    if (customFieldData.getValueData().equals(oneFilter.getIntVal())) {
+                                        projectIdSet.add(customFieldData.getScopeId());
+                                    }
+                                } else if ("fDateTime".equals(oneFilter.getType())) {
+
+                                }
+                            }
                         }
-                        projectService.findAllByProject(project);
+                    } else {
+                        //两个条件同时满足
+                        //先将条件存储起来
+                        if (i != oneFilters.size() - 1) {
+                            stringStringHashMap.put(oneFilter.getFieldName(), oneFilter.getSourceVal());
+                            continue;
+                        }
+                        Set<String> strings = stringStringHashMap.keySet();
+                        Project project = new Project();
+                        Class<? extends Project> aClass = project.getClass();
+                        for (String string : strings) {
+
+                            Method getTitle = aClass.getMethod("set" + string, String.class);
+                            getTitle.invoke(project, stringStringHashMap.get(string));
+
+                            List<Project> allByProject;
+                            allByProject = projectService.findAllByProject(project);
+                            projects.addAll(allByProject);
+                        }
+                        for (String projectId : projectIdSet) {
+                            Project data = projectService.queryById(projectId).getData();
+                            projects.add(data);
+                        }
+
                     }
                 }
                 break;
@@ -542,7 +608,6 @@ public class ViewServiceImpl implements ViewService {
 
         return new Resp.Builder<String>().setData(JSONObject.toJSONString("")).ok();
     }
-
 
 
     /**
@@ -623,7 +688,7 @@ public class ViewServiceImpl implements ViewService {
      * @Date: 2021/12/29
      */
     @Override
-    public Resp<Map<String,Object>> getViewScope(String scope) {
+    public Resp<Map<String, Object>> getViewScope(String scope) {
         //搜索所有系统字段
         HashMap<String, Object> map = new HashMap<>(3);
         Resp<List<SysCustomField>> allSysCustomField = customFieldDataService.getAllSysCustomField(scope);
@@ -640,6 +705,6 @@ public class ViewServiceImpl implements ViewService {
         List<Object> customField = allCustomField.getData();
         map.put("customField", customField);
 
-        return new Resp.Builder<Map<String,Object>>().setData(map).ok();
+        return new Resp.Builder<Map<String, Object>>().setData(map).ok();
     }
 }

@@ -142,4 +142,12 @@ public interface CustomFieldDataService {
      * @param scope
      */
     Resp<List<SysCustomField>> getAllSysCustomField(String scope);
+
+    /** 查询该用户下的该项目数据
+     * @Param: [scope]
+     * @return: java.util.List<com.hu.oneclick.model.domain.CustomField>
+     * @Author: MaSiyi
+     * @Date: 2022/1/4
+     */
+    List<CustomFieldData> findAllByUserIdAndScope(String scope, String fieldName);
 }

@@ -443,12 +443,6 @@
                 and close_date &lt; #{closeDateEnd}
             </if>
 
-
-            <if test="filter != null and filter != ''">
-                ${filter}
-            </if>
-
-
             and del_flag = 0
             order by create_time desc
         </where>

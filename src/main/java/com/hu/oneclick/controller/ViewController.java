@@ -114,9 +114,7 @@ public class ViewController {
     public Resp<String> renderingView(@RequestBody String viewId){
         try {
             return viewService.renderingView(viewId);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
