@@ -1,7 +1,6 @@
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.common.constant.OneConstant;
-import com.hu.oneclick.common.enums.OrderEnum;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.SysUserOrderDao;
@@ -43,63 +42,81 @@ public class UserOrderServiceImpl implements UserOrderService {
         sysUserOrder.setStatus(false);
         long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
         sysUserOrder.setOrderId(orderId);
-        OrderEnum orderEnum = OrderEnum.toType(sysUserOrder.getServiceDuration());
+        String serviceDuration = sysUserOrder.getServiceDuration();
         //付款时间
         Calendar instance = Calendar.getInstance();
-        switch (orderEnum) {
-            case MONTHLU:
+        switch (serviceDuration) {
+            case "Monthly":
                 for (int i = 0; i < 12; i++) {
                     SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
-                    SysUserOrderRecord addSysUserOrderRecord = addOrderRecord(sysUserOrderRecord, sysUserOrder);
-                    addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
+                    addOrderRecord(sysUserOrderRecord, sysUserOrder);
+                    sysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
                             .divide(new BigDecimal(12), 2, RoundingMode.HALF_UP));
-                    addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
+                    sysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
                             .divide(new BigDecimal(12), 2, RoundingMode.HALF_UP));
-                    addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                    sysUserOrderRecord.setService_plan_duration("Monthly");
                     instance.add(Calendar.MONTH, +1);
-                    addSysUserOrderRecord.setPayment_time(instance.getTime());
-                    sysUserOrderRecordService.insert(addSysUserOrderRecord);
+                    sysUserOrderRecord.setPayment_time(instance.getTime());
+                    sysUserOrderRecordService.insert(sysUserOrderRecord);
                 }
                 break;
-            case QUARTOLY:
+            case "Quarterly":
                 for (int i = 0; i < 4; i++) {
                     SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
-                    SysUserOrderRecord addSysUserOrderRecord = addOrderRecord(sysUserOrderRecord, sysUserOrder);
-                    addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
+                    addOrderRecord(sysUserOrderRecord, sysUserOrder);
+                    sysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
                             .divide(new BigDecimal(4), 2, RoundingMode.HALF_UP));
-                    addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
+                    sysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
                             .divide(new BigDecimal(4), 2, RoundingMode.HALF_UP));
-                    addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                    sysUserOrderRecord.setService_plan_duration("Quarterly");
                     instance.add(Calendar.MONTH, +3);
-                    addSysUserOrderRecord.setPayment_time(instance.getTime());
-                    sysUserOrderRecordService.insert(addSysUserOrderRecord);
+                    sysUserOrderRecord.setPayment_time(instance.getTime());
+                    sysUserOrderRecordService.insert(sysUserOrderRecord);
                 }
                 break;
-            case HALFYEAR:
+            case "HalfYear":
                 for (int i = 0; i < 2; i++) {
                     SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
-                    SysUserOrderRecord addSysUserOrderRecord = addOrderRecord(sysUserOrderRecord, sysUserOrder);
-                    addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
+                    addOrderRecord(sysUserOrderRecord, sysUserOrder);
+                    sysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
                             .divide(new BigDecimal(2), 2, RoundingMode.HALF_UP));
-                    addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
+                    sysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
                             .divide(new BigDecimal(2), 2, RoundingMode.HALF_UP));
-                    addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
+                    sysUserOrderRecord.setService_plan_duration("HalfYear");
                     instance.add(Calendar.MONTH, +6);
-                    addSysUserOrderRecord.setPayment_time(instance.getTime());
-                    sysUserOrderRecordService.insert(addSysUserOrderRecord);
+                    sysUserOrderRecord.setPayment_time(instance.getTime());
+                    sysUserOrderRecordService.insert(sysUserOrderRecord);
                 }
                 break;
-            case YEARLY:
-                SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
-                SysUserOrderRecord addSysUserOrderRecord = addOrderRecord(sysUserOrderRecord, sysUserOrder);
-                addSysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice());
-                addSysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice());
-                addSysUserOrderRecord.setService_plan_duration(orderEnum.getValue());
-                instance.add(Calendar.MONDAY, +12);
-                addSysUserOrderRecord.setPayment_time(instance.getTime());
-                sysUserOrderRecordService.insert(addSysUserOrderRecord);
+            case "Yearly":
+                for (int i = 0; i < 1; i++) {
+
+                    SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
+                    addOrderRecord(sysUserOrderRecord, sysUserOrder);
+                    sysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice());
+                    sysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice());
+                    sysUserOrderRecord.setService_plan_duration("Yearly");
+                    instance.add(Calendar.MONDAY, +12);
+                    sysUserOrderRecord.setPayment_time(instance.getTime());
+                    sysUserOrderRecordService.insert(sysUserOrderRecord);
+                }
+                break;
+
+            case "Perpetual":
+                for (int i = 0; i < 1; i++) {
+
+                    SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
+                    addOrderRecord(sysUserOrderRecord, sysUserOrder);
+                    sysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice());
+                    sysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice());
+                    sysUserOrderRecord.setService_plan_duration("Perpetual");
+                    instance.add(Calendar.MONDAY, +12);
+                    sysUserOrderRecord.setPayment_time(instance.getTime());
+                    sysUserOrderRecordService.insert(sysUserOrderRecord);
+                }
                 break;
             default:
+
 
         }
         if (sysUserOrderDao.insertSelective(sysUserOrder) > 0) {
@@ -117,14 +134,14 @@ public class UserOrderServiceImpl implements UserOrderService {
      * @Author: MaSiyi
      * @Date: 2021/10/20
      */
-    private SysUserOrderRecord addOrderRecord(SysUserOrderRecord sysUserOrderRecord, SysUserOrder sysUserOrder) {
+    private void addOrderRecord(SysUserOrderRecord sysUserOrderRecord, SysUserOrder sysUserOrder) {
 
         //todo 而在提交的订单的时候，来判断用户身份的改变
         sysUserOrderRecord.setOrder_id(sysUserOrder.getOrderId());
         sysUserOrderRecord.setStatus(false);
         sysUserOrderRecord.setCreate_time(new Date());
         sysUserOrderRecord.setPayment_type(sysUserOrder.getPaymentType());
-        Integer dataStrorage = sysUserOrder.getDataStrorage();
+        String dataStrorage = sysUserOrder.getDataStrorage();
         sysUserOrderRecord.setData_strorage(dataStrorage);
         sysUserOrderRecord.setData_price(new BigDecimal(systemConfigService.getDateForKeyAndGroup(
                 String.valueOf(dataStrorage), OneConstant.SystemConfigGroup.DATASTRORAGE)));
@@ -136,7 +153,7 @@ public class UserOrderServiceImpl implements UserOrderService {
         sysUserOrderRecord.setDiscount(new BigDecimal("0"));
         sysUserOrderRecord.setExpenditure(new BigDecimal("0"));
         sysUserOrderRecord.setInvoice(false);
-        return sysUserOrderRecord;
+
     }
 
     @Override

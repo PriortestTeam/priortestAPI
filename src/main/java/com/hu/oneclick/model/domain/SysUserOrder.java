@@ -53,13 +53,13 @@ public class SysUserOrder implements Serializable {
      * 服务周期
      */
     @ApiModelProperty(value="服务周期")
-    private Integer serviceDuration;
+    private String serviceDuration;
 
     /**
      * 容量大小
      */
     @ApiModelProperty(value="容量大小")
-    private Integer dataStrorage;
+    private String dataStrorage;
 
     /**
      * 订阅时长

@@ -79,7 +79,7 @@ public class SysUserOrderRecord implements Serializable {
      * 容量大小
      */
     @ApiModelProperty(value="容量大小")
-    private Integer data_strorage;
+    private String data_strorage;
 
     /**
      * 容量价格
