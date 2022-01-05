@@ -111,7 +111,7 @@ public class ViewController {
 
     @PostMapping("renderingView")
     @ApiOperation("渲染视图")
-    public Resp<String> renderingView(@RequestBody String viewId){
+    public Resp<Object> renderingView(@RequestBody String viewId){
         try {
             return viewService.renderingView(viewId);
         } catch (Exception e) {

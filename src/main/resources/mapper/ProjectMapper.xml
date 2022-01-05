@@ -420,7 +420,6 @@
         project_category,foreign_id,customer,close_desc
         from oneclick.project
         <where>
-            user_id = #{userId}
             <if test="title != null and title != ''">
                 and title = #{title}
             </if>
