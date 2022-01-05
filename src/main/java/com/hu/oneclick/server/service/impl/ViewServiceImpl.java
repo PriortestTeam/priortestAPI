@@ -542,9 +542,9 @@ public class ViewServiceImpl implements ViewService {
                     if (andOr.equals("or")) {
                         //查询第一条的结果
                         Set<String> strings = filterMap.keySet();
-                        Project project = new Project();
-                        Class<? extends Project> aClass = project.getClass();
                         for (String string : strings) {
+                            Project project = new Project();
+                            Class<? extends Project> aClass = project.getClass();
 
                             Method getTitle = aClass.getMethod("set" + string, String.class);
                             getTitle.invoke(project, filterMap.get(string));
@@ -598,23 +598,7 @@ public class ViewServiceImpl implements ViewService {
                         }
 
                     } else {
-                        //两个条件同时满足
-                        //先将条件存储起来
-
-                        if (i != oneFilters.size() - 1) {
-                            //赋值方法
-                            oneFilter.verify();
-                            String sourceVal = "";
-                            if ("fString".equals(oneFilter.getType())) {
-                                sourceVal = oneFilter.getTextVal();
-                            } else if ("fInteger".equals(oneFilter.getType())) {
-                                sourceVal = String.valueOf(oneFilter.getIntVal());
-                            } else if ("fDateTime".equals(oneFilter.getType())) {
-
-                            }
-                            filterMap.put(oneFilter.getFieldName(), sourceVal);
-                            continue;
-                        }
+                        //两个条件同时满足 ，拿取第一条的条件
                         Set<String> strings = filterMap.keySet();
                         Project project = new Project();
                         Class<? extends Project> aClass = project.getClass();
@@ -623,9 +607,21 @@ public class ViewServiceImpl implements ViewService {
                             Method getTitle = aClass.getMethod("set" + string, String.class);
                             getTitle.invoke(project, filterMap.get(string));
 
-                            List<Project> allByProject = projectService.findAllByProject(project);
-                            projects.addAll(allByProject);
                         }
+                        //当前条件
+                        oneFilter.verify();
+                        if ("fString".equals(oneFilter.getType())) {
+                            Method getTitle = aClass.getMethod("set" + fieldName, String.class);
+                            getTitle.invoke(project, oneFilter.getTextVal());
+                        } else if ("fInteger".equals(oneFilter.getType())) {
+                            Method getTitle = aClass.getMethod("set" + fieldName, Integer.class);
+                            getTitle.invoke(project, oneFilter.getIntVal());
+                        } else if ("fDateTime".equals(oneFilter.getType())) {
+
+                        }
+
+                        projects.addAll(projectService.findAllByProject(project));
+
                         for (String projectId : projectIdSet) {
                             Project data = projectService.queryById(projectId).getData();
                             projects.add(data);
