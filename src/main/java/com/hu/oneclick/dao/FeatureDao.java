@@ -24,4 +24,5 @@ public interface FeatureDao extends BaseMapper<Feature> {
 
     List<Feature> queryTitlesByTestCycleId(@Param("testCycleId")String testCycleId);
 
+    List<Feature> findAllByFeature(Feature feature);
 }

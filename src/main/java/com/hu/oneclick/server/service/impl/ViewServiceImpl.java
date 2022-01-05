@@ -15,6 +15,7 @@ import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.CustomFieldData;
+import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.OneFilter;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysCustomField;
@@ -26,6 +27,7 @@ import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.CustomFieldDataService;
+import com.hu.oneclick.server.service.FeatureService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.ViewService;
@@ -72,7 +74,9 @@ public class ViewServiceImpl implements ViewService {
 
     private final ProjectService projectService;
 
-    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService, CustomFieldDataService customFieldDataService, ProjectService projectService) {
+    private final FeatureService featureService;
+
+    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService, CustomFieldDataService customFieldDataService, ProjectService projectService, FeatureService featureService) {
         this.viewDao = v;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
@@ -81,6 +85,7 @@ public class ViewServiceImpl implements ViewService {
         this.sysCustomFieldService = sysCustomFieldService;
         this.customFieldDataService = customFieldDataService;
         this.projectService = projectService;
+        this.featureService = featureService;
     }
 
     @Override
@@ -590,7 +595,86 @@ public class ViewServiceImpl implements ViewService {
                 }
                 break;
             case FieldConstant.FEATURE:
+                List<Feature> features = new ArrayList<>();
+                List<OneFilter> featureFilter = JSONArray.parseArray(filter, OneFilter.class);
+                HashMap<String, String> featuresMap = new HashMap<>();
+                //放置用户自定义查询
+                Set<String> featuresSet = new HashSet<>();
+                for (int i = 0; i < featureFilter.size(); i++) {
+                    OneFilter oneFilter = featureFilter.get(i);
 
+                    String andOr = oneFilter.getAndOr();
+                    String fieldName = oneFilter.getFieldName();
+
+                    if (andOr.equals("or")) {
+                        Feature feature = new Feature();
+                        Class<? extends Feature> aClass = feature.getClass();
+                        String customType = oneFilter.getCustomType();
+                        if ("sys".equals(customType)) {
+                            List<Feature> allFeature;
+                            try {
+                                //赋值方法
+                                oneFilter.verify();
+                                if ("fString".equals(oneFilter.getType())) {
+                                    Method getTitle = aClass.getMethod("set" + fieldName, String.class);
+                                    getTitle.invoke(feature, oneFilter.getTextVal());
+                                } else if ("fInteger".equals(oneFilter.getType())) {
+                                    Method getTitle = aClass.getMethod("set" + fieldName, Integer.class);
+                                    getTitle.invoke(feature, oneFilter.getIntVal());
+                                } else if ("fDateTime".equals(oneFilter.getType())) {
+
+                                }
+
+                            } catch (NoSuchMethodException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                            allFeature = featureService.findAllByFeature(feature);
+                            features.addAll(allFeature);
+                        } else if ("user".equals(customType)) {
+                            //查询该用户下的该项目数据
+                            List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, oneFilter.getFieldName());
+
+                            for (CustomFieldData customFieldData : customFieldDatas) {
+                                oneFilter.verify();
+                                if ("fString".equals(oneFilter.getType())) {
+                                    if (customFieldData.getValueData().equals(oneFilter.getTextVal())) {
+                                        featuresSet.add(customFieldData.getScopeId());
+                                    }
+                                } else if ("fInteger".equals(oneFilter.getType())) {
+                                    if (customFieldData.getValueData().equals(oneFilter.getIntVal())) {
+                                        featuresSet.add(customFieldData.getScopeId());
+                                    }
+                                } else if ("fDateTime".equals(oneFilter.getType())) {
+
+                                }
+                            }
+                        }
+                    } else {
+                        //两个条件同时满足
+                        //先将条件存储起来
+                        if (i != featureFilter.size() - 1) {
+                            featuresMap.put(oneFilter.getFieldName(), oneFilter.getSourceVal());
+                            continue;
+                        }
+                        Set<String> strings = featuresMap.keySet();
+                        Feature feature = new Feature();
+                        Class<? extends Feature> aClass = feature.getClass();
+                        for (String string : strings) {
+
+                            Method getTitle = aClass.getMethod("set" + string, String.class);
+                            getTitle.invoke(feature, featuresMap.get(string));
+
+                            List<Feature> allByProject;
+                            allByProject = featureService.findAllByFeature(feature);
+                            features.addAll(allByProject);
+                        }
+                        for (String projectId : featuresSet) {
+                            Feature data = featureService.queryById(projectId).getData();
+                            features.add(data);
+                        }
+
+                    }
+                }
                 break;
             case FieldConstant.TESTCYCLE:
 

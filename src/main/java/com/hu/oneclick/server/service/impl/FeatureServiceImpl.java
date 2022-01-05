@@ -335,4 +335,9 @@ public class FeatureServiceImpl implements FeatureService {
             throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), feature.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
         }
     }
+
+    @Override
+    public List<Feature> findAllByFeature(Feature feature) {
+        return featureDao.findAllByFeature(feature);
+    }
 }

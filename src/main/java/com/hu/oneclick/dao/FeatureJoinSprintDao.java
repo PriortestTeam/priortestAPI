@@ -1,5 +1,6 @@
 package com.hu.oneclick.dao;
 
+import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.FeatureJoinSprint;
 import com.hu.oneclick.model.domain.Sprint;
 import org.apache.ibatis.annotations.Param;
@@ -52,4 +53,6 @@ public interface FeatureJoinSprintDao {
     int verifyIsExist(FeatureJoinSprint featureJoinSprint);
 
     List<Sprint> queryBindSprints(@Param("featureId") String featureId);
+
+    List<Feature> findAllByFeature(Feature feature);
 }
