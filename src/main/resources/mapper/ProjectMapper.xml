@@ -426,6 +426,9 @@
             <if test="reportToName != null and reportToName != ''">
                 and report_to_name = #{reportToName}
             </if>
+            <if test="testFrame != null and testFrame != ''">
+                and test_frame = #{testFrame}
+            </if>
             <if test="status != null">
                 and status = #{status}
             </if>

@@ -542,23 +542,23 @@ public class ViewServiceImpl implements ViewService {
                     if (andOr.equals("or")) {
                         //查询第一条的结果
                         Set<String> strings = filterMap.keySet();
+                        Project project = new Project();
+                        Class<? extends Project> aClass = project.getClass();
                         for (String string : strings) {
-                            Project project = new Project();
-                            Class<? extends Project> aClass = project.getClass();
 
                             Method getTitle = aClass.getMethod("set" + string, String.class);
                             getTitle.invoke(project, filterMap.get(string));
-
-                            List<Project> allByProject = projectService.findAllByProject(project);
-                            projects.addAll(allByProject);
                         }
+
+                        List<Project> allByProject = projectService.findAllByProject(project);
+                        projects.addAll(allByProject);
                         //组合第二个查询
 
                         String customType = oneFilter.getCustomType();
                         if ("sys".equals(customType)) {
                             Project project2 = new Project();
                             Class<? extends Project> aClass2 = project2.getClass();
-                            List<Project> allByProject;
+                            List<Project> allByProject2;
                             try {
                                 //赋值方法
                                 oneFilter.verify();
@@ -575,8 +575,8 @@ public class ViewServiceImpl implements ViewService {
                             } catch (NoSuchMethodException | InvocationTargetException e) {
                                 e.printStackTrace();
                             }
-                            allByProject = projectService.findAllByProject(project2);
-                            projects.addAll(allByProject);
+                            allByProject2 = projectService.findAllByProject(project2);
+                            projects.addAll(allByProject2);
                         } else if ("user".equals(customType)) {
                             //查询该用户下的该项目数据
                             List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, oneFilter.getFieldName());
@@ -598,6 +598,20 @@ public class ViewServiceImpl implements ViewService {
                         }
 
                     } else {
+                        if (i != oneFilters.size() - 1) {
+                            //赋值方法
+                            oneFilter.verify();
+                            String sourceVal = "";
+                            if ("fString".equals(oneFilter.getType())) {
+                                sourceVal = oneFilter.getTextVal();
+                            } else if ("fInteger".equals(oneFilter.getType())) {
+                                sourceVal = String.valueOf(oneFilter.getIntVal());
+                            } else if ("fDateTime".equals(oneFilter.getType())) {
+
+                            }
+                            filterMap.put(oneFilter.getFieldName(), sourceVal);
+                            continue;
+                        }
                         //两个条件同时满足 ，拿取第一条的条件
                         Set<String> strings = filterMap.keySet();
                         Project project = new Project();
