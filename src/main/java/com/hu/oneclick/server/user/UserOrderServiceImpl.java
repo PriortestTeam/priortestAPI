@@ -48,7 +48,9 @@ public class UserOrderServiceImpl implements UserOrderService {
         sysUserOrder.setStatus(false);
         long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
         sysUserOrder.setOrderId(orderId);
+
         String serviceDuration = sysUserOrder.getServiceDuration();
+        String subScription = sysUserOrder.getSubScription();
         //付款时间
         Calendar instance = Calendar.getInstance();
         switch (serviceDuration) {
@@ -61,19 +63,20 @@ public class UserOrderServiceImpl implements UserOrderService {
                     sysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
                             .divide(new BigDecimal(12), 2, RoundingMode.HALF_UP));
                     sysUserOrderRecord.setService_plan_duration("Monthly");
-                    instance.add(Calendar.MONTH, +1);
+
                     sysUserOrderRecord.setPayment_time(instance.getTime());
                     sysUserOrderRecordService.insert(sysUserOrderRecord);
+
                 }
                 break;
             case "Quarterly":
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 3; i++) {
                     SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
                     addOrderRecord(sysUserOrderRecord, sysUserOrder);
                     sysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
-                            .divide(new BigDecimal(4), 2, RoundingMode.HALF_UP));
+                            .divide(new BigDecimal(3), 2, RoundingMode.HALF_UP));
                     sysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
-                            .divide(new BigDecimal(4), 2, RoundingMode.HALF_UP));
+                            .divide(new BigDecimal(3), 2, RoundingMode.HALF_UP));
                     sysUserOrderRecord.setService_plan_duration("Quarterly");
                     instance.add(Calendar.MONTH, +3);
                     sysUserOrderRecord.setPayment_time(instance.getTime());

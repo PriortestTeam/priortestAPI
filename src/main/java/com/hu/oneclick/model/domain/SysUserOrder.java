@@ -50,7 +50,7 @@ public class SysUserOrder implements Serializable {
     private String payName;
 
     /**
-     * 服务周期
+     * 服务周期-一共订阅多久
      */
     @ApiModelProperty(value="服务周期")
     private String serviceDuration;
@@ -62,7 +62,7 @@ public class SysUserOrder implements Serializable {
     private String dataStrorage;
 
     /**
-     * 订阅时长
+     * 订阅时长-我是怎么付款，月付，季付
      */
     @ApiModelProperty(value="订阅时长")
     private String subScription;
