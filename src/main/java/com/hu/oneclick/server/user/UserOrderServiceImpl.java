@@ -2,6 +2,7 @@ package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.SysUserOrderDao;
 import com.hu.oneclick.model.base.Resp;
@@ -34,10 +35,15 @@ public class UserOrderServiceImpl implements UserOrderService {
     private SystemConfigService systemConfigService;
     @Autowired
     private SysUserOrderRecordService sysUserOrderRecordService;
+    @Autowired
+    private JwtUserServiceImpl jwtUserService;
 
 
     @Override
     public Resp<String> insertOrder(SysUserOrder sysUserOrder) {
+        String userId = jwtUserService.getUserLoginInfo().getSysUser().getId();
+        sysUserOrder.setUserId(userId);
+
         //初始转态为未支付
         sysUserOrder.setStatus(false);
         long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
