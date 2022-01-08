@@ -145,14 +145,14 @@
             <if test="originalPrice != null">
                 #{originalPrice},
             </if>
+            <if test="currentPrice != null">
+                #{currentPrice},
+            </if>
             <if test="apiCall != null">
                 #{apiCall},
             </if>
             <if test="serviceDuration != null">
-                #{serviceDuration},
-            </if>
-            <if test="currentPrice != null">
-                #{currentPrice}
+                #{serviceDuration}
             </if>
         </trim>
     </insert>
