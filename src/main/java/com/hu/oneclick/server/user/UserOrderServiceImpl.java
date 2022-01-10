@@ -51,7 +51,7 @@ public class UserOrderServiceImpl implements UserOrderService {
 
         //订阅时长
         String serviceDuration = sysUserOrder.getServiceDuration();
-        int duration = 0;
+        int duration = 1;
         switch (serviceDuration) {
             case "Monthly":
                 duration = 1;
@@ -75,7 +75,7 @@ public class UserOrderServiceImpl implements UserOrderService {
 
         BigDecimal durationBigDecimal = new BigDecimal(duration);
         //产生订单的数量
-        int orderCount = 0;
+        int orderCount;
         switch (subScription) {
             case "Monthly":
                 scription = 1;
@@ -101,13 +101,25 @@ public class UserOrderServiceImpl implements UserOrderService {
             instance.add(Calendar.MONDAY, +scription);
             SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
             addOrderRecord(sysUserOrderRecord, sysUserOrder);
-            sysUserOrderRecord.setOriginal_price(sysUserOrder.getOriginalPrice()
+            //原价
+            BigDecimal originalPrice = sysUserOrder.getOriginalPrice();
+            sysUserOrderRecord.setOriginal_price(originalPrice
                     .divide(new BigDecimal(orderCount), 2, RoundingMode.HALF_UP));
-            sysUserOrderRecord.setDiscount_price(sysUserOrder.getCurrentPrice()
-                    .divide(new BigDecimal(orderCount), 2, RoundingMode.HALF_UP));
-            sysUserOrderRecord.setService_plan_duration(serviceDuration);
+            //折扣价
+            BigDecimal discountPrice = sysUserOrder.getCurrentPrice()
+                    .divide(new BigDecimal(orderCount), 2, RoundingMode.HALF_UP);
 
+            sysUserOrderRecord.setService_plan_duration(serviceDuration);
+            //最后一次付款价格
+            int newCount = orderCount - 1;
+            if (i == newCount) {
+                discountPrice = originalPrice.subtract(discountPrice.multiply(BigDecimal.valueOf(newCount)));
+                sysUserOrderRecord.setDiscount_price(discountPrice);
+            } else {
+                sysUserOrderRecord.setDiscount_price(discountPrice);
+            }
             sysUserOrderRecord.setPayment_time(instance.getTime());
+
             sysUserOrderRecordService.insert(sysUserOrderRecord);
 
         }

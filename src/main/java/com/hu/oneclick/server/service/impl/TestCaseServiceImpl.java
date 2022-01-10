@@ -63,7 +63,6 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     private final MailService mailService;
 
-    private final ViewService viewService;
 
     private final SysCustomFieldExpandDao sysCustomFieldExpandDao;
 
@@ -75,7 +74,7 @@ public class TestCaseServiceImpl implements TestCaseService {
 
     public TestCaseServiceImpl(TestCaseDao testCaseDao, ModifyRecordsService modifyRecordsService, JwtUserServiceImpl jwtUserService
             , QueryFilterService queryFilterService, FeatureDao featureDao, SysCustomFieldService sysCustomFieldService
-            , TestCaseStepDao testCaseStepDao, MailService mailService, ViewService viewService, SysCustomFieldExpandDao sysCustomFieldExpandDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, TestCycleService testCycleService, CustomFieldDataService customFieldDataService) {
+            , TestCaseStepDao testCaseStepDao, MailService mailService, SysCustomFieldExpandDao sysCustomFieldExpandDao, TestCycleJoinTestCaseDao testCycleJoinTestCaseDao, TestCycleService testCycleService, CustomFieldDataService customFieldDataService) {
         this.testCaseDao = testCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.jwtUserService = jwtUserService;
@@ -84,7 +83,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         this.sysCustomFieldService = sysCustomFieldService;
         this.testCaseStepDao = testCaseStepDao;
         this.mailService = mailService;
-        this.viewService = viewService;
+
         this.sysCustomFieldExpandDao = sysCustomFieldExpandDao;
         this.testCycleJoinTestCaseDao = testCycleJoinTestCaseDao;
         this.testCycleService = testCycleService;
@@ -561,7 +560,7 @@ public class TestCaseServiceImpl implements TestCaseService {
         view.setScope("TestCase");
         view.setIsPrivate(0);
         view.setTitle("创建时间：" + nowString + "-" + nowString);
-        viewService.addView(view);
+//        viewService.addView(view);
     }
 
     /**
