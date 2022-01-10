@@ -21,6 +21,9 @@
         <result property="level" column="level" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <sql id="base_sql">
+        id, user_id, project_id, title, `scope`, is_private, owner, filter, `sql`,modify_user, modify_date, create_time, update_time,parent_id,`level`
+    </sql>
     <!--查询单个-->
     <select id="queryById" resultMap="ViewMap">
         select
@@ -32,7 +35,7 @@
     <!--查询单个-->
     <select id="queryOnlyById" resultMap="ViewMap">
         select
-            id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id,`level`
+        <include refid="base_sql"></include>
         from oneclick.view
         where id = #{id}
     </select>
@@ -185,6 +188,9 @@
             <if test="filter != null and filter != ''">
                 filter,
             </if>
+            <if test="sql != null and sql != ''">
+                `sql`,
+            </if>
             <if test="modifyUser != null and modifyUser != ''">
                 modify_user,
             </if>
@@ -224,6 +230,9 @@
             </if>
             <if test="filter != null and filter != ''">
                 #{filter},
+            </if>
+            <if test="sql != null and sql != ''">
+                #{sql},
             </if>
             <if test="modifyUser != null and modifyUser != ''">
                 #{modifyUser},

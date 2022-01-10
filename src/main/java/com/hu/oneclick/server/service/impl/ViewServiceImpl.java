@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.FieldConstant;
@@ -9,7 +10,6 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
-import com.hu.oneclick.common.util.OneClickUtil;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author qingyang
@@ -369,14 +370,15 @@ public class ViewServiceImpl implements ViewService {
                 return new Resp.Builder<String>().buildResult("请选择一个项目");
             }
 
-            String filter = view.getFilter();
-            List<OneFilter> oneFilter = JSONArray.parseArray(filter, OneFilter.class);
+            List<OneFilter> oneFilter = view.getOneFilters();
+            view.setFilter(JSON.toJSONString(oneFilter));
             view.setUserId(masterId);
             view.setProjectId(projectId);
             view.setOwner(sysUser.getUserName());
             //设置sql
-//            String sql = appendSql(oneFilter, view);
-//            view.setSql(sql);
+            String sql = appendSql(oneFilter, view);
+
+            view.setSql(sql);
             return Result.addResult(viewDao.insert(view));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#addView,error []" + e.getMessage());
@@ -395,6 +397,9 @@ public class ViewServiceImpl implements ViewService {
      */
     @Deprecated
     private String appendSql(List<OneFilter> oneFilter, View view) {
+        //过滤系统字段
+        List<OneFilter> collect = oneFilter.stream().filter(f -> "sys".equals(f.getCustomType())).collect(Collectors.toList());
+
         StringBuilder stringBuilder = new StringBuilder("select * from ");
         String scope = view.getScope();
         switch (scope) {
@@ -417,9 +422,11 @@ public class ViewServiceImpl implements ViewService {
 
         }
         stringBuilder.append("where ");
-        stringBuilder.append("user_id = ").append(view.getUserId()).append(" and ");
-        stringBuilder.append("project_id = ").append(view.getUserId());
-        for (OneFilter filter : oneFilter) {
+        stringBuilder.append("user_id = ").append(view.getUserId());
+        if (!scope.equals(FieldConstant.PROJECT)) {
+            stringBuilder.append(" and ").append("project_id = ").append(view.getProjectId());
+        }
+        for (OneFilter filter : collect) {
             //format字符串
             filter.verify();
 
@@ -440,15 +447,15 @@ public class ViewServiceImpl implements ViewService {
              *   Include 包含
              *   Exclude 不包含
              */
-            stringBuilder.append(OneClickUtil.humpToLine(filter.getFieldName()));
+            stringBuilder.append(filter.getFieldName());
             switch (condition) {
                 case "Is":
                     stringBuilder.append(" = ");
-                    stringBuilder.append(filter.getTextVal());
+                    stringBuilder.append("'").append(filter.getTextVal()).append("'");
                     break;
                 case "IsNot":
                     stringBuilder.append(" != ");
-                    stringBuilder.append(filter.getTextVal());
+                    stringBuilder.append("'").append(filter.getTextVal()).append("'");
                     break;
                 case "IsEmpty":
                     stringBuilder.append(" is null ");
@@ -458,21 +465,21 @@ public class ViewServiceImpl implements ViewService {
                     break;
                 case "MoreThan":
                     stringBuilder.append(" > ");
-                    stringBuilder.append(filter.getIntVal());
+                    stringBuilder.append("'").append(filter.getIntVal()).append("'");
                     break;
                 case "LessThan":
                     stringBuilder.append(" < ");
-                    stringBuilder.append(filter.getIntVal());
+                    stringBuilder.append("'").append(filter.getIntVal()).append("'");
                     break;
                 case "Include":
                     stringBuilder.append("  in ( ");
                     //todo 待和前端商讨传数据的格式
-                    stringBuilder.append(filter.getTextVal());
+                    stringBuilder.append("'").append(filter.getTextVal()).append("'");
                     stringBuilder.append("  ) ");
                     break;
                 case "Exclude":
                     stringBuilder.append(" not in ( ");
-                    stringBuilder.append(filter.getTextVal());
+                    stringBuilder.append("'").append(filter.getTextVal()).append("'");
                     stringBuilder.append("  ) ");
                     break;
                 default:
@@ -492,9 +499,11 @@ public class ViewServiceImpl implements ViewService {
      * @Author: MaSiyi
      * @Date: 2021/12/22
      */
-    @Deprecated
-    private List<Object> sql(String sql) {
-        return viewDao.sql(sql);
+
+    private String sql(String sql) {
+        List<Object> objects = viewDao.sql(sql);
+
+        return JSON.toJSONString(objects);
     }
 
     /**
@@ -507,143 +516,58 @@ public class ViewServiceImpl implements ViewService {
      */
     @Override
     public Resp<Object> renderingView(String viewId) throws Exception {
+
         View view = viewDao.queryOnlyById(viewId);
+        //执行系统字段
+        String sql = view.getSql();
+
+
         String filter = view.getFilter();
         String scope = view.getScope();
         switch (scope) {
             case FieldConstant.PROJECT:
-                List<Project> projects = new ArrayList<>();
+                List<Project> projectList = JSONArray.parseArray(this.sql(sql), Project.class);
+                List<Project> projects = new ArrayList<>(projectList);
+
                 List<OneFilter> oneFilters = JSONArray.parseArray(filter, OneFilter.class);
-                //放置查询条件
-                HashMap<String, String> filterMap = new HashMap<>();
+
+
                 //放置用户自定义查询的projecid
                 Set<String> projectIdSet = new HashSet<>();
                 for (int i = 0; i < oneFilters.size(); i++) {
                     OneFilter oneFilter = oneFilters.get(i);
 
-                    String andOr = oneFilter.getAndOr();
+                    String customType = oneFilter.getCustomType();
                     String fieldName = oneFilter.getFieldName();
+                    if ("user".equals(customType)) {
+                        //查询该用户下的该项目数据
+                        List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
 
-                    //说明是第一个，忽略and 和 or
-                    if (i == 0) {
-                        //赋值方法
-                        oneFilter.verify();
-                        String sourceVal = "";
-                        if ("fString".equals(oneFilter.getType())) {
-                            sourceVal = oneFilter.getTextVal();
-                        } else if ("fInteger".equals(oneFilter.getType())) {
-                            sourceVal = String.valueOf(oneFilter.getIntVal());
-                        } else if ("fDateTime".equals(oneFilter.getType())) {
-
-                        }
-                        filterMap.put(oneFilter.getFieldName(), sourceVal);
-                        continue;
-                    }
-                    if (andOr.equals("or")) {
-                        //查询第一条的结果
-                        Set<String> strings = filterMap.keySet();
-                        Project project = new Project();
-                        Class<? extends Project> aClass = project.getClass();
-                        for (String string : strings) {
-
-                            Method getTitle = aClass.getMethod("set" + string, String.class);
-                            getTitle.invoke(project, filterMap.get(string));
-                        }
-
-                        List<Project> allByProject = projectService.findAllByProject(project);
-                        projects.addAll(allByProject);
-                        //组合第二个查询
-
-                        String customType = oneFilter.getCustomType();
-                        if ("sys".equals(customType)) {
-                            Project project2 = new Project();
-                            Class<? extends Project> aClass2 = project2.getClass();
-                            List<Project> allByProject2;
-                            try {
-                                //赋值方法
-                                oneFilter.verify();
-                                if ("fString".equals(oneFilter.getType())) {
-                                    Method getTitle = aClass2.getMethod("set" + fieldName, String.class);
-                                    getTitle.invoke(project2, oneFilter.getTextVal());
-                                } else if ("fInteger".equals(oneFilter.getType())) {
-                                    Method getTitle = aClass2.getMethod("set" + fieldName, Integer.class);
-                                    getTitle.invoke(project2, oneFilter.getIntVal());
-                                } else if ("fDateTime".equals(oneFilter.getType())) {
-
-                                }
-
-                            } catch (NoSuchMethodException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                            allByProject2 = projectService.findAllByProject(project2);
-                            projects.addAll(allByProject2);
-                        } else if ("user".equals(customType)) {
-                            //查询该用户下的该项目数据
-                            List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, oneFilter.getFieldName());
-
-                            for (CustomFieldData customFieldData : customFieldDatas) {
-                                oneFilter.verify();
-                                if ("fString".equals(oneFilter.getType())) {
-                                    if (customFieldData.getValueData().equals(oneFilter.getTextVal())) {
-                                        projectIdSet.add(customFieldData.getScopeId());
-                                    }
-                                } else if ("fInteger".equals(oneFilter.getType())) {
-                                    if (customFieldData.getValueData().equals(oneFilter.getIntVal())) {
-                                        projectIdSet.add(customFieldData.getScopeId());
-                                    }
-                                } else if ("fDateTime".equals(oneFilter.getType())) {
-
-                                }
-                            }
-                        }
-
-                    } else {
-                        if (i != oneFilters.size() - 1) {
-                            //赋值方法
+                        for (CustomFieldData customFieldData : customFieldDatas) {
                             oneFilter.verify();
-                            String sourceVal = "";
+
                             if ("fString".equals(oneFilter.getType())) {
-                                sourceVal = oneFilter.getTextVal();
+                                if (customFieldData.getValueData().equals(oneFilter.getTextVal())) {
+                                    projectIdSet.add(customFieldData.getScopeId());
+                                }
                             } else if ("fInteger".equals(oneFilter.getType())) {
-                                sourceVal = String.valueOf(oneFilter.getIntVal());
+                                if (customFieldData.getValueData().equals(oneFilter.getIntVal())) {
+                                    projectIdSet.add(customFieldData.getScopeId());
+                                }
                             } else if ("fDateTime".equals(oneFilter.getType())) {
 
                             }
-                            filterMap.put(oneFilter.getFieldName(), sourceVal);
-                            continue;
                         }
-                        //两个条件同时满足 ，拿取第一条的条件
-                        Set<String> strings = filterMap.keySet();
-                        Project project = new Project();
-                        Class<? extends Project> aClass = project.getClass();
-                        for (String string : strings) {
-
-                            Method getTitle = aClass.getMethod("set" + string, String.class);
-                            getTitle.invoke(project, filterMap.get(string));
-
-                        }
-                        //当前条件
-                        oneFilter.verify();
-                        if ("fString".equals(oneFilter.getType())) {
-                            Method getTitle = aClass.getMethod("set" + fieldName, String.class);
-                            getTitle.invoke(project, oneFilter.getTextVal());
-                        } else if ("fInteger".equals(oneFilter.getType())) {
-                            Method getTitle = aClass.getMethod("set" + fieldName, Integer.class);
-                            getTitle.invoke(project, oneFilter.getIntVal());
-                        } else if ("fDateTime".equals(oneFilter.getType())) {
-
-                        }
-
-                        projects.addAll(projectService.findAllByProject(project));
-
-                        for (String projectId : projectIdSet) {
-                            Project data = projectService.queryById(projectId).getData();
-                            projects.add(data);
-                        }
-
                     }
+
+
                 }
-                return new Resp.Builder<Object>().setData(projects).ok();
+                for (String projectId : projectIdSet) {
+                    Project data = projectService.queryById(projectId).getData();
+                    projects.add(data);
+                }
+                return new Resp.Builder<>().setData(projects).ok();
+
             case FieldConstant.FEATURE:
                 List<Feature> features = new ArrayList<>();
                 List<OneFilter> featureFilter = JSONArray.parseArray(filter, OneFilter.class);
@@ -740,7 +664,10 @@ public class ViewServiceImpl implements ViewService {
         }
 
 
-        return new Resp.Builder<>().ok();
+        return new Resp.Builder<>().
+
+                ok();
+
     }
 
 
