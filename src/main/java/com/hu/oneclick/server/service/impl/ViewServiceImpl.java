@@ -16,10 +16,13 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.OneFilter;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SysCustomField;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.TestCase;
+import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.ViewDownChildParams;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
@@ -28,8 +31,11 @@ import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.FeatureService;
+import com.hu.oneclick.server.service.IssueService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
+import com.hu.oneclick.server.service.TestCaseService;
+import com.hu.oneclick.server.service.TestCycleService;
 import com.hu.oneclick.server.service.ViewService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -40,8 +46,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -77,7 +81,13 @@ public class ViewServiceImpl implements ViewService {
 
     private final FeatureService featureService;
 
-    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService, CustomFieldDataService customFieldDataService, ProjectService projectService, FeatureService featureService) {
+    private final TestCycleService testCycleService;
+
+    private final TestCaseService testCaseService;
+
+    private final IssueService issueService;
+
+    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService, CustomFieldDataService customFieldDataService, ProjectService projectService, FeatureService featureService, TestCycleService testCycleService, TestCaseService testCaseService, IssueService issueService) {
         this.viewDao = v;
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
@@ -87,6 +97,9 @@ public class ViewServiceImpl implements ViewService {
         this.customFieldDataService = customFieldDataService;
         this.projectService = projectService;
         this.featureService = featureService;
+        this.testCycleService = testCycleService;
+        this.testCaseService = testCaseService;
+        this.issueService = issueService;
     }
 
     @Override
@@ -563,110 +576,194 @@ public class ViewServiceImpl implements ViewService {
 
                 }
                 for (String projectId : projectIdSet) {
-                    Project data = projectService.queryById(projectId).getData();
-                    projects.add(data);
+                    if (!projects.stream().map(Project::getId).collect(Collectors.toSet()).contains(projectId)) {
+                        Project data = projectService.queryById(projectId).getData();
+                        projects.add(data);
+                    }
                 }
                 return new Resp.Builder<>().setData(projects).ok();
 
             case FieldConstant.FEATURE:
-                List<Feature> features = new ArrayList<>();
-                List<OneFilter> featureFilter = JSONArray.parseArray(filter, OneFilter.class);
-                HashMap<String, String> featuresMap = new HashMap<>();
+                List<Feature> featureList = JSONArray.parseArray(this.sql(sql), Feature.class);
+                List<Feature> features = new ArrayList<>(featureList);
+
+                oneFilters = JSONArray.parseArray(filter, OneFilter.class);
+
+
                 //放置用户自定义查询
-                Set<String> featuresSet = new HashSet<>();
-                for (int i = 0; i < featureFilter.size(); i++) {
-                    OneFilter oneFilter = featureFilter.get(i);
+                Set<String> featureIdSet = new HashSet<>();
+                for (int i = 0; i < oneFilters.size(); i++) {
+                    OneFilter oneFilter = oneFilters.get(i);
 
-                    String andOr = oneFilter.getAndOr();
+                    String customType = oneFilter.getCustomType();
                     String fieldName = oneFilter.getFieldName();
+                    if ("user".equals(customType)) {
+                        //查询该用户下的该项目数据
+                        List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.FEATURE, fieldName);
 
-                    if (andOr.equals("or")) {
-                        Feature feature = new Feature();
-                        Class<? extends Feature> aClass = feature.getClass();
-                        String customType = oneFilter.getCustomType();
-                        if ("sys".equals(customType)) {
-                            List<Feature> allFeature;
-                            try {
-                                //赋值方法
-                                oneFilter.verify();
-                                if ("fString".equals(oneFilter.getType())) {
-                                    Method getTitle = aClass.getMethod("set" + fieldName, String.class);
-                                    getTitle.invoke(feature, oneFilter.getTextVal());
-                                } else if ("fInteger".equals(oneFilter.getType())) {
-                                    Method getTitle = aClass.getMethod("set" + fieldName, Integer.class);
-                                    getTitle.invoke(feature, oneFilter.getIntVal());
-                                } else if ("fDateTime".equals(oneFilter.getType())) {
+                        for (CustomFieldData customFieldData : customFieldDatas) {
+                            oneFilter.verify();
 
+                            if ("fString".equals(oneFilter.getType())) {
+                                if (customFieldData.getValueData().equals(oneFilter.getTextVal())) {
+                                    featureIdSet.add(customFieldData.getScopeId());
                                 }
-
-                            } catch (NoSuchMethodException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                            allFeature = featureService.findAllByFeature(feature);
-                            features.addAll(allFeature);
-                        } else if ("user".equals(customType)) {
-                            //查询该用户下的该项目数据
-                            List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, oneFilter.getFieldName());
-
-                            for (CustomFieldData customFieldData : customFieldDatas) {
-                                oneFilter.verify();
-                                if ("fString".equals(oneFilter.getType())) {
-                                    if (customFieldData.getValueData().equals(oneFilter.getTextVal())) {
-                                        featuresSet.add(customFieldData.getScopeId());
-                                    }
-                                } else if ("fInteger".equals(oneFilter.getType())) {
-                                    if (customFieldData.getValueData().equals(oneFilter.getIntVal())) {
-                                        featuresSet.add(customFieldData.getScopeId());
-                                    }
-                                } else if ("fDateTime".equals(oneFilter.getType())) {
-
+                            } else if ("fInteger".equals(oneFilter.getType())) {
+                                if (customFieldData.getValueData().equals(oneFilter.getIntVal())) {
+                                    featureIdSet.add(customFieldData.getScopeId());
                                 }
+                            } else if ("fDateTime".equals(oneFilter.getType())) {
+
                             }
                         }
-                    } else {
-                        //两个条件同时满足
-                        //先将条件存储起来
-                        if (i != featureFilter.size() - 1) {
-                            featuresMap.put(oneFilter.getFieldName(), oneFilter.getSourceVal());
-                            continue;
-                        }
-                        Set<String> strings = featuresMap.keySet();
-                        Feature feature = new Feature();
-                        Class<? extends Feature> aClass = feature.getClass();
-                        for (String string : strings) {
+                    }
 
-                            Method getTitle = aClass.getMethod("set" + string, String.class);
-                            getTitle.invoke(feature, featuresMap.get(string));
 
-                            List<Feature> allByProject;
-                            allByProject = featureService.findAllByFeature(feature);
-                            features.addAll(allByProject);
-                        }
-                        for (String projectId : featuresSet) {
-                            Feature data = featureService.queryById(projectId).getData();
-                            features.add(data);
-                        }
-
+                }
+                for (String featureId : featureIdSet) {
+                    if (!features.stream().map(Feature::getId).collect(Collectors.toSet()).contains(featureId)) {
+                        Feature data = featureService.queryById(featureId).getData();
+                        features.add(data);
                     }
                 }
-                break;
+                return new Resp.Builder<>().setData(features).ok();
             case FieldConstant.TESTCYCLE:
+                List<TestCycle> testCycles = JSONArray.parseArray(this.sql(sql), TestCycle.class);
+                List<TestCycle> cycles = new ArrayList<>(testCycles);
+                oneFilters = JSONArray.parseArray(filter, OneFilter.class);
 
-                break;
+
+                //放置用户自定义查询
+                Set<String> testCycleIds = new HashSet<>();
+                for (int i = 0; i < oneFilters.size(); i++) {
+                    OneFilter oneFilter = oneFilters.get(i);
+
+                    String customType = oneFilter.getCustomType();
+                    String fieldName = oneFilter.getFieldName();
+                    if ("user".equals(customType)) {
+                        //查询该用户下的该项目数据
+                        List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
+
+                        for (CustomFieldData customFieldData : customFieldDatas) {
+                            oneFilter.verify();
+
+                            if ("fString".equals(oneFilter.getType())) {
+                                if (customFieldData.getValueData().equals(oneFilter.getTextVal())) {
+                                    testCycleIds.add(customFieldData.getScopeId());
+                                }
+                            } else if ("fInteger".equals(oneFilter.getType())) {
+                                if (customFieldData.getValueData().equals(oneFilter.getIntVal())) {
+                                    testCycleIds.add(customFieldData.getScopeId());
+                                }
+                            } else if ("fDateTime".equals(oneFilter.getType())) {
+
+                            }
+                        }
+                    }
+
+
+                }
+                for (String testCycleId : testCycleIds) {
+                    if (!cycles.stream().map(TestCycle::getId).collect(Collectors.toSet()).contains(testCycleId)) {
+                        TestCycle data = testCycleService.queryById(testCycleId).getData();
+                        cycles.add(data);
+                    }
+                }
+                return new Resp.Builder<>().setData(cycles).ok();
             case FieldConstant.TESTCASE:
+                List<TestCase> testCases = JSONArray.parseArray(this.sql(sql), TestCase.class);
+                List<TestCase> testCaseList = new ArrayList<>(testCases);
 
-                break;
+                oneFilters = JSONArray.parseArray(filter, OneFilter.class);
+
+
+                //放置用户自定义查询的
+                Set<String> testCaseIds = new HashSet<>();
+                for (int i = 0; i < oneFilters.size(); i++) {
+                    OneFilter oneFilter = oneFilters.get(i);
+
+                    String customType = oneFilter.getCustomType();
+                    String fieldName = oneFilter.getFieldName();
+                    if ("user".equals(customType)) {
+                        //查询该用户下的该项目数据
+                        List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
+
+                        for (CustomFieldData customFieldData : customFieldDatas) {
+                            oneFilter.verify();
+
+                            if ("fString".equals(oneFilter.getType())) {
+                                if (customFieldData.getValueData().equals(oneFilter.getTextVal())) {
+                                    testCaseIds.add(customFieldData.getScopeId());
+                                }
+                            } else if ("fInteger".equals(oneFilter.getType())) {
+                                if (customFieldData.getValueData().equals(oneFilter.getIntVal())) {
+                                    testCaseIds.add(customFieldData.getScopeId());
+                                }
+                            } else if ("fDateTime".equals(oneFilter.getType())) {
+
+                            }
+                        }
+                    }
+
+
+                }
+                for (String testCaseId : testCaseIds) {
+                    if (!testCaseList.stream().map(TestCase::getId).collect(Collectors.toSet()).contains(testCaseId)) {
+                        TestCase data = testCaseService.queryById(testCaseId).getData();
+                        testCaseList.add(data);
+                    }
+                }
+                return new Resp.Builder<>().setData(testCaseList).ok();
             case FieldConstant.ISSUE:
+                List<Issue> issues = JSONArray.parseArray(this.sql(sql), Issue.class);
+                List<Issue> issueList = new ArrayList<>(issues);
 
-                break;
+                oneFilters = JSONArray.parseArray(filter, OneFilter.class);
+
+
+                //放置用户自定义查询的
+                Set<String> issueIdSet = new HashSet<>();
+                for (int i = 0; i < oneFilters.size(); i++) {
+                    OneFilter oneFilter = oneFilters.get(i);
+
+                    String customType = oneFilter.getCustomType();
+                    String fieldName = oneFilter.getFieldName();
+                    if ("user".equals(customType)) {
+                        //查询该用户下的该项目数据
+                        List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
+
+                        for (CustomFieldData customFieldData : customFieldDatas) {
+                            oneFilter.verify();
+
+                            if ("fString".equals(oneFilter.getType())) {
+                                if (customFieldData.getValueData().equals(oneFilter.getTextVal())) {
+                                    issueIdSet.add(customFieldData.getScopeId());
+                                }
+                            } else if ("fInteger".equals(oneFilter.getType())) {
+                                if (customFieldData.getValueData().equals(oneFilter.getIntVal())) {
+                                    issueIdSet.add(customFieldData.getScopeId());
+                                }
+                            } else if ("fDateTime".equals(oneFilter.getType())) {
+
+                            }
+                        }
+                    }
+
+
+                }
+                for (String issueId : issueIdSet) {
+                    if (!issueList.stream().map(Issue::getId).collect(Collectors.toSet()).contains(issueId)) {
+                        Issue data = issueService.queryById(issueId).getData();
+                        issueList.add(data);
+                    }
+                }
+                return new Resp.Builder<>().setData(issueList).ok();
             default:
 
         }
 
 
-        return new Resp.Builder<>().
-
-                ok();
+        return new Resp.Builder<>().ok();
 
     }
 
