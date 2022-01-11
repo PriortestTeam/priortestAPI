@@ -8,7 +8,6 @@ import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -91,9 +90,6 @@ public interface UserService {
      * @return
      */
     Resp<String> deleteUserById(String id);
-
-
-    Date getExpireDate(String id);
 
     /**
      * 管理员生成token

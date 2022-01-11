@@ -363,7 +363,7 @@ public class UserServiceImpl implements UserService {
                 project.setUpdateTime(new Date());
                 project.setReportToName(sysUser.getUserName());
                 projectService.initProject(project, userUseOpenProject);
-                this.initOrder();
+                this.initOrder(userId);
             } else {
                 SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
                 UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
@@ -408,8 +408,9 @@ public class UserServiceImpl implements UserService {
      * @return: void
      * @Author: MaSiyi
      * @Date: 2022/1/11
+     * @param userId
      */
-    private void initOrder() {
+    private void initOrder(String userId) {
         SysUserOrder sysUserOrder = new SysUserOrder();
         long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
         sysUserOrder.setOrderId(orderId);
@@ -431,6 +432,7 @@ public class UserServiceImpl implements UserService {
         String currentPrice = systemConfigService.getDateForKeyAndGroup("currentPrice", OneConstant.SystemConfigGroup.INITORDER);
         sysUserOrder.setCurrentPrice(new BigDecimal(currentPrice));
 
+        sysUserOrder.setUserId(userId);
         userOrderService.insertOrder(sysUserOrder);
     }
 
@@ -472,10 +474,6 @@ public class UserServiceImpl implements UserService {
         return activateAccount(activateAccountDto, OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION);
     }
 
-    @Override
-    public Date getExpireDate(String id) {
-        return sysUserDao.getExpireDate(id);
-    }
 
     /**
      * 管理员生成token

@@ -4,6 +4,7 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
+import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.dao.SysUserOrderDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
@@ -12,6 +13,7 @@ import com.hu.oneclick.model.domain.SysUserOrderRecord;
 import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -30,7 +32,7 @@ public class UserOrderServiceImpl implements UserOrderService {
     @Autowired
     private SysUserOrderDao sysUserOrderDao;
     @Autowired
-    private UserService userService;
+    private SysUserDao sysUserDao;
     @Autowired
     private SystemConfigService systemConfigService;
     @Autowired
@@ -41,7 +43,10 @@ public class UserOrderServiceImpl implements UserOrderService {
 
     @Override
     public Resp<String> insertOrder(SysUserOrder sysUserOrder) {
-        String userId = jwtUserService.getUserLoginInfo().getSysUser().getId();
+        String userId = sysUserOrder.getUserId();
+        if (StringUtils.isEmpty(userId)) {
+            userId = jwtUserService.getUserLoginInfo().getSysUser().getId();
+        }
         sysUserOrder.setUserId(userId);
 
         //初始转态为未支付
@@ -168,7 +173,7 @@ public class UserOrderServiceImpl implements UserOrderService {
         sysUser.setActivitiDate(new Date(System.currentTimeMillis()));
         String userId = sysUser.getId();
         //过期时间
-        long expireDate = userService.getExpireDate(userId).getTime();
+        long expireDate = sysUserDao.getExpireDate(userId).getTime();
         SysUserOrder orderOfUserId = sysUserOrderDao.getOrderOfUserId(userId);
         //订阅时长
         String subScription = orderOfUserId.getSubScription();
@@ -177,7 +182,8 @@ public class UserOrderServiceImpl implements UserOrderService {
 
         //过期时间
         sysUser.setExpireDate(new Date(expireDate + addTime));
-        userService.updateUserInfo(sysUser);
+        sysUserDao.update(sysUser);
+        jwtUserService.saveUserLoginInfo2(sysUserDao.queryById(sysUser.getId()));
         //已支付
         orderOfUserId.setStatus(true);
         sysUserOrderDao.updateByUuidSelective(orderOfUserId);
