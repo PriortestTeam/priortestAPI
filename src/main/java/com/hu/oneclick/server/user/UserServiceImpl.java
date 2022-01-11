@@ -8,6 +8,7 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
+import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.MasterIdentifierDao;
 import com.hu.oneclick.dao.SubUserProjectDao;
 import com.hu.oneclick.dao.SysUserDao;
@@ -18,6 +19,7 @@ import com.hu.oneclick.model.domain.MasterIdentifier;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.SysUserOrder;
 import com.hu.oneclick.model.domain.SysUserToken;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
@@ -27,6 +29,7 @@ import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
+import com.hu.oneclick.server.service.SystemConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -37,6 +40,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +72,10 @@ public class UserServiceImpl implements UserService {
 
     private final SubUserProjectDao subUserProjectDao;
 
+    private final UserOrderService userOrderService;
+
+    private final SystemConfigService systemConfigService;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
@@ -78,7 +86,7 @@ public class UserServiceImpl implements UserService {
     private long secondTime;
 
 
-    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService, SubUserProjectDao subUserProjectDao) {
+    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService, SubUserProjectDao subUserProjectDao, UserOrderService userOrderService, SystemConfigService systemConfigService) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
@@ -87,6 +95,8 @@ public class UserServiceImpl implements UserService {
         this.sysUserTokenDao = sysUserTokenDao;
         this.projectService = projectService;
         this.subUserProjectDao = subUserProjectDao;
+        this.userOrderService = userOrderService;
+        this.systemConfigService = systemConfigService;
     }
 
     @Override
@@ -353,6 +363,7 @@ public class UserServiceImpl implements UserService {
                 project.setUpdateTime(new Date());
                 project.setReportToName(sysUser.getUserName());
                 projectService.initProject(project, userUseOpenProject);
+                this.initOrder();
             } else {
                 SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
                 UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
@@ -388,6 +399,39 @@ public class UserServiceImpl implements UserService {
         }
 
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+    }
+
+    /**
+     * 初始化订单
+     *
+     * @Param: [sysUser]
+     * @return: void
+     * @Author: MaSiyi
+     * @Date: 2022/1/11
+     */
+    private void initOrder() {
+        SysUserOrder sysUserOrder = new SysUserOrder();
+        long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
+        sysUserOrder.setOrderId(orderId);
+        String apiCall = systemConfigService.getDateForKeyAndGroup("apiCall", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setApiCall(apiCall);
+
+        String dataStrorage = systemConfigService.getDateForKeyAndGroup("dataStrorage", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setDataStrorage(dataStrorage);
+
+        String subScription = systemConfigService.getDateForKeyAndGroup("subScription", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setSubScription(subScription);
+
+        String serviceDuration = systemConfigService.getDateForKeyAndGroup("serviceDuration", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setServiceDuration(serviceDuration);
+
+        String originalPrice = systemConfigService.getDateForKeyAndGroup("originalPrice", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setOriginalPrice(new BigDecimal(originalPrice));
+
+        String currentPrice = systemConfigService.getDateForKeyAndGroup("currentPrice", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setCurrentPrice(new BigDecimal(currentPrice));
+
+        userOrderService.insertOrder(sysUserOrder);
     }
 
     @Override

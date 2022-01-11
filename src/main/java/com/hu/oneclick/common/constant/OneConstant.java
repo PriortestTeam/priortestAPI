@@ -179,6 +179,7 @@ public interface OneConstant {
         String DATASTRORAGE = "DataStrorage";
         String FLASHDISCOUNT = "FlashDiscount";
         String PAYMENTTYPE = "PaymentType";
+        String INITORDER = "InitOrder";
         String APICALL = "APICall";
         String VIP = "VIP";
     }
