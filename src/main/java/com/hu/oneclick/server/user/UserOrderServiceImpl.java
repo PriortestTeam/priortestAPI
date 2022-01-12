@@ -97,7 +97,11 @@ public class UserOrderServiceImpl implements UserOrderService {
             default:
         }
         BigDecimal scriptionBigDecimal = new BigDecimal(scription);
-        BigDecimal divide = durationBigDecimal.divide(scriptionBigDecimal);
+
+        BigDecimal divide = new BigDecimal(1);
+        if (!"Perpetual".equals(serviceDuration)) {
+            divide = durationBigDecimal.divide(scriptionBigDecimal);
+        }
         orderCount = divide.intValue();
         //付款时间
         Calendar instance = Calendar.getInstance();
