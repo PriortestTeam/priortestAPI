@@ -112,8 +112,10 @@ public class UserOrderServiceImpl implements UserOrderService {
             addOrderRecord(sysUserOrderRecord, sysUserOrder);
             //原价
             BigDecimal originalPrice = sysUserOrder.getOriginalPrice();
+
             sysUserOrderRecord.setOriginal_price(originalPrice
                     .divide(new BigDecimal(orderCount), 2, RoundingMode.HALF_UP));
+
             //折扣价
             BigDecimal discountPrice = sysUserOrder.getCurrentPrice()
                     .divide(new BigDecimal(orderCount), 2, RoundingMode.HALF_UP);
@@ -122,7 +124,7 @@ public class UserOrderServiceImpl implements UserOrderService {
             //最后一次付款价格
             int newCount = orderCount - 1;
             if (i == newCount) {
-                discountPrice = originalPrice.subtract(discountPrice.multiply(BigDecimal.valueOf(newCount)));
+                discountPrice = discountPrice.subtract(discountPrice.multiply(BigDecimal.valueOf(newCount)));
                 sysUserOrderRecord.setDiscount_price(discountPrice);
             } else {
                 sysUserOrderRecord.setDiscount_price(discountPrice);
@@ -158,11 +160,11 @@ public class UserOrderServiceImpl implements UserOrderService {
         String dataStrorage = sysUserOrder.getDataStrorage();
         sysUserOrderRecord.setData_strorage(dataStrorage);
         sysUserOrderRecord.setData_price(new BigDecimal(systemConfigService.getDateForKeyAndGroup(
-                String.valueOf(dataStrorage), OneConstant.SystemConfigGroup.DATASTRORAGE)));
+                String.valueOf(dataStrorage), OneConstant.SystemConfigGroup.SYSTEMCONFIG)));
         String apiCall = sysUserOrder.getApiCall();
         sysUserOrderRecord.setApi_call(apiCall);
         sysUserOrderRecord.setApi_call_price(new BigDecimal(systemConfigService.getDateForKeyAndGroup(
-                apiCall, OneConstant.SystemConfigGroup.APICALL)));
+                apiCall, OneConstant.SystemConfigGroup.SYSTEMCONFIG)));
         sysUserOrderRecord.setSub_scription(sysUserOrder.getSubScription());
         sysUserOrderRecord.setDiscount(new BigDecimal("0"));
         sysUserOrderRecord.setExpenditure(new BigDecimal("0"));

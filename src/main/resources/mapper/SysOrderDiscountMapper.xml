@@ -19,7 +19,7 @@
     from sys_order_discount
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="getNormalDiscount" resultType="java.math.BigDecimal" parameterType="com.hu.oneclick.model.domain.dto.SysOrderDiscountDto">
+  <select id="getNormalDiscount" resultType="java.math.BigDecimal">
     SELECT
       normal_discount
     FROM
@@ -28,7 +28,7 @@
       sub_scription = #{subScription}
       AND data_strorage = #{dataStrorage}
       AND api_call = #{apiCall}
-      AND ServiceDuration = #{ServiceDuration}
+      AND serviceDuration = #{serviceDuration}
       AND userClass = #{userClass}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

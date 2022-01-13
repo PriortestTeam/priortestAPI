@@ -3,7 +3,6 @@ package com.hu.oneclick.server.user;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserOrder;
-import com.hu.oneclick.model.domain.SysUserOrderRecord;
 
 import java.util.List;
 

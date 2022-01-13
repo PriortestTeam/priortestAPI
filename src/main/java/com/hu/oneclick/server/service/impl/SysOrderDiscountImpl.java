@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,20 +64,23 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         String dataApPrice = systemConfigService.getDateForKeyAndGroup(sysOrderDiscountDto.getApiCall(),OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         BigDecimal dataStPriceBd = new BigDecimal(dataStPrice);
         BigDecimal dataApPriceBd = new BigDecimal(dataApPrice);
+        //原始价格
         BigDecimal allPrice = dataApPriceBd.add(dataStPriceBd);
+        BigDecimal currentPrice ;
+        currentPrice = allPrice.subtract(allPrice.multiply(normalDiscount));
         //根据推荐表里面获取当前的推荐人折扣
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         Date[] monthLimit = DateUtil.getMonthLimit(new Date());
-        //总折扣
+
         BigDecimal allReferenceDiscount = this.getReferenceDiscount(sysUser, monthLimit[0], monthLimit[1]);
-        //两个折扣相加，计算出折扣之后的价钱
-        BigDecimal addDiscount = normalDiscount.add(allReferenceDiscount);
+        currentPrice = currentPrice.subtract(currentPrice.multiply(allReferenceDiscount));
+
         //如果特别折扣开关为打开
         String specialDiscount = systemConfigService.getDateForKeyAndGroup("SpecialDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         if (OneConstant.SystemConfigStatus.ON.equals(specialDiscount)) {
             String specialDiscountNu = systemConfigService.getDateForKeyAndGroup(sysUser.getEmail(), OneConstant.SystemConfigGroup.SPECICALDISCOUNT);
             if (StringUtils.isNotEmpty(specialDiscountNu)) {
-                addDiscount = addDiscount.add(new BigDecimal(specialDiscountNu));
+                currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(specialDiscountNu)));
             }
         }
         //如果VIP开关为打开
@@ -85,19 +89,18 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
             if ("VIP".equals(sysUser.getUserClass())) {
                 //vip折扣力度
                 String vipNu = systemConfigService.getDateForKeyAndGroup("VIP", OneConstant.SystemConfigGroup.VIP);
-                addDiscount = addDiscount.add(new BigDecimal(vipNu));
+                currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(vipNu)));
             }
         }
         //如果节假日折扣开关为打开
         String flashDiscount = systemConfigService.getDateForKeyAndGroup("FlashDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         if (OneConstant.SystemConfigStatus.ON.equals(flashDiscount)) {
             String flashDiscountNu = systemConfigService.getDateForKeyAndGroup("FlashDiscount", OneConstant.SystemConfigGroup.FLASHDISCOUNT);
-            addDiscount = addDiscount.add(new BigDecimal(flashDiscountNu));
+            currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(flashDiscountNu)));
         }
-        BigDecimal currentPrice = allPrice.multiply(addDiscount);
         Map<String, BigDecimal> map = new HashMap<>(3);
         map.put("originalPrice", allPrice);
-        map.put("currentPrice", allPrice.subtract(currentPrice));
+        map.put("currentPrice",currentPrice.setScale(2, RoundingMode.HALF_UP));
         return new Resp.Builder<Map<String, BigDecimal>>().setData(map).ok();
     }
     /** 计算推荐折扣
