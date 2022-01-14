@@ -124,7 +124,8 @@ public class UserOrderServiceImpl implements UserOrderService {
             //最后一次付款价格
             int newCount = orderCount - 1;
             if (i == newCount) {
-                discountPrice = discountPrice.subtract(discountPrice.multiply(BigDecimal.valueOf(newCount)));
+                BigDecimal currentPrice = sysUserOrder.getCurrentPrice();
+                discountPrice = currentPrice.subtract(discountPrice.multiply(BigDecimal.valueOf(newCount)));
                 sysUserOrderRecord.setDiscount_price(discountPrice);
             } else {
                 sysUserOrderRecord.setDiscount_price(discountPrice);
