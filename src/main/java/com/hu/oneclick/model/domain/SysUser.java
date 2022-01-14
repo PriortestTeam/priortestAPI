@@ -61,7 +61,7 @@ public class SysUser extends BaseEntity implements Serializable {
      */
     private Date closeDate;
     /**
-     * 用户类型， 1 admin 2 trail user 3 testers 4 developer
+     * 用户类型，  1 admin 2 子用户
      */
     private Integer type;
     /**

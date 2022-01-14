@@ -8,6 +8,7 @@ import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.dao.ProjectDao;
+import com.hu.oneclick.dao.SubUserProjectDao;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
@@ -15,6 +16,7 @@ import com.hu.oneclick.model.domain.Attachment;
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
@@ -93,7 +95,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final CustomFieldDataService customFieldDataService;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao, MailService mailService, AttachmentService attachmentService, CustomFieldDataService customFieldDataService) {
+    private final SubUserProjectDao subUserProjectDao;
+
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao, MailService mailService, AttachmentService attachmentService, CustomFieldDataService customFieldDataService, SubUserProjectDao subUserProjectDao) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
@@ -103,6 +107,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.mailService = mailService;
         this.attachmentService = attachmentService;
         this.customFieldDataService = customFieldDataService;
+        this.subUserProjectDao = subUserProjectDao;
     }
 
     /**
@@ -133,12 +138,24 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Resp<List<Project>> queryForProjects(ProjectDto project) {
-        String masterId = jwtUserService.getMasterId();
-        project.setUserId(masterId);
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        List<Project> projects = new ArrayList<>();
+        String sysUserId = sysUser.getId();
+        if (sysUser.getType().equals(OneConstant.USER_TYPE.ADMIN)) {
+            projects = projectDao.queryAllProjects(sysUserId);
+        } else {
+            SubUserProject subUserProject = subUserProjectDao.queryByUserId(sysUserId);
+            String[] split = subUserProject.getProjectId().split(",");
+            for (String projectId : split) {
+                Project projectGet = projectDao.queryById(projectId);
+                projects.add(projectGet);
+            }
+        }
+//        project.setUserId(masterId);
+//
+//        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto(), masterId));
 
-        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto(), masterId));
-
-        List<Project> projects = projectDao.queryAll(project);
+//        List<Project> projects = projectDao.queryAll(project);
         return new Resp.Builder<List<Project>>().setData(projects).total(projects).ok();
     }
 
