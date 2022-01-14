@@ -45,7 +45,7 @@ public interface TestCycleService {
     Resp<Map<String, Object>> queryIssueByIdOrName(Issue issue);
 
     Resp<String> mergeIssue(Issue issue);
-    Resp<List<String>> getTestCycleVersion(String projectId, String env, String version);
+    Resp<   List<Map<String, String>>> getTestCycleVersion(String projectId, String env, String version);
 
     List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto);
 

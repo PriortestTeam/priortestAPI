@@ -99,8 +99,6 @@ public class TestCycleServiceImpl implements TestCycleService {
     private CustomFieldDataService customFieldDataService;
 
 
-
-
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
         List<LeftJoinDto> select = testCycleDao.queryTitles(projectId, title, jwtUserService.getMasterId());
@@ -514,9 +512,9 @@ public class TestCycleServiceImpl implements TestCycleService {
     }
 
     @Override
-    public Resp<List<String>> getTestCycleVersion(String projectId, String env, String version) {
-        List<String> cycleVersion = testCycleDao.getTestCycleVersion(projectId, env, version);
-        return new Resp.Builder<List<String>>().setData(cycleVersion).ok();
+    public Resp<List<Map<String, String>>> getTestCycleVersion(String projectId, String env, String version) {
+        List<Map<String, String>> testCycleVersion = testCycleDao.getTestCycleVersion(projectId, env, version);
+        return new Resp.Builder<List<Map<String, String>>>().setData(testCycleVersion).ok();
     }
 
     @Override

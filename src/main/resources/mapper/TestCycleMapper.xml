@@ -161,8 +161,8 @@
         where id = #{id}
     </update>
 
-    <select id="getTestCycleVersion" resultType="string" parameterType="java.lang.String">
-        SELECT version
+    <select id="getTestCycleVersion" resultType="java.util.Map" parameterType="java.lang.String">
+        SELECT version,title
         FROM test_cycle
         WHERE project_id = #{projectId}
         AND env = #{env}

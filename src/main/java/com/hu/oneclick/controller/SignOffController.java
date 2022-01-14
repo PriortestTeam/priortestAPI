@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 王富贵
@@ -53,7 +54,7 @@ public class SignOffController {
     }
 
     @GetMapping("/getTestCycleVersion")
-    public Resp<List<String>> getTestCycleVersion(@RequestParam String projectId, @RequestParam String env, @RequestParam String version) {
+    public Resp<List<Map<String, String>>> getTestCycleVersion(@RequestParam String projectId, @RequestParam String env, @RequestParam String version) {
         return testCycleService.getTestCycleVersion(projectId, env, version);
     }
 
