@@ -55,7 +55,7 @@ public class SignOffController {
 
     @GetMapping("/getIssue")
     public Resp<SysCustomFieldVo> getIssue() {
-        return sysCustomFieldService.getSysCustomField("issue");
+        return sysCustomFieldService.getSysCustomField("issue_status");
     }
 
     @GetMapping("/getTestCycleDetail")
