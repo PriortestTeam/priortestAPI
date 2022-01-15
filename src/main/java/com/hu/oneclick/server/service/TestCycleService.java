@@ -16,7 +16,7 @@ import java.util.Map;
 
 public interface TestCycleService {
 
-    Resp< List<LeftJoinDto>> queryTitles(String projectId, String title);
+    Resp<List<LeftJoinDto>> queryTitles(String projectId, String title);
 
     Resp<TestCycle> queryById(String id);
 
@@ -27,7 +27,6 @@ public interface TestCycleService {
     Resp<String> update(TestCycle testCycle);
 
     Resp<String> delete(String id);
-
 
 
     Resp<List<TestCase>> queryBindCaseList(String testCycleId);
@@ -45,11 +44,14 @@ public interface TestCycleService {
     Resp<Map<String, Object>> queryIssueByIdOrName(Issue issue);
 
     Resp<String> mergeIssue(Issue issue);
-    Resp<   List<Map<String, String>>> getTestCycleVersion(String projectId, String env, String version);
+
+    Resp<List<Map<String, String>>> getTestCycleVersion(String projectId, String env, String version);
 
     List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto);
 
-    /** 添加计划
+    /**
+     * 添加计划
+     *
      * @Param: [model]
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi

@@ -520,7 +520,7 @@ public class TestCycleServiceImpl implements TestCycleService {
     @Override
     public List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto) {
 
-        List<Map<String, String>> allTestCycle = testCycleDao.getAllTestCycle(signOffDto.getProjectId(), signOffDto.getVersion(), signOffDto.getEnv(), signOffDto.getTestCycleVersion());
+        List<Map<String, String>> allTestCycle = testCycleDao.getAllTestCycle(signOffDto.getProjectId(), signOffDto.getVersion(), signOffDto.getEnv(), signOffDto.getTestCycle());
         return allTestCycle;
     }
 

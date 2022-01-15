@@ -53,7 +53,7 @@ public class SignOffController {
         return sysCustomFieldService.getSysCustomField("versions");
     }
 
-    @GetMapping("/getTestCycleVersion")
+    @GetMapping("/getTestCycleDetail")
     public Resp<List<Map<String, String>>> getTestCycleVersion(@RequestParam String projectId, @RequestParam String env, @RequestParam String version) {
         return testCycleService.getTestCycleVersion(projectId, env, version);
     }

@@ -176,7 +176,7 @@
                  JOIN test_cycle tc on cy.test_cycle_id = tc.id WHERE ca.project_id = #{param1}
             AND ca.version = #{param2}
             and ca.env = #{param3}
-            and tc.version in (#{param4})
+            and tc.title in (#{param4})
     </select>
 
 
