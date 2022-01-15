@@ -6,8 +6,10 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.DateUtil;
+import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.dao.ProjectDao;
+import com.hu.oneclick.dao.ProjectSignOffDao;
 import com.hu.oneclick.dao.SubUserProjectDao;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
@@ -16,6 +18,7 @@ import com.hu.oneclick.model.domain.Attachment;
 import com.hu.oneclick.model.domain.CustomFieldData;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.ProjectSignOff;
 import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.TestCycle;
@@ -97,7 +100,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final SubUserProjectDao subUserProjectDao;
 
-    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao, MailService mailService, AttachmentService attachmentService, CustomFieldDataService customFieldDataService, SubUserProjectDao subUserProjectDao) {
+    private final ProjectSignOffDao projectSignOffDao;
+
+    public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao, RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService, IssueDao issueDao, MailService mailService, AttachmentService attachmentService, CustomFieldDataService customFieldDataService, SubUserProjectDao subUserProjectDao, ProjectSignOffDao projectSignOffDao) {
         this.sysPermissionService = sysPermissionService;
         this.jwtUserService = jwtUserService;
         this.projectDao = projectDao;
@@ -108,6 +113,7 @@ public class ProjectServiceImpl implements ProjectService {
         this.attachmentService = attachmentService;
         this.customFieldDataService = customFieldDataService;
         this.subUserProjectDao = subUserProjectDao;
+        this.projectSignOffDao = projectSignOffDao;
     }
 
     /**
@@ -325,7 +331,8 @@ public class ProjectServiceImpl implements ProjectService {
             // 创建行的单元格,也是从0开始
             row.createCell(0).setCellValue("项目");
             // 项目
-            row.createCell(1).setCellValue(this.queryById(signOffDto.getProjectId()).getData().getTitle());
+            Project project = this.queryById(signOffDto.getProjectId()).getData();
+            row.createCell(1).setCellValue(project.getTitle());
 
             // 测试环境
             HSSFRow row1 = sheet.createRow(1);
@@ -609,17 +616,38 @@ public class ProjectServiceImpl implements ProjectService {
                 wb.saveToFile(desFilePathd, FileFormat.PDF);
                 //发送邮件
                 AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
-                mailService.sendAttachmentsMail(userLoginInfo.getUsername(), "OneClick验收结果", "请查收验收结果", desFilePathd);
+                String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId());
+                String sendName = signOffId + project.getTitle() + signOffDto.getEnv() + signOffDto.getVersion() + ".pdf";
+
+                //存储签收邮件
+                saveSignOff(signOffId, userLoginInfo, signOffDto, project, desFilePathd, sendName);
+
+                mailService.sendAttachmentsMail(userLoginInfo.getUsername(), "OneClick验收结果", "请查收验收结果", desFilePathd, sendName);
                 out.close();//关闭文件流
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } catch (Exception e) {
+
             return new Resp.Builder<String>().setData(SysConstantEnum.SYS_ERROR.getValue()).fail();
         }
 
         return null;
     }
+
+    private ProjectSignOff saveSignOff(String signOffId, AuthLoginUser userLoginInfo, SignOffDto signOffDto, Project project, String desFilePathd, String sendName) {
+        ProjectSignOff projectSignOff = new ProjectSignOff();
+        projectSignOff.setId(signOffId);
+        projectSignOff.setProjectId(project.getId());
+        projectSignOff.setUserId(userLoginInfo.getSysUser().getId());
+        projectSignOff.setCreateTime(new Date());
+        projectSignOff.setFilePath(desFilePathd);
+        projectSignOff.setFileName(sendName);
+        projectSignOff.setCreateUser(userLoginInfo.getSysUser().getId());
+        projectSignOffDao.insert(projectSignOff);
+        return projectSignOff;
+    }
+
 
     @Override
     public Resp<String> upload(MultipartFile file) {
@@ -639,7 +667,7 @@ public class ProjectServiceImpl implements ProjectService {
         //保存文件信息
         Attachment attachment = new Attachment();
         attachment.setUserId(jwtUserService.getId());
-        attachment.setUuidFileName(newName);
+        attachment.setUuidFileName(oldName);
         attachment.setFilePath(uri);
         attachment.setUploadTime(new Date(System.currentTimeMillis()));
         attachment.setUploader(jwtUserService.getUserLoginInfo().getUsername());
@@ -666,7 +694,7 @@ public class ProjectServiceImpl implements ProjectService {
      * @Date: 2021/10/18
      */
     private Boolean cheakUserSignFile() {
-        List<String> data = attachmentService.getUserAttachment().getData();
+        List<Map<String, Object>> data = attachmentService.getUserAttachment().getData();
         return data.size() >= 3;
     }
 

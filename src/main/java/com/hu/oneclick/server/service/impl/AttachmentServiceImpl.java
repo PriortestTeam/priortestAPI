@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -58,8 +59,8 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Resp<List<Attachment>> list(String type,String linkId) {
-        if (StringUtils.isEmpty(type) || StringUtils.isEmpty(linkId)){
+    public Resp<List<Attachment>> list(String type, String linkId) {
+        if (StringUtils.isEmpty(type) || StringUtils.isEmpty(linkId)) {
             return new Resp.Builder<List<Attachment>>().buildResult("参数不能为空！");
         }
         Attachment attachment = new Attachment();
@@ -72,9 +73,9 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> addAttachment(MultipartFile file, String type,String linkId) {
+    public Resp<String> addAttachment(MultipartFile file, String type, String linkId) {
         try {
-            if (StringUtils.isEmpty(type) || StringUtils.isEmpty(linkId) || file == null){
+            if (StringUtils.isEmpty(type) || StringUtils.isEmpty(linkId) || file == null) {
                 return new Resp.Builder<String>().buildResult("参数不能为空！");
             }
             sysPermissionService.projectPermission(OneConstant.PERMISSION.ADD);
@@ -109,7 +110,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateAttachment(MultipartFile file, String attachmentId) {
         try {
-            if (StringUtils.isEmpty(attachmentId)){
+            if (StringUtils.isEmpty(attachmentId)) {
                 return new Resp.Builder<String>().buildResult("参数不能为空！");
             }
             sysPermissionService.projectPermission(OneConstant.PERMISSION.EDIT);
@@ -162,6 +163,20 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     /**
+     * @param attachmentId
+     * @Param: [attachmentId]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2022/1/15
+     */
+    @Override
+    public Resp<String> deleteAttachmentById(String attachmentId) {
+        String masterId = jwtUserService.getMasterId();
+
+        return Result.deleteResult(attachmentDao.deleteById(attachmentId, masterId));
+    }
+
+    /**
      * 文件上传
      *
      * @param file
@@ -196,10 +211,10 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Resp<List<String>> getUserAttachment() {
+    public Resp<List<Map<String, Object>>> getUserAttachment() {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        List<String> list =  attachmentDao.getUserAttachment(sysUser.getId(),OneConstant.AREA_TYPE.SIGNOFFSIGN);
-        return new Resp.Builder<List<String>>().setData(list).ok();
+        List<Map<String, Object>> list = attachmentDao.getUserAttachment(sysUser.getId(), OneConstant.AREA_TYPE.SIGNOFFSIGN);
+        return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
     }
 
     @Override

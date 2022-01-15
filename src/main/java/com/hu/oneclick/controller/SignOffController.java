@@ -1,10 +1,12 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.ProjectSignOff;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.server.service.AttachmentService;
 import com.hu.oneclick.server.service.ProjectService;
+import com.hu.oneclick.server.service.ProjectSignOffService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleService;
@@ -41,6 +43,9 @@ public class SignOffController {
     private AttachmentService attachmentService;
     @Autowired
     private SysCustomFieldService sysCustomFieldService;
+    @Autowired
+    private ProjectSignOffService signOffService;
+
 
     @GetMapping("/getProjectEnv")
     public Resp<SysCustomFieldVo> getProjectEnv() {
@@ -52,6 +57,7 @@ public class SignOffController {
     public Resp<SysCustomFieldVo> getProjectVersion() {
         return sysCustomFieldService.getSysCustomField("versions");
     }
+
 
     @GetMapping("/getIssue")
     public Resp<SysCustomFieldVo> getIssue() {
@@ -75,9 +81,24 @@ public class SignOffController {
         return projectService.upload(file);
     }
 
+    @GetMapping("/delete")
+    @ApiOperation("文件删除")
+    public Resp<String> delete(@RequestParam String fileId) {
+        return attachmentService.deleteAttachmentById(fileId);
+    }
+
+
+    @GetMapping("/getPdf")
+    @ApiOperation("返回当前项目下产生的PDF列表")
+    public  Resp< List<ProjectSignOff>> getPdf() {
+        return signOffService.getPdf();
+    }
+
+
+
     @GetMapping("/getUserAttachmentSign")
     @ApiOperation("访问用户签名文件路径")
-    public Resp<List<String>> getUserAttachmentSign() {
+    public Resp<List<Map<String, Object>>> getUserAttachmentSign() {
         return attachmentService.getUserAttachment();
     }
 

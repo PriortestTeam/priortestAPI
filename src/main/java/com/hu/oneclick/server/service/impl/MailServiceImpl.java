@@ -136,7 +136,7 @@ public class MailServiceImpl  implements MailService {
      */
     @Override
     public void sendAttachmentsMail(String to, String subject, String contnet,
-                                    String filePath) throws MessagingException {
+                                    String filePath,String sendName) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -146,8 +146,7 @@ public class MailServiceImpl  implements MailService {
         helper.setFrom(from);
 
         FileSystemResource file = new FileSystemResource(new File(filePath));
-        String fileName = file.getFilename();
-        helper.addAttachment(fileName, file);
+        helper.addAttachment(sendName, file);
 
         javaMailSender.send(message);
     }

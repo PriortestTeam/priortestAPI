@@ -19,5 +19,5 @@ public interface  MailService {
     void sendSimpleMail(String to, String subject, String contnet);
 
     void sendAttachmentsMail(String to, String subject, String contnet,
-                             String filePath) throws MessagingException;
+                             String filePath, String sendName) throws MessagingException;
 }
