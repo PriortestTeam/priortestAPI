@@ -635,7 +635,13 @@ public class ProjectServiceImpl implements ProjectService {
         return null;
     }
 
-    private ProjectSignOff saveSignOff(String signOffId, AuthLoginUser userLoginInfo, SignOffDto signOffDto, Project project, String desFilePathd, String sendName) {
+    /** 存储验收记录
+     * @Param: [signOffId, userLoginInfo, signOffDto, project, desFilePathd, sendName]
+     * @return: com.hu.oneclick.model.domain.ProjectSignOff
+     * @Author: MaSiyi
+     * @Date: 2022/1/17
+     */
+    private void saveSignOff(String signOffId, AuthLoginUser userLoginInfo, SignOffDto signOffDto, Project project, String desFilePathd, String sendName) {
         ProjectSignOff projectSignOff = new ProjectSignOff();
         projectSignOff.setId(signOffId);
         projectSignOff.setProjectId(project.getId());
@@ -645,7 +651,6 @@ public class ProjectServiceImpl implements ProjectService {
         projectSignOff.setFileName(sendName);
         projectSignOff.setCreateUser(userLoginInfo.getSysUser().getId());
         projectSignOffDao.insert(projectSignOff);
-        return projectSignOff;
     }
 
 

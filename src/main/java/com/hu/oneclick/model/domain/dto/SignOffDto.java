@@ -33,5 +33,10 @@ public class SignOffDto {
      * 签名
      */
     private String fileUrl;
+    /**
+     * "auto":false：  在生成的PDF 时， 备注： 此签收文档是由用户通过界面生成
+     * "auto":true  在生成的PDF 时， 备注： 此签收文档是由自动化测试生成
+     */
+    private String auto;
 
 }
