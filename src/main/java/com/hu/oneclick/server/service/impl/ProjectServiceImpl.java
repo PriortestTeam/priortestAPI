@@ -632,7 +632,7 @@ public class ProjectServiceImpl implements ProjectService {
             return new Resp.Builder<String>().setData(SysConstantEnum.SYS_ERROR.getValue()).fail();
         }
 
-        return null;
+        return new Resp.Builder<String>().ok();
     }
 
     /** 存储验收记录
