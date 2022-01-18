@@ -19,7 +19,7 @@
     from project_sign_off
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="selectByUserProject" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectByUserProject" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from project_sign_off
