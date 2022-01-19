@@ -30,10 +30,10 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.ProjectSignOff" useGeneratedKeys="true">
-    insert into project_sign_off (project_id, user_id, create_time, 
+    insert into project_sign_off (id,project_id, user_id, create_time,
       file_path, file_name, create_user
       )
-    values (#{projectId,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+    values (#{id,jdbcType=VARCHAR},#{projectId,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
       #{filePath,jdbcType=VARCHAR}, #{fileName,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}
       )
   </insert>
