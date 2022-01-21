@@ -301,7 +301,7 @@ public class TestCaseServiceImpl implements TestCaseService {
 
             List<String> priorityValues = sysCustomFieldService.getSysCustomField("priority").getData().getMergeValues();
             List<String> allowBrowserValues = sysCustomFieldService.getSysCustomField("browser").getData().getMergeValues();
-            List<String> allowPlatformValues = sysCustomFieldService.getSysCustomField("platform").getData().getMergeValues();
+            List<String> allowPlatformValues = sysCustomFieldService.getSysCustomField("test_platform").getData().getMergeValues();
             List<String> moudleMergeValues = sysCustomFieldService.getSysCustomField("moudle").getData().getMergeValues();
             List<String> versionsMergeValues = sysCustomFieldService.getSysCustomField("versions").getData().getMergeValues();
             List<String> testCategoryMergeValues = sysCustomFieldService.getSysCustomField("testCategory").getData().getMergeValues();

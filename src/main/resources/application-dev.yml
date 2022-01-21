@@ -1,8 +1,10 @@
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/oneclick?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false
-    username: root
-    password: panku
+    url: jdbc:mysql://124.71.142.223:3306/oneclick?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false
+    username: oneclick
+    password: Oneclick456!
+    #username: root
+    #password: 123456
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
@@ -33,8 +35,8 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss #设置返回格式
 
   redis:
-#    host: 192.168.184.10
-    host: localhost
+    #host: localhost
+    host: 124.71.142.223
     port: 6379
     ssl: false
 #    password: qingyang_redis
@@ -68,7 +70,7 @@ onclick:
       enable: true
   default:
     photo: https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2511150983,4244929698&fm=26&gp=0.jpg
-    frontUrl: http://192.168.0.107:9528           #前端地址 可用于发送邮件中默认调整前端的地址
+    frontUrl: http://localhost:9529          #前端地址 可用于发送邮件中默认调整前端的地址
   minioConfig:
     bucketName: oneclick
     endpoint: http://106.13.39.32:9000
