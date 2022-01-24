@@ -214,6 +214,12 @@ public class AttachmentServiceImpl implements AttachmentService {
     public Resp<List<Map<String, Object>>> getUserAttachment() {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         List<Map<String, Object>> list = attachmentDao.getUserAttachment(sysUser.getId(), OneConstant.AREA_TYPE.SIGNOFFSIGN);
+        for (Map<String, Object> map : list) {
+            String id = String.valueOf(map.get("id"));
+            map.put("id", id);
+        }
+
+
         return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
     }
 
