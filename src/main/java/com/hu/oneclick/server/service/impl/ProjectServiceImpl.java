@@ -517,7 +517,7 @@ public class ProjectServiceImpl implements ProjectService {
 //            }
             HSSFRow row30 = sheet.createRow(rowId++);
             row30.createCell(0).setCellValue(signOffDto.getTestCycle());
-//            row30.createCell(1).setCellValue(maps.size());
+            row30.createCell(1).setCellValue("");
 
 
             HSSFRow row32 = sheet.createRow(rowId++);
@@ -631,7 +631,7 @@ public class ProjectServiceImpl implements ProjectService {
                 e.printStackTrace();
             }
         } catch (Exception e) {
-
+            logger.error(e.getMessage(), e);
             return new Resp.Builder<String>().setData(SysConstantEnum.SYS_ERROR.getValue()).fail();
         }
 
