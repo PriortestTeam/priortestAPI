@@ -59,5 +59,5 @@ public interface TestCycleService {
      */
     Resp<String> addSchedule(TestCycleScheduleModel model);
 
-    String getTestCycleByProjectIdAndEvn(String projectId, String env, String testCycle);
+    List<String> getTestCycleByProjectIdAndEvn(String projectId, String env, String testCycle);
 }

@@ -519,10 +519,16 @@ public class ProjectServiceImpl implements ProjectService {
 //            }
             HSSFRow row30 = sheet.createRow(rowId++);
             String testCycle = signOffDto.getTestCycle();
-            testCycle = testCycle.substring(testCycle.lastIndexOf("=")+1);
-            String testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, env,testCycle);
-            row30.createCell(0).setCellValue(testCycleName);
-            row30.createCell(1).setCellValue("");
+            testCycle = testCycle.substring(testCycle.lastIndexOf("=") + 1);
+            List<String> testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, env, testCycle);
+            if (testCycleName.isEmpty()) {
+                throw new BizException("当前选择的没有测试周期");
+            }
+            for (String testCycleNameOne : testCycleName) {
+                row30.createCell(0).setCellValue(testCycleNameOne);
+                row30.createCell(1).setCellValue("");
+                row30 = sheet.createRow(rowId);
+            }
 
 
             HSSFRow row32 = sheet.createRow(rowId++);

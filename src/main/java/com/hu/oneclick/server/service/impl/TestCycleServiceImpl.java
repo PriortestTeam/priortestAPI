@@ -924,7 +924,7 @@ public class TestCycleServiceImpl implements TestCycleService {
     }
 
     @Override
-    public String getTestCycleByProjectIdAndEvn(String projectId, String env, String testCycle) {
+    public  List<String> getTestCycleByProjectIdAndEvn(String projectId, String env, String testCycle) {
         return testCycleDao.getTestCycleByProjectIdAndEvn(projectId, env,testCycle);
     }
 }
