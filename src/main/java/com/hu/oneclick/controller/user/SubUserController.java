@@ -77,7 +77,7 @@ public class SubUserController {
     }
 
 
-    @DeleteMapping("getSubUserProject/{userId}")
+    @GetMapping("getSubUserProject/{userId}")
     @ApiOperation("返回用户的项目列表")
     public Resp<SubUserProject> getSubUserProject(@PathVariable String userId) {
         return subUserService.getSubUserProject(userId);
