@@ -517,7 +517,6 @@ public class ProjectServiceImpl implements ProjectService {
 //                row30.createCell(0).setCellValue(title);
 //                row30.createCell(1).setCellValue(maps.size());
 //            }
-            HSSFRow row30 = sheet.createRow(rowId++);
             String testCycle = signOffDto.getTestCycle();
             testCycle = testCycle.substring(testCycle.lastIndexOf("=") + 1);
             List<String> testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, env, testCycle);
@@ -525,9 +524,10 @@ public class ProjectServiceImpl implements ProjectService {
                 throw new BizException("当前选择的没有测试周期");
             }
             for (String testCycleNameOne : testCycleName) {
+                HSSFRow row30 = sheet.createRow(rowId++);
                 row30.createCell(0).setCellValue(testCycleNameOne);
                 row30.createCell(1).setCellValue("");
-                row30 = sheet.createRow(rowId);
+
             }
 
 
@@ -610,7 +610,12 @@ public class ProjectServiceImpl implements ProjectService {
                 }
                 for (int j = 0; j < 2; j++) {
 
-                    sheet.getRow(i).getCell(j).setCellStyle(style);
+                    try {
+                        sheet.getRow(i).getCell(j).setCellStyle(style);
+                    } catch (Exception e) {
+                        System.out.println(i);
+                        e.printStackTrace();
+                    }
                 }
             }
 
