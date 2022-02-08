@@ -1,7 +1,7 @@
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 
 import java.util.List;
@@ -47,5 +47,12 @@ public interface SubUserService {
     Resp<String> deleteSubUser(String id);
 
 
+    /** 返回用户的项目列表
+     * @Param: [userId]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2022/2/8
+     */
+    Resp<SubUserProject> getSubUserProject(String userId);
 }
 

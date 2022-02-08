@@ -2,6 +2,7 @@ package com.hu.oneclick.controller.user;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.user.SubUserService;
@@ -40,39 +41,46 @@ public class SubUserController {
 
     @PostMapping("querySubUsers")
     @ApiOperation("查询子用户")
-    public Resp<List<SubUserDto>> querySubUsers(@RequestBody SubUserDto sysUser){
-        return  subUserService.querySubUsers(sysUser);
+    public Resp<List<SubUserDto>> querySubUsers(@RequestBody SubUserDto sysUser) {
+        return subUserService.querySubUsers(sysUser);
     }
 
     @GetMapping("queryForProjects")
     @ApiOperation("查询项目")
-    public Resp<List<Project>> queryForProjects(){
-        return  projectService.queryForProjects();
+    public Resp<List<Project>> queryForProjects() {
+        return projectService.queryForProjects();
     }
 
     @PostMapping("createSubUser")
     @ApiOperation("添加子用户")
-    public Resp<String> createSubUser(@RequestBody SubUserDto sysUser){
-        return  subUserService.createSubUser(sysUser);
+    public Resp<String> createSubUser(@RequestBody SubUserDto sysUser) {
+        return subUserService.createSubUser(sysUser);
     }
 
     @PostMapping("updateSubUser")
     @ApiOperation("修改子用户")
-    public Resp<String> updateSubUser(@RequestBody SubUserDto sysUser){
-        return  subUserService.updateSubUser(sysUser);
+    public Resp<String> updateSubUser(@RequestBody SubUserDto sysUser) {
+        return subUserService.updateSubUser(sysUser);
     }
 
     @PostMapping("updateSubUserPassword")
     @ApiOperation("修改子用户密码")
-    public Resp<String> updateSubUserPassword(@RequestBody SubUserDto sysUser){
-        return  subUserService.updateSubUserPassword(sysUser);
+    public Resp<String> updateSubUserPassword(@RequestBody SubUserDto sysUser) {
+        return subUserService.updateSubUserPassword(sysUser);
     }
 
 
     @DeleteMapping("deleteSubUser/{id}")
     @ApiOperation("删除子用户")
-    public Resp<String> deleteSubUser(@PathVariable String id){
-        return  subUserService.deleteSubUser(id);
+    public Resp<String> deleteSubUser(@PathVariable String id) {
+        return subUserService.deleteSubUser(id);
+    }
+
+
+    @DeleteMapping("getSubUserProject/{userId}")
+    @ApiOperation("返回用户的项目列表")
+    public Resp<SubUserProject> getSubUserProject(@PathVariable String userId) {
+        return subUserService.getSubUserProject(userId);
     }
 
 }

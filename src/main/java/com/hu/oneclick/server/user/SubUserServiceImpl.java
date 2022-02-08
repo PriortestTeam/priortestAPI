@@ -231,4 +231,18 @@ public class SubUserServiceImpl implements SubUserService{
         return jwtUserServiceImpl.encryptPassword(password);
     }
 
+    /**
+     * 返回用户的项目列表
+     *
+     * @param userId
+     * @Param: [userId]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2022/2/8
+     */
+    @Override
+    public Resp<SubUserProject> getSubUserProject(String userId) {
+        SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
+        return new Resp.Builder<SubUserProject>().setData(subUserProject).ok();
+    }
 }

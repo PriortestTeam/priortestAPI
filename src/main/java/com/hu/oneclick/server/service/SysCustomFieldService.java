@@ -11,6 +11,7 @@ public interface SysCustomFieldService {
     /** 查询所有系统字段加上用户自己添加的字段
      * @Param: []
      * @return: com.hu.oneclick.model.base.Resp<java.util.List<com.hu.oneclick.model.domain.dto.SysCustomFieldVo>>
+     * @deprecated replaced by <code>getAllCustomField(CustomFieldDto customFieldDto)</code>
      * @Author:
      * @Date: 2021/11/18
      */
