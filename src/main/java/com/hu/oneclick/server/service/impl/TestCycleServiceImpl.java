@@ -922,4 +922,9 @@ public class TestCycleServiceImpl implements TestCycleService {
 
         return new Resp.Builder<String>().ok();
     }
+
+    @Override
+    public String getTestCycleByProjectIdAndEvn(String projectId, String env) {
+        return testCycleDao.getTestCycleByProjectIdAndEvn(projectId, env);
+    }
 }

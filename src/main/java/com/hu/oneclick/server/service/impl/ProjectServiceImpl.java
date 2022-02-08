@@ -330,13 +330,15 @@ public class ProjectServiceImpl implements ProjectService {
             // 创建行的单元格,也是从0开始
             row.createCell(0).setCellValue("项目");
             // 项目
-            Project project = this.queryById(signOffDto.getProjectId()).getData();
+            String projectId = signOffDto.getProjectId();
+            Project project = this.queryById(projectId).getData();
             row.createCell(1).setCellValue(project.getTitle());
 
             // 测试环境
             HSSFRow row1 = sheet.createRow(1);
             row1.createCell(0).setCellValue("测试环境");
-            row1.createCell(1).setCellValue(signOffDto.getEnv());
+            String env = signOffDto.getEnv();
+            row1.createCell(1).setCellValue(env);
             // 测试版本
             HSSFRow row2 = sheet.createRow(2);
             row2.createCell(0).setCellValue("测试版本");
@@ -516,7 +518,10 @@ public class ProjectServiceImpl implements ProjectService {
 //                row30.createCell(1).setCellValue(maps.size());
 //            }
             HSSFRow row30 = sheet.createRow(rowId++);
-            row30.createCell(0).setCellValue(signOffDto.getTestCycle());
+            String testCycle = signOffDto.getTestCycle();
+            testCycle = testCycle.substring(testCycle.lastIndexOf("=")+1);
+            String testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, env);
+            row30.createCell(0).setCellValue(testCycleName);
             row30.createCell(1).setCellValue("");
 
 

@@ -58,4 +58,6 @@ public interface TestCycleService {
      * @Date: 2021/12/9
      */
     Resp<String> addSchedule(TestCycleScheduleModel model);
+
+    String getTestCycleByProjectIdAndEvn(String projectId, String env);
 }
