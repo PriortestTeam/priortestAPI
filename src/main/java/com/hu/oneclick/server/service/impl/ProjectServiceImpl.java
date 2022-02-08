@@ -521,7 +521,7 @@ public class ProjectServiceImpl implements ProjectService {
             testCycle = testCycle.substring(testCycle.lastIndexOf("=") + 1);
             List<String> testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, env, testCycle);
             if (testCycleName.isEmpty()) {
-                throw new BizException("当前选择的没有测试周期");
+                return new Resp.Builder<String>().buildResult("没有查询到当前发布版本的测试周期");
             }
             for (String testCycleNameOne : testCycleName) {
                 HSSFRow row30 = sheet.createRow(rowId++);
