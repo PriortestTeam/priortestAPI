@@ -520,7 +520,7 @@ public class ProjectServiceImpl implements ProjectService {
             HSSFRow row30 = sheet.createRow(rowId++);
             String testCycle = signOffDto.getTestCycle();
             testCycle = testCycle.substring(testCycle.lastIndexOf("=")+1);
-            String testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, env);
+            String testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, env,testCycle);
             row30.createCell(0).setCellValue(testCycleName);
             row30.createCell(1).setCellValue("");
 

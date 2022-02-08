@@ -182,8 +182,9 @@
     <select id="getTestCycleByProjectIdAndEvn" resultType="java.lang.String">
         SELECT `title`
         FROM test_cycle
-        WHERE project_id = #{projectId}
-          AND env = #{env}
+        WHERE project_id = #{param1}
+          AND env = #{param2}
+          and currentReleaseVersion = #{param3}
     </select>
 
 
