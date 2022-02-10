@@ -39,7 +39,7 @@ public class FeatureController {
 
     @PostMapping("insert")
     @ApiOperation("插入故事")
-    public Resp<String> insert(@RequestBody Feature feature) {
+    public Resp<String> insert(@RequestBody FeatureDto feature) {
         return featureService.insert(feature);
     }
 

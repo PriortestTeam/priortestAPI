@@ -106,8 +106,6 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "项目ID" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(title)) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "故事名称" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (StringUtils.isEmpty(version)) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "版本" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
     }
 

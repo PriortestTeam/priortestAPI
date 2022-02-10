@@ -172,13 +172,13 @@ public class FeatureServiceImpl implements FeatureService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> insert(Feature feature) {
+    public Resp<String> insert(FeatureDto feature) {
         try {
-            sysPermissionService.featurePermission(OneConstant.PERMISSION.ADD, OneConstant.SCOPE.ONE_FEATURE);
+//            sysPermissionService.featurePermission(OneConstant.PERMISSION.ADD, OneConstant.SCOPE.ONE_FEATURE);
             //验证参数
             feature.verify();
             //验证是否存在
-            verifyIsExist(feature.getTitle(), feature.getProjectId());
+//            verifyIsExist(feature.getTitle(), feature.getProjectId());
             feature.setUserId(jwtUserService.getMasterId());
             feature.setAuthorName(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
             Date date = new Date();

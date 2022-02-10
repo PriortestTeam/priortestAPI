@@ -20,7 +20,7 @@ public interface FeatureService {
 
     Resp<List<Feature>> queryList(FeatureDto feature);
 
-    Resp<String> insert(Feature feature);
+    Resp<String> insert(FeatureDto feature);
 
     Resp<String> update(Feature feature);
 

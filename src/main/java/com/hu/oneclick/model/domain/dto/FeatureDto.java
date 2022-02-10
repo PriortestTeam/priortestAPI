@@ -1,29 +1,20 @@
 package com.hu.oneclick.model.domain.dto;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.model.domain.Feature;
+import lombok.Data;
 
 /**
- * @author qingyang
+ * @author masiyi
  */
+@Data
 public class FeatureDto extends Feature {
     private ViewTreeDto viewTreeDto;
 
     private String filter;
 
-    public String getFilter() {
-        return filter;
-    }
+    private JSONObject sysCustomField;
 
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
 
-    public ViewTreeDto getViewTreeDto() {
-        return viewTreeDto;
-    }
-
-    public void setViewTreeDto(ViewTreeDto viewTreeDto) {
-        this.viewTreeDto = viewTreeDto;
-    }
 
 }
