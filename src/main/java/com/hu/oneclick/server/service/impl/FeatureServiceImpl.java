@@ -1,11 +1,16 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.DateUtil;
+import com.hu.oneclick.common.util.OneClickUtil;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.FeatureJoinSprintDao;
 import com.hu.oneclick.dao.SprintDao;
@@ -27,7 +32,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author qingyang
@@ -185,12 +195,27 @@ public class FeatureServiceImpl implements FeatureService {
             feature.setCreateTime(date);
             feature.setUpdateTime(date);
             updateFeatureJoinSprint(feature);
-            int insertFlag = featureDao.insert(feature);
-            if (insertFlag > 0) {
-                List<CustomFieldData> customFieldDatas = feature.getCustomFieldDatas();
-                insertFlag = customFieldDataService.insertFeatureCustomData(customFieldDatas, feature);
+//            int insertFlag = featureDao.insert(feature);
+            JSONArray sysCustomField = feature.getSysCustomField();
+            for (Object oField : sysCustomField) {
+                JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(oField));
+                String fieldName = jsonObject.getString("fieldName");
+                Class<? extends FeatureDto> aClass = feature.getClass();
+                try {
+                    Method method = aClass.getMethod("set" + StrUtil.upperFirst(OneClickUtil.lineToHump(fieldName)), String.class);
+                    method.invoke(feature,jsonObject.getString("value"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
             }
-            return Result.addResult(insertFlag);
+
+//            if (insertFlag > 0) {
+//                List<CustomFieldData> customFieldDatas = feature.getCustomFieldDatas();
+//                insertFlag = customFieldDataService.insertFeatureCustomData(customFieldDatas, feature);
+//            }
+
+            return new Resp.Builder<String>().ok();
         } catch (BizException e) {
             logger.error("class: FeatureServiceImpl#insert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

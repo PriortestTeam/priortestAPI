@@ -337,7 +337,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
             for (SysCustomFieldExpand sysCustomFieldExpand : filterSysCustomFieldExpand) {
                 if (sysCustomField.getFieldName().equals(sysCustomFieldExpand.getLinkSysCustomField())) {
 
-                    sysCustomField.setFieldName(sysCustomField.getDefaultValues() + "," + sysCustomFieldExpand.getValues());
+                    sysCustomField.setDefaultValues(sysCustomField.getDefaultValues() + "," + sysCustomFieldExpand.getValues());
                 }
             }
             newSysCustomFields.add(sysCustomField);

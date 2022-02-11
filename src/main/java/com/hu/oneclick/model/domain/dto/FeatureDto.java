@@ -1,6 +1,6 @@
 package com.hu.oneclick.model.domain.dto;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 import com.hu.oneclick.model.domain.Feature;
 import lombok.Data;
 
@@ -13,7 +13,7 @@ public class FeatureDto extends Feature {
 
     private String filter;
 
-    private JSONObject sysCustomField;
+    private JSONArray sysCustomField;
 
 
 
