@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.dao.SysUserBusinessDao;
+import com.hu.oneclick.model.domain.SysFunction;
 import com.hu.oneclick.model.domain.SysUserBusiness;
 import com.hu.oneclick.server.service.UserBusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,4 +57,21 @@ public class UserBusinessServiceImpl implements UserBusinessService {
         return sysUserBusinessDao.updateByExampleSelective(keyId, type, btnStr);
 
     }
+
+    @Override
+    public SysUserBusiness getRoleProjectFunction(Long roleId, Long projectId, Long userId) {
+        return  sysUserBusinessDao.findByRoleIdAndProjectIdAndUserId(roleId,projectId,userId);
+    }
+
+    @Override
+    public int updateByPrimaryKey(SysUserBusiness record) {
+        return sysUserBusinessDao.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
+    public int insert(SysUserBusiness record) {
+        return sysUserBusinessDao.insertSelective(record);
+    }
+
+
 }

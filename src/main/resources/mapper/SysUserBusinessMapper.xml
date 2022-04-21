@@ -8,6 +8,12 @@
         <result column="value" jdbcType="VARCHAR" property="value"/>
         <result column="btn_str" jdbcType="VARCHAR" property="btnStr"/>
         <result column="tenant_id" jdbcType="BIGINT" property="tenantId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="project_id" jdbcType="BIGINT" property="projectId"/>
+        <result column="project_name" jdbcType="VARCHAR" property="projectName"/>
+        <result column="role_id" jdbcType="BIGINT" property="roleId"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
         <result column="delete_flag" jdbcType="VARCHAR" property="deleteFlag"/>
     </resultMap>
     <sql id="Base_Column_List">
@@ -25,6 +31,13 @@
         <include refid="Base_Column_List"/>
         from sys_user_business
         where type = #{param1} and key_id = #{param2}
+    </select>
+
+    <select id="findByRoleIdAndProjectIdAndUserId" resultType="com.hu.oneclick.model.domain.SysUserBusiness">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_business
+        where role_Id = #{param1} and project_Id = #{param2} and user_Id = #{param3}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete
@@ -60,6 +73,30 @@
             <if test="deleteFlag != null">
                 delete_flag,
             </if>
+
+            <if test="userId != null">
+                user_id,
+            </if>
+
+            <if test="userName != null">
+                user_name,
+            </if>
+
+            <if test="projectId != null">
+                project_Id,
+            </if>
+
+            <if test="projectName != null">
+                project_Name,
+            </if>
+
+            <if test="roleId != null">
+                role_Id,
+            </if>
+
+            <if test="roleName != null">
+                role_Name,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="type != null">
@@ -79,6 +116,25 @@
             </if>
             <if test="deleteFlag != null">
                 #{deleteFlag,jdbcType=VARCHAR},
+            </if>
+
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="projectId != null">
+                #{projectId,jdbcType=BIGINT},
+            </if>
+            <if test="projectName != null">
+                #{projectName,jdbcType=VARCHAR},
+            </if>
+            <if test="roleId != null">
+                #{roleId,jdbcType=BIGINT},
+            </if>
+            <if test="roleName != null">
+                #{roleName,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -103,6 +159,29 @@
             <if test="deleteFlag != null">
                 delete_flag = #{deleteFlag,jdbcType=VARCHAR},
             </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+
+            <if test="projectId != null">
+                project_Id = #{projectId,jdbcType=BIGINT},
+            </if>
+
+            <if test="projectName != null">
+                project_Name = #{projectName,jdbcType=VARCHAR},
+            </if>
+
+            <if test="roleId != null">
+                role_Id = #{roleId,jdbcType=BIGINT},
+            </if>
+
+            <if test="roleName != null">
+                role_Name = #{roleName,jdbcType=VARCHAR}
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -113,7 +192,13 @@
             `value`     = #{value,jdbcType=VARCHAR},
             btn_str     = #{btnStr,jdbcType=VARCHAR},
             tenant_id   = #{tenantId,jdbcType=BIGINT},
-            delete_flag = #{deleteFlag,jdbcType=VARCHAR}
+            delete_flag = #{deleteFlag,jdbcType=VARCHAR},
+            user_id = #{userId,jdbcType=BIGINT},
+            user_name = #{userName,jdbcType=VARCHAR},
+            project_Id = #{projectId,jdbcType=BIGINT},
+            project_Name = #{projectName,jdbcType=VARCHAR},
+            role_Id = #{roleId,jdbcType=BIGINT},
+            role_Name = #{roleName,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByExampleSelective">

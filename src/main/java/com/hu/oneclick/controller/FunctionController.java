@@ -1,19 +1,21 @@
 package com.hu.oneclick.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.SysFunction;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserBusiness;
+import com.hu.oneclick.model.domain.dto.RoleProjectFunctionDTO;
 import com.hu.oneclick.server.service.FunctionService;
 import com.hu.oneclick.server.service.UserBusinessService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -132,18 +135,20 @@ public class FunctionController {
      */
     @GetMapping(value = "/findRoleFunction")
     @ApiOperation(value = "角色对应功能显示")
-    public JSONArray findRoleFunction(@RequestParam("UBType") String type, @RequestParam("UBKeyId") String keyId,
-                                      HttpServletRequest request) throws Exception {
+    public Resp<JSONArray> findRoleFunction(@RequestParam("roleId") Long roleId,
+                                            @RequestParam("ProjectId") Long projectId,
+                                            @RequestParam("userId") Long userId,
+                                            HttpServletRequest request) throws Exception {
         JSONArray arr = new JSONArray();
         try {
             List<SysFunction> dataListFun = functionService.findRoleFunction("0");
             //开始拼接json数据
             JSONObject outer = new JSONObject();
             outer.put("id", 0);
-            outer.put("key", 0);
+//            outer.put("key", 0);
             outer.put("value", 0);
             outer.put("title", "功能列表");
-            outer.put("attributes", "功能列表");
+//            outer.put("attributes", "功能列表");
             //存放数据json数组
             JSONArray dataArray = new JSONArray();
             if (null != dataListFun) {
@@ -161,31 +166,43 @@ public class FunctionController {
                         dataList.add(fun);
                     }
                 }
-                dataArray = getFunctionList(dataList, type, keyId);
-                outer.put("children", dataArray);
+                dataArray = getFunctionList(dataList, "RoleFunctions", roleId, projectId, userId);
+                outer.put("model", dataArray);
             }
             arr.add(outer);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return arr;
+        return new Resp.Builder<JSONArray>().setData(arr).ok();
     }
 
-    public JSONArray getFunctionList(List<SysFunction> dataList, String type, String keyId) throws Exception {
+    public JSONArray getFunctionList(List<SysFunction> dataList,
+                                     String type,
+                                     Long roleId,
+                                     Long projectId,
+                                     Long userId) throws Exception {
         JSONArray dataArray = new JSONArray();
         //获取权限信息
-        String ubValue = userBusinessService.getUBValueByTypeAndKeyId(type, keyId);
+        SysUserBusiness sysUserBusiness = userBusinessService.getRoleProjectFunction(roleId, projectId, userId);
+        String ubValue = "";
+        if (sysUserBusiness == null) {
+            ubValue = "[]";
+        } else {
+            ubValue = StringUtils.isNotEmpty(sysUserBusiness.getValue()) ? sysUserBusiness.getValue() : "[]";
+        }
+
+//        String ubValue = userBusinessService.getUBValueByTypeAndKeyId(type, keyId);
         if (null != dataList) {
             for (SysFunction function : dataList) {
                 JSONObject item = new JSONObject();
                 item.put("id", function.getId());
-                item.put("key", function.getId());
+//                item.put("key", function.getId());
                 item.put("value", function.getId());
                 item.put("title", function.getName());
-                item.put("attributes", function.getName());
+//                item.put("attributes", function.getName());
                 List<SysFunction> funList = functionService.findRoleFunction(function.getNumber());
                 if (funList.size() > 0) {
-                    JSONArray funArr = getFunctionList(funList, type, keyId);
+                    JSONArray funArr = getFunctionList(funList, "RoleFunctions", roleId, projectId, userId);
                     item.put("children", funArr);
                     dataArray.add(item);
                 } else {
@@ -250,5 +267,37 @@ public class FunctionController {
 
         }
         return new Resp.Builder<JSONObject>().ok();
+    }
+
+    /**
+     * 保存用户角色功能/修改用户角色功能
+     *
+     * @param dto
+     * @return
+     */
+    @PostMapping(value = "/saveRoleFunction")
+    @ApiOperation(value = "保存用户角色功能")
+    public int saveRoleFunction(@RequestBody @Valid RoleProjectFunctionDTO dto) {
+
+        SysUserBusiness sysUserBusiness = userBusinessService.getRoleProjectFunction(dto.getRoleId(), dto.getProjectId(), dto.getUserId());
+
+        if (null != sysUserBusiness) {
+            BeanUtils.copyProperties(dto, sysUserBusiness);
+            if (dto.getFunctionList().size() > 0) {
+                sysUserBusiness.setBtnStr(JSON.toJSONString(dto.getFunctionList()));
+            }
+            sysUserBusiness.setType("RoleFunctions");
+            // 更新权限
+            return userBusinessService.updateByPrimaryKey(sysUserBusiness);
+        } else {
+            // 新增权限
+            sysUserBusiness = new SysUserBusiness();
+            BeanUtils.copyProperties(dto, sysUserBusiness);
+            if (dto.getFunctionList().size() > 0) {
+                sysUserBusiness.setBtnStr(JSON.toJSONString(dto.getFunctionList()));
+            }
+            sysUserBusiness.setType("RoleFunctions");
+            return userBusinessService.insert(sysUserBusiness);
+        }
     }
 }

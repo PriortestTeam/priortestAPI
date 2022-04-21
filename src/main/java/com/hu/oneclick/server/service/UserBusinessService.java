@@ -17,4 +17,10 @@ public interface UserBusinessService {
     Long checkIsValueExist(String type, String keyId);
 
     Integer updateBtnStr(String keyId, String type, String btnStr);
+
+    SysUserBusiness getRoleProjectFunction(Long roleId, Long projectId, Long userId);
+
+    int updateByPrimaryKey(SysUserBusiness record);
+
+    int insert(SysUserBusiness record);
 }

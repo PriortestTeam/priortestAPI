@@ -5,6 +5,9 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * sys_user_business
  * @author 
@@ -53,6 +56,24 @@ public class SysUserBusiness implements Serializable {
      */
     @ApiModelProperty(value="删除标记，0未删除，1删除")
     private String deleteFlag;
+
+    @ApiModelProperty(name= "roleId", value = "角色id")
+    private Long  roleId;
+
+    @ApiModelProperty(name= "roleName", value = "角色名称")
+    private String roleName;
+
+    @ApiModelProperty(name= "projectId", value = "项目id")
+    private Long projectId;
+
+    @ApiModelProperty(name= "projectName", value = "项目名称")
+    private String projectName;
+
+    @ApiModelProperty(name= "userId", value = "用户id")
+    private Long userId;
+
+    @ApiModelProperty(name= "userName", value = "用户名称")
+    private String userName;
 
     private static final long serialVersionUID = 1L;
 }

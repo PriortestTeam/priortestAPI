@@ -22,4 +22,6 @@ public interface SysUserBusinessDao {
     List<SysUserBusiness> checkIsValueExist(String type, String keyId);
 
     Integer updateByExampleSelective(String keyId, String type, String btnStr);
+
+    SysUserBusiness findByRoleIdAndProjectIdAndUserId(Long roleId, Long ProjectId, Long userId);
 }
