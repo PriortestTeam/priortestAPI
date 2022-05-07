@@ -136,7 +136,7 @@ public class FunctionController {
     @GetMapping(value = "/findRoleFunction")
     @ApiOperation(value = "角色对应功能显示")
     public Resp<JSONArray> findRoleFunction(@RequestParam("roleId") Long roleId,
-                                            @RequestParam("ProjectId") Long projectId,
+                                            @RequestParam("projectId") Long projectId,
                                             @RequestParam("userId") Long userId,
                                             HttpServletRequest request) throws Exception {
         JSONArray arr = new JSONArray();
@@ -195,11 +195,11 @@ public class FunctionController {
         if (null != dataList) {
             for (SysFunction function : dataList) {
                 JSONObject item = new JSONObject();
+                Boolean checked = ubValue.contains("[" + function.getId().toString() + "]");
                 item.put("id", function.getId());
-//                item.put("key", function.getId());
                 item.put("value", function.getId());
                 item.put("title", function.getName());
-//                item.put("attributes", function.getName());
+                item.put("checked", checked);
                 List<SysFunction> funList = functionService.findRoleFunction(function.getNumber());
                 if (funList.size() > 0) {
                     JSONArray funArr = getFunctionList(funList, "RoleFunctions", roleId, projectId, userId);
@@ -277,7 +277,7 @@ public class FunctionController {
      */
     @PostMapping(value = "/saveRoleFunction")
     @ApiOperation(value = "保存用户角色功能")
-    public int saveRoleFunction(@RequestBody @Valid RoleProjectFunctionDTO dto) {
+    public Resp<Object> saveRoleFunction(@RequestBody @Valid RoleProjectFunctionDTO dto) {
 
         SysUserBusiness sysUserBusiness = userBusinessService.getRoleProjectFunction(dto.getRoleId(), dto.getProjectId(), dto.getUserId());
 
@@ -288,7 +288,8 @@ public class FunctionController {
             }
             sysUserBusiness.setType("RoleFunctions");
             // 更新权限
-            return userBusinessService.updateByPrimaryKey(sysUserBusiness);
+            userBusinessService.updateByPrimaryKey(sysUserBusiness);
+           return new Resp.Builder<>().ok();
         } else {
             // 新增权限
             sysUserBusiness = new SysUserBusiness();
@@ -297,7 +298,8 @@ public class FunctionController {
                 sysUserBusiness.setBtnStr(JSON.toJSONString(dto.getFunctionList()));
             }
             sysUserBusiness.setType("RoleFunctions");
-            return userBusinessService.insert(sysUserBusiness);
+            userBusinessService.insert(sysUserBusiness);
+            return new Resp.Builder<>().ok();
         }
     }
 }

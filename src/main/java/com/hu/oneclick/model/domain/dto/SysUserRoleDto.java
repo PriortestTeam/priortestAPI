@@ -32,6 +32,11 @@ public class SysUserRoleDto implements Serializable {
     private String userName;
 
     /**
+     * 角色Id
+     */
+    private String roleId;
+
+    /**
      * 角色名称
      */
     private String roleName;

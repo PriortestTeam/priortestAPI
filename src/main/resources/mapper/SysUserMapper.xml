@@ -660,7 +660,8 @@
             u.email as email,
             u.user_name as userName,
             r.role_name as roleName,
-            r.role_desc as roleDesc
+            r.role_desc as roleDesc,
+            r.id as roleId
         FROM
             sys_user u
                 JOIN sys_role r ON u.sys_role_id = r.id
