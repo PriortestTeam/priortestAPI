@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.user;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
@@ -9,19 +10,10 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
-import com.hu.oneclick.dao.MasterIdentifierDao;
-import com.hu.oneclick.dao.SubUserProjectDao;
-import com.hu.oneclick.dao.SysUserDao;
-import com.hu.oneclick.dao.SysUserTokenDao;
+import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.MasterIdentifier;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.SubUserProject;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.SysUserOrder;
-import com.hu.oneclick.model.domain.SysUserToken;
-import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
@@ -76,6 +68,8 @@ public class UserServiceImpl implements UserService {
 
     private final SystemConfigService systemConfigService;
 
+    private final RoomDao roomDao;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
@@ -86,7 +80,11 @@ public class UserServiceImpl implements UserService {
     private long secondTime;
 
 
-    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao, RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl, MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService, SubUserProjectDao subUserProjectDao, UserOrderService userOrderService, SystemConfigService systemConfigService) {
+    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao,
+                           RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl,
+                           MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService,
+                           SubUserProjectDao subUserProjectDao, UserOrderService userOrderService,
+                           SystemConfigService systemConfigService,RoomDao roomDao) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
@@ -97,6 +95,7 @@ public class UserServiceImpl implements UserService {
         this.subUserProjectDao = subUserProjectDao;
         this.userOrderService = userOrderService;
         this.systemConfigService = systemConfigService;
+        this.roomDao = roomDao;
     }
 
     @Override
@@ -128,7 +127,23 @@ public class UserServiceImpl implements UserService {
                     return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
                 }
             }
-
+            // 先查询该用户是否已在room表，如果在，更新，无新增
+            Room room =roomDao.queryByCompanyNameAndUserEmail(registerUser.getCompany(),email);
+            if(null == room){
+                room = new Room();
+                room.setId(SnowFlakeUtil.getFlowIdInstance().nextId());
+                room.setCompanyName(registerUser.getCompany());
+                room.setCreateName(registerUser.getUserName());
+                room.setCreateUserEmail(email);
+                room.setDeleteFlag(false);
+                room.setModifyName(registerUser.getUserName());
+               roomDao.insertRoom(room);
+            }else{
+                BeanUtil.copyProperties(registerUser,room);
+                room.setCreateUserEmail(email);
+               roomDao.updateRoom(room);
+            }
+            user.setRoomId(room.getId());
             //设置默认头像
             user.setPhoto(defaultPhoto);
             user.setType(OneConstant.USER_TYPE.ADMIN);

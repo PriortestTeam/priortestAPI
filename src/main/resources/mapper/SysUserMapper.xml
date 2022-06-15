@@ -35,6 +35,7 @@
         <result property="identifier" column="identifier" jdbcType="VARCHAR"/>
         <result property="userType" column="user_type" jdbcType="VARCHAR"/>
         <result property="userClass" column="user_class" jdbcType="VARCHAR"/>
+        <result property="roomId" column="room_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <!--查询单个-->
@@ -62,7 +63,8 @@
                update_time,
                parent_id,
                sys_role_id,
-               identifier
+               identifier,
+               room_id
         from oneclick.sys_user
         where id = #{id}
     </select>
@@ -92,7 +94,8 @@
                update_time,
                parent_id,
                sys_role_id,
-               identifier
+               identifier,
+               room_id
         from oneclick.sys_user limit #{offset}, #{limit}
     </select>
 
@@ -103,7 +106,7 @@
         password, photo, status,
         register_date, contact_no, company,
         profession, industry, close_date, `type`, active_state,
-        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier
+        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier,room_id
         from oneclick.sys_user
         <where>
             <if test="id != null">
@@ -171,7 +174,7 @@
         password, photo, status,
         register_date, contact_no, company,
         profession, industry, close_date, `type`, active_state,
-        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier
+        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,identifier,room_id
         from oneclick.sys_user
         <where>
             <if test="id != null">
@@ -208,7 +211,8 @@
                identifier,
                activiti_number,
                activiti_date,
-               expire_date
+               expire_date,
+               room_id
         from oneclick.sys_user
         where email = #{email}
           and del_flag = 0 limit 1
@@ -347,6 +351,9 @@
             <if test="identifier != null and identifier != ''">
                 identifier,
             </if>
+            <if test="roomId != null">
+                room_id,
+            </if>
             register_date,
             create_time,
             update_time,
@@ -416,6 +423,9 @@
             <if test="identifier != null and identifier != ''">
                 #{identifier},
             </if>
+            <if test="roomId != null">
+                #{roomId},
+            </if>
             NOW(),
             NOW(),
             NOW()
@@ -478,6 +488,9 @@
             <if test="password != null">
                 password = #{password},
             </if>
+            <if test="roomId != null">
+                room_id = #{roomId},
+            </if>
             update_time = NOW()
         </set>
         where
@@ -517,6 +530,9 @@
             </if>
             <if test="sysRoleId != null and sysRoleId != ''">
                 sys_role_id = #{sysRoleId},
+            </if>
+            <if test="roomId != null">
+                room_id = #{roomId},
             </if>
             update_time = NOW()
         </set>
@@ -605,6 +621,9 @@
             </if>
             <if test="locale != null and locale != ''">
                 locale = #{locale},
+            </if>
+            <if test="roomId != null">
+                room_id = #{roomId},
             </if>
             update_time = NOW()
         </set>

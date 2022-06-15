@@ -126,4 +126,5 @@ public class SysUser extends BaseEntity implements Serializable {
      * VIP,Classic,Trialer 用户身份类型
      */
     private String userClass;
+    private Long roomId;
 }

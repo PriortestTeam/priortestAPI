@@ -135,6 +135,7 @@ public class SubUserServiceImpl implements SubUserService{
             sysUser.setType(OneConstant.USER_TYPE.SUB_USER);
             sysUser.setManager(OneConstant.PLATEFORM_USER_TYPE.SUB_USER);
             sysUser.setParentId(masterUser.getId());
+            sysUser.setRoomId(masterUser.getRoomId());
 
             //设置用户关联的项目
             SubUserProject subUserProject = new SubUserProject();
