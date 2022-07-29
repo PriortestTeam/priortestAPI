@@ -2,6 +2,7 @@ package com.hu.oneclick.server.user;
 
 import cn.hutool.core.util.RandomUtil;
 import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.constant.RoleConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -62,7 +63,7 @@ public class SubUserServiceImpl implements SubUserService{
 
     @Override
     public Resp<List<SubUserDto>> querySubUsers(SubUserDto sysUser) {
-        sysUser.setParentId(jwtUserServiceImpl.getMasterId());
+        sysUser.setParentId(Long.valueOf(jwtUserServiceImpl.getMasterId()));
         List<SubUserDto> sysUsers = sysUserDao.querySubUsers(sysUser);
         List<Project> projects = projectDao.queryAllProjects(jwtUserServiceImpl.getMasterId());
         if (projects != null && projects.size() > 0){
@@ -113,17 +114,13 @@ public class SubUserServiceImpl implements SubUserService{
             }
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
 
-            if(StringUtils.isEmpty(masterUser.getIdentifier())){
-                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"主账号ID" + SysConstantEnum.PARAM_EMPTY.getValue());
-            }
-
             //拼接成员用户邮箱
             String oldEmail = sysUser.getEmail();
             List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(oldEmail);
             if (!sysUsers.isEmpty()) {
                 throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),"邮箱" + SysConstantEnum.DATE_EXIST.getValue());
             }
-            String subEmail = masterUser.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + oldEmail;
+            String subEmail = OneConstant.COMMON.SUB_USER_SEPARATOR + oldEmail;
 
             //验证用户是否存在
             verifySubEmailExists(subEmail);
@@ -132,9 +129,9 @@ public class SubUserServiceImpl implements SubUserService{
 //            sysUser.setPassword(encodePassword(sysUser.getPassword()));
             //设置默认头像
             sysUser.setPhoto(defaultPhoto);
-            sysUser.setType(OneConstant.USER_TYPE.SUB_USER);
+            sysUser.setSysRoleId(RoleConstant.ADMIN_PLAT);
             sysUser.setManager(OneConstant.PLATEFORM_USER_TYPE.SUB_USER);
-            sysUser.setParentId(masterUser.getId());
+            sysUser.setParentId(Long.valueOf(masterUser.getId()));
             sysUser.setRoomId(masterUser.getRoomId());
 
             //设置用户关联的项目
@@ -166,14 +163,14 @@ public class SubUserServiceImpl implements SubUserService{
     public Resp<String> updateSubUser(SubUserDto sysUser) {
         try {
             String masterId = jwtUserServiceImpl.getMasterId();
-            sysUser.setParentId(masterId);
+            sysUser.setParentId(Long.valueOf(masterId));
 
             //邮箱不为空代表需要修改
             if (sysUser.getEmail() != null){
                 SysUser user = sysUserDao.queryById(masterId);
-                if (user != null && StringUtils.isNotEmpty(user.getIdentifier())){
+                if (user != null){
                     //验证用户是否存在
-                    String email = user.getIdentifier() + OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
+                    String email = OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
                     sysUser.setEmail(email);
                     verifySubEmailExists(email);
                 }else {
@@ -202,7 +199,7 @@ public class SubUserServiceImpl implements SubUserService{
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateSubUserPassword(SubUserDto sysUser) {
         sysUser.verifyPassword();
-        sysUser.setParentId(jwtUserServiceImpl.getMasterId());
+        sysUser.setParentId(Long.valueOf(jwtUserServiceImpl.getMasterId()));
         sysUser.setPassword(encodePassword(sysUser.getPassword()));
         return Result.updateResult(sysUserDao.updateSubUserPassword(sysUser));
     }

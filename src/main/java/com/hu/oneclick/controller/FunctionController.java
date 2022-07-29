@@ -156,15 +156,7 @@ public class FunctionController {
                 List<SysFunction> dataList = new ArrayList<>();
                 for (SysFunction fun : dataListFun) {
                     SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-                    String identifier = sysUser.getIdentifier();
-                    if (StringUtils.isNotEmpty(identifier)) {
-                        if (!("系统管理").equals(fun.getName())) {
-                            dataList.add(fun);
-                        }
-                    } else {
-                        //超管
-                        dataList.add(fun);
-                    }
+                    dataList.add(fun);
                 }
                 dataArray = getFunctionList(dataList, "RoleFunctions", roleId, projectId, userId);
                 outer.put("model", dataArray);

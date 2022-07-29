@@ -1,5 +1,6 @@
 package com.hu.oneclick.common.security.service;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -106,10 +107,10 @@ public class JwtUserServiceImpl implements UserDetailsService {
         SysUser sysUser = getUserLoginInfo().getSysUser();
         if (sysUser.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.MANAGER) || sysUser.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.ORDINARY)) {
             return sysUser.getId();
-        } else if (StringUtils.isEmpty(sysUser.getParentId())) {
+        } else if (ObjectUtil.isNull(sysUser.getParentId())) {
             throw new InsufficientAuthenticationException("用户异常！");
         }
-        return sysUser.getParentId();
+        return sysUser.getParentId().toString();
     }
 
     public String getId() {

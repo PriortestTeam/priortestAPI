@@ -2,7 +2,9 @@ package com.hu.oneclick.model.domain;
 
 import lombok.Data;
 
+import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -41,6 +43,16 @@ public class Room implements Serializable {
      * 修改时间
      */
     private Date modifyTime;
+
+    /**
+     * 公司类别：0-试用   1-付费
+     */
+    private Integer type;
+
+    /**
+     * 到期时间
+     */
+    private Date expiredDate;
 
     /**
      * 修改用户

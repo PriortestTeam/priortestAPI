@@ -62,10 +62,7 @@ public class PlatformUserServiceImpl implements PlatformUserService {
             platformUserDto.setPassword(jwtUserServiceImpl.encryptPassword(platformUserDto.getPassword()));
             //设置默认头像
             platformUserDto.setPhoto(defaultPhoto);
-            platformUserDto.setType(OneConstant.USER_TYPE.ADMIN);
             platformUserDto.setManager(OneConstant.PLATEFORM_USER_TYPE.ORDINARY);
-            //主用户识别码，主要用于关联子用户（子用户登录时使用）（8位随机数）
-            platformUserDto.setIdentifier(NumberUtil.getIdentifier());
 
             if (sysUserDao.insert(platformUserDto) > 0){
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_PLATFORM_USER_SUCCESS.getCode(),

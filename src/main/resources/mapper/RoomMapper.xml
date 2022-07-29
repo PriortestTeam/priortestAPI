@@ -26,6 +26,12 @@
             <if test="createUserEmail != null and createUserEmail !=''">
                 create_user_email,
             </if>
+            <if test="expiredDate != null">
+                expired_date,
+            </if>
+            <if test="type != null">
+                `type`,
+            </if>
             <if test="modifyName != null and modifyName !=''">
                 modify_name,
             </if>
@@ -47,6 +53,12 @@
             </if>
             <if test="createUserEmail != null and createUserEmail !=''">
                 #{createUserEmail},
+            </if>
+            <if test="expiredDate != null">
+                #{expiredDate},
+            </if>
+            <if test="type != null">
+                #{type},
             </if>
             <if test="modifyName != null and modifyName !=''">
                 #{modifyName},

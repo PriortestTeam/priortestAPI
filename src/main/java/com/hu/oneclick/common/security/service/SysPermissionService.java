@@ -1,5 +1,6 @@
 package com.hu.oneclick.common.security.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -37,11 +38,11 @@ public class SysPermissionService {
     public boolean manageSubUsers(){
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
         Integer manager = userLoginInfo.getSysUser().getManager();
-        Integer userType = userLoginInfo.getSysUser().getType();
+        String parentId = userLoginInfo.getSysUser().getParentId().toString();
         if (manager.equals(OneConstant.PLATEFORM_USER_TYPE.MANAGER) || manager.equals(OneConstant.PLATEFORM_USER_TYPE.ORDINARY)){
             return true;
         }
-        return userType.equals(OneConstant.USER_TYPE.ADMIN);
+        return StrUtil.isBlank(parentId);
     }
 
 

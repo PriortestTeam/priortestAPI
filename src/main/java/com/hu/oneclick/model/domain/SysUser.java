@@ -4,6 +4,7 @@ import com.hu.oneclick.model.base.BaseEntity;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -61,10 +62,6 @@ public class SysUser extends BaseEntity implements Serializable {
      */
     private Date closeDate;
     /**
-     * 用户类型，  1 admin 2 子用户
-     */
-    private Integer type;
-    /**
      * 激活状态， 1 试用中 3 试用过期 2 激活成功 4 激活失败 5 待激活
      */
     private Integer activeState;
@@ -105,11 +102,9 @@ public class SysUser extends BaseEntity implements Serializable {
 
     private Date updateTime;
 
-    private String parentId;
+    private Long parentId;
 
-    private String sysRoleId;
-
-    private String identifier;
+    private Integer sysRoleId;
 
     /**
      * 用户是否有打开的项目，默认 0 没有

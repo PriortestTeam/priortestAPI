@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.constant.RoleConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -33,6 +34,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -137,6 +140,8 @@ public class UserServiceImpl implements UserService {
                 room.setCreateUserEmail(email);
                 room.setDeleteFlag(false);
                 room.setModifyName(registerUser.getUserName());
+                room.setType(OneConstant.ACTIVE_STATUS.TRIAL);
+                room.setExpiredDate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
                roomDao.insertRoom(room);
             }else{
                 BeanUtil.copyProperties(registerUser,room);
@@ -146,7 +151,7 @@ public class UserServiceImpl implements UserService {
             user.setRoomId(room.getId());
             //设置默认头像
             user.setPhoto(defaultPhoto);
-            user.setType(OneConstant.USER_TYPE.ADMIN);
+            user.setSysRoleId(RoleConstant.ADMIN_PLAT);
             user.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION);
 
             //设置主账号识别号，用于子用户登录
@@ -157,13 +162,12 @@ public class UserServiceImpl implements UserService {
                 masterIdentifier.setFlag(0);
                 masterIdentifierDao.insert(masterIdentifier);
             }
-            user.setIdentifier(masterIdentifier.getId());
             if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
-                        "&params=" + linkStr);
+//                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+//                        "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
@@ -365,7 +369,7 @@ public class UserServiceImpl implements UserService {
             sysUser.setExpireDate(new Date(time));
             //如果是子账户激活则使用主账户设置默认的打开项目
             String userId = sysUser.getId();
-            if (sysUser.getType().equals(OneConstant.USER_TYPE.ADMIN)) {
+            if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
                 Project project = new Project();
                 UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
                 userUseOpenProject.setProjectId(project.getId());
@@ -580,12 +584,11 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         sysUser = sysUsers.get(0);
-        String identifier = sysUser.getIdentifier();
 
-        //如果为空，则是子账号
-        if (StringUtils.isEmpty(identifier)) {
+        //如果不是平台管理人员，则是子账号
+        if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
             //查询是否有权限
-            SysUser parentUser = sysUserDao.queryById(sysUser.getParentId());
+            SysUser parentUser = sysUserDao.queryById(sysUser.getParentId().toString());
             List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId());
             if (sysUserTokens.isEmpty()) {
                 return false;
@@ -637,7 +640,7 @@ public class UserServiceImpl implements UserService {
     public List<SysUser> queryByUserIdAndParentId(String masterId) {
         SysUser sysUser = new SysUser();
         sysUser.setId(masterId);
-        sysUser.setParentId(masterId);
+        sysUser.setParentId(Long.valueOf(masterId));
 
 
         return sysUserDao.queryAllIdOrParentId(sysUser);

@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -14,17 +15,7 @@ import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.CustomFieldData;
-import com.hu.oneclick.model.domain.Feature;
-import com.hu.oneclick.model.domain.Issue;
-import com.hu.oneclick.model.domain.OneFilter;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.SysCustomField;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.TestCycle;
-import com.hu.oneclick.model.domain.View;
-import com.hu.oneclick.model.domain.ViewDownChildParams;
+import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
@@ -291,8 +282,14 @@ public class ViewServiceImpl implements ViewService {
             return new Resp.Builder<List<ViewTreeDto>>().buildResult("scope" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
         String masterId = jwtUserService.getMasterId();
-        String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
-        List<ViewTreeDto> treeAll = viewDao.queryViewByScopeAll(masterId, projectId, scope);
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        UserUseOpenProject openProject = sysUser.getUserUseOpenProject();
+        List<ViewTreeDto> treeAll = null;
+        if (ObjectUtil.isNotNull(openProject)) {
+            String projectId = openProject.getProjectId();
+            treeAll = viewDao.queryViewByScopeAll(masterId, projectId, scope);
+        }
+
         //递归
         List<ViewTreeDto> result = viewTreeRecursion(treeAll);
         return new Resp.Builder<List<ViewTreeDto>>().setData(result).ok();

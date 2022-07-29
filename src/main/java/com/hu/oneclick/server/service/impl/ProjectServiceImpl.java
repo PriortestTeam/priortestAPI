@@ -1,6 +1,8 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.constant.RoleConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -146,14 +148,16 @@ public class ProjectServiceImpl implements ProjectService {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         List<Project> projects = new ArrayList<>();
         String sysUserId = sysUser.getId();
-        if (sysUser.getType().equals(OneConstant.USER_TYPE.ADMIN)) {
+        if (ObjectUtil.isNotNull(sysUser.getSysRoleId()) && sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
             projects = projectDao.queryAllProjects(sysUserId);
         } else {
             SubUserProject subUserProject = subUserProjectDao.queryByUserId(sysUserId);
-            String[] split = subUserProject.getProjectId().split(",");
-            for (String projectId : split) {
-                Project projectGet = projectDao.queryById(projectId);
-                projects.add(projectGet);
+            if (ObjectUtil.isNotNull(subUserProject)) {
+                String[] split = subUserProject.getProjectId().split(",");
+                for (String projectId : split) {
+                    Project projectGet = projectDao.queryById(projectId);
+                    projects.add(projectGet);
+                }
             }
         }
 //        project.setUserId(masterId);

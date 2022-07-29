@@ -41,6 +41,11 @@ public interface OneConstant {
     }
 
     /**
+     * 试用天数
+     */
+    int TRIAL_DAYS = 30;
+
+    /**
      * 激活状态
      */
     interface ACTIVE_STATUS {
