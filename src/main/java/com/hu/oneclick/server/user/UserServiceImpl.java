@@ -166,8 +166,8 @@ public class UserServiceImpl implements UserService {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
-//                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
-//                        "&params=" + linkStr);
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+                        "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
