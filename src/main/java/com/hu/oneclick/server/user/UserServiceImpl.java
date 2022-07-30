@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
                 room.setDeleteFlag(false);
                 room.setModifyName(registerUser.getUserName());
                 room.setType(OneConstant.ACTIVE_STATUS.TRIAL);
-                room.setExpiredDate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+                room.setExpiredDate(Date.from(LocalDateTime.now().plusDays(OneConstant.TRIAL_DAYS).atZone(ZoneId.systemDefault()).toInstant()));
                roomDao.insertRoom(room);
             }else{
                 BeanUtil.copyProperties(registerUser,room);
@@ -369,7 +369,7 @@ public class UserServiceImpl implements UserService {
             sysUser.setExpireDate(new Date(time));
             //如果是子账户激活则使用主账户设置默认的打开项目
             String userId = sysUser.getId();
-            if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
+            if (sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
                 Project project = new Project();
                 UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
                 userUseOpenProject.setProjectId(project.getId());
