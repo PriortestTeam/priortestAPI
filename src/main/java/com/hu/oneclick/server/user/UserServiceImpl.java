@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.user;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
@@ -115,7 +116,7 @@ public class UserServiceImpl implements UserService {
             BeanUtils.copyProperties(registerUser, user);
             //检查数据库是否已存在用户
             List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
-            if (sysUsers.size() > 1) {
+            if (!CollUtil.isEmpty(sysUsers)) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
             }
             for (SysUser sysUser : sysUsers) {
