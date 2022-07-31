@@ -26,6 +26,9 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
      * 关联用户id
      */
     private String userId;
+
+    private Long roomId;
+
     /**
      * 项目名称
      */

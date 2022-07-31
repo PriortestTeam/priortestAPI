@@ -379,6 +379,7 @@ public class UserServiceImpl implements UserService {
                 project.setUserId(userUseOpenProject.getUserId());
                 project.setTitle(userUseOpenProject.getTitle());
                 project.setStatus("开发中");
+                project.setRoomId(sysUser.getRoomId());
                 project.setDelFlag(0);
                 project.setUpdateTime(new Date());
                 project.setReportToName(sysUser.getUserName());

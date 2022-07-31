@@ -366,6 +366,9 @@
             <if test="customer != null and customer != ''">
                 customer,
             </if>
+            <if test="roomId != null and roomId != ''">
+                room_id,
+            </if>
             create_time,
             update_time
 
@@ -403,6 +406,9 @@
             </if>
             <if test="customer != null and customer != ''">
                 #{customer},
+            </if>
+            <if test="roomId != null and roomId != ''">
+                #{roomId},
             </if>
             NOW(),
             NOW()

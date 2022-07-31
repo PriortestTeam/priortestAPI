@@ -627,6 +627,7 @@
                create_time,
                update_time,
                parent_id,
+               room_id,
                activiti_number,
                activiti_date,
                expire_date,
