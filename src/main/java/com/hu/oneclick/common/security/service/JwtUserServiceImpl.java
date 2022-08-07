@@ -104,13 +104,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
 
     public String getMasterId() {
-        SysUser sysUser = getUserLoginInfo().getSysUser();
-        if (sysUser.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.MANAGER) || sysUser.getManager().equals(OneConstant.PLATEFORM_USER_TYPE.ORDINARY)) {
-            return sysUser.getId();
-        } else if (ObjectUtil.isNull(sysUser.getParentId())) {
-            throw new InsufficientAuthenticationException("用户异常！");
-        }
-        return sysUser.getParentId().toString();
+        return getUserLoginInfo().getSysUser().getId();
     }
 
     public String getId() {

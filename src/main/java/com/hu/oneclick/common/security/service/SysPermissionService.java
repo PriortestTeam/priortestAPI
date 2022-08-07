@@ -1,5 +1,6 @@
 package com.hu.oneclick.common.security.service;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -34,15 +35,10 @@ public class SysPermissionService {
 
     /**
      * 判断用户是否具有管理子用户权限
+     * v2 去掉用子账户 功能限制
      */
     public boolean manageSubUsers(){
-        AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
-        Integer manager = userLoginInfo.getSysUser().getManager();
-        String parentId = userLoginInfo.getSysUser().getParentId().toString();
-        if (manager.equals(OneConstant.PLATEFORM_USER_TYPE.MANAGER) || manager.equals(OneConstant.PLATEFORM_USER_TYPE.ORDINARY)){
-            return true;
-        }
-        return StrUtil.isBlank(parentId);
+        return true;
     }
 
 

@@ -29,9 +29,7 @@
         <result property="activitiDate" column="activiti_date" jdbcType="TIMESTAMP"/>
         <result property="activitiNumber" column="activiti_number" jdbcType="INTEGER"/>
         <result property="expireDate" column="expire_date" jdbcType="TIMESTAMP"/>
-        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
         <result property="sysRoleId" column="sys_role_id" jdbcType="INTEGER"/>
-        <result property="userType" column="user_type" jdbcType="VARCHAR"/>
         <result property="userClass" column="user_class" jdbcType="VARCHAR"/>
         <result property="roomId" column="room_id" jdbcType="BIGINT"/>
     </resultMap>
@@ -58,7 +56,6 @@
                del_flag,
                create_time,
                update_time,
-               parent_id,
                sys_role_id,
                room_id
         from oneclick.sys_user
@@ -87,7 +84,6 @@
                del_flag,
                create_time,
                update_time,
-               parent_id,
                sys_role_id,
                room_id
         from oneclick.sys_user limit #{offset}, #{limit}
@@ -100,7 +96,7 @@
         password, photo, status,
         register_date, contact_no, company,
         profession, industry, close_date, active_state,
-        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,room_id
+        enable, time_zone, locale, manager, del_flag, create_time, update_time,sys_role_id,room_id
         from oneclick.sys_user
         <where>
             <if test="id != null">
@@ -154,9 +150,6 @@
             <if test="delFlag != null">
                 and del_flag = #{delFlag}
             </if>
-            <if test="parentId != null">
-                and parent_id = #{parentId}
-            </if>
         </where>
     </select>
     <select id="queryAllIdOrParentId" resultMap="SysUserMap">
@@ -165,14 +158,11 @@
         password, photo, status,
         register_date, contact_no, company,
         profession, industry, close_date, active_state,
-        enable, time_zone, locale, manager, del_flag, create_time, update_time,parent_id,sys_role_id,room_id
+        enable, time_zone, locale, manager, del_flag, create_time, update_time,sys_role_id,room_id
         from oneclick.sys_user
         <where>
             <if test="id != null">
                 and id = #{id}
-            </if>
-            <if test="parentId != null">
-                or parent_id = #{parentId}
             </if>
         </where>
     </select>
@@ -197,7 +187,6 @@
                del_flag,
                create_time,
                update_time,
-               parent_id,
                activiti_number,
                activiti_date,
                expire_date,
@@ -208,7 +197,7 @@
     </select>
     <select id="querySubUsers" resultType="com.hu.oneclick.model.domain.dto.SubUserDto"
             parameterType="com.hu.oneclick.model.domain.dto.SubUserDto">
-        select u.id as id,
+        <!--select u.id as id,
         u.email as email,
         u.user_name as userName,
         u.photo as photo,
@@ -228,10 +217,10 @@
             1 = 1
             and u.parent_id = #{parentId}
         </where>
-        order by u.register_date desc
+        order by u.register_date desc-->
     </select>
     <select id="querySubUserInfo" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">
-        select u.id            as id,
+        /*select u.id            as id,
                u.email         as email,
                u.user_name     as userName,
                u.photo         as photo,
@@ -249,10 +238,10 @@
                  left join sys_role sr on u.sys_role_id = sr.id
         where 1 = 1
           and u.id = #{userId}
-          and u.parent_id = #{masterId}
+          and u.parent_id = #{masterId}*/
     </select>
     <select id="queryByNameSubUsers" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">
-        select
+       <!-- select
         id as id,
         user_name as userName
         from sys_user
@@ -264,7 +253,7 @@
             </if>
             limit 0,10
         </where>
-
+-->
     </select>
 
     <!--新增所有列-->
@@ -321,9 +310,6 @@
             </if>
             <if test="delFlag != null">
                 del_flag,
-            </if>
-            <if test="parentId != null and parentId != ''">
-                parent_id,
             </if>
             <if test="sysRoleId != null and sysRoleId != ''">
                 sys_role_id,
@@ -387,9 +373,6 @@
             </if>
             <if test="delFlag != null">
                 #{delFlag},
-            </if>
-            <if test="parentId != null and parentId != ''">
-                #{parentId},
             </if>
             <if test="sysRoleId != null and sysRoleId != ''">
                 #{sysRoleId},
@@ -473,7 +456,7 @@
           and del_flag = 0
     </update>
     <update id="updateSubUser">
-        update oneclick.sys_user
+        <!--update oneclick.sys_user
         <set>
             <if test="email != null and email != ''">
                 email = #{email},
@@ -504,10 +487,10 @@
         where
         id = #{id}
         and parent_id = #{parentId}
-        and del_flag = 0
+        and del_flag = 0-->
     </update>
     <update id="updateSubUserPassword">
-        update oneclick.sys_user
+        <!--update oneclick.sys_user
         <set>
             password = #{password},
             update_time = NOW()
@@ -516,7 +499,7 @@
         id = #{id}
         and parent_id = #{parentId}
         and manager = 2
-        and del_flag = 0
+        and del_flag = 0-->
     </update>
 
     <!--通过主键删除-->
@@ -527,11 +510,11 @@
     </delete>
 
     <delete id="deleteSubUser">
-        delete
+        <!--delete
         from sys_user
         where id = #{id}
           and manager = 2
-          and parent_id = #{masterId}
+          and parent_id = #{masterId}-->
     </delete>
 
     <select id="queryPlatformUsers" resultType="com.hu.oneclick.model.domain.dto.PlatformUserDto">
@@ -597,8 +580,8 @@
     </update>
 
     <delete id="deleteByParentId">
-        delete from sys_user where
-             parent_id = #{parentId}
+       /* delete from sys_user where
+             parent_id = #{parentId}*/
     </delete>
 
     <select id="getExpireDate" resultType="java.util.Date">
@@ -626,12 +609,10 @@
                del_flag,
                create_time,
                update_time,
-               parent_id,
                room_id,
                activiti_number,
                activiti_date,
                expire_date,
-               user_type,
                user_class
         from oneclick.sys_user
         where email like CONCAT('%',#{email})
@@ -648,7 +629,7 @@
         FROM
             sys_user u
                 JOIN sys_role r ON u.sys_role_id = r.id
-                AND u.parent_id = #{userId}
+                AND u.id = #{userId}
                 AND r.id = #{roleId}
     </select>
 </mapper>

@@ -63,13 +63,14 @@ public class SubUserServiceImpl implements SubUserService{
 
     @Override
     public Resp<List<SubUserDto>> querySubUsers(SubUserDto sysUser) {
-        sysUser.setParentId(Long.valueOf(jwtUserServiceImpl.getMasterId()));
+        /*sysUser.setParentId(Long.valueOf(jwtUserServiceImpl.getMasterId()));
         List<SubUserDto> sysUsers = sysUserDao.querySubUsers(sysUser);
         List<Project> projects = projectDao.queryAllProjects(jwtUserServiceImpl.getMasterId());
         if (projects != null && projects.size() > 0){
             sysUsers.forEach(e -> accept(e, projects));
         }
-        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();
+        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();*/
+        return new Resp.Builder<List<SubUserDto>>().ok();
     }
 
     private void accept(SubUserDto subUserDto, List<Project> projects) {
@@ -131,7 +132,7 @@ public class SubUserServiceImpl implements SubUserService{
             sysUser.setPhoto(defaultPhoto);
             sysUser.setSysRoleId(RoleConstant.ADMIN_PLAT);
             sysUser.setManager(OneConstant.PLATEFORM_USER_TYPE.SUB_USER);
-            sysUser.setParentId(Long.valueOf(masterUser.getId()));
+//            sysUser.setParentId(Long.valueOf(masterUser.getId()));
             sysUser.setRoomId(masterUser.getRoomId());
 
             //设置用户关联的项目
@@ -161,7 +162,7 @@ public class SubUserServiceImpl implements SubUserService{
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateSubUser(SubUserDto sysUser) {
-        try {
+        /*try {
             String masterId = jwtUserServiceImpl.getMasterId();
             sysUser.setParentId(Long.valueOf(masterId));
 
@@ -192,22 +193,26 @@ public class SubUserServiceImpl implements SubUserService{
         }catch (BizException e){
             logger.error("class: SubUserServiceImpl#updateSubUser,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
-        }
+        }*/
+        return  new Resp.Builder<String>().buildResult("500", "接口已删除");
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateSubUserPassword(SubUserDto sysUser) {
-        sysUser.verifyPassword();
+        /*sysUser.verifyPassword();
         sysUser.setParentId(Long.valueOf(jwtUserServiceImpl.getMasterId()));
         sysUser.setPassword(encodePassword(sysUser.getPassword()));
-        return Result.updateResult(sysUserDao.updateSubUserPassword(sysUser));
+        return Result.updateResult(sysUserDao.updateSubUserPassword(sysUser));*/
+        String msg = "接口已删除";
+        return new Resp.Builder<String>().buildResult("500", "接口已删除");
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> deleteSubUser(String id) {
-        return Result.deleteResult(sysUserDao.deleteSubUser(id,jwtUserServiceImpl.getMasterId()));
+//        return Result.deleteResult(sysUserDao.deleteSubUser(id,jwtUserServiceImpl.getMasterId()));
+        return new Resp.Builder<String>().buildResult("500", "接口已删除");
     }
 
     /**

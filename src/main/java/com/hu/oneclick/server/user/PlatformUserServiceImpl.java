@@ -102,14 +102,15 @@ public class PlatformUserServiceImpl implements PlatformUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> deletePlatformUserByid(String id) {
-        try {
+        /*try {
             sysUserDao.deleteById(id);
             sysUserDao.deleteByParentId(id);
             return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_SUCCESS.getValue()).ok();
         }catch (BizException e){
             logger.error("class: PlatformUserServiceImpl#createPlatformUser,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
-        }
+        }*/
+        return new Resp.Builder<String>().buildResult("500", "接口已删除");
     }
 
 

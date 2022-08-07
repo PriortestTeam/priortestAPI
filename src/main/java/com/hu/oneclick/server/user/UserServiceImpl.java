@@ -268,7 +268,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName) {
-        List<SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
+        List<SubUserDto> subUserDtos = CollUtil.newArrayList();
+//        List<SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
         return new Resp.Builder<List<SubUserDto>>().setData(subUserDtos).totalSize(subUserDtos.size()).ok();
     }
 
@@ -588,7 +589,7 @@ public class UserServiceImpl implements UserService {
         sysUser = sysUsers.get(0);
 
         //如果不是平台管理人员，则是子账号
-        if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
+        /*if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
             //查询是否有权限
             SysUser parentUser = sysUserDao.queryById(sysUser.getParentId().toString());
             List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId());
@@ -603,7 +604,8 @@ public class UserServiceImpl implements UserService {
 
             }
             return true;
-        } else {
+        } else */
+        {
             //主账号
             List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(sysUser.getId());
             if (sysUserTokens.isEmpty()) {
@@ -642,9 +644,7 @@ public class UserServiceImpl implements UserService {
     public List<SysUser> queryByUserIdAndParentId(String masterId) {
         SysUser sysUser = new SysUser();
         sysUser.setId(masterId);
-        sysUser.setParentId(Long.valueOf(masterId));
-
-
+//        sysUser.setParentId(Long.valueOf(masterId));
         return sysUserDao.queryAllIdOrParentId(sysUser);
     }
 

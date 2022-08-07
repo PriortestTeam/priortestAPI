@@ -102,8 +102,6 @@ public class SysUser extends BaseEntity implements Serializable {
 
     private Date updateTime;
 
-    private Long parentId;
-
     private Integer sysRoleId;
 
     /**
@@ -113,10 +111,6 @@ public class SysUser extends BaseEntity implements Serializable {
 
     private UserUseOpenProject userUseOpenProject;
 
-    /**
-     * Trialer,Payed 用户付款类型
-     */
-    private String userType;
     /**
      * VIP,Classic,Trialer 用户身份类型
      */
