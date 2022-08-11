@@ -62,7 +62,7 @@ public class SubUserServiceImpl implements SubUserService{
     }
 
     @Override
-    public Resp<List<SubUserDto>> querySubUsers(SubUserDto sysUser) {
+    public Resp<List<SubUserDto>> querySubUsers(SubUserDto dto) {
         /*sysUser.setParentId(Long.valueOf(jwtUserServiceImpl.getMasterId()));
         List<SubUserDto> sysUsers = sysUserDao.querySubUsers(sysUser);
         List<Project> projects = projectDao.queryAllProjects(jwtUserServiceImpl.getMasterId());
@@ -70,7 +70,9 @@ public class SubUserServiceImpl implements SubUserService{
             sysUsers.forEach(e -> accept(e, projects));
         }
         return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();*/
-        return new Resp.Builder<List<SubUserDto>>().ok();
+        SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+        List<SubUserDto> sysUsers = sysUserDao.querySubUsersByRoomId(Long.parseLong(sysUser.getId()), sysUser.getRoomId());
+        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();
     }
 
     private void accept(SubUserDto subUserDto, List<Project> projects) {
@@ -121,12 +123,12 @@ public class SubUserServiceImpl implements SubUserService{
             if (!sysUsers.isEmpty()) {
                 throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),"邮箱" + SysConstantEnum.DATE_EXIST.getValue());
             }
-            String subEmail = OneConstant.COMMON.SUB_USER_SEPARATOR + oldEmail;
+//            String subEmail = OneConstant.COMMON.SUB_USER_SEPARATOR + oldEmail;
 
             //验证用户是否存在
-            verifySubEmailExists(subEmail);
+            verifySubEmailExists(oldEmail);
 
-            sysUser.setEmail(subEmail);
+            sysUser.setEmail(oldEmail);
 //            sysUser.setPassword(encodePassword(sysUser.getPassword()));
             //设置默认头像
             sysUser.setPhoto(defaultPhoto);
@@ -140,6 +142,10 @@ public class SubUserServiceImpl implements SubUserService{
             subUserProject.setUserId(sysUser.getId());
             subUserProject.setProjectId(sysUser.getProjectIdStr());
             subUserProject.setOpenProjectByDefaultId(sysUser.getOpenProjectByDefaultId());
+
+            //获取项目roomId
+            Project project = projectDao.queryById(sysUser.getProjectIdStr());
+            sysUser.setRoomId(project.getRoomId());
 
             if (sysUserDao.insert(sysUser) > 0
                     && subUserProjectDao.insert(subUserProject) > 0){

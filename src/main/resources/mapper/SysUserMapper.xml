@@ -632,4 +632,9 @@
                 AND u.id = #{userId}
                 AND r.id = #{roleId}
     </select>
+
+    <select id="querySubUsersByRoomId" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">
+        select * from sys_user where room_id = #{roomId} and id != #{id}
+    </select>
+
 </mapper>

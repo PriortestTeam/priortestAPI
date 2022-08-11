@@ -155,4 +155,6 @@ public interface SysUserDao {
     List<SysUser> queryByLikeEmail(@Param("email") String email);
 
     List<SysUserRoleDto> getAccountRole(String userId, String roleId);
+
+    List<SubUserDto> querySubUsersByRoomId(@Param("id") Long id, @Param("roomId") Long roomId);
 }
