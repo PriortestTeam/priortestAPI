@@ -17,7 +17,7 @@
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="operationAuthIds" column="operation_auth_ids" jdbcType="VARCHAR"/>
         <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
-
+        <result property="roomId" column="room_id" jdbcType="INTEGER"/>
         <result property="testFrame" column="test_frame" jdbcType="VARCHAR"/>
         <result property="projectCategory" column="project_category" jdbcType="VARCHAR"/>
         <result property="closeDesc" column="close_desc" jdbcType="VARCHAR"/>
@@ -29,6 +29,7 @@
         select id,
                user_id,
                title,
+               room_id,
                report_to_name,
                status,
                description,

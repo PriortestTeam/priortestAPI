@@ -144,8 +144,7 @@ public class SubUserServiceImpl implements SubUserService{
             subUserProject.setOpenProjectByDefaultId(sysUser.getOpenProjectByDefaultId());
 
             //获取项目roomId
-            Project project = projectDao.queryById(sysUser.getProjectIdStr());
-            sysUser.setRoomId(project.getRoomId());
+            Project project = projectDao.queryById(sysUser.getOpenProjectByDefaultId());
 
             if (sysUserDao.insert(sysUser) > 0
                     && subUserProjectDao.insert(subUserProject) > 0){
