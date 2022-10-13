@@ -126,8 +126,11 @@ public class UserServiceImpl implements UserService {
                     //邮箱链接失效
                     String linkStr = RandomUtil.randomString(80);
                     redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+                    // mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+                           // "&params=" + linkStr);
+                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + email +
                             "&params=" + linkStr);
+
                     return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
                 }
             }
@@ -167,7 +170,9 @@ public class UserServiceImpl implements UserService {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+//                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
+//                        "&params=" + linkStr);
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + email +
                         "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
@@ -369,9 +374,10 @@ public class UserServiceImpl implements UserService {
             sysUser.setActivitiNumber(1);
             long time = activitiDate.getTime() + firstTime * 24 * 60 * 60 * 1000;
             sysUser.setExpireDate(new Date(time));
-            //如果是子账户激活则使用主账户设置默认的打开项目
             String userId = sysUser.getId();
-            if (sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
+            // TODO 如果OpenProjectByDefaultId为空，代表这个是注册的激活
+            SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
+            if (subUserProject == null || StringUtils.isEmpty(subUserProject.getOpenProjectByDefaultId())) {
                 Project project = new Project();
                 UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
                 userUseOpenProject.setProjectId(project.getId());
@@ -385,16 +391,14 @@ public class UserServiceImpl implements UserService {
                 project.setUpdateTime(new Date());
                 project.setReportToName(sysUser.getUserName());
                 projectService.initProject(project, userUseOpenProject);
+                //设置用户关联的项目
+                subUserProject = new SubUserProject();
+                subUserProject.setUserId(sysUser.getId());
+                subUserProject.setProjectId(project.getId());
+                subUserProject.setOpenProjectByDefaultId(project.getId());
+                subUserProjectDao.insert(subUserProject);
                 this.initOrder(userId);
-            } else {
-                SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
-                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
-                userUseOpenProject.setUserId(userId);
-                userUseOpenProject.setProjectId(subUserProject.getOpenProjectByDefaultId());
-                projectService.insertUseOpenProject(userUseOpenProject);
             }
-
-
         }
         //申请延期
         if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
@@ -474,7 +478,8 @@ public class UserServiceImpl implements UserService {
         }
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?email=" + email + "&params=" + linkStr);
+        // mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?email=" + email + "&params=" + linkStr);
+         mailService.sendSimpleMail(email, "OneClick忘记密码", "http://127.0.0.1:9529/#/findpwd?email=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 

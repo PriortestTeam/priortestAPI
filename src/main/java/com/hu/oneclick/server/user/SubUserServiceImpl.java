@@ -15,6 +15,7 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.server.service.MailService;
 import org.apache.commons.lang3.StringUtils;
@@ -143,15 +144,22 @@ public class SubUserServiceImpl implements SubUserService{
             subUserProject.setProjectId(sysUser.getProjectIdStr());
             subUserProject.setOpenProjectByDefaultId(sysUser.getOpenProjectByDefaultId());
 
-            //获取项目roomId
-            Project project = projectDao.queryById(sysUser.getOpenProjectByDefaultId());
+
+            // 设置用户下次登录默认打开的项目
+            UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
+            userUseOpenProject.setProjectId(sysUser.getOpenProjectByDefaultId());
+            userUseOpenProject.setUserId(sysUser.getId());
+            projectDao.insertUseOpenProject(userUseOpenProject);
 
             if (sysUserDao.insert(sysUser) > 0
                     && subUserProjectDao.insert(subUserProject) > 0){
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
-                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + oldEmail +
+                // TODO 测试时把地址改成本地了
+//                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + oldEmail +
+//                        "&params=" + linkStr);
+                                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + oldEmail +
                         "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),
                         SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue());
