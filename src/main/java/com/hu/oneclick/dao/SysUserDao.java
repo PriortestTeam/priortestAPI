@@ -106,7 +106,7 @@ public interface SysUserDao {
      * @param sysUser
      * @return
      */
-    int updateSubUser(SubUserDto sysUser);
+    int updateSubUser(SysUser sysUser);
 
     /**
      * 设置子用户密码
@@ -115,13 +115,16 @@ public interface SysUserDao {
      */
     int updateSubUserPassword(SubUserDto sysUser);
 
+
     /**
      * 删除子用户
      * @param id
      * @param masterId
      * @return
      */
-    int deleteSubUser(@Param("id") String id, @Param("masterId") String masterId);
+//    int deleteSubUser(@Param("id") String id, @Param("masterId") String masterId);
+    int deleteSubUser(@Param("id") String id);
+
 
     List<SubUserDto> queryByNameSubUsers(@Param("masterId") String masterId,@Param("subUserName") String subUserName);
 
@@ -157,4 +160,5 @@ public interface SysUserDao {
     List<SysUserRoleDto> getAccountRole(String userId, String roleId);
 
     List<SubUserDto> querySubUsersByRoomId(@Param("id") Long id, @Param("roomId") Long roomId);
+
 }

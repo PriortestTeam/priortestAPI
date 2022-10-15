@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * @author qingyang
  */
 @Service
-public class SubUserServiceImpl implements SubUserService{
+public class SubUserServiceImpl implements SubUserService {
 
     private final static Logger logger = LoggerFactory.getLogger(SubUserServiceImpl.class);
 
@@ -73,6 +73,13 @@ public class SubUserServiceImpl implements SubUserService{
         return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();*/
         SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
         List<SubUserDto> sysUsers = sysUserDao.querySubUsersByRoomId(Long.parseLong(sysUser.getId()), sysUser.getRoomId());
+        for (SubUserDto user : sysUsers) {
+            String[] projectIds = user.getProjectIdStr().split(",");
+            List<String> titles = subUserProjectDao.selectTitlesByUserId(sysUser.getId(),projectIds);
+            String projectsSts = StringUtils.join(titles, ",");
+            user.setProjectsSts(projectsSts);
+        }
+
         return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();
     }
 
@@ -80,24 +87,25 @@ public class SubUserServiceImpl implements SubUserService{
         //用户名裁剪
         subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail()));
         //整合关联的项目
-        queryLikeProjectNames(subUserDto,projects);
+        queryLikeProjectNames(subUserDto, projects);
     }
 
     /**
      * 整合关联的项目
+     *
      * @param subUserDto
      */
     private void queryLikeProjectNames(SubUserDto subUserDto, List<Project> projects) {
         List<String> lists = new ArrayList<>(projects.size());
         String projectIdStr = subUserDto.getProjectIdStr();
-        if (StringUtils.isEmpty(projectIdStr)){
+        if (StringUtils.isEmpty(projectIdStr)) {
             return;
-        }else if (subUserDto.getAll().equals(projectIdStr)){
-            projects.forEach(e-> lists.add(e.getTitle()));
-        }else {
+        } else if (subUserDto.getAll().equals(projectIdStr)) {
+            projects.forEach(e -> lists.add(e.getTitle()));
+        } else {
             //将查询条件转换成list
-            projects.forEach(e->{
-                if (subUserDto.getProjectIdStr().contains(e.getId())){
+            projects.forEach(e -> {
+                if (subUserDto.getProjectIdStr().contains(e.getId())) {
                     lists.add(e.getTitle());
                 }
             });
@@ -111,10 +119,10 @@ public class SubUserServiceImpl implements SubUserService{
     public Resp<String> createSubUser(SubUserDto sysUser) {
         try {
 //            sysUser.verify();
-            if (StringUtils.isEmpty(sysUser.getEmail())){
-                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"邮箱" + SysConstantEnum.PARAM_EMPTY.getValue());
-            } else if (StringUtils.isEmpty(sysUser.getUserName())){
-                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"用户名" + SysConstantEnum.PARAM_EMPTY.getValue());
+            if (StringUtils.isEmpty(sysUser.getEmail())) {
+                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "邮箱" + SysConstantEnum.PARAM_EMPTY.getValue());
+            } else if (StringUtils.isEmpty(sysUser.getUserName())) {
+                throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "用户名" + SysConstantEnum.PARAM_EMPTY.getValue());
             }
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
 
@@ -122,7 +130,7 @@ public class SubUserServiceImpl implements SubUserService{
             String oldEmail = sysUser.getEmail();
             List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(oldEmail);
             if (!sysUsers.isEmpty()) {
-                throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),"邮箱" + SysConstantEnum.DATE_EXIST.getValue());
+                throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), "邮箱" + SysConstantEnum.DATE_EXIST.getValue());
             }
 //            String subEmail = OneConstant.COMMON.SUB_USER_SEPARATOR + oldEmail;
 
@@ -152,29 +160,29 @@ public class SubUserServiceImpl implements SubUserService{
             projectDao.insertUseOpenProject(userUseOpenProject);
 
             if (sysUserDao.insert(sysUser) > 0
-                    && subUserProjectDao.insert(subUserProject) > 0){
+                    && subUserProjectDao.insert(subUserProject) > 0) {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
                 // TODO 测试时把地址改成本地了
 //                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + oldEmail +
 //                        "&params=" + linkStr);
-                                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + oldEmail +
+                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + oldEmail +
                         "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),
                         SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.CREATE_SUB_USER_FAILED.getCode(),
                     SysConstantEnum.CREATE_SUB_USER_FAILED.getValue());
-        }catch (BizException e){
+        } catch (BizException e) {
             logger.error("class: SubUserServiceImpl#createSubUser,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Resp<String> updateSubUser(SubUserDto sysUser) {
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public Resp<String> updateSubUser(SubUserDto sysUser) {
         /*try {
             String masterId = jwtUserServiceImpl.getMasterId();
             sysUser.setParentId(Long.valueOf(masterId));
@@ -207,8 +215,35 @@ public class SubUserServiceImpl implements SubUserService{
             logger.error("class: SubUserServiceImpl#updateSubUser,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
         }*/
-        return  new Resp.Builder<String>().buildResult("500", "接口已删除");
+//        return  new Resp.Builder<String>().buildResult("500", "接口已删除");
+//    }
+
+    @Override
+    public Resp<String> updateSubUser(SubUserDto subUserDto) {
+
+        // 设置用户
+        SysUser sysUser = new SysUser();
+        sysUser.setId(subUserDto.getId());
+        sysUser.setUserName(subUserDto.getUserName());
+        sysUser.setSysRoleId(subUserDto.getSysRoleId());
+        sysUserDao.updateSubUser(sysUser);
+
+        //设置用户关联的项目
+        SubUserProject subUserProject = new SubUserProject();
+        subUserProject.setUserId(subUserDto.getId());
+        subUserProject.setProjectId(subUserDto.getProjectIdStr());
+        subUserProject.setOpenProjectByDefaultId(subUserDto.getOpenProjectByDefaultId());
+        subUserProjectDao.update(subUserProject);
+
+        // 设置用户下次登录默认打开的项目
+        UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
+        userUseOpenProject.setProjectId(subUserDto.getOpenProjectByDefaultId());
+        userUseOpenProject.setUserId(subUserDto.getId());
+        projectDao.updateOpenProject(userUseOpenProject);
+
+        return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
     }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -221,29 +256,43 @@ public class SubUserServiceImpl implements SubUserService{
         return new Resp.Builder<String>().buildResult("500", "接口已删除");
     }
 
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public Resp<String> deleteSubUser(String id) {
+//        //return Result.deleteResult(sysUserDao.deleteSubUser(id,jwtUserServiceImpl.getMasterId()));
+//        return new Resp.Builder<String>().buildResult("500", "接口已删除");
+//    }
+
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Resp<String> deleteSubUser(String id) {
-//        return Result.deleteResult(sysUserDao.deleteSubUser(id,jwtUserServiceImpl.getMasterId()));
-        return new Resp.Builder<String>().buildResult("500", "接口已删除");
+        //删除用户
+        if (sysUserDao.deleteSubUser(id) > 0) {
+            // 删除关联的项目
+            subUserProjectDao.deleteByUserId(id);
+            projectDao.deleteOpenProjectByUserId(id);
+            return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_SUCCESS.getValue()).ok();
+        }
+        return  new Resp.Builder<String>().buildResult("500", "删除失败");
     }
 
     /**
      * 验证用户是否存在
+     *
      * @param email
      */
-    private void verifySubEmailExists(String email){
-        if (sysUserDao.queryByEmail(email) != null){
-            throw new BizException(SysConstantEnum.SUB_USERNAME_ERROR.getCode(),SysConstantEnum.SUB_USERNAME_ERROR.getValue());
+    private void verifySubEmailExists(String email) {
+        if (sysUserDao.queryByEmail(email) != null) {
+            throw new BizException(SysConstantEnum.SUB_USERNAME_ERROR.getCode(), SysConstantEnum.SUB_USERNAME_ERROR.getValue());
         }
     }
 
     /**
      * 密码加密
+     *
      * @param password
      * @return
      */
-    private String encodePassword(String password){
+    private String encodePassword(String password) {
         return jwtUserServiceImpl.encryptPassword(password);
     }
 

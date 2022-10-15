@@ -275,6 +275,10 @@
         where id = #{id}
     </update>
 
+    <update id="updateOpenProject">
+        update user_use_open_project set project_id=#{projectId} where user_id =#{userId}
+    </update>
+
     <!--通过主键删除-->
     <delete id="deleteById">
         delete
@@ -330,6 +334,11 @@
         where id = #{id}
     </delete>
 
+    <delete id="deleteOpenProjectByUserId">
+        delete
+        from user_use_open_project
+        where user_id = #{userId}
+    </delete>
 
     <insert id="initProject">
         insert into oneclick.project

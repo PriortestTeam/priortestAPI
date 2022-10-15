@@ -60,12 +60,24 @@ public interface ProjectDao {
     int update(Project project);
 
     /**
+     * 修改下次登录默认打开的项目
+     */
+    int updateOpenProject(UserUseOpenProject userUseOpenProject);
+
+    /**
      * 通过主键删除数据
      *
      * @param 主键
      * @return 影响行数
      */
     int deleteById(@Param("id") String id);
+
+    /**
+     * 通过用户ID删除数据
+     * @param userId
+     * @return
+     */
+    int deleteOpenProjectByUserId(@Param("userId") String userId);
 
     Integer queryByTitle(@Param("masterId")String masterId,@Param("title") String title);
 

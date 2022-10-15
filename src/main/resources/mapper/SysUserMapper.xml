@@ -455,7 +455,7 @@
         where id = #{id}
           and del_flag = 0
     </update>
-    <update id="updateSubUser">
+<!--    <update id="updateSubUser">-->
         <!--update oneclick.sys_user
         <set>
             <if test="email != null and email != ''">
@@ -488,7 +488,17 @@
         id = #{id}
         and parent_id = #{parentId}
         and del_flag = 0-->
+<!--    </update>-->
+
+    <update id="updateSubUser">
+         update oneclick.sys_user
+         <set>
+            user_name=#{userName},
+            sys_role_id=#{sysRoleId}
+         </set>
+          where id=#{id}
     </update>
+
     <update id="updateSubUserPassword">
         <!--update oneclick.sys_user
         <set>
@@ -509,13 +519,18 @@
         where id = #{id}
     </delete>
 
-    <delete id="deleteSubUser">
+<!--    <delete id="deleteSubUser">-->
         <!--delete
         from sys_user
         where id = #{id}
           and manager = 2
           and parent_id = #{masterId}-->
-    </delete>
+<!--    </delete>-->
+        <delete id="deleteSubUser">
+            delete
+            from sys_user
+            where id = #{id}
+        </delete>
 
     <select id="queryPlatformUsers" resultType="com.hu.oneclick.model.domain.dto.PlatformUserDto">
         select u.id as id,
@@ -633,8 +648,55 @@
                 AND r.id = #{roleId}
     </select>
 
-    <select id="querySubUsersByRoomId" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">
-        select * from sys_user where room_id = #{roomId} and id != #{id}
+    <resultMap type="com.hu.oneclick.model.domain.dto.SubUserDto" id="SysUserProjectMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="photo" column="photo" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="registerDate" column="register_date" jdbcType="TIMESTAMP"/>
+        <result property="contactNo" column="contact_no" jdbcType="VARCHAR"/>
+        <result property="company" column="company" jdbcType="VARCHAR"/>
+        <result property="profession" column="profession" jdbcType="VARCHAR"/>
+        <result property="industry" column="industry" jdbcType="VARCHAR"/>
+        <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
+        <result property="activeState" column="active_state" jdbcType="INTEGER"/>
+        <result property="enable" column="enable" jdbcType="INTEGER"/>
+        <result property="timeZone" column="time_zone" jdbcType="VARCHAR"/>
+        <result property="locale" column="locale" jdbcType="VARCHAR"/>
+        <result property="manager" column="manager" jdbcType="INTEGER"/>
+        <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="activitiDate" column="activiti_date" jdbcType="TIMESTAMP"/>
+        <result property="activitiNumber" column="activiti_number" jdbcType="INTEGER"/>
+        <result property="expireDate" column="expire_date" jdbcType="TIMESTAMP"/>
+        <result property="sysRoleId" column="sys_role_id" jdbcType="INTEGER"/>
+        <result property="userClass" column="user_class" jdbcType="VARCHAR"/>
+        <result property="roomId" column="room_id" jdbcType="BIGINT"/>
+        <result property="roleName" column="role_name" jdbcType="VARCHAR"/>
+        <result property="projectIdStr" column="project_id" jdbcType="VARCHAR"/>
+        <result property="projectsSts" column="projects_sts" jdbcType="VARCHAR"/>
+        <result property="openProjectByDefaultId" column="open_project_by_default_id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="querySubUsersByRoomId" resultMap="SysUserProjectMap">
+        select
+        su.*,
+        sup.project_id,
+        sr.role_name,
+        uop.project_id AS open_project_by_default_id
+        from `sys_user` su
+        join `sub_user_project` sup on su.id = sup.user_id
+        join `sys_role` sr on su.sys_role_id = sr.id
+        join `user_use_open_project` uop on uop.user_id = su.id
+        and su.room_id = #{roomId} and su.id != #{id}
     </select>
+
+<!--  未开启驼峰规则需要使用resultMap标签进行映射  -->
+<!--    <select id="querySubUsersByRoomId1" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">-->
+<!--        select * from sys_user where room_id = #{roomId} and id != #{id}-->
+<!--    </select>-->
 
 </mapper>
