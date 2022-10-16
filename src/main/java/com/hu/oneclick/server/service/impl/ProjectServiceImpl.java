@@ -170,7 +170,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Resp<List<Project>> queryForProjects() {
-        List<Project> projects = projectDao.queryAllProjects(jwtUserService.getMasterId());
+        SysUser masterUser = jwtUserService.getUserLoginInfo().getSysUser();
+        Long roomId = masterUser.getRoomId();
+        List<Project> projects = projectDao.queryAllProjects(String.valueOf(roomId));
         return new Resp.Builder<List<Project>>().setData(projects).totalSize(projects.size()).ok();
     }
 

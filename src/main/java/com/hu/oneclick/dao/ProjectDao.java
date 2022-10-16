@@ -85,7 +85,7 @@ public interface ProjectDao {
      * 查询所有的项目
      * @return
      */
-    List<Project> queryAllProjects(String masterId);
+    List<Project> queryAllProjects(@Param("roomId")String roomId);
 
 
 

@@ -121,7 +121,7 @@
     <select id="queryAllProjects" resultMap="ProjectMap">
         select id, title
         from project
-        where user_id = #{masterId}
+        where room_id = #{roomId}
         order by create_time
     </select>
 
