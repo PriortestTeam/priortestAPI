@@ -159,6 +159,6 @@ public interface SysUserDao {
 
     List<SysUserRoleDto> getAccountRole(String userId, String roleId);
 
-    List<SubUserDto> querySubUsersByRoomId(@Param("id") Long id, @Param("roomId") Long roomId);
+    List<SubUserDto> querySubUsersByRoomId(@Param("roomId") Long roomId);
 
 }

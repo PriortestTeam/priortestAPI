@@ -72,7 +72,7 @@ public class SubUserServiceImpl implements SubUserService {
         }
         return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();*/
         SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-        List<SubUserDto> sysUsers = sysUserDao.querySubUsersByRoomId(Long.parseLong(sysUser.getId()), sysUser.getRoomId());
+        List<SubUserDto> sysUsers = sysUserDao.querySubUsersByRoomId(sysUser.getRoomId());
         for (SubUserDto user : sysUsers) {
             String[] projectIds = user.getProjectIdStr().split(",");
             List<String> titles = subUserProjectDao.selectTitlesByUserId(sysUser.getId(),projectIds);
