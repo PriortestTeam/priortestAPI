@@ -141,7 +141,8 @@ public class SubUserServiceImpl implements SubUserService {
 //            sysUser.setPassword(encodePassword(sysUser.getPassword()));
             //设置默认头像
             sysUser.setPhoto(defaultPhoto);
-            sysUser.setSysRoleId(RoleConstant.ADMIN_PLAT);
+//            sysUser.setSysRoleId(RoleConstant.ADMIN_PLAT);
+            sysUser.setSysRoleId(sysUser.getSysRoleId());
             sysUser.setManager(OneConstant.PLATEFORM_USER_TYPE.SUB_USER);
 //            sysUser.setParentId(Long.valueOf(masterUser.getId()));
             sysUser.setRoomId(masterUser.getRoomId());
