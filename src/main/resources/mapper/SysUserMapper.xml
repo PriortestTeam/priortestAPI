@@ -691,7 +691,7 @@
         join `sub_user_project` sup on su.id = sup.user_id
         join `sys_role` sr on su.sys_role_id = sr.id
         join `user_use_open_project` uop on uop.user_id = su.id
-        and su.room_id = #{roomId} and su.id != #{id}
+        and su.room_id = #{roomId}
     </select>
 
 <!--  未开启驼峰规则需要使用resultMap标签进行映射  -->
