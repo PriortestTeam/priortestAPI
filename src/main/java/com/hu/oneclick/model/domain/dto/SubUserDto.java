@@ -41,6 +41,8 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
      */
     private String openProjectByDefaultId;
 
+    private String openProjectByDefaultName;
+
 
     @Override
     public void verify() throws BizException {

@@ -74,6 +74,12 @@ public class UserServiceImpl implements UserService {
 
     private final RoomDao roomDao;
 
+    private final RoleFunctionDao roleFunctionDao;
+
+    private final SysUserBusinessDao sysUserBusinessDao;
+
+    private final SysRoleDao sysRoleDao;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
@@ -88,7 +94,8 @@ public class UserServiceImpl implements UserService {
                            RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl,
                            MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService,
                            SubUserProjectDao subUserProjectDao, UserOrderService userOrderService,
-                           SystemConfigService systemConfigService,RoomDao roomDao) {
+                           SystemConfigService systemConfigService,RoomDao roomDao, RoleFunctionDao roleFunctionDao,
+                           SysUserBusinessDao sysUserBusinessDao,SysRoleDao sysRoleDao) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
@@ -100,6 +107,9 @@ public class UserServiceImpl implements UserService {
         this.userOrderService = userOrderService;
         this.systemConfigService = systemConfigService;
         this.roomDao = roomDao;
+        this.roleFunctionDao = roleFunctionDao;
+        this.sysUserBusinessDao = sysUserBusinessDao;
+        this.sysRoleDao = sysRoleDao;
     }
 
     @Override
@@ -398,6 +408,26 @@ public class UserServiceImpl implements UserService {
                 subUserProject.setOpenProjectByDefaultId(project.getId());
                 subUserProjectDao.insert(subUserProject);
                 this.initOrder(userId);
+
+
+                // 2022/11/1 WangYiCheng 设置创始人初始项目的默认function
+                RoleFunction roleFunction = roleFunctionDao.queryByRoleId(sysUser.getSysRoleId());
+
+                SysRole sysRole = sysRoleDao.queryById(String.valueOf(sysUser.getSysRoleId()));
+
+                SysUserBusiness sysUserBusiness = new SysUserBusiness();
+                sysUserBusiness.setType("RoleFunctions");
+                sysUserBusiness.setValue(roleFunction.getCheckFunctionId());
+                sysUserBusiness.setInvisible(roleFunction.getInvisibleFunctionId());
+                sysUserBusiness.setDeleteFlag("0");
+                sysUserBusiness.setUserId(Long.valueOf(sysUser.getId()));
+                sysUserBusiness.setUserName(sysUser.getUserName());
+                sysUserBusiness.setRoleId(Long.valueOf(sysUser.getSysRoleId()));
+                sysUserBusiness.setRoleName(sysRole.getRoleName());
+
+                sysUserBusiness.setProjectId(Long.valueOf(project.getId()));
+                sysUserBusiness.setProjectName(project.getTitle());
+                sysUserBusinessDao.insertSelective(sysUserBusiness);
             }
         }
         //申请延期

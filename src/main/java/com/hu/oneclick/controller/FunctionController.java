@@ -27,10 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author masiyi
@@ -183,25 +180,37 @@ public class FunctionController {
             ubValue = StringUtils.isNotEmpty(sysUserBusiness.getValue()) ? sysUserBusiness.getValue() : "[]";
         }
 
+        String invisibleList = sysUserBusiness.getInvisible();
+        if(invisibleList==null){
+            invisibleList = "[]";
+        }
+
+
 //        String ubValue = userBusinessService.getUBValueByTypeAndKeyId(type, keyId);
         if (null != dataList) {
             for (SysFunction function : dataList) {
                 JSONObject item = new JSONObject();
-                Boolean checked = ubValue.contains("[" + function.getId().toString() + "]");
-                item.put("id", function.getId());
-                item.put("value", function.getId());
-                item.put("title", function.getName());
-                item.put("checked", checked);
-                List<SysFunction> funList = functionService.findRoleFunction(function.getNumber());
-                if (funList.size() > 0) {
-                    JSONArray funArr = getFunctionList(funList, "RoleFunctions", roleId, projectId, userId);
-                    item.put("children", funArr);
-                    dataArray.add(item);
-                } else {
-                    Boolean flag = ubValue.contains("[" + function.getId().toString() + "]");
-                    item.put("checked", flag);
-                    dataArray.add(item);
+
+                //可见的才显示出来
+                if(!invisibleList.contains("[" + function.getId().toString() + "]")){
+                    Boolean checked = ubValue.contains("[" + function.getId().toString() + "]");
+                    item.put("id", function.getId());
+                    item.put("value", function.getId());
+                    item.put("title", function.getName());
+                    item.put("checked", checked);
+                    List<SysFunction> funList = functionService.findRoleFunction(function.getNumber());
+                    if (funList.size() > 0) {
+                        JSONArray funArr = getFunctionList(funList, "RoleFunctions", roleId, projectId, userId);
+                        item.put("children", funArr);
+                        dataArray.add(item);
+                    } else {
+                        Boolean flag = ubValue.contains("[" + function.getId().toString() + "]");
+                        item.put("checked", flag);
+                        dataArray.add(item);
+                    }
                 }
+
+
             }
         }
         return dataArray;

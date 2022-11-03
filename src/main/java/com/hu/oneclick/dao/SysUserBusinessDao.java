@@ -9,6 +9,10 @@ import java.util.List;
 public interface SysUserBusinessDao {
     int deleteByPrimaryKey(Long id);
 
+    int deleteByUserId(String userId);
+
+    int deleteByUserIdAndProjectId(String userId,String projectId);
+
     int insert(SysUserBusiness record);
 
     int insertSelective(SysUserBusiness record);

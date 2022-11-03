@@ -40,6 +40,12 @@ public class SysUserBusiness implements Serializable {
     private String value;
 
     /**
+     * 值
+     */
+    @ApiModelProperty(value="不可见项")
+    private String invisible;
+
+    /**
      * 按钮权限
      */
     @ApiModelProperty(value="按钮权限")

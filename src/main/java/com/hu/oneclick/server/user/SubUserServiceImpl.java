@@ -2,22 +2,16 @@ package com.hu.oneclick.server.user;
 
 import cn.hutool.core.util.RandomUtil;
 import com.hu.oneclick.common.constant.OneConstant;
-import com.hu.oneclick.common.constant.RoleConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
-import com.hu.oneclick.dao.ProjectDao;
-import com.hu.oneclick.dao.SubUserProjectDao;
-import com.hu.oneclick.dao.SysUserDao;
+import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.SubUserProject;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.server.service.MailService;
+import com.hu.oneclick.server.service.UserBusinessService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -27,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -50,16 +45,26 @@ public class SubUserServiceImpl implements SubUserService {
 
     private final RedissonClient redisClient;
 
+    private final RoleFunctionDao roleFunctionDao;
+
+    private final SysUserBusinessDao sysUserBusinessDao;
+
+    private final SysRoleDao sysRoleDao;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
-    public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, SubUserProjectDao subUserProjectDao, ProjectDao projectDao, MailService mailService, RedissonClient redisClient) {
+    public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, SubUserProjectDao subUserProjectDao, ProjectDao projectDao, MailService mailService, RedissonClient redisClient,RoleFunctionDao roleFunctionDao,SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.sysUserDao = sysUserDao;
         this.subUserProjectDao = subUserProjectDao;
         this.projectDao = projectDao;
         this.mailService = mailService;
         this.redisClient = redisClient;
+        this.roleFunctionDao = roleFunctionDao;
+        this.sysUserBusinessDao = sysUserBusinessDao;
+        this.sysRoleDao = sysRoleDao;
+
     }
 
     @Override
@@ -125,7 +130,6 @@ public class SubUserServiceImpl implements SubUserService {
                 throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "用户名" + SysConstantEnum.PARAM_EMPTY.getValue());
             }
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-
             //拼接成员用户邮箱
             String oldEmail = sysUser.getEmail();
             List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(oldEmail);
@@ -170,6 +174,42 @@ public class SubUserServiceImpl implements SubUserService {
 //                        "&params=" + linkStr);
                 mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + oldEmail +
                         "&params=" + linkStr);
+
+
+                //2022/10/31 WangYiCheng 新增用户，根据角色，设置默认权限
+                RoleFunction roleFunction = roleFunctionDao.queryByRoleId(sysUser.getSysRoleId());
+
+
+                SysUserBusiness sysUserBusiness = new SysUserBusiness();
+                sysUserBusiness.setType("RoleFunctions");
+                sysUserBusiness.setValue(roleFunction.getCheckFunctionId());
+                sysUserBusiness.setInvisible(roleFunction.getInvisibleFunctionId());
+                sysUserBusiness.setDeleteFlag("0");
+                sysUserBusiness.setUserId(Long.valueOf(sysUser.getId()));
+                sysUserBusiness.setUserName(sysUser.getUserName());
+                sysUserBusiness.setRoleId(Long.valueOf(sysUser.getSysRoleId()));
+
+                SysRole sysRole = sysRoleDao.queryById(String.valueOf(sysUser.getSysRoleId()));
+                sysUserBusiness.setRoleName(sysRole.getRoleName());
+
+                String[] projectIds = sysUser.getProjectIdStr().split(",");
+
+                for (String projectId : projectIds) {
+                    Project project = projectDao.queryById(projectId);
+                    sysUserBusiness.setProjectId(Long.valueOf(project.getId()));
+                    sysUserBusiness.setProjectName(project.getTitle());
+                    sysUserBusinessDao.insertSelective(sysUserBusiness);
+                }
+
+
+
+
+
+
+
+
+
+
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),
                         SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue());
             }
@@ -222,6 +262,11 @@ public class SubUserServiceImpl implements SubUserService {
     @Override
     public Resp<String> updateSubUser(SubUserDto subUserDto) {
 
+        SysUser sysUserBefore = sysUserDao.queryById(subUserDto.getId());
+        List<String> projectIdsBefore = Arrays.asList(subUserProjectDao.queryByUserId(subUserDto.getId()).getProjectId().split(","));
+
+
+
         // 设置用户
         SysUser sysUser = new SysUser();
         sysUser.setId(subUserDto.getId());
@@ -241,6 +286,83 @@ public class SubUserServiceImpl implements SubUserService {
         userUseOpenProject.setProjectId(subUserDto.getOpenProjectByDefaultId());
         userUseOpenProject.setUserId(subUserDto.getId());
         projectDao.updateOpenProject(userUseOpenProject);
+
+        //business相关
+        //如果角色变了，则根据userId删除以前所有business数据，然后插入
+
+        if(subUserDto.getSysRoleId() != sysUserBefore.getSysRoleId()){
+            sysUserBusinessDao.deleteByUserId(subUserDto.getId());
+
+            RoleFunction roleFunction = roleFunctionDao.queryByRoleId(subUserDto.getSysRoleId());
+
+            SysUserBusiness sysUserBusiness = new SysUserBusiness();
+            sysUserBusiness.setType("RoleFunctions");
+            sysUserBusiness.setValue(roleFunction.getCheckFunctionId());
+            sysUserBusiness.setInvisible(roleFunction.getInvisibleFunctionId());
+            sysUserBusiness.setDeleteFlag("0");
+            sysUserBusiness.setUserId(Long.valueOf(subUserDto.getId()));
+            sysUserBusiness.setUserName(subUserDto.getUserName());
+            sysUserBusiness.setRoleId(Long.valueOf(subUserDto.getSysRoleId()));
+            sysUserBusiness.setRoleName(subUserDto.getRoleName());
+
+            String[] projectIds = subUserDto.getProjectIdStr().split(",");
+
+            for (String projectId : projectIds) {
+                Project project = projectDao.queryById(projectId);
+                sysUserBusiness.setProjectId(Long.valueOf(project.getId()));
+                sysUserBusiness.setProjectName(project.getTitle());
+                sysUserBusinessDao.insertSelective(sysUserBusiness);
+            }
+        }
+
+        else{
+            List<String> addProjectIds = new ArrayList<>();
+
+            List<String> projectIds = Arrays.asList(subUserDto.getProjectIdStr().split(","));
+            for(int i=0;i<projectIdsBefore.size();i++){
+                //原来的不在现在的，则是要删除的
+                if(!projectIds.contains(projectIdsBefore.get(i))){
+                    sysUserBusinessDao.deleteByUserIdAndProjectId(subUserDto.getId(),projectIdsBefore.get(i));
+                }
+            }
+
+            for(int i=0;i<projectIds.size();i++){
+                //现在的不在原来的，则是要增加的
+                if(!projectIdsBefore.contains(projectIds.get(i))){
+                    addProjectIds.add(projectIds.get(i));
+
+                    RoleFunction roleFunction = roleFunctionDao.queryByRoleId(subUserDto.getSysRoleId());
+
+                    SysUserBusiness sysUserBusiness = new SysUserBusiness();
+                    sysUserBusiness.setType("RoleFunctions");
+                    sysUserBusiness.setValue(roleFunction.getCheckFunctionId());
+                    sysUserBusiness.setInvisible(roleFunction.getInvisibleFunctionId());
+                    sysUserBusiness.setDeleteFlag("0");
+                    sysUserBusiness.setUserId(Long.valueOf(subUserDto.getId()));
+                    sysUserBusiness.setUserName(subUserDto.getUserName());
+                    sysUserBusiness.setRoleId(Long.valueOf(subUserDto.getSysRoleId()));
+                    sysUserBusiness.setRoleName(subUserDto.getRoleName());
+
+                    Project project = projectDao.queryById(projectIds.get(i));
+                    sysUserBusiness.setProjectId(Long.valueOf(project.getId()));
+                    sysUserBusiness.setProjectName(project.getTitle());
+                    sysUserBusinessDao.insertSelective(sysUserBusiness);
+
+
+                }
+            }
+
+
+
+
+
+
+        }
+
+
+
+        //如果角色没变，根据userId、查询以前所有business的projectIds
+        //以前有现在也有，则不动。以前有，现在没有则删除。以前没有，现在有，则增加
 
         return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
     }
@@ -271,6 +393,8 @@ public class SubUserServiceImpl implements SubUserService {
             // 删除关联的项目
             subUserProjectDao.deleteByUserId(id);
             projectDao.deleteOpenProjectByUserId(id);
+            // 删除bussiness
+            sysUserBusinessDao.deleteByUserId(id);
             return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_SUCCESS.getValue()).ok();
         }
         return  new Resp.Builder<String>().buildResult("500", "删除失败");

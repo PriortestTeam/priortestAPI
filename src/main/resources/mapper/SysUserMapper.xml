@@ -644,7 +644,7 @@
         FROM
             sys_user u
                 JOIN sys_role r ON u.sys_role_id = r.id
-                AND u.id = #{userId}
+                and u.room_id = (select room_id from sys_user where id = #{userId})
                 AND r.id = #{roleId}
     </select>
 
@@ -679,6 +679,7 @@
         <result property="projectIdStr" column="project_id" jdbcType="VARCHAR"/>
         <result property="projectsSts" column="projects_sts" jdbcType="VARCHAR"/>
         <result property="openProjectByDefaultId" column="open_project_by_default_id" jdbcType="VARCHAR"/>
+        <result property="openProjectByDefaultName" column="open_project_by_default_name" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="querySubUsersByRoomId" resultMap="SysUserProjectMap">
@@ -686,11 +687,13 @@
         su.*,
         sup.project_id,
         sr.role_name,
-        uop.project_id AS open_project_by_default_id
+        uop.project_id AS open_project_by_default_id,
+        p.title AS open_project_by_default_name
         from `sys_user` su
         join `sub_user_project` sup on su.id = sup.user_id
         join `sys_role` sr on su.sys_role_id = sr.id
         join `user_use_open_project` uop on uop.user_id = su.id
+        join `project` p on uop.project_id =  p.id
         and su.room_id = #{roomId}
     </select>
 
