@@ -122,11 +122,11 @@ public interface SysUserDao {
      * @param masterId
      * @return
      */
-//    int deleteSubUser(@Param("id") String id, @Param("masterId") String masterId);
+    // int deleteSubUser(@Param("id") String id, @Param("masterId") String masterId);
     int deleteSubUser(@Param("id") String id);
-
-
-    List<SubUserDto> queryByNameSubUsers(@Param("masterId") String masterId,@Param("subUserName") String subUserName);
+   // List<SubUserDto> queryByNameSubUsers(@Param("masterId") String masterId,@Param("subUserName") String subUserName);
+    // query all user name in the same room
+    List<SubUserDto> queryNameUsersByRoomId(@Param("roomId") String room_id,@Param("subUserName") String subUserName);
 
     /**
      * 查詢平台用戶
