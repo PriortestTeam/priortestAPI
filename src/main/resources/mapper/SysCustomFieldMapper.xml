@@ -7,21 +7,32 @@
         <result property="fieldName" column="field_name" jdbcType="VARCHAR"/>
         <result property="fieldNameCn" column="field_name_cn" jdbcType="VARCHAR"/>
         <result property="defaultValues" column="default_values" jdbcType="VARCHAR"/>
-        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="fieldType" column="fieldType" jdbcType="VARCHAR"/>
         <result property="scope" column="scope" jdbcType="VARCHAR"/>
+        <result property="chartDisplay" column="chartDisplay" jdbcType="INTEGER"/>
+        <result property="mandatory" column="mandatory" jdbcType="INTEGER"/>
+
+        <result property="uiDisplay" column="uiDisplay" jdbcType="INTEGER"/>
+        <result property="unicodeId" column="unicodeId" jdbcType="INTEGER"/>
+        <result property="length" column="length" jdbcType="INTEGER"/>
 
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, field_name, field_name_cn, default_values, `type`, `scope`
+        id, field_name, field_name_cn, default_values, `fieldType`, `scope`, chartDisplay, unicodeId, mandatory,length
     </sql>
 
     <!--查询单个-->
     <select id="queryById" resultMap="SysCustomFieldMap">
         select id,
-               field_name,
-               field_name_cn,
-               default_values
+        field_name,
+        field_name_cn,
+        default_values,
+        chartDisplay,
+        unicodeId,
+        uiDisplay,
+        mandatory,
+        length
         from sys_custom_field
         where id = #{id}
     </select>

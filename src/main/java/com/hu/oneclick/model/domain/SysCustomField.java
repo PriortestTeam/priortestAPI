@@ -28,18 +28,31 @@ public class SysCustomField implements Serializable {
      */
     private String defaultValues;
 
-    /** type
+    /**
+     * type
+     *
      * @Param:
      * @return:
      * @Author: MaSiyi
      * @Date: 2021/12/29
      */
-    private String type;
-    /** scope
+    private String fieldType;
+    /**
+     * scope
+     *
      * @Param:
      * @return:
      * @Author: MaSiyi
      * @Date: 2021/12/29
      */
     private String scope;
+
+    private String chartDisplay;
+
+    private String mandatory;
+
+    private String uiDisplay;
+    private String unicodeId;
+    private String length;
+
 }
