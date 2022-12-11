@@ -15,14 +15,13 @@
         <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-        <result property="operationAuthIds" column="operation_auth_ids" jdbcType="VARCHAR"/>
         <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
         <result property="roomId" column="room_id" jdbcType="INTEGER"/>
         <result property="testFrame" column="test_frame" jdbcType="VARCHAR"/>
         <result property="projectCategory" column="project_category" jdbcType="VARCHAR"/>
         <result property="closeDesc" column="close_desc" jdbcType="VARCHAR"/>
-        <result property="foreignId" column="foreign_id" jdbcType="VARCHAR"/>
         <result property="customer" column="customer" jdbcType="VARCHAR"/>
+        <result property="modifyUser" column="modifyUser" jdbcType="INTEGER"/>
     </resultMap>
 
     <select id="queryById" resultMap="ProjectMap">
@@ -41,7 +40,6 @@
                test_frame,
                project_category,
                close_desc,
-               foreign_id,
                project_expand,
                customer
         from project
@@ -63,7 +61,6 @@
                close_date,
                test_frame,
                project_category,
-               foreign_id,
                customer
         from oneclick.project limit #{offset}, #{limit}
     </select>
@@ -76,7 +73,7 @@
         description, plan_release_date ,
         del_flag, create_time,
         update_time,close_date,test_frame,
-        project_category,foreign_id,customer,close_desc
+        project_category,customer,close_desc
         from oneclick.project
         <where>
             user_id = #{userId}
@@ -180,9 +177,7 @@
             <if test="projectCategory != null and projectCategory != ''">
                 project_category,
             </if>
-            <if test="foreignId != null and foreignId != ''">
-                foreign_id,
-            </if>
+
             <if test="customer != null and customer != ''">
                 customer,
             </if>
@@ -218,9 +213,7 @@
             <if test="projectCategory != null and projectCategory != ''">
                 #{projectCategory},
             </if>
-            <if test="foreignId != null and foreignId != ''">
-                #{foreignId},
-            </if>
+
             <if test="customer != null and customer != ''">
                 #{customer},
             </if>
@@ -370,14 +363,15 @@
             <if test="projectCategory != null and projectCategory != ''">
                 project_category,
             </if>
-            <if test="foreignId != null and foreignId != ''">
-                foreign_id,
-            </if>
+
             <if test="customer != null and customer != ''">
                 customer,
             </if>
             <if test="roomId != null and roomId != ''">
                 room_id,
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                user_id,
             </if>
             create_time,
             update_time
@@ -411,15 +405,17 @@
             <if test="projectCategory != null and projectCategory != ''">
                 #{projectCategory},
             </if>
-            <if test="foreignId != null and foreignId != ''">
-                #{foreignId},
-            </if>
+
             <if test="customer != null and customer != ''">
                 #{customer},
             </if>
             <if test="roomId != null and roomId != ''">
                 #{roomId},
             </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                #{userId},
+            </if>
+
             NOW(),
             NOW()
         </trim>
@@ -433,7 +429,7 @@
         description, plan_release_date ,
         del_flag, create_time,
         update_time,close_date,test_frame,
-        project_category,foreign_id,customer,close_desc
+        project_category,customer,close_desc
         from oneclick.project
         <where>
             <if test="title != null and title != ''">

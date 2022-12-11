@@ -54,5 +54,6 @@ public class SysCustomField implements Serializable {
     private String uiDisplay;
     private String unicodeId;
     private String length;
+    private String allowAddedValue;
 
 }

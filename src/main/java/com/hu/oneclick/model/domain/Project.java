@@ -76,7 +76,7 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
     private Date planReleaseDateBegin;
     private Date planReleaseDateEnd;
 
-    private String foreignId;
+    private String modifyUser;
 
     /**
      * 项目绑定的权限

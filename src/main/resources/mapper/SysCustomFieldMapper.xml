@@ -15,6 +15,7 @@
         <result property="uiDisplay" column="uiDisplay" jdbcType="INTEGER"/>
         <result property="unicodeId" column="unicodeId" jdbcType="INTEGER"/>
         <result property="length" column="length" jdbcType="INTEGER"/>
+        <result property="allowAddedValue" column="allowAddedValue" jdbcType="INTEGER"/>
 
     </resultMap>
 
@@ -32,7 +33,8 @@
         unicodeId,
         uiDisplay,
         mandatory,
-        length
+        length,
+        allowAddedValue
         from sys_custom_field
         where id = #{id}
     </select>
@@ -50,7 +52,7 @@
     <select id="queryAll" resultMap="SysCustomFieldMap">
         select
         id, field_name, field_name_cn, default_values
-        from sys_custom_field
+        from sys_custom_field where allowAddedValue=1
     </select>
 
     <select id="queryByFieldName" resultMap="SysCustomFieldMap">
