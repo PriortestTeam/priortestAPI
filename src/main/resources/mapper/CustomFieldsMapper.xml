@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.CustomFieldsDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.CustomFields">
+        <id column="custom_field_id" property="customFieldId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="type" property="type"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="field_name_cn" property="fieldNameCn"/>
+        <result column="project_id" property="projectId"/>
+        <result column="modify_user" property="modifyUser"/>
+        <result column="length" property="length"/>
+        <result column="possible_value" property="possibleValue"/>
+        <result column="field_type" property="fieldType"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        custom_field_id
+        , create_user, type, create_time, update_time, field_name_cn, project_id, modify_user, length, possible_value, field_type
+    </sql>
+
+
+    <update id="update" parameterType="com.hu.oneclick.model.domain.CustomFields">
+        UPDATE custom_fields
+        <set>
+            <if test="null != customFieldId and '' != customFieldId">custom_field_id = #{customFieldId},</if>
+            <if test="null != createUser and '' != createUser">create_user = #{createUser},</if>
+            <if test="null != type and '' != type">type = #{type},</if>
+            <if test="null != createTime and '' != createTime">create_time = #{createTime},</if>
+            <if test="null != updateTime and '' != updateTime">update_time = #{updateTime},</if>
+            <if test="null != fieldNameCn and '' != fieldNameCn">field_name_cn = #{fieldNameCn},</if>
+            <if test="null != projectId and '' != projectId">project_id = #{projectId},</if>
+            <if test="null != modifyUser and '' != modifyUser">modify_user = #{modifyUser},</if>
+            <if test="null != length and '' != length">length = #{length},</if>
+            <if test="null != possibleValue and '' != possibleValue">possible_value = #{possibleValue},</if>
+            <if test="null != fieldType and '' != fieldType">field_type = #{fieldType},</if>
+        </set>
+        WHERE custom_field_id = #{customFieldId}
+    </update>
+
+
+    <delete id="deleteBatchByKey">
+        delete from custom_fields where custom_field_id in
+        <foreach collection="customFieldIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryCustomList" resultMap="BaseResultMap" parameterType="com.hu.oneclick.model.domain.CustomFields">
+        select
+        <include refid="Base_Column_List"></include>
+        from custom_fields
+        <where>
+            project_id = #{projectId}
+            and create_user = #{createUser}
+            <if test="type != null and type != ''">
+                and `type` = #{type}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="fieldNameCn != null and fieldNameCn != ''">
+                and field_name_cn = #{fieldNameCn}
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                and modify_user = #{modifyUser}
+            </if>
+           <if test="length != null and length != ''">
+                and length = #{length}
+            </if>
+           <if test="possibleValue != null and possibleValue != ''">
+                and possible_value = #{possibleValue}
+            </if>
+           <if test="fieldType != null and fieldType != ''">
+                and field_type = #{fieldType}
+            </if>
+
+        </where>
+        order by update_time desc
+    </select>
+</mapper>

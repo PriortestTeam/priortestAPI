@@ -1,0 +1,32 @@
+package com.hu.oneclick.dao;
+
+import com.hu.oneclick.model.domain.CustomField;
+import com.hu.oneclick.model.domain.CustomFields;
+import org.apache.ibatis.annotations.Param;
+import tk.mybatis.mapper.common.BaseMapper;
+
+import java.util.List;
+import java.util.Set;
+
+/**
+ * <p>
+ * 自定义字段表 Mapper 接口
+ * </p>
+ *
+ * @author vince
+ * @since 2022-12-13
+ */
+public interface CustomFieldsDao extends BaseMapper<CustomFields> {
+
+    int update( CustomFields customFields);
+
+    int deleteBatchByKey(@Param("customFieldIds") Set<Long> customFieldsIds);
+    /**
+     * 通过实体作为筛选条件查询
+     *
+     * @param customField 实例对象
+     * @return 对象列表
+     */
+    List<CustomFields> queryCustomList(CustomFields customField);
+
+}

@@ -81,7 +81,9 @@ public class FeatureServiceImpl implements FeatureService {
     }
 
 
-    /** update feature custom
+    /**
+     * update feature custom
+     *
      * @Param: [id]
      * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.Feature>
      * @Author: MaSiyi
@@ -197,18 +199,21 @@ public class FeatureServiceImpl implements FeatureService {
             updateFeatureJoinSprint(feature);
 //            int insertFlag = featureDao.insert(feature);
             JSONArray sysCustomField = feature.getSysCustomField();
-            for (Object oField : sysCustomField) {
-                JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(oField));
-                String fieldName = jsonObject.getString("fieldName");
-                Class<? extends FeatureDto> aClass = feature.getClass();
-                try {
-                    Method method = aClass.getMethod("set" + StrUtil.upperFirst(OneClickUtil.lineToHump(fieldName)), String.class);
-                    method.invoke(feature,jsonObject.getString("value"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    continue;
+            if (sysCustomField != null) {
+                for (Object oField : sysCustomField) {
+                    JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(oField));
+                    String fieldName = jsonObject.getString("fieldName");
+                    Class<? extends FeatureDto> aClass = feature.getClass();
+                    try {
+                        Method method = aClass.getMethod("set" + StrUtil.upperFirst(OneClickUtil.lineToHump(fieldName)), String.class);
+                        method.invoke(feature, jsonObject.getString("value"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        continue;
+                    }
                 }
             }
+
 
 //            if (insertFlag > 0) {
 //                List<CustomFieldData> customFieldDatas = feature.getCustomFieldDatas();

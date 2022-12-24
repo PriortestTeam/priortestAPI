@@ -19,7 +19,7 @@ public class CustomFieldDto{
 
     private String projectId;
 
-
+    private String type;
 
 
 }
