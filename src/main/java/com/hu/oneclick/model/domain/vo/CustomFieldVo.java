@@ -40,7 +40,7 @@ public class CustomFieldVo {
 
     private List<ComponentAttributesVo> componentAttributes;
 
-    private Long scopeId;
+
     @Data
     public class Attributes {
         @Length(max = 255,message = "长度不能超过255")
