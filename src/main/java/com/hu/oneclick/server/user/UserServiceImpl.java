@@ -94,8 +94,8 @@ public class UserServiceImpl implements UserService {
                            RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl,
                            MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService,
                            SubUserProjectDao subUserProjectDao, UserOrderService userOrderService,
-                           SystemConfigService systemConfigService,RoomDao roomDao, RoleFunctionDao roleFunctionDao,
-                           SysUserBusinessDao sysUserBusinessDao,SysRoleDao sysRoleDao) {
+                           SystemConfigService systemConfigService, RoomDao roomDao, RoleFunctionDao roleFunctionDao,
+                           SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao) {
         this.sysUserDao = sysUserDao;
         this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
                     String linkStr = RandomUtil.randomString(80);
                     redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
                     // mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
-                           // "&params=" + linkStr);
+                    // "&params=" + linkStr);
                     mailService.sendSimpleMail(email, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + email +
                             "&params=" + linkStr);
 
@@ -145,8 +145,8 @@ public class UserServiceImpl implements UserService {
                 }
             }
             // 先查询该用户是否已在room表，如果在，更新，无新增
-            Room room =roomDao.queryByCompanyNameAndUserEmail(registerUser.getCompany(),email);
-            if(null == room){
+            Room room = roomDao.queryByCompanyNameAndUserEmail(registerUser.getCompany(), email);
+            if (null == room) {
                 room = new Room();
                 room.setId(SnowFlakeUtil.getFlowIdInstance().nextId());
                 room.setCompanyName(registerUser.getCompany());
@@ -156,11 +156,11 @@ public class UserServiceImpl implements UserService {
                 room.setModifyName(registerUser.getUserName());
                 room.setType(OneConstant.ACTIVE_STATUS.TRIAL);
                 room.setExpiredDate(Date.from(LocalDateTime.now().plusDays(OneConstant.TRIAL_DAYS).atZone(ZoneId.systemDefault()).toInstant()));
-               roomDao.insertRoom(room);
-            }else{
-                BeanUtil.copyProperties(registerUser,room);
+                roomDao.insertRoom(room);
+            } else {
+                BeanUtil.copyProperties(registerUser, room);
                 room.setCreateUserEmail(email);
-               roomDao.updateRoom(room);
+                roomDao.updateRoom(room);
             }
             user.setRoomId(room.getId());
             //设置默认头像
@@ -460,11 +460,11 @@ public class UserServiceImpl implements UserService {
     /**
      * 初始化订单
      *
+     * @param userId
      * @Param: [sysUser]
      * @return: void
      * @Author: MaSiyi
      * @Date: 2022/1/11
-     * @param userId
      */
     private void initOrder(String userId) {
         SysUserOrder sysUserOrder = new SysUserOrder();
@@ -509,7 +509,7 @@ public class UserServiceImpl implements UserService {
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
         // mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?email=" + email + "&params=" + linkStr);
-         mailService.sendSimpleMail(email, "OneClick忘记密码", "http://127.0.0.1:9529/#/findpwd?email=" + email + "&params=" + linkStr);
+        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://127.0.0.1:9529/#/findpwd?email=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -696,5 +696,18 @@ public class UserServiceImpl implements UserService {
     public Resp<String> getUserActivNumber(String email) {
         SysUser sysUser = sysUserDao.queryByEmail(email);
         return new Resp.Builder<String>().setData(String.valueOf(sysUser.getActivitiNumber())).ok();
+    }
+
+    /**
+     * @param projectId 项目id
+     * @return Resp<List < Map < String, Object>>>
+     * @description 通过项目ID获取用户信息
+     * @author Vince
+     * @createTime 2022/12/24 19:56
+     */
+    @Override
+    public Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId) {
+        List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
+        return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
     }
 }

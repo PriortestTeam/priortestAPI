@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (SysUser)表数据库访问层
@@ -161,4 +162,5 @@ public interface SysUserDao {
 
     List<SubUserDto> querySubUsersByRoomId(@Param("roomId") Long roomId);
 
+    List<Map<String, Object>> listUserByProjectId(@Param("projectId")Long projectId);
 }

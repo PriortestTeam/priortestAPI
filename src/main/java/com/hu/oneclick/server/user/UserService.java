@@ -145,5 +145,12 @@ public interface UserService {
      * @Date: 2021/12/18
      */
     Resp<String> getUserActivNumber(String email);
-
+    /**
+     * @description 通过项目ID获取用户信息
+     * @author Vince
+     * @createTime 2022/12/24 19:56
+     * @param projectId 项目id
+     * @return Resp<List<Map<String, Object>>>
+     */
+    Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId);
 }

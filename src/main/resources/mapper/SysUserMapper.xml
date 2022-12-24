@@ -697,6 +697,19 @@
         and su.room_id = #{roomId}
     </select>
 
+    <select id="listUserByProjectId" resultType="java.util.Map" parameterType="java.lang.Long">
+        SELECT
+            u.id,
+            u.user_name as userName
+        FROM
+            user_use_open_project up
+                LEFT JOIN sys_user u ON up.user_id = u.id
+        <where>
+            up.project_id = #{projectId}
+        </where>
+
+    </select>
+
 <!--  未开启驼峰规则需要使用resultMap标签进行映射  -->
 <!--    <select id="querySubUsersByRoomId1" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">-->
 <!--        select * from sys_user where room_id = #{roomId} and id != #{id}-->
