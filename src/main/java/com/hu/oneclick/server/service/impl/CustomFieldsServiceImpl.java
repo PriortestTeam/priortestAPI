@@ -1,5 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.CustomFieldsDao;
@@ -47,13 +49,14 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     private final JwtUserServiceImpl jwtUserServiceImpl;
 
     @Override
-    public Resp<List<CustomFields>>queryCustomList(CustomFieldDto customFieldDto) {
+    public Resp<List<CustomFields>> queryCustomList(CustomFieldDto customFieldDto) {
         CustomFields customField = new CustomFields();
 
         customField.setType(customFieldDto.getType());
         customField.setCreateUser(Long.parseLong(jwtUserServiceImpl.getMasterId()));
-        customField.setProjectId(NumberUtils.toLong(customFieldDto.getProjectId(),0 ));
-        List<CustomFields> customFields = customFieldsDao.queryCustomList(customField);;
+        customField.setProjectId(NumberUtils.toLong(customFieldDto.getProjectId(), 0));
+        List<CustomFields> customFields = customFieldsDao.queryCustomList(customField);
+        ;
 
         return new Resp.Builder<List<CustomFields>>().setData(customFields).total(customFields).ok();
     }
@@ -72,7 +75,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         customField.setCustomFieldId(SnowFlakeUtil.getFlowIdInstance().nextId());
         int insertSelective = customFieldsDao.insertSelective(customField);
         if (insertSelective > 0) {
-            List<CustomFileldLink>  customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
+            List<CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
             int insertBatch = customFileldLinkDao.insertBatch(customFileldLinkList);
             insertSelective += insertBatch;
         }
@@ -83,15 +86,22 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> update(CustomFieldVo customFieldVo) {
+
         CustomFields customField = new CustomFields();
+        customField.setCustomFieldId(customFieldVo.getCustomFieldId());
+        int count = customFieldsDao.selectCount(customField);
+        if (count == 0) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "customFieldId不存在！");
+        }
         BeanUtils.copyProperties(customFieldVo, customField);
+
         customField.setModifyUser(Long.parseLong(jwtUserServiceImpl.getMasterId()));
         CustomFieldVo.Attributes attributes = customFieldVo.getAttributes();
         BeanUtils.copyProperties(attributes, customField);
         int row = customFieldsDao.update(customField);
 
         if (row > 0) {
-            List<CustomFileldLink>  customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
+            List<CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
             // 先根据customFieldsId删除数据再新增
             customFileldLinkDao.delete(new CustomFileldLink(customField.getCustomFieldId()));
             int insertBatch = customFileldLinkDao.insertBatch(customFileldLinkList);
@@ -104,10 +114,9 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> delete(Set<Long> customFieldIds) {
         int del = customFieldsDao.deleteBatchByKey(customFieldIds);
-         del += customFileldLinkDao.deleteBatchByCustomFieldId(customFieldIds);
-        return Result.updateResult(del >= 1 ? 1 : 0);
+        del += customFileldLinkDao.deleteBatchByCustomFieldId(customFieldIds);
+        return Result.deleteResult(del >= 1 ? 1 : 0);
     }
-
 
 
     private List<CustomFileldLink> getCustomFileldLinkList(CustomFieldVo customFieldVo, CustomFields customField) {
