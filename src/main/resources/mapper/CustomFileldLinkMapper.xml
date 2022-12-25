@@ -10,6 +10,7 @@
         <result column="scope" property="scope"/>
         <result column="mandatory" property="mandatory"/>
         <result column="scope_id" property="scopeId"/>
+        <result column="scope_name_cn" property="scopeCn"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -25,7 +26,8 @@
         default_value,
         scope,
         mandatory,
-        scope_id
+        scope_id,
+        scope_name_cn
         )
         VALUES
         <foreach collection="customFileldLinkList" item="item" separator=",">
@@ -35,7 +37,8 @@
             #{item.defaultValue},
             #{item.scope},
             #{item.mandatory},
-            #{item.scopeId}
+            #{item.scopeId},
+            #{item.scopeCn}
             )
         </foreach>
 

@@ -15,6 +15,7 @@
         <result column="length" property="length"/>
         <result column="possible_value" property="possibleValue"/>
         <result column="field_type" property="fieldType"/>
+        <result column="field_type_cn" property="fieldTypeCn"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->

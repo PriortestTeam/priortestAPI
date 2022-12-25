@@ -54,19 +54,24 @@ public class CustomFields implements Serializable {
     private Long modifyUser;
 
     /**
-     * 用于文本字段
+     * 用于文本，备注，链接字段
      */
     private Integer length;
 
     /**
-     * 可能的值
+     * 可能的值,变量值，依据类型的不同而不同
      */
     private String possibleValue;
 
     /**
-     * field_type
+     * field_type （类型英文名，用作前端名页面创建，修改时的标识）
      */
     private String fieldType;
+
+    /**
+     * field_type_cn (类型中文名，用作前端显示）
+     */
+    private String fieldTypeCn;
 
 
 }

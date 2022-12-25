@@ -38,6 +38,7 @@ public class CustomFieldVo {
 
     private String possibleValue;
 
+
     private List<ComponentAttributesVo> componentAttributes;
 
 
@@ -45,9 +46,15 @@ public class CustomFieldVo {
     public class Attributes {
         @Length(max = 255,message = "长度不能超过255")
         private String fieldNameCn;
+
         @NotNull(message = "fieldType不能为空", groups = {AddGroup.class, UpdateGroup.class})
         @NotEmpty(message = "fieldType不能为空", groups = {AddGroup.class, UpdateGroup.class})
         private String fieldType;
+
+        @NotNull(message = "fieldTypeCn不能为空", groups = {AddGroup.class, UpdateGroup.class})
+        @NotEmpty(message = "fieldTypeCn不能为空", groups = {AddGroup.class, UpdateGroup.class})
+        private String fieldTypeCn;
+
         /**
          * 关联项目id
          */

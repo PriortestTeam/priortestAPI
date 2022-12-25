@@ -118,7 +118,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                                 item.getDefaultValue(),
                                 item.getScope(),
                                 item.getMandatory() ? 1 : 0,
-                                item.getScopeId()
+                                item.getScopeId(),
+                                item.getScopeCn()
                         )).collect(Collectors.toList());
 
         return customFileldLinkList;

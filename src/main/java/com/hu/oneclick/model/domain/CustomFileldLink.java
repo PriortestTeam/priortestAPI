@@ -28,15 +28,28 @@ public class CustomFileldLink implements Serializable {
     private Long customFieldId;
 
     /**
-     * 默认下拉菜单第一项
+     * 字段应用范围 - 属性：默认值
      */
     private String defaultValue;
 
+    /**
+     * 字段应用范围 - 属性：英文
+     */
     private String scope;
 
+    /**
+     * 字段应用范围 - 属性：必填
+     */
     private Integer mandatory;
 
+    /**
+     * 字段应用范围 - 属性：范围id
+     */
     private Long scopeId;
+    /**
+     * 字段应用范围 - 属性：范围中文
+     */
+    private String scopeCn;
 
     public CustomFileldLink(Long customFieldId) {
         this.customFieldId = customFieldId;
