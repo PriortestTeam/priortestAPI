@@ -49,7 +49,7 @@ public class CustomFileldLink implements Serializable {
     /**
      * 字段应用范围 - 属性：范围中文
      */
-    private String scopeCn;
+    private String scopeNameCn;
 
     public CustomFileldLink(Long customFieldId) {
         this.customFieldId = customFieldId;

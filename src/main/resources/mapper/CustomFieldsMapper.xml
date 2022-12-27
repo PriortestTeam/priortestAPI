@@ -18,10 +18,26 @@
         <result column="field_type_cn" property="fieldTypeCn"/>
     </resultMap>
 
+    <resultMap id="CustomFileldLinkVoResultMap" type="com.hu.oneclick.model.domain.vo.CustomFileldLinkVo">
+        <result column="custom_field_id" property="customFieldId"/>
+        <result column="type" property="type"/>
+        <result column="possible_value" property="possibleValue"/>
+        <result column="field_type" property="fieldType"/>
+        <result column="field_type_cn" property="fieldTypeCn"/>
+        <result column="field_name_cn" property="fieldNameCn"/>
+        <result column="project_id" property="projectId"/>
+        <result column="length" property="length"/>
+        <result column="scope" property="scope"/>
+        <result column="scope_id" property="scopeId"/>
+        <result column="scope_name_cn" property="scopeNameCn"/>
+        <result column="default_value" property="defaultValue"/>
+        <result column="mandatory" property="mandatory"/>
+
+    </resultMap>
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         custom_field_id
-        , create_user, type, create_time, update_time, field_name_cn, project_id, modify_user, length, possible_value, field_type
+        , create_user, type, create_time, update_time, field_name_cn, project_id, modify_user, length, possible_value, field_type,field_type_cn
     </sql>
 
 
@@ -39,6 +55,7 @@
             <if test="null != length and '' != length">length = #{length},</if>
             <if test="null != possibleValue and '' != possibleValue">possible_value = #{possibleValue},</if>
             <if test="null != fieldType and '' != fieldType">field_type = #{fieldType},</if>
+            <if test="null != fieldTypeCn and '' != fieldTypeCn">field_type_cn = #{fieldTypeCn},</if>
         </set>
         WHERE custom_field_id = #{customFieldId}
     </update>
@@ -58,7 +75,6 @@
         from custom_fields
         <where>
             project_id = #{projectId}
-            and create_user = #{createUser}
             <if test="type != null and type != ''">
                 and `type` = #{type}
             </if>
@@ -83,8 +99,45 @@
            <if test="fieldType != null and fieldType != ''">
                 and field_type = #{fieldType}
             </if>
-
+            <if test="createUser != null and createUser != ''">
+                and `create_user` = #{createUser}
+            </if>
         </where>
         order by update_time desc
+    </select>
+
+    <select id="getAllCustomList" resultMap="CustomFileldLinkVoResultMap" parameterType="com.hu.oneclick.model.domain.dto.CustomFieldDto">
+        SELECT
+            cf.custom_field_id,
+            cf.type,
+            cf.possible_value,
+            cf.field_type,
+            cf.field_type_cn,
+            cf.field_name_cn,
+            cf.project_id,
+            cf.length,
+            cfl.scope,
+            cfl.scope_id,
+            cfl.scope_name_cn,
+            cfl.default_value,
+            cfl.mandatory
+        FROM
+            custom_fileld_link cfl
+                LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        <where>
+            cfl.scope_id =  #{customFieldDto.scopeId}
+            and cf.project_id = #{customFieldDto.projectId}
+        </where>
+
+    </select>
+
+    <select id="getFieldTypeByProjectId" resultType="java.lang.String" parameterType="java.lang.Long">
+        SELECT
+            DISTINCT cf.field_type
+        FROM
+            custom_fileld_link cfl
+                LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        WHERE
+            cf.project_id = #{projectId};
     </select>
 </mapper>

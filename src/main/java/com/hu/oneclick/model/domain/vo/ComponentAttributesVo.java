@@ -12,7 +12,7 @@ import lombok.Data;
 public class ComponentAttributesVo {
     private String scope;
     private Long scopeId;
-    private String scopeCn;
+    private String scopeNameCn;
     private String defaultValue;
     private Boolean mandatory;
 }

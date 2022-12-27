@@ -12,7 +12,9 @@ import com.hu.oneclick.model.domain.CustomField;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.CustomFileldLink;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.vo.ComponentAttributesVo;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
+import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 import com.hu.oneclick.server.service.CustomFieldsService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +24,10 @@ import org.assertj.core.util.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -49,16 +51,38 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     private final JwtUserServiceImpl jwtUserServiceImpl;
 
     @Override
-    public Resp<List<CustomFields>> queryCustomList(CustomFieldDto customFieldDto) {
+    public Resp<List<CustomFieldVo>> queryCustomList(CustomFieldDto customFieldDto) {
         CustomFields customField = new CustomFields();
-
-        customField.setType(customFieldDto.getType());
-        customField.setCreateUser(Long.parseLong(jwtUserServiceImpl.getMasterId()));
-        customField.setProjectId(NumberUtils.toLong(customFieldDto.getProjectId(), 0));
+        customField.setProjectId(NumberUtils.toLong(customFieldDto.getProjectId()));
         List<CustomFields> customFields = customFieldsDao.queryCustomList(customField);
-        ;
+        Set<Long> customFieldIds = customFields.stream().map(CustomFields::getCustomFieldId).collect(Collectors.toSet());
+        List<CustomFileldLink> customFileldLinkList = customFileldLinkDao.findByCustomFieldIds(customFieldIds);
+        Map<Long, List<CustomFileldLink>> listMap = customFileldLinkList.stream().collect(Collectors.groupingBy(CustomFileldLink::getCustomFieldId));
 
-        return new Resp.Builder<List<CustomFields>>().setData(customFields).total(customFields).ok();
+        List<CustomFieldVo> resList = Lists.newArrayList();
+        for (CustomFields field : customFields) {
+            CustomFieldVo customFieldVo = new CustomFieldVo();
+            BeanUtils.copyProperties(field, customFieldVo);
+
+            CustomFieldVo.Attributes attributes = new CustomFieldVo.Attributes();
+            BeanUtils.copyProperties(field, attributes);
+            customFieldVo.setAttributes(attributes);
+
+            List<ComponentAttributesVo> componentAttributes = new ArrayList<>();
+
+            List<CustomFileldLink> fileldLinks = listMap.get(field.getCustomFieldId());
+            if (!ObjectUtils.isEmpty(fileldLinks)) {
+                for (CustomFileldLink fileldLink : fileldLinks) {
+                    ComponentAttributesVo componentAttributesVo = new ComponentAttributesVo();
+                    BeanUtils.copyProperties(fileldLink, componentAttributesVo);
+                    componentAttributesVo.setMandatory(fileldLink.getMandatory() == 1);
+                    componentAttributes.add(componentAttributesVo);
+                }
+            }
+            customFieldVo.setComponentAttributes(componentAttributes);
+            resList.add(customFieldVo);
+        }
+        return new Resp.Builder<List<CustomFieldVo>>().setData(resList).ok();
     }
 
 
@@ -118,6 +142,12 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         return Result.deleteResult(del >= 1 ? 1 : 0);
     }
 
+    @Override
+    public Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
+        List<CustomFileldLinkVo> list = customFieldsDao.getAllCustomList(customFieldDto);
+        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(list).ok();
+    }
+
 
     private List<CustomFileldLink> getCustomFileldLinkList(CustomFieldVo customFieldVo, CustomFields customField) {
         List<CustomFileldLink> customFileldLinkList = Optional.ofNullable(customFieldVo.getComponentAttributes())
@@ -128,7 +158,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                                 item.getScope(),
                                 item.getMandatory() ? 1 : 0,
                                 item.getScopeId(),
-                                item.getScopeCn()
+                                item.getScopeNameCn()
                         )).collect(Collectors.toList());
 
         return customFileldLinkList;

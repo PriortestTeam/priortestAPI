@@ -20,4 +20,6 @@ public interface CustomFileldLinkDao extends BaseMapper<CustomFileldLink> {
     int insertBatch(@Param("customFileldLinkList") List<CustomFileldLink> customFileldLinkList);
 
     int deleteBatchByCustomFieldId(@Param("customFieldIds")  Set<Long> customFieldIds);
+
+    List<CustomFileldLink> findByCustomFieldIds (@Param("customFieldIds") Set<Long> customFieldIds);
 }

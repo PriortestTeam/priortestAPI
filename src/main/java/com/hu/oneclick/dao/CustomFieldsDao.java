@@ -2,6 +2,8 @@ package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.domain.CustomField;
 import com.hu.oneclick.model.domain.CustomFields;
+import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.BaseMapper;
 
@@ -18,9 +20,10 @@ import java.util.Set;
  */
 public interface CustomFieldsDao extends BaseMapper<CustomFields> {
 
-    int update( CustomFields customFields);
+    int update(CustomFields customFields);
 
     int deleteBatchByKey(@Param("customFieldIds") Set<Long> customFieldsIds);
+
     /**
      * 通过实体作为筛选条件查询
      *
@@ -29,4 +32,7 @@ public interface CustomFieldsDao extends BaseMapper<CustomFields> {
      */
     List<CustomFields> queryCustomList(CustomFields customField);
 
+    List<CustomFileldLinkVo> getAllCustomList(@Param("customFieldDto") CustomFieldDto customFieldDto);
+
+    List<String> getFieldTypeByProjectId(@Param("projectId") Long projectId);
 }

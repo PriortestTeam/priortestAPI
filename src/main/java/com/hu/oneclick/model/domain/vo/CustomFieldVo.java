@@ -2,7 +2,9 @@ package com.hu.oneclick.model.domain.vo;
 
 import com.hu.oneclick.common.validator.group.AddGroup;
 import com.hu.oneclick.common.validator.group.UpdateGroup;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.Valid;
@@ -43,8 +45,10 @@ public class CustomFieldVo {
 
 
     @Data
-    public class Attributes {
-        @Length(max = 255,message = "长度不能超过255")
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Attributes {
+        @Length(max = 255, message = "长度不能超过255")
         private String fieldNameCn;
 
         @NotNull(message = "fieldType不能为空", groups = {AddGroup.class, UpdateGroup.class})
@@ -60,7 +64,7 @@ public class CustomFieldVo {
          */
         @NotNull(message = "项目ID不能为空")
         private Long projectId;
-        @Min(value = 0,message = "字段长度不能小于0")
+        @Min(value = 0, message = "字段长度不能小于0")
         private Integer length;
     }
 

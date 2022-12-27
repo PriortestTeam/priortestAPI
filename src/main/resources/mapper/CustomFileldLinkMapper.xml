@@ -10,12 +10,13 @@
         <result column="scope" property="scope"/>
         <result column="mandatory" property="mandatory"/>
         <result column="scope_id" property="scopeId"/>
-        <result column="scope_name_cn" property="scopeCn"/>
+        <result column="scope_name_cn" property="scopeNameCn"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        custom_field_link_id,custom_field_id, default_value, scope, mandatory,scope_id
+        custom_field_link_id
+        ,custom_field_id, default_value, scope, mandatory,scope_id
     </sql>
 
 
@@ -38,7 +39,7 @@
             #{item.scope},
             #{item.mandatory},
             #{item.scopeId},
-            #{item.scopeCn}
+            #{item.scopeNameCn}
             )
         </foreach>
 
@@ -50,4 +51,15 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="findByCustomFieldIds" resultMap="BaseResultMap" parameterType="java.util.Set">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM custom_fileld_link
+        WHERE
+        custom_field_id IN
+        <foreach collection="customFieldIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

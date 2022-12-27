@@ -4,6 +4,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
+import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 
 import java.util.List;
 import java.util.Set;
@@ -19,12 +20,12 @@ import java.util.Set;
 public interface CustomFieldsService {
 
 
-    Resp<List<CustomFields>> queryCustomList(CustomFieldDto customFieldDto);
+    Resp<List<CustomFieldVo>>  queryCustomList(CustomFieldDto customFieldDto);
     Resp<String> add(CustomFieldVo customFieldVo);
 
     Resp<String> update(CustomFieldVo customFieldVo);
 
     Resp<String> delete(Set<Long> customFieldIds);
 
-
+    Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto);
 }

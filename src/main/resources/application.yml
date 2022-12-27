@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: test
+    active: @profileActive@
 #  devtools:
 #    restart:
 #      enabled: false
