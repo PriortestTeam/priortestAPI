@@ -67,7 +67,7 @@ public class CustomFieldsController {
         return customFieldsService.delete(customFieldIds);
     }
 
-    @GetMapping ("/getAllCustomList")
+    @GetMapping("/getAllCustomList")
     public Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
         if (customFieldDto.getProjectId() == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
@@ -79,15 +79,14 @@ public class CustomFieldsController {
         return customFieldsService.getAllCustomList(customFieldDto);
     }
 
-//    @GetMapping ("/getFieldTypeByProjectId")
-//    public Resp<List<String>> getFieldTypeByProjectId(@RequestParam("projectId") Long projectId) {
-//        if (projectId == null) {
-//            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
-//        }
-//        log.info("getFieldTypeByProjectId==>projectId:{}", projectId);
-//        return customFieldsService.getFieldTypeByProjectId(projectId);
-//    }
-    // // TODO: 2022/12/27 接口暂时还没写 
+    @GetMapping("/getDropDownBox")
+    public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
+        if (customFieldDto.getProjectId() == null) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+        log.info("getDropDownBox==>customFieldDto:{}", JSON.toJSONString(customFieldDto));
+        return customFieldsService.getDropDownBox(customFieldDto);
+    }
 
 
 }

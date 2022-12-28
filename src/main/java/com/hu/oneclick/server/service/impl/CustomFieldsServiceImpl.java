@@ -148,6 +148,12 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         return new Resp.Builder<List<CustomFileldLinkVo>>().setData(list).ok();
     }
 
+    @Override
+    public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
+        List<CustomFileldLinkVo> dropDownBox = customFieldsDao.getDropDownBox(customFieldDto);
+        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(dropDownBox).ok();
+    }
+
 
     private List<CustomFileldLink> getCustomFileldLinkList(CustomFieldVo customFieldVo, CustomFields customField) {
         List<CustomFileldLink> customFileldLinkList = Optional.ofNullable(customFieldVo.getComponentAttributes())

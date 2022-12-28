@@ -28,4 +28,6 @@ public interface CustomFieldsService {
     Resp<String> delete(Set<Long> customFieldIds);
 
     Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto);
+
+    Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto);
 }

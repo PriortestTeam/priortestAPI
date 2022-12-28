@@ -27,6 +27,7 @@
         <result column="field_name_cn" property="fieldNameCn"/>
         <result column="project_id" property="projectId"/>
         <result column="length" property="length"/>
+        <result column="custom_field_link_id" property="customFieldLinkId"/>
         <result column="scope" property="scope"/>
         <result column="scope_id" property="scopeId"/>
         <result column="scope_name_cn" property="scopeNameCn"/>
@@ -38,6 +39,24 @@
     <sql id="Base_Column_List">
         custom_field_id
         , create_user, type, create_time, update_time, field_name_cn, project_id, modify_user, length, possible_value, field_type,field_type_cn
+    </sql>
+
+    <sql id="Custom_Column_List">
+        cf.
+        custom_field_id,
+            cf.type,
+            cf.possible_value,
+            cf.field_type,
+            cf.field_type_cn,
+            cf.field_name_cn,
+            cf.project_id,
+            cf.length,
+            cfl.custom_field_link_id,
+            cfl.scope,
+            cfl.scope_id,
+            cfl.scope_name_cn,
+            cfl.default_value,
+            cfl.mandatory
     </sql>
 
 
@@ -90,13 +109,13 @@
             <if test="modifyUser != null and modifyUser != ''">
                 and modify_user = #{modifyUser}
             </if>
-           <if test="length != null and length != ''">
+            <if test="length != null and length != ''">
                 and length = #{length}
             </if>
-           <if test="possibleValue != null and possibleValue != ''">
+            <if test="possibleValue != null and possibleValue != ''">
                 and possible_value = #{possibleValue}
             </if>
-           <if test="fieldType != null and fieldType != ''">
+            <if test="fieldType != null and fieldType != ''">
                 and field_type = #{fieldType}
             </if>
             <if test="createUser != null and createUser != ''">
@@ -106,38 +125,39 @@
         order by update_time desc
     </select>
 
-    <select id="getAllCustomList" resultMap="CustomFileldLinkVoResultMap" parameterType="com.hu.oneclick.model.domain.dto.CustomFieldDto">
+    <select id="getAllCustomList" resultMap="CustomFileldLinkVoResultMap"
+            parameterType="com.hu.oneclick.model.domain.dto.CustomFieldDto">
         SELECT
-            cf.custom_field_id,
-            cf.type,
-            cf.possible_value,
-            cf.field_type,
-            cf.field_type_cn,
-            cf.field_name_cn,
-            cf.project_id,
-            cf.length,
-            cfl.scope,
-            cfl.scope_id,
-            cfl.scope_name_cn,
-            cfl.default_value,
-            cfl.mandatory
+        <include refid="Custom_Column_List"/>
         FROM
-            custom_fileld_link cfl
-                LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        custom_fileld_link cfl
+        LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
         <where>
-            cfl.scope_id =  #{customFieldDto.scopeId}
+            cfl.scope_id = #{customFieldDto.scopeId}
             and cf.project_id = #{customFieldDto.projectId}
         </where>
 
     </select>
 
     <select id="getFieldTypeByProjectId" resultType="java.lang.String" parameterType="java.lang.Long">
+        SELECT DISTINCT cf.field_type
+        FROM custom_fileld_link cfl
+        LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        <where>
+            WHERE cf.project_id = #{projectId}
+            AND cfl.scope IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+        </where>
+    </select>
+
+    <select id="getDropDownBox" resultMap="CustomFileldLinkVoResultMap" parameterType="com.hu.oneclick.model.domain.dto.CustomFieldDto">
         SELECT
-            DISTINCT cf.field_type
-        FROM
-            custom_fileld_link cfl
-                LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
-        WHERE
-            cf.project_id = #{projectId};
+        <include refid="Custom_Column_List"/>
+        FROM custom_fileld_link cfl
+        LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        <where>
+             cf.project_id = #{customFieldDto.projectId}
+            AND cfl.scope IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+        </where>
+
     </select>
 </mapper>

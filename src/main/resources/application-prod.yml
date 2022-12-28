@@ -31,7 +31,9 @@ spring:
   jackson:
     time-zone: GMT+8 #设置时区
     date-format: yyyy-MM-dd HH:mm:ss #设置返回格式
-
+    generator:
+      ## 将数值类型转换为字符串，解决long型精度丢失
+      write_numbers_as_strings: true
 
   redis:
     #    host: 192.168.184.10
