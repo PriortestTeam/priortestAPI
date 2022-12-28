@@ -16,7 +16,7 @@
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         custom_field_link_id
-        ,custom_field_id, default_value, scope, mandatory,scope_id
+        ,custom_field_id, default_value, scope, scope_name_cn,mandatory,scope_id
     </sql>
 
 
