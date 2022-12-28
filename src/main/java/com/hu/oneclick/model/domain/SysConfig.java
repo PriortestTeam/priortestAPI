@@ -2,6 +2,7 @@ package com.hu.oneclick.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,7 +21,6 @@ public class SysConfig implements Serializable {
     /**
      * id
      */
-    @JsonFormat
     private Long id;
 
     /**
