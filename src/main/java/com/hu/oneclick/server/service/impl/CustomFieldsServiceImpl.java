@@ -1,5 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.google.common.collect.Maps;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -56,8 +58,12 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         customField.setProjectId(NumberUtils.toLong(customFieldDto.getProjectId()));
         List<CustomFields> customFields = customFieldsDao.queryCustomList(customField);
         Set<Long> customFieldIds = customFields.stream().map(CustomFields::getCustomFieldId).collect(Collectors.toSet());
-        List<CustomFileldLink> customFileldLinkList = customFileldLinkDao.findByCustomFieldIds(customFieldIds);
-        Map<Long, List<CustomFileldLink>> listMap = customFileldLinkList.stream().collect(Collectors.groupingBy(CustomFileldLink::getCustomFieldId));
+        List<CustomFileldLink> customFileldLinkList = Lists.newArrayList();
+        Map<Long, List<CustomFileldLink>> listMap = Maps.newHashMap();
+        if (!ObjectUtils.isEmpty(customFieldIds)) {
+            customFileldLinkList = customFileldLinkDao.findByCustomFieldIds(customFieldIds);
+            listMap = customFileldLinkList.stream().collect(Collectors.groupingBy(CustomFileldLink::getCustomFieldId));
+        }
 
         List<CustomFieldVo> resList = Lists.newArrayList();
         for (CustomFields field : customFields) {
@@ -68,7 +74,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             BeanUtils.copyProperties(field, attributes);
             customFieldVo.setAttributes(attributes);
 
-            List<ComponentAttributesVo> componentAttributes = new ArrayList<>();
+            List<ComponentAttributesVo> componentAttributes = Lists.newArrayList();
 
             List<CustomFileldLink> fileldLinks = listMap.get(field.getCustomFieldId());
             if (!ObjectUtils.isEmpty(fileldLinks)) {
