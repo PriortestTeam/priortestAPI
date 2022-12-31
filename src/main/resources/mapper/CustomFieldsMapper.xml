@@ -145,7 +145,7 @@
         LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
         <where>
             WHERE cf.project_id = #{projectId}
-            AND cfl.scope IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+            AND cf.field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
         </where>
     </select>
 
@@ -156,7 +156,7 @@
         LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
         <where>
              cf.project_id = #{customFieldDto.projectId}
-            AND cfl.scope IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+            AND cf.field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
         </where>
 
     </select>
