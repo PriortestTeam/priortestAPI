@@ -22,6 +22,8 @@ public class SysCustomFieldExpand implements Serializable {
 
     private String values;
 
+    private String sysCustomFieldId;
+
     private Date createTime;
 
     private Date updateTime;
@@ -56,6 +58,14 @@ public class SysCustomFieldExpand implements Serializable {
 
     public void setLinkSysCustomField(String linkSysCustomField) {
         this.linkSysCustomField = linkSysCustomField;
+    }
+
+    public String getSysCustomFieldId() {
+        return sysCustomFieldId;
+    }
+
+    public void setSysCustomFieldId(String sysCustomFieldId) {
+        this.sysCustomFieldId = sysCustomFieldId;
     }
 
     public String getValues() {

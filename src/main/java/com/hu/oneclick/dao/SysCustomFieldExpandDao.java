@@ -88,5 +88,5 @@ public interface SysCustomFieldExpandDao {
      * @Author: MaSiyi
      * @Date: 2021/12/30
      */
-    List<SysCustomFieldExpand> getAllSysCustomFieldExpand(String userId, String projectId);
+    List<SysCustomFieldExpand> getAllSysCustomFieldExpand(String projectId);
 }
