@@ -131,7 +131,11 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
                 querySysCustomFieldExpand.setId(String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId()));
                 querySysCustomFieldExpand.setProjectId(projectId);
                 querySysCustomFieldExpand.setLinkSysCustomField(querySysCustomField.getFieldName());
-                querySysCustomFieldExpand.setUserId(masterId);
+                querySysCustomFieldExpand.setSysCustomFieldId(querySysCustomField.getId());
+                // 移除 master id - 待修改
+                SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+                String userId = sysUser.getId();
+                querySysCustomFieldExpand.setUserId(userId);
 
                 flag = sysCustomFieldExpandDao.insert(querySysCustomFieldExpand);
             }

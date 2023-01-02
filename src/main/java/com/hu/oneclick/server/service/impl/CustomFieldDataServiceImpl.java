@@ -328,7 +328,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         String userId = sysUser.getId();
         String projectId = sysUser.getUserUseOpenProject().getProjectId();
-        List<SysCustomFieldExpand> sysCustomFieldExpands = sysCustomFieldExpandDao.getAllSysCustomFieldExpand(userId, projectId);
+        List<SysCustomFieldExpand> sysCustomFieldExpands = sysCustomFieldExpandDao.getAllSysCustomFieldExpand(projectId);
         //将拓展表中字段名与系统表中匹配的值拿出来
         List<SysCustomFieldExpand> filterSysCustomFieldExpand = sysCustomFieldExpands.stream().filter(f -> collect.contains(f.getLinkSysCustomField())).collect(Collectors.toList());
         //拼装拓展值
@@ -337,7 +337,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
             for (SysCustomFieldExpand sysCustomFieldExpand : filterSysCustomFieldExpand) {
                 if (sysCustomField.getFieldName().equals(sysCustomFieldExpand.getLinkSysCustomField())) {
 
-                    sysCustomField.setDefaultValues(sysCustomField.getDefaultValues() + "," + sysCustomFieldExpand.getValues());
+                    sysCustomField.setValueList(sysCustomField.getValueList() + "," + sysCustomFieldExpand.getValues());
                 }
             }
             newSysCustomFields.add(sysCustomField);

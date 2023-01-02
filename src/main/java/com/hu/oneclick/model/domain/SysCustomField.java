@@ -28,6 +28,8 @@ public class SysCustomField implements Serializable {
      */
     private String defaultValues;
 
+    private String valueList;
+
     /**
      * type
      *
@@ -47,13 +49,14 @@ public class SysCustomField implements Serializable {
      */
     private String scope;
 
-    private String chartDisplay;
+    private int chartDisplay;
 
-    private String mandatory;
+    private int mandatory;
 
-    private String uiDisplay;
-    private String unicodeId;
-    private String length;
-    private String allowAddedValue;
+    private int uiDisplay;
+    //private String unicodeId;
+    private int length;
+    private int allowAddedValue;
+    private int sort;
 
 }
