@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -13,6 +14,7 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.CustomField;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.CustomFileldLink;
+import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.vo.ComponentAttributesVo;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
@@ -57,6 +59,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         CustomFields customField = new CustomFields();
         customField.setProjectId(NumberUtils.toLong(customFieldDto.getProjectId()));
         List<CustomFields> customFields = customFieldsDao.queryCustomList(customField);
+//        PageInfo<CustomFields> pageInfo = new PageInfo<>(customFields);
         Set<Long> customFieldIds = customFields.stream().map(CustomFields::getCustomFieldId).collect(Collectors.toSet());
         List<CustomFileldLink> customFileldLinkList = Lists.newArrayList();
         Map<Long, List<CustomFileldLink>> listMap = Maps.newHashMap();
@@ -88,7 +91,8 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             customFieldVo.setComponentAttributes(componentAttributes);
             resList.add(customFieldVo);
         }
-        return new Resp.Builder<List<CustomFieldVo>>().setData(resList).ok();
+
+        return new Resp.Builder<List<CustomFieldVo>>().setData(resList).total(customFields).ok();
     }
 
 

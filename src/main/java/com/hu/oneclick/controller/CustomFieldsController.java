@@ -4,6 +4,7 @@ package com.hu.oneclick.controller;
 import com.alibaba.fastjson.JSON;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
@@ -37,10 +38,11 @@ public class CustomFieldsController {
     @NonNull
     private final CustomFieldsService customFieldsService;
 
+    @Page
     @GetMapping("/queryCustomList")
     public Resp<List<CustomFieldVo>> queryCustomList(CustomFieldDto customFieldDto) {
         if (customFieldDto.getProjectId() == null) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "ProjectId" + SysConstantEnum.PARAM_EMPTY.getValue());
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
         log.info("queryCustomList==>customFieldDto:{}", JSON.toJSONString(customFieldDto));
         return customFieldsService.queryCustomList(customFieldDto);
