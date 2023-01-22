@@ -70,12 +70,6 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
     private String scope = OneConstant.SCOPE.ONE_PROJECT;
 
 
-    private Date closeDateBegin;
-    private Date closeDateEnd;
-
-    private Date planReleaseDateBegin;
-    private Date planReleaseDateEnd;
-
     private String modifyUser;
 
     /**

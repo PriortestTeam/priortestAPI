@@ -93,7 +93,7 @@
         <include refid="Base_Column_List"></include>
         from custom_fields
         <where>
-            project_id = #{projectId}
+            project_id = #{projectId} or type='sField'
             <if test="type != null and type != ''">
                 and `type` = #{type}
             </if>
@@ -122,7 +122,8 @@
                 and `create_user` = #{createUser}
             </if>
         </where>
-        order by update_time desc
+
+        order by create_time desc
     </select>
 
     <select id="getAllCustomList" resultMap="CustomFileldLinkVoResultMap"
@@ -135,7 +136,7 @@
         <where>
             (cfl.scope_id = #{customFieldDto.scopeId}
             and cf.project_id = #{customFieldDto.projectId})
-            OR (cf.type="system" AND cfl.scope_id = #{customFieldDto.scopeId})
+            OR (cf.type="sField" AND cfl.scope_id = #{customFieldDto.scopeId})
             ORDER BY sort DESC
         </where>
 
@@ -170,8 +171,10 @@
         <include refid="Base_Column_List"></include>
         FROM custom_fields
         <where>
-            project_id = #{customFieldDto.projectId}
+           (project_id = #{customFieldDto.projectId} or type ='sField')
             AND field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+            AND (JSON_TYPE(possible_value->'$.order_1') != 'NULL' OR JSON_TYPE(possible_value->'$.others') != 'NULL')
+            order by create_time
         </where>
 
     </select>

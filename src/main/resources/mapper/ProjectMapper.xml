@@ -12,7 +12,7 @@
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="planReleaseDate" column="plan_release_date" jdbcType="TIMESTAMP"/>
-        <result property="delFlag" column="del_flag" jdbcType="INTEGER"/>
+        <!--<result property="delFlag" column="del_flag" jdbcType="INTEGER"/> -->
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
@@ -33,7 +33,7 @@
                status,
                description,
                plan_release_date,
-               del_flag,
+
                create_time,
                update_time,
                close_date,
@@ -55,7 +55,6 @@
                status,
                description,
                plan_release_date,
-               del_flag,
                create_time,
                update_time,
                close_date,
@@ -71,7 +70,7 @@
         id, user_id, title,
         report_to_name, status,
         description, plan_release_date ,
-        del_flag, create_time,
+        create_time,
         update_time,close_date,test_frame,
         project_category,customer,close_desc
         from oneclick.project
@@ -104,8 +103,6 @@
                 ${filter}
             </if>
 
-
-            and del_flag = 0
             order by create_time desc
         </where>
     </select>
@@ -427,7 +424,7 @@
         id, user_id, title,
         report_to_name, status,
         description, plan_release_date ,
-        del_flag, create_time,
+        create_time,
         update_time,close_date,test_frame,
         project_category,customer,close_desc
         from oneclick.project
@@ -456,8 +453,6 @@
                 and close_date &gt; #{closeDateBegin}
                 and close_date &lt; #{closeDateEnd}
             </if>
-
-            and del_flag = 0
             order by create_time desc
         </where>
     </select>
