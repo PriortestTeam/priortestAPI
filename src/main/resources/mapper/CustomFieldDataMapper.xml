@@ -17,7 +17,7 @@
     <sql id="Base_Column_List">
         id
         , user_id, project_id, custom_field_id, scope_id, `scope`, value_data, create_time,
-    is_del, create_user_id
+     create_user_id
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -50,7 +50,7 @@
             useGeneratedKeys="true">
         insert into custom_field_data (user_id, project_id, custom_field_id,
                                        scope_id, `scope`, field_name, value_data,
-                                       create_time, is_del, create_user_id)
+                                       create_time, create_user_id)
         values (#{userId,jdbcType=BIGINT}, #{projectId,jdbcType=BIGINT}, #{customFieldId,jdbcType=VARCHAR},
                 #{scopeId,jdbcType=VARCHAR}, #{scope,jdbcType=VARCHAR}, #{fieldName,jdbcType=VARCHAR},
                 #{valueData,jdbcType=VARCHAR},
@@ -142,9 +142,7 @@
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="isDel != null">
-                is_del = #{isDel,jdbcType=BOOLEAN},
-            </if>
+
             <if test="createUserId != null">
                 create_user_id = #{createUserId,jdbcType=BIGINT},
             </if>
@@ -160,7 +158,6 @@
             `scope`         = #{scope,jdbcType=VARCHAR},
             value_data      = #{valueData,jdbcType=VARCHAR},
             create_time     = #{createTime,jdbcType=TIMESTAMP},
-            is_del          = #{isDel,jdbcType=BOOLEAN},
             create_user_id  = #{createUserId,jdbcType=BIGINT}
         where id = #{id,jdbcType=INTEGER}
     </update>
