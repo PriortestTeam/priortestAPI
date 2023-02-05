@@ -15,9 +15,9 @@ import java.util.regex.Pattern;
 public class DateUtil {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
+        Arrays.stream(getMonthLimit(new Date())).forEach(System.out::println);
 
-        String date = "2018-01-12 12:07:06";
     }
 
 
@@ -316,7 +316,7 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static Date[] getMonthLimit(Date date) throws Exception {
+    public static Date[] getMonthLimit(Date date){
         Calendar cal = clearDate (date, 5);
         cal.set (Calendar.DATE, 1);
         Date date1 = cal.getTime ( );

@@ -1,5 +1,7 @@
 package com.hu.oneclick.model.domain;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
@@ -8,6 +10,7 @@ import java.io.Serializable;
  * @author makejava
  * @since 2021-04-11 14:40:13
  */
+@Data
 public class SysCustomField implements Serializable {
     private static final long serialVersionUID = 680119388243867579L;
 
@@ -25,36 +28,35 @@ public class SysCustomField implements Serializable {
      */
     private String defaultValues;
 
+    private String valueList;
 
-    public String getId() {
-        return id;
-    }
+    /**
+     * type
+     *
+     * @Param:
+     * @return:
+     * @Author: MaSiyi
+     * @Date: 2021/12/29
+     */
+    private String fieldType;
+    /**
+     * scope
+     *
+     * @Param:
+     * @return:
+     * @Author: MaSiyi
+     * @Date: 2021/12/29
+     */
+    private String scope;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+    private int chartDisplay;
 
-    public String getFieldName() {
-        return fieldName;
-    }
+    private int mandatory;
 
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
+    private int uiDisplay;
+    //private String unicodeId;
+    private int length;
+    private int allowAddedValue;
+    private int sort;
 
-    public String getFieldNameCn() {
-        return fieldNameCn;
-    }
-
-    public void setFieldNameCn(String fieldNameCn) {
-        this.fieldNameCn = fieldNameCn;
-    }
-
-    public String getDefaultValues() {
-        return defaultValues;
-    }
-
-    public void setDefaultValues(String defaultValues) {
-        this.defaultValues = defaultValues;
-    }
 }

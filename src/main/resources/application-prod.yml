@@ -1,0 +1,79 @@
+spring:
+  datasource:
+    url: jdbc:mysql://43.139.159.146:3306/oneclick?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false
+    username: oneclick
+    password: Oneclick+123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      #配置初始化大小、最小、最大
+      initial-size: 5
+      min-idle: 5
+      max-active: 10
+      max-wait: 10000                                             #配置从连接池获取连接等待超时的时间
+      time-between-eviction-runs-millis: 600000                   #配置间隔多久启动一次DestroyThread，对连接池内的连接才进行一次检测，单位是毫秒。检测时:1.如果连接空闲并且超过minIdle以外的连接，如果空闲时间超过minEvictableIdleTimeMillis设置的值则直接物理关闭。2.在minIdle以内的不处理
+      min-evictable-idle-time-millis: 300000                      #配置一个连接在池中最大空闲时间，单位是毫秒
+      test-on-borrow: false                                       #设置从连接池获取连接时是否检查连接有效性，true时，每次都检查;false时，不检查
+      test-on-return: false                                       #设置往连接池归还连接时是否检查连接有效性，true时，每次都检查;false时，不检查
+      test-while-idle: true                                       #设置从连接池获取连接时是否检查连接有效性，true时，如果连接空闲时间超过minEvictableIdleTimeMillis进行检查，否则不检查;false时，不检查
+      validation-query: "select 1"                      #检验连接是否有m效的查询语句。如果数据库Driver支持ping()方法，则优先使用ping()方法进行检查，否则使用validationQuery查询进行检查。(Oracle jdbc Driver目前不支持ping方法)
+      keep-alive: true                                            #打开后，增强timeBetweenEvictionRunsMillis的周期性连接检查，minIdle内的空闲连接，每次检查强制验证连接有效性. 参考：https://github.com/alibaba/druid/wiki/KeepAlive_cn
+      remove-abandoned: true
+      remove-abandoned-timeout: 80                                # 超时时间，秒
+      log-abandoned: true                                         #关闭abanded连接时输出错误日志，这样出现连接泄露时可以通过错误日志定位忘记关闭连接的位置
+      #根据自身业务及事务大小来设置
+      #connection-properties: "oracle.net.CONNECT_TIMEOUT=2000;oracle.jdbc.ReadTimeout=10000"
+      time-between-log-stats-millis: 120000                       #配置监控统计日志的输出间隔，单位毫秒，每次输出所有统计数据会重置，酌情开启
+      filter:
+        stat:
+          # 显示慢sql 默认当超过3秒显示
+          log-slow-sql: true
+  jackson:
+    time-zone: GMT+8 #设置时区
+    date-format: yyyy-MM-dd HH:mm:ss #设置返回格式
+
+
+  redis:
+    #    host: 192.168.184.10
+    host: 43.139.159.146
+    port: 6379
+    ssl: false
+#    password: qingyang_redis
+
+  #email 配置
+  mail:
+    host: smtp.163.com
+    username: qahelpdesk@163.com #发送邮件人的邮箱
+    password: YTLFEQYYJEMGGICS #这个密码是邮箱设置里SMTP服务生成的授权码
+    default-encoding: UTF-8
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  configuration:
+    call-setters-on-nulls: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: true
+
+
+logging:
+  config: classpath:log4j2.yml
+#  level: info
+
+
+
+onclick:
+  config:
+    interceptor:
+      enable: true
+  default:
+    photo:
+  minioConfig:
+    bucketName: oneclick
+    endpoint: http://43.139.159.146:9000
+    accountKey: admin
+    password: password
+    source: true
+  time:
+    firstTime: 30
+    secondTime: 15
+  dirPath: /usr/oneclick/data/file

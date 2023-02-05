@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.CustomFieldsDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.CustomFields">
+        <id column="custom_field_id" property="customFieldId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="type" property="type"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="field_name_cn" property="fieldNameCn"/>
+        <result column="project_id" property="projectId"/>
+        <result column="modify_user" property="modifyUser"/>
+        <result column="length" property="length"/>
+        <result column="possible_value" property="possibleValue"/>
+        <result column="field_type" property="fieldType"/>
+        <result column="field_type_cn" property="fieldTypeCn"/>
+    </resultMap>
+
+    <resultMap id="CustomFileldLinkVoResultMap" type="com.hu.oneclick.model.domain.vo.CustomFileldLinkVo">
+        <result column="custom_field_id" property="customFieldId"/>
+        <result column="type" property="type"/>
+        <result column="possible_value" property="possibleValue"/>
+        <result column="field_type" property="fieldType"/>
+        <result column="field_type_cn" property="fieldTypeCn"/>
+        <result column="field_name_cn" property="fieldNameCn"/>
+        <result column="project_id" property="projectId"/>
+        <result column="length" property="length"/>
+        <result column="custom_field_link_id" property="customFieldLinkId"/>
+        <result column="scope" property="scope"/>
+        <result column="scope_id" property="scopeId"/>
+        <result column="scope_name_cn" property="scopeNameCn"/>
+        <result column="default_value" property="defaultValue"/>
+        <result column="mandatory" property="mandatory"/>
+
+    </resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        custom_field_id
+        , create_user, type, create_time, update_time, field_name_cn, project_id, modify_user, length, possible_value, field_type,field_type_cn
+    </sql>
+
+    <sql id="Custom_Column_List">
+        cf.
+        custom_field_id,
+            cf.type,
+            cf.possible_value,
+            cf.field_type,
+            cf.field_type_cn,
+            cf.field_name_cn,
+            cf.project_id,
+            cf.length,
+            cfl.custom_field_link_id,
+            cfl.scope,
+            cfl.scope_id,
+            cfl.scope_name_cn,
+            cfl.default_value,
+            cfl.mandatory
+    </sql>
+
+
+    <update id="update" parameterType="com.hu.oneclick.model.domain.CustomFields">
+        UPDATE custom_fields
+        <set>
+            <if test="null != customFieldId and '' != customFieldId">custom_field_id = #{customFieldId},</if>
+            <if test="null != createUser and '' != createUser">create_user = #{createUser},</if>
+            <if test="null != type and '' != type">type = #{type},</if>
+            <if test="null != createTime and '' != createTime">create_time = #{createTime},</if>
+            <if test="null != updateTime and '' != updateTime">update_time = #{updateTime},</if>
+            <if test="null != fieldNameCn and '' != fieldNameCn">field_name_cn = #{fieldNameCn},</if>
+            <if test="null != projectId and '' != projectId">project_id = #{projectId},</if>
+            <if test="null != modifyUser and '' != modifyUser">modify_user = #{modifyUser},</if>
+            <if test="null != length and '' != length">length = #{length},</if>
+            <if test="null != possibleValue and '' != possibleValue">possible_value = #{possibleValue},</if>
+            <if test="null != fieldType and '' != fieldType">field_type = #{fieldType},</if>
+            <if test="null != fieldTypeCn and '' != fieldTypeCn">field_type_cn = #{fieldTypeCn},</if>
+        </set>
+        WHERE custom_field_id = #{customFieldId}
+    </update>
+
+
+    <delete id="deleteBatchByKey">
+        delete from custom_fields where custom_field_id in
+        <foreach collection="customFieldIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryCustomList" resultMap="BaseResultMap" parameterType="com.hu.oneclick.model.domain.CustomFields">
+        select
+        <include refid="Base_Column_List"></include>
+        from custom_fields
+        <where>
+            project_id = #{projectId} or type='sField'
+            <if test="type != null and type != ''">
+                and `type` = #{type}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="fieldNameCn != null and fieldNameCn != ''">
+                and field_name_cn = #{fieldNameCn}
+            </if>
+            <if test="modifyUser != null and modifyUser != ''">
+                and modify_user = #{modifyUser}
+            </if>
+            <if test="length != null and length != ''">
+                and length = #{length}
+            </if>
+            <if test="possibleValue != null and possibleValue != ''">
+                and possible_value = #{possibleValue}
+            </if>
+            <if test="fieldType != null and fieldType != ''">
+                and field_type = #{fieldType}
+            </if>
+            <if test="createUser != null and createUser != ''">
+                and `create_user` = #{createUser}
+            </if>
+        </where>
+
+        order by create_time desc
+    </select>
+
+    <select id="getAllCustomList" resultMap="CustomFileldLinkVoResultMap"
+            parameterType="com.hu.oneclick.model.domain.dto.CustomFieldDto">
+        SELECT
+        <include refid="Custom_Column_List"/>
+        FROM
+        custom_fileld_link cfl
+        LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        <where>
+            (cfl.scope_id = #{customFieldDto.scopeId}
+            and cf.project_id = #{customFieldDto.projectId})
+            OR (cf.type="sField" AND cfl.scope_id = #{customFieldDto.scopeId})
+            ORDER BY sort DESC
+        </where>
+
+    </select>
+
+    <select id="getFieldTypeByProjectId" resultType="java.lang.String" parameterType="java.lang.Long">
+        SELECT DISTINCT cf.field_type
+        FROM custom_fileld_link cfl
+        LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        <where>
+            WHERE cf.project_id = #{projectId}
+            AND cf.field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+        </where>
+    </select>
+
+    <!--    <select id="getDropDownBox" resultMap="CustomFileldLinkVoResultMap" parameterType="com.hu.oneclick.model.domain.dto.CustomFieldDto">
+            SELECT
+            <include refid="Custom_Column_List"/>
+            FROM custom_fileld_link cfl
+            LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+            <where>
+                 cf.project_id = #{customFieldDto.projectId}
+                AND cf.field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+            </where>
+
+        </select>
+        -->
+
+    <select id="getDropDownBox" resultMap="CustomFileldLinkVoResultMap"
+            parameterType="com.hu.oneclick.model.domain.dto.CustomFieldDto">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM custom_fields
+        <where>
+           (project_id = #{customFieldDto.projectId} or type ='sField')
+            AND field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+            AND (JSON_TYPE(possible_value->'$.order_1') != 'NULL' OR JSON_TYPE(possible_value->'$.others') != 'NULL')
+            order by create_time
+        </where>
+
+    </select>
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.RoomDao">
+    <resultMap type="com.hu.oneclick.model.domain.Room" id="RoomMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="companyName" column="company_name" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createName" column="create_name" jdbcType="VARCHAR"/>
+        <result property="createUserEmail" column="create_user_email" jdbcType="VARCHAR"/>
+        <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+        <result property="modifyName" column="modify_name" jdbcType="VARCHAR"/>
+        <result property="deleteFlag" column="delete_flag" jdbcType="TINYINT"/>
+    </resultMap>
+    <insert id="insertRoom" parameterType="com.hu.oneclick.model.domain.Room" useGeneratedKeys="true">
+        insert into room
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="companyName != null and companyName !=''">
+                company_name,
+            </if>
+            <if test="createName != null and createName !=''">
+                create_name,
+            </if>
+            <if test="createUserEmail != null and createUserEmail !=''">
+                create_user_email,
+            </if>
+            <if test="expiredDate != null">
+                expired_date,
+            </if>
+            <if test="type != null">
+                `type`,
+            </if>
+            <if test="modifyName != null and modifyName !=''">
+                modify_name,
+            </if>
+            <if test="deleteFlag != null and deleteFlag != ''">
+                delete_flag,
+            </if>
+            create_time,
+            modify_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="companyName != null and companyName !=''">
+                #{companyName},
+            </if>
+            <if test="createName != null and createName !=''">
+                #{createName},
+            </if>
+            <if test="createUserEmail != null and createUserEmail !=''">
+                #{createUserEmail},
+            </if>
+            <if test="expiredDate != null">
+                #{expiredDate},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="modifyName != null and modifyName !=''">
+                #{modifyName},
+            </if>
+            <if test="deleteFlag != null and deleteFlag != ''">
+                #{deleteFlag},
+            </if>
+            NOW(),
+            NOW()
+        </trim>
+    </insert>
+
+    <update id="updateRoom" parameterType="com.hu.oneclick.model.domain.Room">
+        update room
+        <set>
+            <if test="companyName != null and companyName != ''">
+                company_name = #{companyName},
+            </if>
+            <if test="createName != null and createName != ''">
+                create_name = #{createName},
+            </if>
+            <if test="createUserEmail != null and createUserEmail != ''">
+                create_user_email = #{createUserEmail},
+            </if>
+            <if test="modifyName != null and modifyName != ''">
+                modify_name = #{modifyName},
+            </if>
+            <if test="deleteFlag != null">
+                deleteFlag = #{deleteFlag},
+            </if>
+            modify_time = NOW()
+        </set>
+        where id = #{id} and del_flag = 0
+    </update>
+
+    <select id="queryByCompanyNameAndUserEmail" resultType="com.hu.oneclick.model.domain.Room">
+         select * from room
+        where company_name = #{companyName} and create_user_email = #{email}
+    </select>
+</mapper>

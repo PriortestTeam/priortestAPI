@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.SysUserOrderRecordDao">
+  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysUserOrderRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="order_id" jdbcType="INTEGER" property="order_id" />
+    <result column="original_price" jdbcType="DECIMAL" property="original_price" />
+    <result column="discount_price" jdbcType="DECIMAL" property="discount_price" />
+    <result column="status" jdbcType="BOOLEAN" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="is_del" jdbcType="BOOLEAN" property="is_del" />
+    <result column="payment_time" jdbcType="TIMESTAMP" property="payment_time" />
+    <result column="payment_type" jdbcType="INTEGER" property="payment_type" />
+    <result column="service_plan_duration" jdbcType="VARCHAR" property="service_plan_duration" />
+    <result column="data_strorage" jdbcType="INTEGER" property="data_strorage" />
+    <result column="data_price" jdbcType="DECIMAL" property="data_price" />
+    <result column="api_call" jdbcType="VARCHAR" property="api_call" />
+    <result column="api_call_price" jdbcType="DECIMAL" property="api_call_price" />
+    <result column="sub_scription" jdbcType="VARCHAR" property="sub_scription" />
+    <result column="discount" jdbcType="DECIMAL" property="discount" />
+    <result column="expenditure" jdbcType="DECIMAL" property="expenditure" />
+    <result column="invoice" jdbcType="BOOLEAN" property="invoice" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, order_id, original_price, discount_price, `status`, create_time, is_del, payment_time,
+    payment_type, service_plan_duration, data_strorage, data_price, api_call, api_call_price, 
+    sub_scription, discount, expenditure, invoice
+  </sql>
+  <sql id="Join_Column_List">
+    ore.id, ore.order_id, ore.original_price, ore.discount_price, ore.`status`, ore.create_time, ore.is_del, ore.payment_time,
+    ore.payment_type, ore.service_plan_duration, ore.data_strorage, ore.data_price, ore.api_call, ore.api_call_price,
+    ore.sub_scription, ore.discount, ore.expenditure, ore.invoice
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user_order_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getUserOrderRecord"  resultMap="BaseResultMap" parameterType="java.lang.String">
+    SELECT
+    <include refid="Join_Column_List" />
+    FROM
+      sys_user_order ord
+        JOIN sys_user_order_record ore ON ord.order_id = ore.order_id
+    WHERE
+      user_id = #{userId}
+  </select>
+  <select id="getOrderRecordForDate"  resultMap="BaseResultMap" >
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM
+      sys_user_order_record
+    WHERE
+      payment_time BETWEEN #{param1}
+        AND #{param2}
+      AND order_id = #{param3}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sys_user_order_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserOrderRecord" useGeneratedKeys="true">
+    insert into sys_user_order_record (order_id, original_price, discount_price,
+      `status`, create_time, is_del,
+      payment_time, payment_type, service_plan_duration,
+      data_strorage, data_price, api_call,
+      api_call_price, sub_scription, discount,
+      expenditure, invoice)
+    values (#{order_id,jdbcType=INTEGER}, #{original_price,jdbcType=DECIMAL}, #{discount_price,jdbcType=DECIMAL},
+      #{status,jdbcType=BOOLEAN}, #{create_time,jdbcType=TIMESTAMP}, #{is_del,jdbcType=BOOLEAN},
+      #{payment_time,jdbcType=TIMESTAMP}, #{payment_type,jdbcType=INTEGER}, #{service_plan_duration,jdbcType=VARCHAR},
+      #{data_strorage,jdbcType=INTEGER}, #{data_price,jdbcType=DECIMAL}, #{api_call,jdbcType=VARCHAR},
+      #{api_call_price,jdbcType=DECIMAL}, #{sub_scription,jdbcType=VARCHAR}, #{discount,jdbcType=DECIMAL},
+      #{expenditure,jdbcType=DECIMAL}, #{invoice,jdbcType=BOOLEAN})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserOrderRecord" useGeneratedKeys="true">
+    insert into sys_user_order_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="order_id != null">
+        order_id,
+      </if>
+      <if test="original_price != null">
+        original_price,
+      </if>
+      <if test="discount_price != null">
+        discount_price,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="create_time != null">
+        create_time,
+      </if>
+      <if test="is_del != null">
+        is_del,
+      </if>
+      <if test="payment_time != null">
+        payment_time,
+      </if>
+      <if test="payment_type != null">
+        payment_type,
+      </if>
+      <if test="service_plan_duration != null">
+        service_plan_duration,
+      </if>
+      <if test="data_strorage != null">
+        data_strorage,
+      </if>
+      <if test="data_price != null">
+        data_price,
+      </if>
+      <if test="api_call != null">
+        api_call,
+      </if>
+      <if test="api_call_price != null">
+        api_call_price,
+      </if>
+      <if test="sub_scription != null">
+        sub_scription,
+      </if>
+      <if test="discount != null">
+        discount,
+      </if>
+      <if test="expenditure != null">
+        expenditure,
+      </if>
+      <if test="invoice != null">
+        invoice,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="order_id != null">
+        #{order_id,jdbcType=INTEGER},
+      </if>
+      <if test="original_price != null">
+        #{original_price,jdbcType=DECIMAL},
+      </if>
+      <if test="discount_price != null">
+        #{discount_price,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=BOOLEAN},
+      </if>
+      <if test="create_time != null">
+        #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="is_del != null">
+        #{is_del,jdbcType=BOOLEAN},
+      </if>
+      <if test="payment_time != null">
+        #{payment_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payment_type != null">
+        #{payment_type,jdbcType=INTEGER},
+      </if>
+      <if test="service_plan_duration != null">
+        #{service_plan_duration,jdbcType=VARCHAR},
+      </if>
+      <if test="data_strorage != null">
+        #{data_strorage,jdbcType=INTEGER},
+      </if>
+      <if test="data_price != null">
+        #{data_price,jdbcType=DECIMAL},
+      </if>
+      <if test="api_call != null">
+        #{api_call,jdbcType=VARCHAR},
+      </if>
+      <if test="api_call_price != null">
+        #{api_call_price,jdbcType=DECIMAL},
+      </if>
+      <if test="sub_scription != null">
+        #{sub_scription,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null">
+        #{discount,jdbcType=DECIMAL},
+      </if>
+      <if test="expenditure != null">
+        #{expenditure,jdbcType=DECIMAL},
+      </if>
+      <if test="invoice != null">
+        #{invoice,jdbcType=BOOLEAN},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysUserOrderRecord">
+    update sys_user_order_record
+    <set>
+      <if test="order_id != null">
+        order_id = #{order_id,jdbcType=INTEGER},
+      </if>
+      <if test="original_price != null">
+        original_price = #{original_price,jdbcType=DECIMAL},
+      </if>
+      <if test="discount_price != null">
+        discount_price = #{discount_price,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=BOOLEAN},
+      </if>
+      <if test="create_time != null">
+        create_time = #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="is_del != null">
+        is_del = #{is_del,jdbcType=BOOLEAN},
+      </if>
+      <if test="payment_time != null">
+        payment_time = #{payment_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payment_type != null">
+        payment_type = #{payment_type,jdbcType=INTEGER},
+      </if>
+      <if test="service_plan_duration != null">
+        service_plan_duration = #{service_plan_duration,jdbcType=VARCHAR},
+      </if>
+      <if test="data_strorage != null">
+        data_strorage = #{data_strorage,jdbcType=INTEGER},
+      </if>
+      <if test="data_price != null">
+        data_price = #{data_price,jdbcType=DECIMAL},
+      </if>
+      <if test="api_call != null">
+        api_call = #{api_call,jdbcType=VARCHAR},
+      </if>
+      <if test="api_call_price != null">
+        api_call_price = #{api_call_price,jdbcType=DECIMAL},
+      </if>
+      <if test="sub_scription != null">
+        sub_scription = #{sub_scription,jdbcType=VARCHAR},
+      </if>
+      <if test="discount != null">
+        discount = #{discount,jdbcType=DECIMAL},
+      </if>
+      <if test="expenditure != null">
+        expenditure = #{expenditure,jdbcType=DECIMAL},
+      </if>
+      <if test="invoice != null">
+        invoice = #{invoice,jdbcType=BOOLEAN},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysUserOrderRecord">
+    update sys_user_order_record
+    set order_id = #{order_id,jdbcType=INTEGER},
+      original_price = #{original_price,jdbcType=DECIMAL},
+      discount_price = #{discount_price,jdbcType=DECIMAL},
+      `status` = #{status,jdbcType=BOOLEAN},
+      create_time = #{create_time,jdbcType=TIMESTAMP},
+      is_del = #{is_del,jdbcType=BOOLEAN},
+      payment_time = #{payment_time,jdbcType=TIMESTAMP},
+      payment_type = #{payment_type,jdbcType=INTEGER},
+      service_plan_duration = #{service_plan_duration,jdbcType=VARCHAR},
+      data_strorage = #{data_strorage,jdbcType=INTEGER},
+      data_price = #{data_price,jdbcType=DECIMAL},
+      api_call = #{api_call,jdbcType=VARCHAR},
+      api_call_price = #{api_call_price,jdbcType=DECIMAL},
+      sub_scription = #{sub_scription,jdbcType=VARCHAR},
+      discount = #{discount,jdbcType=DECIMAL},
+      expenditure = #{expenditure,jdbcType=DECIMAL},
+      invoice = #{invoice,jdbcType=BOOLEAN}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="payment" parameterType="java.lang.String">
+     UPDATE sys_user_order_record set `status` = 1 WHERE id = #{id}
+  </update>
+</mapper>

@@ -5,15 +5,26 @@ import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.ViewService;
-import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
  */
 @RestController
 @RequestMapping("view")
+@Api(tags = "视图管理")
 public class ViewController {
 
     private final ViewService viewService;
@@ -38,9 +49,23 @@ public class ViewController {
     }
 
     @GetMapping("getViewScopeChildParams")
+    @ApiOperation("根据范围搜索所有字段(弃用)请使用getViewScope")
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope){
         return viewService.getViewScopeChildParams(scope);
     }
+
+    /**
+     * @Param: [scope]
+     * @return: com.hu.oneclick.model.base.Resp<java.util.Map<java.lang.String,java.lang.Object>>
+     * @Author: MaSiyi
+     * @Date: 2021/12/29
+     */
+    @GetMapping("getViewScope")
+    @ApiOperation("根据范围搜索所有字段")
+    public Resp<Map<String,Object>> getViewScope(@RequestParam String scope){
+        return viewService.getViewScope(scope);
+    }
+
 
 
     @PostMapping("queryViews")
@@ -49,8 +74,16 @@ public class ViewController {
     }
 
     @PostMapping("addView")
+    @ApiOperation("添加视图(已弃用)请使用addViewRE")
     private Resp<String> addView(@RequestBody View view){
         return viewService.addView(view);
+    }
+
+
+    @PostMapping("addViewRE")
+    @ApiOperation("添加视图(新)")
+    private Resp<String> addViewRE(@RequestBody View view){
+        return viewService.addViewRE(view);
     }
 
     @PostMapping("updateView")
@@ -65,13 +98,36 @@ public class ViewController {
 
 
     @GetMapping("queryViewParents")
-    private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String viewTitle){
-        return viewService.queryViewParents(scope,viewTitle);
+    @ApiOperation("查询父视图")
+    private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String projectId){
+        return viewService.queryViewParents(scope,projectId);
     }
 
     @GetMapping("queryViewTrees")
+    @ApiOperation("查询视图树")
     private Resp<List<ViewTreeDto>> queryViewTrees(@RequestParam String scope){
         return viewService.queryViewTrees(scope);
     }
+
+    @PostMapping("renderingView")
+    @ApiOperation("渲染视图")
+    public Resp<Object> renderingView(@RequestBody String viewId){
+        try {
+            return viewService.renderingView(viewId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+
+    @PostMapping("getViewFilter")
+    @ApiOperation("获取filter字段")
+    public Resp<Object> getViewFilter(){
+        return viewService.getViewFilter();
+    }
+
 
 }

@@ -82,7 +82,6 @@ public interface ViewDao {
 
     List<View> queryViewParents(@Param("masterId") String masterId,
                                 @Param("scope") String scope,
-                                @Param("title")  String title,
                                 @Param("projectId") String projectId);
 
     String queryTitleByParentId(@Param("parentId") String parentId);
@@ -92,4 +91,14 @@ public interface ViewDao {
                                           @Param("scope") String scope);
 
     List<ViewTreeDto> queryViewTreeById(@Param("masterId") String masterId,@Param("viewId") String viewId);
+
+    List<Object> sql(@Param("sqlen")String sqlen);
+
+    /** 通过ID查询单条数据
+     * @Param: [id, masterId]
+     * @return: com.hu.oneclick.model.domain.View
+     * @Author: MaSiyi
+     * @Date: 2021/12/22
+     */
+    View queryOnlyById(@Param("id") String id);
 }

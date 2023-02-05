@@ -41,7 +41,6 @@ public class RedisConfig {
                 .setSubscriptionsPerConnection(5)
                 .setSubscriptionConnectionMinimumIdleSize(1)
                 .setSubscriptionConnectionPoolSize(50)
-                .setConnectionMinimumIdleSize(32)
                 .setConnectionPoolSize(64)
                 .setDnsMonitoringInterval(5000);
         config.setThreads(0);

@@ -42,6 +42,7 @@
         join sprint s on fjs.sprint = s.id
         where f.id = #{featureId}
     </select>
+    <select id="findAllByFeature" resultType="com.hu.oneclick.model.domain.Feature"></select>
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="" useGeneratedKeys="true">

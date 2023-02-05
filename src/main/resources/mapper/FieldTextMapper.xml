@@ -11,18 +11,21 @@
 
     <!--查询单个-->
     <select id="queryById" resultMap="FieldTextMap">
-        select
-          custom_field_id, default_value, content, `length`
+        select custom_field_id,
+               default_value,
+               content,
+               `length`
         from oneclick.field_text
         where custom_field_id = #{customFieldId}
     </select>
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="FieldTextMap">
-        select
-          custom_field_id, default_value, content,`length`
-        from oneclick.field_text
-        limit #{offset}, #{limit}
+        select custom_field_id,
+               default_value,
+               content,
+               `length`
+        from oneclick.field_text limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
@@ -47,23 +50,22 @@
     </select>
     <select id="queryFieldTextById" resultType="com.hu.oneclick.model.domain.FieldText">
         select
-                    cf.id as id,
-                       cf.type as type,
-                       cf.create_time as createTime,
-                       cf.update_time as updateTime,
-                       cf.user_id as userId,
-                       cf.field_name as fieldName,
-                       cf.scope as scope,
-                       cf.mandatory as mandatory,
-                       cf.project_id as projectId,
-                       t.default_value as defaultValue,
-                       t.content as content,
-                       t.`length` as `length`
-                from field_text t
-                join custom_field cf on t.custom_field_id = cf.id
-                where
-                cf.id = #{customFieldId}
-                and cf.user_id = #{masterId}
+               t.custom_field_id as customFieldId,
+               cf.type         as type,
+               cf.create_time  as createTime,
+               cf.update_time  as updateTime,
+               cf.user_id      as userId,
+               cf.field_name   as fieldName,
+               cf.scope        as scope,
+               cf.mandatory    as mandatory,
+               cf.project_id   as projectId,
+               t.default_value as defaultValue,
+               t.content       as content,
+               t.`length`      as `length`
+        from field_text t
+                 join custom_field cf on t.custom_field_id = cf.id
+        where cf.id = #{customFieldId}
+          and cf.user_id = #{masterId}
     </select>
 
     <!--新增所有列-->
@@ -120,7 +122,9 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from oneclick.field_text where custom_field_id = #{customFieldId}
+        delete
+        from oneclick.field_text
+        where custom_field_id = #{customFieldId}
     </delete>
 
 </mapper>

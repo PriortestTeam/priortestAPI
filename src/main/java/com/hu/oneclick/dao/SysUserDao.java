@@ -2,10 +2,15 @@ package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.dto.PlatformUserDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
+import com.hu.oneclick.model.domain.dto.SysUserRoleDto;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (SysUser)表数据库访问层
@@ -13,6 +18,7 @@ import java.util.List;
  * @author makejava
  * @since 2020-11-14 23:32:43
  */
+@Component
 public interface SysUserDao {
 
     /**
@@ -41,6 +47,7 @@ public interface SysUserDao {
      */
     List<SysUser> queryAll(SysUser sysUser);
 
+    List<SysUser> queryAllIdOrParentId(SysUser sysUser);
     /**
      * 根据用户邮箱查询
      * @param email
@@ -100,7 +107,7 @@ public interface SysUserDao {
      * @param sysUser
      * @return
      */
-    int updateSubUser(SubUserDto sysUser);
+    int updateSubUser(SysUser sysUser);
 
     /**
      * 设置子用户密码
@@ -109,14 +116,51 @@ public interface SysUserDao {
      */
     int updateSubUserPassword(SubUserDto sysUser);
 
+
     /**
      * 删除子用户
      * @param id
      * @param masterId
      * @return
      */
-    int deleteSubUser(@Param("id") String id, @Param("masterId") String masterId);
+    // int deleteSubUser(@Param("id") String id, @Param("masterId") String masterId);
+    int deleteSubUser(@Param("id") String id);
+   // List<SubUserDto> queryByNameSubUsers(@Param("masterId") String masterId,@Param("subUserName") String subUserName);
+    // query all user name in the same room
+    List<SubUserDto> queryNameUsersByRoomId(@Param("roomId") String room_id,@Param("subUserName") String subUserName);
 
-    List<SubUserDto> queryByNameSubUsers(@Param("masterId") String masterId,@Param("subUserName") String subUserName);
+    /**
+     * 查詢平台用戶
+     * @param platformUserDto
+     * @return
+     */
+    List<PlatformUserDto> queryPlatformUsers(PlatformUserDto platformUserDto);
 
+    /**
+     * 更新平台用户
+     * @param platformUserDto
+     * @return
+     */
+    int updatePlatformUser(PlatformUserDto platformUserDto);
+
+    /**
+     * 根据父id删除
+     * @param parentId 父id
+     */
+    void deleteByParentId(@Param("parentId")String parentId);
+
+    Date getExpireDate(String userId);
+
+    /**
+     * 根据用户邮箱模糊查询
+     * @param email
+     * @return
+     */
+    List<SysUser> queryByLikeEmail(@Param("email") String email);
+
+    List<SysUserRoleDto> getAccountRole(String userId, String roleId);
+
+    List<SubUserDto> querySubUsersByRoomId(@Param("roomId") Long roomId);
+
+    List<Map<String, Object>> listUserByProjectId(@Param("projectId")Long projectId);
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.CustomFileldLinkDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.CustomFileldLink">
+        <result column="custom_field_link_id" property="customFieldLinkId"/>
+        <result column="custom_field_id" property="customFieldId"/>
+        <result column="default_value" property="defaultValue"/>
+        <result column="scope" property="scope"/>
+        <result column="mandatory" property="mandatory"/>
+        <result column="scope_id" property="scopeId"/>
+        <result column="scope_name_cn" property="scopeNameCn"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        custom_field_link_id
+        ,custom_field_id, default_value, scope, scope_name_cn,mandatory,scope_id
+    </sql>
+
+
+    <insert id="insertBatch" parameterType="com.hu.oneclick.model.domain.CustomFileldLink">
+        INSERT INTO custom_fileld_link(
+        custom_field_link_id,
+        custom_field_id,
+        default_value,
+        scope,
+        mandatory,
+        scope_id,
+        scope_name_cn
+        )
+        VALUES
+        <foreach collection="customFileldLinkList" item="item" separator=",">
+            (
+            #{item.customFieldLinkId} ,
+            #{item.customFieldId} ,
+            #{item.defaultValue},
+            #{item.scope},
+            #{item.mandatory},
+            #{item.scopeId},
+            #{item.scopeNameCn}
+            )
+        </foreach>
+
+    </insert>
+
+    <delete id="deleteBatchByCustomFieldId">
+        delete from custom_fileld_link where custom_field_id in
+        <foreach collection="customFieldIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="findByCustomFieldIds" resultMap="BaseResultMap" parameterType="java.util.Set">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM custom_fileld_link
+        WHERE
+        custom_field_id IN
+        <foreach collection="customFieldIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

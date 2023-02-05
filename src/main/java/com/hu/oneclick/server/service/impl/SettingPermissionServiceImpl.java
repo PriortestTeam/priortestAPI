@@ -65,7 +65,8 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
             return new Resp.Builder<SubUserPermissionDto>().buildResult("参数不能为空.");
         }
         SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId());
+        SubUserDto subUserDto = null;
+//        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId());
         if (subUserDto == null){
             return new Resp.Builder<SubUserPermissionDto>().buildResult("未查询到该用户.");
         }
@@ -127,7 +128,8 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         entity.verify();
         try {
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-            SubUserDto subUserDto = sysUserDao.querySubUserInfo(entity.getSubUserDto().getId(),masterUser.getId());
+            SubUserDto subUserDto = null;
+//            SubUserDto subUserDto = sysUserDao.querySubUserInfo(entity.getSubUserDto().getId(),masterUser.getId());
             if (subUserDto == null){
                 return new Resp.Builder<String>().fail();
             }
@@ -148,17 +150,17 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
     @Override
     public Resp<List<Project>> getProjects(String subUserId) {
         List<Project> result = null;
-        SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId());
-        if (subUserDto.getProjectIdStr().equals(subUserDto.getAll())){
-            result = projectDao.queryAllProjects(masterUser.getId());
-        }else if(StringUtils.isNotEmpty(subUserDto.getProjectIdStr())){
-            List<String> ids = Arrays.asList(subUserDto.getProjectIdStr().split(subUserDto.getDelimiter()));
-            if (ids.size() <= 0){
-                return new Resp.Builder<List<Project>>().buildResult("该用户未分配项目。");
-            }
-            result = projectDao.queryInProjectIdsAndPermission(ids,masterUser.getId());
-        }
+//        SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+//        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId());
+//        if (subUserDto.getProjectIdStr().equals(subUserDto.getAll())){
+//            result = projectDao.queryAllProjects(masterUser.getId());
+//        }else if(StringUtils.isNotEmpty(subUserDto.getProjectIdStr())){
+//            List<String> ids = Arrays.asList(subUserDto.getProjectIdStr().split(subUserDto.getDelimiter()));
+//            if (ids.size() <= 0){
+//                return new Resp.Builder<List<Project>>().buildResult("该用户未分配项目。");
+//            }
+//            result = projectDao.queryInProjectIdsAndPermission(ids,masterUser.getId());
+//        }
         return new Resp.Builder<List<Project>>().setData(result).ok();
     }
 

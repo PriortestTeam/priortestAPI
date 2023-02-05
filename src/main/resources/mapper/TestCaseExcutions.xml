@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.TestCaseExcutionDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.TestCaseExcution" id="TestCaseExcution">
+        <result property="testCycleId" column="test_cycle_id" jdbcType="VARCHAR"/>
+        <result property="testCaseId" column="test_case_id" jdbcType="VARCHAR"/>
+        <result property="step" column="step" jdbcType="INTEGER"/>
+        <result property="stepStatus" column="step_status" jdbcType="INTEGER"/>
+        <result property="runStatus" column="run_status" jdbcType="INTEGER"/>
+        <result property="runCount" column="run_count" jdbcType="INTEGER"/>
+        <result property="runner" column="runner" jdbcType="VARCHAR"/>
+        <result property="issueId" column="issueId" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+
+    </resultMap>
+
+    <resultMap type="com.hu.oneclick.model.domain.Issue" id="IssueMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="author" column="author" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>
+        <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
+        <result property="testCase" column="test_case" jdbcType="INTEGER"/>
+        <result property="testCycle" column="test_cycle" jdbcType="INTEGER"/>
+        <result property="feature" column="feature" jdbcType="INTEGER"/>
+        <result property="priority" column="priority" jdbcType="VARCHAR"/>
+        <result property="env" column="env" jdbcType="VARCHAR"/>
+        <result property="browser" column="browser" jdbcType="VARCHAR"/>
+        <result property="platform" column="platform" jdbcType="VARCHAR"/>
+        <result property="version" column="version" jdbcType="VARCHAR"/>
+        <result property="caseCategory" column="case_category" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!--查詢該測試用例下的所有執行記錄-->
+    <select id="queryHistoryByTestCaseId" resultMap="TestCaseExcution">
+        SELECT
+        test_cycle_id,max(run_status) as 'run_status',test_case_id,max(issueId) as 'issueId' ,max(runner) as 'runner',max(update_time) as update_time
+        FROM test_cases_execution
+        WHERE test_case_id = #{testCaseId}
+        GROUP BY
+        test_cycle_id,test_case_id, run_count
+    </select>
+
+    <insert id="createTestCaseExcutionDate">
+    insert into test_cases_execution
+        (test_cycle_id,
+            test_case_id,
+            step,
+            runner,
+            issueId,
+            run_count,
+            update_time,
+            step_status,
+            run_status)
+         (
+        select b.test_cycle_id,
+            b.test_case_id,
+            b.step,
+            b.runner,
+            b.issueId,
+            b.run_count,
+            b.update_time,
+            b.step_status,
+            b.run_status
+            from
+            test_cycle_join_test_step b
+            where b.test_cycle_id = #{testCycleId}
+            and b.test_case_id = #{testCaseId}
+        );
+    </insert>
+
+    <update id="update">
+        update test_cases_execution
+        <set>
+            <if test="runCount != null and runCount != ''">
+                run_count = #{runCount},
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="runDuration != null and runDuration != ''">
+                run_duration = #{runDuration},
+            </if>
+            <if test="runStatus != null and runStatus != ''">
+                run_status = #{runStatus},
+            </if>
+            <if test="stepStatus != null and stepStatus != ''">
+                step_status = #{stepStatus},
+            </if>
+            update_time=NOW()
+        </set>
+        where test_cycle_id = #{testCycleId}
+        and test_case_id = #{testCaseId}
+    </update>
+
+    <insert id="insertIssue">
+        insert into issue
+        (id,
+        project_id,
+        user_id,
+        title,
+        author,
+        status,
+        planned_release_date,
+        close_date,
+        test_case,
+        test_cycle,
+        feature,
+        priority,
+        env,
+        browser,
+        platform,
+        version,
+        case_category,
+        create_time,
+        update_time,
+        description)
+        values (
+        <if test="id != null">
+            #{id},
+        </if>
+        <if test="projectId != null">
+            #{projectId},
+        </if>
+        <if test="userId != null and userId != ''">
+            #{userId},
+        </if>
+        <if test="title != null and title != ''">
+            #{title},
+        </if>
+        <if test="author != null and author != ''">
+            #{author},
+        </if>
+        <if test="status != status">
+            #{status},
+        </if>
+        <if test="plannedReleaseDate != null and plannedReleaseDate != ''">
+            #{plannedReleaseDate},
+        </if>
+        <if test="closeDate != null">
+            #{closeDate},
+        </if>
+        <if test="testCase != null and testCase != ''">
+            #{testCase},
+        </if>
+        <if test="testCycle != null and testCycle != ''">
+            #{testCycle},
+        </if>
+        <if test="feature != null and feature != ''">
+            #{feature},
+        </if>
+        <if test="priority != null and priority != ''">
+            #{priority},
+        </if>)
+
+        <if test="env != null and env != ''">
+            #{env},
+        </if>
+        <if test="browser != null and browser != ''">
+            #{browser},
+        </if>
+        <if test="platform != null and platform != ''">
+            #{platform},
+        </if>)
+        <if test="version != null and version != ''">
+            #{version},
+        </if>
+        <if test="caseCategory != null and caseCategory != ''">
+            #{caseCategory},
+        </if>
+        <if test="createTime != null and createTime != ''">
+            #{createTime},
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            #{updateTime},
+        </if>
+        <if test="description != null and description != ''">
+            #{description},
+        </if>))
+    </insert>
+
+    <select id="queryIssueList" resultMap="IssueMap">
+        select
+        id, project_id, user_id, title, author, status, planned_release_date, close_date, test_case, test_cycle,
+        feature, priority, env, browser, platform, version, case_category, create_time, update_time, description
+        from oneclick.issue
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="projectId != null">
+                and project_id = #{projectId}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="title != null and title != ''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="author != null and author != ''">
+                and author = #{author}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="plannedReleaseDate != null">
+                and planned_release_date = #{plannedReleaseDate}
+            </if>
+            <if test="closeDate != null">
+                and close_date = #{closeDate}
+            </if>
+            <if test="testCase != null">
+                and test_case = #{testCase}
+            </if>
+            <if test="testCycle != null">
+                and test_cycle = #{testCycle}
+            </if>
+            <if test="feature != null">
+                and feature = #{feature}
+            </if>
+            <if test="priority != null and priority != ''">
+                and priority = #{priority}
+            </if>
+            <if test="env != null and env != ''">
+                and env = #{env}
+            </if>
+            <if test="browser != null and browser != ''">
+                and browser = #{browser}
+            </if>
+            <if test="platform != null and platform != ''">
+                and platform = #{platform}
+            </if>
+            <if test="version != null and version != ''">
+                and version = #{version}
+            </if>
+            <if test="caseCategory != null and caseCategory != ''">
+                and case_category = #{caseCategory}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+
+
+            <if test="filter != null and filter != ''">
+                ${filter}
+            </if>
+
+
+        </where>
+    </select>
+
+    <update id="mergeIssue">
+        update issue
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="author != null and author != ''">
+                author = #{author},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="plannedReleaseDate != null">
+                planned_release_date = #{plannedReleaseDate},
+            </if>
+            <if test="closeDate != null">
+                close_date = #{closeDate},
+            </if>
+            <if test="testCase != null">
+                test_case = #{testCase},
+            </if>
+            <if test="testCycle != null">
+                test_cycle = #{testCycle},
+            </if>
+            <if test="feature != null">
+                feature = #{feature},
+            </if>
+            <if test="priority != null and priority != ''">
+                priority = #{priority},
+            </if>
+            <if test="env != null and env != ''">
+                env = #{env},
+            </if>
+            <if test="browser != null and browser != ''">
+                browser = #{browser},
+            </if>
+            <if test="platform != null and platform != ''">
+                platform = #{platform},
+            </if>
+            <if test="version != null and version != ''">
+                version = #{version},
+            </if>
+            <if test="caseCategory != null and caseCategory != ''">
+                case_category = #{caseCategory},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            update_time =NOW()
+        </set>
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+        </where>
+    </update>
+</mapper>

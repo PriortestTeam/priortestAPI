@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.RoleFunctionDao">
+    <resultMap type="com.hu.oneclick.model.domain.RoleFunction" id="RoleFunctionMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+        <result property="roomId" column="room_id" jdbcType="INTEGER"/>
+        <result property="checkFunctionId" column="check_function_id" jdbcType="LONGVARCHAR"/>
+        <result property="invisibleFunctionId" column="invisible_function_id" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+
+    <select id="queryByRoleId" resultMap="RoleFunctionMap">
+         select * from sys_role_function
+            where role_id = #{roleId}
+    </select>
+</mapper>

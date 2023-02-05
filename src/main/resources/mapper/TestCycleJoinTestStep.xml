@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.TestCycleJoinTestStepDao">
+
+    <resultMap type="com.hu.oneclick.model.domain.TestCycleJoinTestStep" id="TestCycleJoinTestStepMap">
+        <result property="testCycleId" column="test_cycle_id" jdbcType="VARCHAR"/>
+        <result property="testCaseId" column="test_case_id" jdbcType="VARCHAR"/>
+        <result property="step" column="step" jdbcType="INTEGER"/>
+        <result property="stepStatus" column="step_status" jdbcType="INTEGER"/>
+        <result property="runStatus" column="run_status" jdbcType="INTEGER"/>
+        <result property="runCount" column="run_count" jdbcType="INTEGER"/>
+        <result property="runner" column="runner" jdbcType="VARCHAR"/>
+        <result property="issueId" column="issueId" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+
+    </resultMap>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryList" resultMap="TestCycleJoinTestStepMap">
+        select b.test_cycle_id,
+            b.test_case_id,
+            b.step,
+            b.runner,
+            b.issueId,
+            b.run_count,
+            b.update_time,
+            b.step_status,
+            b.run_status
+            from
+            test_cycle_join_test_step b
+            where b.test_cycle_id = #{testCycleId}
+            and b.test_case_id = #{testCaseId}
+    </select>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update test_cycle_join_test_step
+        <set>
+            <if test="runCount != null and runCount != ''">
+                run_count = #{runCount},
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="runDuration != null and runDuration != ''">
+                run_duration = #{runDuration},
+            </if>
+            <if test="runStatus != null and runStatus != ''">
+                run_status = #{runStatus},
+            </if>
+            <if test="stepStatus != null and stepStatus != ''">
+                step_status = #{stepStatus},
+            </if>
+            update_time=NOW()
+        </set>
+        where test_cycle_id = #{testCycleId}
+        and test_case_id = #{testCaseId}
+    </update>
+
+    <update id="updateRunCount">
+        update test_cycle_join_test_step
+        set
+            run_count = run_count + 1,
+            update_time=NOW()
+        where test_cycle_id = #{testCycleId}
+        and test_case_id = #{testCaseId}
+    </update>
+
+</mapper>

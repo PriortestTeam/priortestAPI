@@ -3,9 +3,20 @@ package com.hu.oneclick.controller;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
+import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.server.service.ProjectService;
+import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.ViewService;
-import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -14,51 +25,60 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("project")
+@Api(tags = "项目管理")
 public class ProjectController {
 
     private final ProjectService projectService;
 
-    public ProjectController(ProjectService projectService, ViewService viewService) {
+    private final SysCustomFieldService sysCustomFieldService;
+
+
+    public ProjectController(ProjectService projectService, ViewService viewService, SysCustomFieldService sysCustomFieldService) {
         this.projectService = projectService;
+        this.sysCustomFieldService = sysCustomFieldService;
     }
 
     /**
      * 关闭项目
+     *
      * @param id,closeDesc
      * @return
      */
     @GetMapping("getCloseProject")
     public Resp<String> getCloseProject(@RequestParam String id, @RequestParam String closeDesc) {
-        return projectService.getCloseProject(id,closeDesc);
+        return projectService.getCloseProject(id, closeDesc);
     }
+
     @GetMapping("queryDoesExistByTitle")
     public Resp<String> queryDoesExistByTitle(@RequestParam String title) {
         return projectService.queryDoesExistByTitle(title);
     }
 
     @GetMapping("queryById/{id}")
-    private Resp<Project> queryById(@PathVariable String id){
+    @ApiOperation("查询项目详细")
+    private Resp<Project> queryById(@PathVariable String id) {
         return projectService.queryById(id);
     }
 
 
     @PostMapping("queryForProjects")
-    private Resp<List<Project>> queryForProjects(@RequestBody ProjectDto project){
+    private Resp<List<Project>> queryForProjects(@RequestBody ProjectDto project) {
         return projectService.queryForProjects(project);
     }
 
     @PostMapping("addProject")
-    private Resp<String> addProject(@RequestBody Project project){
+    @ApiOperation("添加项目")
+    private Resp<String> addProject(@RequestBody Project project) {
         return projectService.addProject(project);
     }
 
     @PostMapping("updateProject")
-    private Resp<String> updateProject(@RequestBody Project project){
+    private Resp<String> updateProject(@RequestBody Project project) {
         return projectService.updateProject(project);
     }
 
     @DeleteMapping("deleteProject/{projectId}")
-    private Resp<String> deleteProject(@PathVariable String projectId){
+    private Resp<String> deleteProject(@PathVariable String projectId) {
         return projectService.deleteProject(projectId);
     }
 
@@ -68,7 +88,14 @@ public class ProjectController {
      * 选择项目
      */
     @GetMapping("checkProject/{projectId}")
-    public Resp<String> checkProject(@PathVariable String projectId){
+    public Resp<String> checkProject(@PathVariable String projectId) {
         return projectService.checkProject(projectId);
+    }
+
+
+    @GetMapping("getThePersonInCharge")
+    @ApiOperation("获取负责人")
+    public Resp<List<String>> getThePersonInCharge() {
+        return sysCustomFieldService.getThePersonInCharge();
     }
 }

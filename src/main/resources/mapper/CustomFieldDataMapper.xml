@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.CustomFieldDataDao">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.CustomFieldData">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="project_id" jdbcType="BIGINT" property="projectId"/>
+        <result column="custom_field_id" jdbcType="VARCHAR" property="customFieldId"/>
+        <result column="scope_id" jdbcType="VARCHAR" property="scopeId"/>
+        <result column="scope" jdbcType="VARCHAR" property="scope"/>
+        <result column="field_name" jdbcType="VARCHAR" property="fieldName"/>
+        <result column="value_data" jdbcType="VARCHAR" property="valueData"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="is_del" jdbcType="BOOLEAN" property="isDel"/>
+        <result column="create_user_id" jdbcType="BIGINT" property="createUserId"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , user_id, project_id, custom_field_id, scope_id, `scope`, value_data, create_time,
+     create_user_id
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from custom_field_data
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="getAllByScopeIdAndScope" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from custom_field_data
+        where `scope` = #{scope}
+        and scope_id = #{scopeId}
+    </select>
+    <select id="findAllByUserIdAndScope" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from custom_field_data
+        where project_id = #{projectId}
+        and user_id = #{userId}
+        and `scope` = #{scope}
+        and field_name =#{fieldName}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from custom_field_data
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.CustomFieldData"
+            useGeneratedKeys="true">
+        insert into custom_field_data (user_id, project_id, custom_field_id,
+                                       scope_id, `scope`, field_name, value_data,
+                                       create_time, create_user_id)
+        values (#{userId,jdbcType=BIGINT}, #{projectId,jdbcType=BIGINT}, #{customFieldId,jdbcType=VARCHAR},
+                #{scopeId,jdbcType=VARCHAR}, #{scope,jdbcType=VARCHAR}, #{fieldName,jdbcType=VARCHAR},
+                #{valueData,jdbcType=VARCHAR},
+                #{createTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=BOOLEAN}, #{createUserId,jdbcType=BIGINT})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.hu.oneclick.model.domain.CustomFieldData" useGeneratedKeys="true">
+        insert into custom_field_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="projectId != null">
+                project_id,
+            </if>
+            <if test="customFieldId != null">
+                custom_field_id,
+            </if>
+            <if test="scopeId != null">
+                scope_id,
+            </if>
+            <if test="scope != null">
+                `scope`,
+            </if>
+            <if test="valueData != null">
+                value_data,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="isDel != null">
+                is_del,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="projectId != null">
+                #{projectId,jdbcType=BIGINT},
+            </if>
+            <if test="customFieldId != null">
+                #{customFieldId,jdbcType=VARCHAR},
+            </if>
+            <if test="scopeId != null">
+                #{scopeId,jdbcType=VARCHAR},
+            </if>
+            <if test="scope != null">
+                #{scope,jdbcType=VARCHAR},
+            </if>
+            <if test="valueData != null">
+                #{valueData,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                #{isDel,jdbcType=BOOLEAN},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.CustomFieldData">
+        update custom_field_data
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="projectId != null">
+                project_id = #{projectId,jdbcType=BIGINT},
+            </if>
+            <if test="customFieldId != null">
+                custom_field_id = #{customFieldId,jdbcType=VARCHAR},
+            </if>
+            <if test="scopeId != null">
+                scope_id = #{scopeId,jdbcType=VARCHAR},
+            </if>
+            <if test="scope != null">
+                `scope` = #{scope,jdbcType=VARCHAR},
+            </if>
+            <if test="valueData != null">
+                value_data = #{valueData,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+
+            <if test="createUserId != null">
+                create_user_id = #{createUserId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.CustomFieldData">
+        update custom_field_data
+        set user_id         = #{userId,jdbcType=BIGINT},
+            project_id      = #{projectId,jdbcType=BIGINT},
+            custom_field_id = #{customFieldId,jdbcType=VARCHAR},
+            scope_id        = #{scopeId,jdbcType=VARCHAR},
+            `scope`         = #{scope,jdbcType=VARCHAR},
+            value_data      = #{valueData,jdbcType=VARCHAR},
+            create_time     = #{createTime,jdbcType=TIMESTAMP},
+            create_user_id  = #{createUserId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

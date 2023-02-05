@@ -8,7 +8,7 @@ public interface OneConstant {
     /**
      * 公共参数
      */
-    interface COMMON{
+    interface COMMON {
         //成员用户分隔符
         String SUB_USER_SEPARATOR = "#*&";
 
@@ -26,20 +26,24 @@ public interface OneConstant {
     /**
      * 系统平台用户类型
      */
-    interface PLATEFORM_USER_TYPE{
+    interface PLATEFORM_USER_TYPE {
         Integer ORDINARY = 0;
         Integer MANAGER = 1;
         Integer SUB_USER = 2;
     }
 
     /**
-     *
      * 用户类型
      */
     interface USER_TYPE {
         Integer ADMIN = 1;
         Integer SUB_USER = 2;
     }
+
+    /**
+     * 试用天数
+     */
+    int TRIAL_DAYS = 30;
 
     /**
      * 激活状态
@@ -53,6 +57,10 @@ public interface OneConstant {
         Integer TRIAL_EXPIRED = 3;
         //激活失败
         Integer ACTIVE_FAILED = 4;
+        //待激活
+        Integer ACTIVE_GENERATION = 5;
+        //付费用户
+        Integer PAYING_USERS = 6;
     }
 
     /**
@@ -68,6 +76,25 @@ public interface OneConstant {
         String SYS_CUSTOM_FIELDS = "sys_custom_fields";
 
         String viewScopeDown = "VIEW_SCOPE_DOWN";
+    }
+
+    /**
+     * 密码
+     */
+    interface PASSWORD {
+        /**
+         * 激活账号
+         */
+        String ACTIVATION = "ACTIVATION";
+
+        /**
+         * 忘记密码
+         */
+        String FORGETPASSWORD = "FORGETPASSWORD";
+        /**
+         * 申请延期
+         */
+        String APPLY_FOR_AN_EXTENSION = "APPLY_FOR_AN_EXTENSION";
     }
 
 
@@ -127,12 +154,49 @@ public interface OneConstant {
     /**
      * 自定义字段类型
      */
-    interface CUSTOM_FIELD_TYPE{
-        String RADIO = "radio";
-        String TEXT = "text";
-        String RICH_TEXT = "RichText";
-        String DROP_DOWN = "DropDown";
-        String CHECK_BOX = "CheckBox";
+    interface CUSTOM_FIELD_TYPE {
+        /** masiyi 于备注
+         * @Param:
+         * @return:
+         * @Author: MaSiyi
+         * @Date: 2021/12/22
+         */
+        String RADIO = "radio";//单选
+        String TEXT = "text";//文本
+        String RICH_TEXT = "RichText";//备注
+        String DROP_DOWN = "DropDown";//下拉框
+        String CHECK_BOX = "CheckBox";//复选框
     }
 
+    /**
+     * email
+     */
+    interface EMAIL {
+        String TITLE_IMPORTTESTCASE = "导入测试用例结果提醒";
+        String TEMPLATEHTMLNAME_IMPORTTESTCASE = "importTestCase.html";
+    }
+
+    interface SystemConfigGroup {
+        String REFERENCETIME = "ReferenceTime";
+        String REFERENCEPERSONNO = "ReferencePersonNo";
+        String SYSTEMCONFIG = "SystemConfig";
+        String SPECICALDISCOUNT = "SpecicalDiscount";
+        String DATASTRORAGE = "DataStrorage";
+        String FLASHDISCOUNT = "FlashDiscount";
+        String PAYMENTTYPE = "PaymentType";
+        String INITORDER = "InitOrder";
+        String APICALL = "APICall";
+        String VIP = "VIP";
+    }
+
+    interface SystemConfigStatus {
+        String ON = "0";
+        String OFF = "1";
+
+    }
+
+    interface AREA_TYPE {
+
+        String SIGNOFFSIGN = "SignOffSign";
+    }
 }

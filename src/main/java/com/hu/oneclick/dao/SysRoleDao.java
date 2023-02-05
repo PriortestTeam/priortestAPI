@@ -64,4 +64,11 @@ public interface SysRoleDao {
      */
     int deleteById(@Param("id") String id);
 
+    /** 根据角色名称查角色
+     * @Param: [roleName]
+     * @return: com.hu.oneclick.model.domain.SysRole
+     * @Author: MaSiyi
+     * @Date: 2022/1/3
+     */
+    SysRole queryByRoleName(@Param("roleName")String roleName);
 }

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.TestCycleScheduleModelDao">
+  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.TestCycleScheduleModel">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="test_cycle_id" jdbcType="INTEGER" property="testCycleId" />
+    <result column="start_time_date" jdbcType="TIMESTAMP" property="startTimeDate" />
+    <result column="start_time_week" jdbcType="INTEGER" property="startTimeWeek" />
+    <result column="run_time" jdbcType="TIMESTAMP" property="runTime" />
+    <result column="jenkins_url" jdbcType="VARCHAR" property="jenkinsUrl" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="frequency" jdbcType="VARCHAR" property="frequency" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, test_cycle_id, start_time_date, start_time_week, run_time, jenkins_url, end_time, 
+    frequency
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from test_cycle_schedule_model
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from test_cycle_schedule_model
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCycleScheduleModel" useGeneratedKeys="true">
+    insert into test_cycle_schedule_model (test_cycle_id, start_time_date, start_time_week, 
+      run_time, jenkins_url, end_time, 
+      frequency)
+    values (#{testCycleId,jdbcType=INTEGER}, #{startTimeDate,jdbcType=TIMESTAMP}, #{startTimeWeek,jdbcType=INTEGER}, 
+      #{runTime,jdbcType=TIMESTAMP}, #{jenkinsUrl,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{frequency,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCycleScheduleModel" useGeneratedKeys="true">
+    insert into test_cycle_schedule_model
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="testCycleId != null">
+        test_cycle_id,
+      </if>
+      <if test="startTimeDate != null">
+        start_time_date,
+      </if>
+      <if test="startTimeWeek != null">
+        start_time_week,
+      </if>
+      <if test="runTime != null">
+        run_time,
+      </if>
+      <if test="jenkinsUrl != null">
+        jenkins_url,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="frequency != null">
+        frequency,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="testCycleId != null">
+        #{testCycleId,jdbcType=INTEGER},
+      </if>
+      <if test="startTimeDate != null">
+        #{startTimeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTimeWeek != null">
+        #{startTimeWeek,jdbcType=INTEGER},
+      </if>
+      <if test="runTime != null">
+        #{runTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="jenkinsUrl != null">
+        #{jenkinsUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="frequency != null">
+        #{frequency,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.TestCycleScheduleModel">
+    update test_cycle_schedule_model
+    <set>
+      <if test="testCycleId != null">
+        test_cycle_id = #{testCycleId,jdbcType=INTEGER},
+      </if>
+      <if test="startTimeDate != null">
+        start_time_date = #{startTimeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTimeWeek != null">
+        start_time_week = #{startTimeWeek,jdbcType=INTEGER},
+      </if>
+      <if test="runTime != null">
+        run_time = #{runTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="jenkinsUrl != null">
+        jenkins_url = #{jenkinsUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="frequency != null">
+        frequency = #{frequency,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.TestCycleScheduleModel">
+    update test_cycle_schedule_model
+    set test_cycle_id = #{testCycleId,jdbcType=INTEGER},
+      start_time_date = #{startTimeDate,jdbcType=TIMESTAMP},
+      start_time_week = #{startTimeWeek,jdbcType=INTEGER},
+      run_time = #{runTime,jdbcType=TIMESTAMP},
+      jenkins_url = #{jenkinsUrl,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      frequency = #{frequency,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

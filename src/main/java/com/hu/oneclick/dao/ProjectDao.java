@@ -60,6 +60,11 @@ public interface ProjectDao {
     int update(Project project);
 
     /**
+     * 修改下次登录默认打开的项目
+     */
+    int updateOpenProject(UserUseOpenProject userUseOpenProject);
+
+    /**
      * 通过主键删除数据
      *
      * @param 主键
@@ -67,13 +72,20 @@ public interface ProjectDao {
      */
     int deleteById(@Param("id") String id);
 
+    /**
+     * 通过用户ID删除数据
+     * @param userId
+     * @return
+     */
+    int deleteOpenProjectByUserId(@Param("userId") String userId);
+
     Integer queryByTitle(@Param("masterId")String masterId,@Param("title") String title);
 
     /**
      * 查询所有的项目
      * @return
      */
-    List<Project> queryAllProjects(String masterId);
+    List<Project> queryAllProjects(@Param("roomId")String roomId);
 
 
 
@@ -115,5 +127,16 @@ public interface ProjectDao {
 
     int deleteUseOpenProject(@Param("id") String id);
 
+
+    Integer initProject(Project project);
+
+
+    /** 查询项目
+     * @Param: [project]
+     * @return: java.util.List<com.hu.oneclick.model.domain.Project>
+     * @Author: MaSiyi
+     * @Date: 2022/1/3
+     */
+    List<Project> findAllByProject(Project project);
 
 }
