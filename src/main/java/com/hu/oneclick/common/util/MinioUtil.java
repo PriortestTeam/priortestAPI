@@ -21,8 +21,8 @@ public class MinioUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(MinioUtil.class);
 
-    /**
-     * 创建具有给定区域的新存储桶
+    /**有给定区域的新存储桶
+     * 创建具
      */
     public static boolean createRegion(MinioClient client, String bucketName, String region){
         boolean flag = false;

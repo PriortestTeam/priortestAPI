@@ -83,9 +83,9 @@ public class QueryFilterServiceImpl implements QueryFilterService {
                 case "fDateTime":
                     rs.append(oneFilter.getAndOr())
                             .append(" ");
-                    String buildFDate = fieldName  + " > '" + oneFilter.getBeginDate() + "'"
+                    String buildFDate = fieldName  + " >= '" + oneFilter.getBeginDate() + "'"
                             + " and " +
-                            fieldName  + " < '" + oneFilter.getEndDate() + "'";
+                            fieldName  + " <= '" + oneFilter.getEndDate() + "'";
                     rs.append(buildFDate);
                     break;
                 default:

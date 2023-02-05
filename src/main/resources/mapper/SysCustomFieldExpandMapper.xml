@@ -8,20 +8,32 @@
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <result property="linkSysCustomField" column="link_sys_custom_field" jdbcType="INTEGER"/>
         <result property="values" column="values" jdbcType="VARCHAR"/>
+        <result property="sysCustomFieldId" column="sys_custom_field_id" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
+    <sql id="base_sql">
+        id,
+        user_id,
+        project_id,
+        link_sys_custom_field,
+        `values`,
+        sys_custom_field_id,
+        create_time,
+        update_time
+    </sql>
     <!--查询单个-->
     <select id="queryById" resultMap="SysCustomFieldExpandMap">
         select
-          id,
-          user_id,
-          project_id,
-          link_sys_custom_field,
-          `values`,
-          create_time,
-          update_time
+        id,
+        user_id,
+        project_id,
+        link_sys_custom_field,
+        `values`,
+        sys_custom_field_id,
+        create_time,
+        update_time
         from sys_custom_field_expand
         where id = #{id}
     </select>
@@ -30,12 +42,13 @@
     <select id="queryAllByLimit" resultMap="SysCustomFieldExpandMap">
         select
         id,
-          user_id,
-          project_id,
-          link_sys_custom_field,
-          `values`,
-          create_time,
-          update_time
+        user_id,
+        project_id,
+        link_sys_custom_field,
+        `values`,
+        sys_custom_field_id,
+        create_time,
+        update_time
         from sys_custom_field_expand
         limit #{offset}, #{limit}
     </select>
@@ -44,16 +57,16 @@
     <select id="queryList" resultMap="SysCustomFieldExpandMap">
         select
         id,
-          user_id,
-          project_id,
-          link_sys_custom_field,
-          `values`,
-          create_time,
-          update_time
+        user_id,
+        project_id,
+        link_sys_custom_field,
+        `values`,
+        sys_custom_field_id,
+        create_time,
+        update_time
         from sys_custom_field_expand
         where
-        user_id = #{userId}
-        and project_id = #{projectId}
+        project_id = #{projectId}
     </select>
 
     <select id="queryByUserIdAndFieldName" resultMap="SysCustomFieldExpandMap">
@@ -66,9 +79,14 @@
           create_time,
           update_time
         from sys_custom_field_expand
-        where user_id = #{masterId}
-        and link_sys_custom_field = #{fieldName}
+        where link_sys_custom_field = #{fieldName}
         and project_id = #{projectId}
+    </select>
+    <select id="getAllSysCustomFieldExpand"  resultMap="SysCustomFieldExpandMap">
+        select
+        <include refid="base_sql"></include>
+        from sys_custom_field_expand
+        where project_id = #{projectId}
     </select>
 
     <!--新增所有列-->
@@ -87,6 +105,9 @@
             <if test="linkSysCustomField != null">
                 link_sys_custom_field,
             </if>
+            <if test="sysCustomFieldId != null ">
+                sys_custom_field_id,
+            </if>
             <if test="values != null and values != ''">
                 `values`,
             </if>
@@ -103,8 +124,12 @@
             <if test="projectId != null">
                 #{projectId},
             </if>
+
             <if test="linkSysCustomField != null">
                 #{linkSysCustomField},
+            </if>
+            <if test="sysCustomFieldId != null ">
+                #{sysCustomFieldId},
             </if>
             <if test="values != null and values != ''">
                 #{values},

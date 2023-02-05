@@ -24,24 +24,25 @@
 
     <!--查询单个-->
     <select id="queryById" resultType="com.hu.oneclick.model.domain.TestCycle">
-        select t.id as id,
-               t.user_id as userId,
-               t.project_id as projectId,
-               t.title as title,
-               t.status as status,
-               t.run_status as runStatus,
+        select t.id            as id,
+               t.user_id       as userId,
+               t.project_id    as projectId,
+               t.title         as title,
+               t.status        as status,
+               t.run_status    as runStatus,
                t.last_run_date as lastRunDate,
-               t.last_modify as lastModify,
-               t.version as version,
-               t.create_time as createTime,
-               t.update_time as updateTime,
-               t.ped as ped,
-               t.author_name as authorName,
-               t.description as description,
-               t.assign_to as assignTo,
-               t.notifiy_list as notifiyList
+               t.last_modify   as lastModify,
+               t.version       as version,
+               t.create_time   as createTime,
+               t.update_time   as updateTime,
+               t.ped           as ped,
+               t.author_name   as authorName,
+               t.description   as description,
+               t.assign_to     as assignTo,
+               t.notifiy_list  as notifiyList
         from test_cycle t
-        where t.id = #{id} and t.user_id = #{masterId}
+        where t.id = #{id}
+          and t.user_id = #{masterId}
     </select>
 
     <select id="queryTitles" resultType="com.hu.oneclick.model.domain.dto.LeftJoinDto">
@@ -62,7 +63,8 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="TestCycleMap">
         select
-          id, user_id, project_id, title, status, run_status, last_run_date, last_modify,description, version, create_time, update_time, ped, author_name,assign_to,notifiy_list
+        id, user_id, project_id, title, status, run_status, last_run_date, last_modify,description, version,
+        create_time, update_time, ped, author_name,assign_to,notifiy_list
         from oneclick.test_cycle
         <where>
             <if test="id != null">
@@ -146,9 +148,44 @@
             <if test="assignTo != null and assignTo != ''">
                 assign_to = #{assignTo},
             </if>
+            <!-- 新增 WJK BEGIN-->
+            <if test="runStatus != null and runStatus != ''">
+                run_status = #{runStatus},
+            </if>
+            <if test="stepStatus != null and stepStatus != ''">
+                step_status = #{stepStatus},
+            </if>
+            <!-- 新增 WJK END-->
             update_time = NOW()
         </set>
         where id = #{id}
     </update>
+
+    <select id="getTestCycleVersion" resultType="java.util.Map" parameterType="java.lang.String">
+        SELECT version, title
+        FROM test_cycle
+        WHERE project_id = #{projectId}
+          AND env = #{env}
+          AND version = #{version}
+    </select>
+
+    <select id="getAllTestCycle" resultType="java.util.Map">
+        SELECT *
+        FROM test_case ca
+                 JOIN test_cycle_join_test_case cy ON ca.id = cy.test_case_id
+                 JOIN test_cycle tc on cy.test_cycle_id = tc.id
+        WHERE ca.project_id = #{param1}
+          AND ca.version = #{param2}
+          and ca.env = #{param3}
+          and tc.title in (#{param4})
+    </select>
+    <select id="getTestCycleByProjectIdAndEvn" resultType="java.lang.String">
+        SELECT `title`
+        FROM test_cycle
+        WHERE project_id = #{param1}
+          AND env = #{param2}
+          and currentReleaseVersion = #{param3}
+    </select>
+
 
 </mapper>

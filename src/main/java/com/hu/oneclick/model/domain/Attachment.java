@@ -133,4 +133,20 @@ public class Attachment extends BaseEntity implements Serializable {
     public void setLinkId(String linkId) {
         this.linkId = linkId;
     }
+
+    @Override
+    public String toString() {
+        return "Attachment{" +
+                "userId='" + userId + '\'' +
+                ", uuidFileName='" + uuidFileName + '\'' +
+                ", filePath='" + filePath + '\'' +
+                ", uploadTime=" + uploadTime +
+                ", uploader='" + uploader + '\'' +
+                ", modifyTime=" + modifyTime +
+                ", modifyUser='" + modifyUser + '\'' +
+                ", areaType='" + areaType + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", linkId='" + linkId + '\'' +
+                '}';
+    }
 }

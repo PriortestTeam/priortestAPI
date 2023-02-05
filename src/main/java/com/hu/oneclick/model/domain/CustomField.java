@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 自定义字段表(CustomField)实体类
+ * 自定义字段表(CustomFieldDto)实体类
  *
  * @author qingyang
  * @since 2020-12-04 15:35:47

@@ -8,8 +8,30 @@
     </resultMap>
 
 
+    <delete id="deleteByUserId">
+        delete
+        from `sub_user_project`
+        where user_id = #{userId}
+    </delete>
+
+
+
+
+
     <select id="queryByUserId" resultType="com.hu.oneclick.model.domain.SubUserProject">
-        select user_id as userId, project_id as projectId where user_id = #{userId}
+        select user_id as userId, project_id as projectId , open_project_by_default_id as openProjectByDefaultId FROM sub_user_project where user_id = #{userId}
+    </select>
+
+    <select id="selectTitlesByUserId" resultType="java.lang.String">
+        SELECT
+        p.title
+        FROM `sys_user` su
+        JOIN `sub_user_project` sup ON su.id = sup.user_id
+        JOIN `project` p ON p.room_id = su.room_id  AND p.id IN
+        <foreach collection="projectIds" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        WHERE su.id = #{userId}
     </select>
 
 
@@ -17,12 +39,14 @@
     <insert id="insert" keyProperty="" useGeneratedKeys="true">
         insert into sub_user_project
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                user_id,
-                project_id
+            user_id,
+            project_id,
+            open_project_by_default_id
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-                #{userId},
-                #{projectId}
+            #{userId},
+            #{projectId},
+            #{openProjectByDefaultId}
         </trim>
     </insert>
 
@@ -32,7 +56,12 @@
         <if test="projectId != null and projectId != ''">
             update oneclick.sub_user_project
             <set>
-                project_id = #{projectId}
+                <if test="projectId != null">
+                    project_id = #{projectId},
+                </if>
+                <if test="openProjectByDefaultId != null">
+                    open_project_by_default_id=#{openProjectByDefaultId},
+                </if>
             </set>
             where user_id = #{userId}
         </if>

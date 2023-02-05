@@ -100,6 +100,45 @@
                  join test_cycle_join_test_case tcjtc on tc.id = tcjtc.test_case_id
         where tcjtc.test_cycle_id = #{testCycleId};
     </select>
+    <select id="findAllByFeature"  resultMap="FeatureMap">
+        select
+        id, project_id, epic, report_to, status, version, description, close_date, author_name, create_time,
+        title, user_id, update_time,moudle
+        from oneclick.feature
+        <where>
+            user_id = #{userId}
+            and project_id = #{projectId}
+            <if test="reportTo != null and reportTo != ''">
+                and report_to = #{reportTo}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="version != null and version != ''">
+                and version = #{version}
+            </if>
+            <if test="closeDateBegin != null and closeDateEnd != null">
+                and close_date &gt; #{closeDateBegin}
+                and close_date &lt; #{closeDateEnd}
+            </if>
+            <if test="authorName != null and authorName != ''">
+                and author_name = #{authorName}
+            </if>
+            <if test="createTimeBegin != null and createTimeEnd != null">
+                and create_time &gt; #{createTimeBegin}
+                and create_time &lt; #{createTimeEnd}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+
+
+            <if test="filter != null and filter != ''">
+                ${filter}
+            </if>
+
+        </where>
+    </select>
 
     <!--通过主键修改数据-->
     <update id="update">

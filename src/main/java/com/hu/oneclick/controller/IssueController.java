@@ -6,12 +6,15 @@ import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.IssueJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueDto;
 import com.hu.oneclick.server.service.IssueService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("issue")
+@Api(tags = "缺陷")
 public class IssueController {
 
     private final IssueService issueService;
@@ -21,6 +24,7 @@ public class IssueController {
     }
 
     @GetMapping("queryById/{id}")
+    @ApiOperation("查询缺陷")
     public Resp<Issue> queryById(@PathVariable String id) {
         return issueService.queryById(id);
     }
@@ -32,6 +36,7 @@ public class IssueController {
     }
 
     @PostMapping("insert")
+    @ApiOperation("插入缺陷")
     public Resp<String> insert(@RequestBody Issue issue) {
         return issueService.insert(issue);
     }

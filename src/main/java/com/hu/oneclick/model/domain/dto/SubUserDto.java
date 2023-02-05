@@ -5,6 +5,7 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.model.base.VerifyParam;
 import com.hu.oneclick.model.domain.SysUser;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 /**
  * @author qingyang
  */
+@Data
 public class SubUserDto extends SysUser implements VerifyParam, Serializable {
 
     private static final long serialVersionUID = 1993189923318507589L;
@@ -31,6 +33,16 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
      */
     private String projectsSts;
 
+    /** 默认打开项目
+     * @Param: []
+     * @return: void
+     * @Author: MaSiyi
+     * @Date: 2021/12/24
+     */
+    private String openProjectByDefaultId;
+
+    private String openProjectByDefaultName;
+
 
     @Override
     public void verify() throws BizException {
@@ -38,10 +50,6 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"邮箱" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(super.getUserName())){
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"用户名" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (StringUtils.isEmpty(super.getSysRoleId())){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"角色" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (StringUtils.isEmpty(projectIdStr)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
         verifyPassword();
     }
@@ -64,29 +72,4 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
         return ",";
     }
 
-    public String getProjectsSts() {
-        return projectsSts;
-    }
-
-    public void setProjectsSts(String projectsSts) {
-        this.projectsSts = projectsSts;
-    }
-
-    public String getProjectIdStr() {
-        return projectIdStr;
-    }
-
-    public void setProjectIdStr(String projectIdStr) {
-        this.projectIdStr = projectIdStr;
-    }
-
-
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
 }

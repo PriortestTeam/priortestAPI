@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.SysOrderDiscountDao">
+  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysOrderDiscount">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sub_scription" jdbcType="VARCHAR" property="subScription" />
+    <result column="data_strorage" jdbcType="VARCHAR" property="dataStrorage" />
+    <result column="api_call" jdbcType="VARCHAR" property="apiCall" />
+    <result column="normal_discount" jdbcType="DECIMAL" property="normalDiscount" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sub_scription, data_strorage, api_call, normal_discount, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_order_discount
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getNormalDiscount" resultType="java.math.BigDecimal">
+    SELECT
+      normal_discount
+    FROM
+      sys_order_discount
+    WHERE
+      sub_scription = #{subScription}
+      AND data_strorage = #{dataStrorage}
+      AND api_call = #{apiCall}
+      AND serviceDuration = #{serviceDuration}
+      AND userClass = #{userClass}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sys_order_discount
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysOrderDiscount" useGeneratedKeys="true">
+    insert into sys_order_discount (sub_scription, data_strorage, api_call, 
+      normal_discount, create_time, update_time
+      )
+    values (#{sub_scription,jdbcType=VARCHAR}, #{data_strorage,jdbcType=VARCHAR}, #{api_call,jdbcType=VARCHAR}, 
+      #{normal_discount,jdbcType=DECIMAL}, #{create_time,jdbcType=TIMESTAMP}, #{update_time,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysOrderDiscount" useGeneratedKeys="true">
+    insert into sys_order_discount
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="sub_scription != null">
+        sub_scription,
+      </if>
+      <if test="data_strorage != null">
+        data_strorage,
+      </if>
+      <if test="api_call != null">
+        api_call,
+      </if>
+      <if test="normal_discount != null">
+        normal_discount,
+      </if>
+      <if test="create_time != null">
+        create_time,
+      </if>
+      <if test="update_time != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="sub_scription != null">
+        #{sub_scription,jdbcType=VARCHAR},
+      </if>
+      <if test="data_strorage != null">
+        #{data_strorage,jdbcType=VARCHAR},
+      </if>
+      <if test="api_call != null">
+        #{api_call,jdbcType=VARCHAR},
+      </if>
+      <if test="normal_discount != null">
+        #{normal_discount,jdbcType=DECIMAL},
+      </if>
+      <if test="create_time != null">
+        #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_time != null">
+        #{update_time,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysOrderDiscount">
+    update sys_order_discount
+    <set>
+      <if test="sub_scription != null">
+        sub_scription = #{sub_scription,jdbcType=VARCHAR},
+      </if>
+      <if test="data_strorage != null">
+        data_strorage = #{data_strorage,jdbcType=VARCHAR},
+      </if>
+      <if test="api_call != null">
+        api_call = #{api_call,jdbcType=VARCHAR},
+      </if>
+      <if test="normal_discount != null">
+        normal_discount = #{normal_discount,jdbcType=DECIMAL},
+      </if>
+      <if test="create_time != null">
+        create_time = #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_time != null">
+        update_time = #{update_time,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysOrderDiscount">
+    update sys_order_discount
+    set sub_scription = #{sub_scription,jdbcType=VARCHAR},
+      data_strorage = #{data_strorage,jdbcType=VARCHAR},
+      api_call = #{api_call,jdbcType=VARCHAR},
+      normal_discount = #{normal_discount,jdbcType=DECIMAL},
+      create_time = #{create_time,jdbcType=TIMESTAMP},
+      update_time = #{update_time,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

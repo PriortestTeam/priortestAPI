@@ -7,14 +7,34 @@
         <result property="fieldName" column="field_name" jdbcType="VARCHAR"/>
         <result property="fieldNameCn" column="field_name_cn" jdbcType="VARCHAR"/>
         <result property="defaultValues" column="default_values" jdbcType="VARCHAR"/>
+        <result property="fieldType" column="field_type" jdbcType="VARCHAR"/>
+        <result property="scope" column="scope" jdbcType="VARCHAR"/>
+        <result property="chartDisplay" column="chart_display" jdbcType="INTEGER"/>
+        <result property="mandatory" column="mandatory" jdbcType="INTEGER"/>
+        <result property="uiDisplay" column="ui_display" jdbcType="INTEGER"/>
+        <result property="length" column="length" jdbcType="INTEGER"/>
+        <result property="allowAddedValue" column="allow_added_value" jdbcType="INTEGER"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="valueList" column="value_list" jdbcType="VARCHAR"/>
+
     </resultMap>
+
+    <sql id="Base_Column_List">
+        id, field_name, field_name_cn,value_list, default_values, `field_type`, `scope`, mandatory,length,chart_display,ui_display,sort
+    </sql>
 
     <!--查询单个-->
     <select id="queryById" resultMap="SysCustomFieldMap">
         select id,
-               field_name,
-               field_name_cn,
-               default_values
+        field_name,
+        field_name_cn,
+        value_list,
+        default_values,
+        chart_display,
+        ui_display,
+        mandatory,
+        length,
+        allow_added_value
         from sys_custom_field
         where id = #{id}
     </select>
@@ -32,7 +52,7 @@
     <select id="queryAll" resultMap="SysCustomFieldMap">
         select
         id, field_name, field_name_cn, default_values
-        from sys_custom_field
+        from sys_custom_field where allow_added_value=1
     </select>
 
     <select id="queryByFieldName" resultMap="SysCustomFieldMap">
@@ -40,6 +60,12 @@
         id, field_name, field_name_cn, default_values
         from sys_custom_field
         where field_name = #{fieldName}
+    </select>
+    <select id="getAllSysCustomFieldByScope" resultMap="SysCustomFieldMap">
+        select
+         <include refid="Base_Column_List" />
+        from sys_custom_field
+        where scope like CONCAT('%',#{scope},'%') order by sort
     </select>
 
     <!--新增所有列-->

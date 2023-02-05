@@ -16,6 +16,8 @@ public interface SubUserProjectDao {
 
     SubUserProject queryByUserId(String userId);
 
+
+
     /**
      * 新增数据
      *
@@ -32,4 +34,7 @@ public interface SubUserProjectDao {
      */
     int update(SubUserProject subUserProject);
 
+    int deleteByUserId(@Param("userId") String userId);
+
+    List<String> selectTitlesByUserId(@Param("userId") String userId,@Param("projectIds") String[] projectIds);
 }

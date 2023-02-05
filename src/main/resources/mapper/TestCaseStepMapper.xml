@@ -10,13 +10,14 @@
         <result property="expectedResult" column="expected_result" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="actualResult" column="actual_result" jdbcType="VARCHAR"/>
     </resultMap>
 
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="TestCaseStepMap">
         select
-        id, test_case_id, step, test_date, expected_result, status, create_time
+        id, test_case_id, step, test_date, expected_result, status, create_time,actual_result
         from oneclick.test_case_step
         <where>
             <if test="id != null">
@@ -56,6 +57,9 @@
             </if>
             <if test="testDate != null">
                 test_date=#{testDate},
+            </if>
+            <if test="actualResult != null and actualResult != ''">
+                actual_result = #{actualResult},
             </if>
         </set>
         where id = #{id} and test_case_id = #{testCaseId}

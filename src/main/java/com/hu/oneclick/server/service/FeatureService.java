@@ -20,7 +20,7 @@ public interface FeatureService {
 
     Resp<List<Feature>> queryList(FeatureDto feature);
 
-    Resp<String> insert(Feature feature);
+    Resp<String> insert(FeatureDto feature);
 
     Resp<String> update(Feature feature);
 
@@ -36,4 +36,6 @@ public interface FeatureService {
     Resp<String> bindSprintDelete(String sprint,String featureId);
 
     Resp<List<Sprint>> querySprintList(String title);
+
+    List<Feature> findAllByFeature(Feature feature);
 }

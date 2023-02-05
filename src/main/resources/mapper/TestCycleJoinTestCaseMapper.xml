@@ -73,5 +73,45 @@
             from test_cycle_join_test_case t
             where t.test_cycle_id = #{testCycleId}
     </select>
+    <!-- 新增WJK BEGIN-->
+    <update id="updateTestCycleJoinTestCase">
+        update test_cycle_join_test_case
+        <set>
+            <if test="runCount != null and runCount != ''">
+                run_count = #{runCount},
+            </if>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="runDuration != null and runDuration != ''">
+                run_duration = #{runDuration},
+            </if>
+            <if test="runStatus != null and runStatus != ''">
+                run_status = #{runStatus},
+            </if>
+            <if test="stepStatus != null and stepStatus != ''">
+                step_status = #{stepStatus},
+            </if>
+            update_time=NOW()
+        </set>
+        where test_cycle_id = #{testCycleId}
+        and test_case_id = #{testCaseId}
+    </update>
 
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAllDate" resultMap="TestCycleJoinTestCaseMap">
+        select
+        test_cycle_id, test_case_id, execute_status,
+        run_duration,run_count,user_id,step_status,run_status,update_time
+        from oneclick.test_cycle_join_test_case
+        <where>
+            <if test="testCycleId != null and testCycleId != ''">
+                and test_cycle_id = #{testCycleId}
+            </if>
+            <if test="testCaseId != null and testCaseId != ''">
+                and test_case_id = #{testCaseId}
+            </if>
+        </where>
+    </select>
+    <!-- 新增 WJK END-->
 </mapper>

@@ -31,6 +31,10 @@ public enum  SysStatusEnum {
     ISSUE_STATUS_ASSIGNED("0","成功"),
     ISSUE_STATUS_FIXED("0","成功"),
 
+
+    TEST_CASE_STATUS_READY("Ready","待执行"),
+    TEST_CASE_STATUS_DRAFT("Draft","草稿")
+
     ;
 
 

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.SysUserTokenDao">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysUserToken">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_id" jdbcType="VARCHAR" property="user_id"/>
+        <result column="token_name" jdbcType="VARCHAR" property="token_name"/>
+        <result column="token_value" jdbcType="VARCHAR" property="token_value"/>
+        <result column="expiration_time" jdbcType="TIMESTAMP" property="expiration_time"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
+        <result column="is_del" jdbcType="BOOLEAN" property="is_del"/>
+        <result column="status" jdbcType="BOOLEAN" property="status"/>
+        <result column="api_times" jdbcType="BIGINT" property="api_times"/>
+        <result column="create_id" jdbcType="VARCHAR" property="create_id"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        sys_user_token
+        .
+        id
+        as id, sys_user_token.user_id as user_id,
+    sys_user_token.token_name as token_name, sys_user_token.token_value as token_value,
+    sys_user_token.expiration_time as expiration_time, sys_user_token.create_time as create_time,
+    sys_user_token.is_del as is_del, sys_user_token.`status` as `status`,
+    sys_user_token.api_times as api_times, sys_user_token.create_id as create_id
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_token sys_user_token
+        where sys_user_token.id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByUserId" resultType="com.hu.oneclick.model.domain.SysUserToken"  parameterType="java.lang.String" >
+      select
+      <include refid="Base_Column_List"/>
+      from sys_user_token sys_user_token
+      where sys_user_token.user_id = #{user_id,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByTokenValue" resultType="com.hu.oneclick.model.domain.SysUserToken" parameterType="java.lang.String"  >
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_token sys_user_token
+        where sys_user_token.token_value = #{token_value,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from sys_user_token
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserToken"
+            useGeneratedKeys="true">
+        insert into sys_user_token (user_id, token_name, token_value,
+                                    expiration_time, create_time, is_del,
+                                    `status`, api_times, create_id)
+        values (#{user_id,jdbcType=VARCHAR}, #{token_name,jdbcType=VARCHAR}, #{token_value,jdbcType=VARCHAR},
+                #{expiration_time,jdbcType=TIMESTAMP}, #{create_time,jdbcType=TIMESTAMP}, #{is_del,jdbcType=BOOLEAN},
+                #{status,jdbcType=BOOLEAN}, #{api_times,jdbcType=BIGINT}, #{create_id,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id"
+            parameterType="com.hu.oneclick.model.domain.SysUserToken" useGeneratedKeys="true">
+        insert into sys_user_token
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="user_id != null">
+                user_id,
+            </if>
+            <if test="token_name != null">
+                token_name,
+            </if>
+            <if test="token_value != null">
+                token_value,
+            </if>
+            <if test="expiration_time != null">
+                expiration_time,
+            </if>
+            <if test="create_time != null">
+                create_time,
+            </if>
+            <if test="is_del != null">
+                is_del,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="api_times != null">
+                api_times,
+            </if>
+            <if test="create_id != null">
+                create_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="user_id != null">
+                #{user_id,jdbcType=INTEGER},
+            </if>
+            <if test="token_name != null">
+                #{token_name,jdbcType=VARCHAR},
+            </if>
+            <if test="token_value != null">
+                #{token_value,jdbcType=VARCHAR},
+            </if>
+            <if test="expiration_time != null">
+                #{expiration_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="create_time != null">
+                #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="is_del != null">
+                #{is_del,jdbcType=BOOLEAN},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=BOOLEAN},
+            </if>
+            <if test="api_times != null">
+                #{api_times,jdbcType=BIGINT},
+            </if>
+            <if test="create_id != null">
+                #{create_id,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysUserToken">
+        update sys_user_token
+        <set>
+            <if test="user_id != null">
+                user_id = #{user_id,jdbcType=VARCHAR},
+            </if>
+            <if test="token_name != null">
+                token_name = #{token_name,jdbcType=VARCHAR},
+            </if>
+            <if test="token_value != null">
+                token_value = #{token_value,jdbcType=VARCHAR},
+            </if>
+            <if test="expiration_time != null">
+                expiration_time = #{expiration_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="create_time != null">
+                create_time = #{create_time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="is_del != null">
+                is_del = #{is_del,jdbcType=BOOLEAN},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=BOOLEAN},
+            </if>
+            <if test="api_times != null">
+                api_times = #{api_times,jdbcType=BIGINT},
+            </if>
+            <if test="create_id != null">
+                create_id = #{create_id,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysUserToken">
+        update sys_user_token
+        set user_id         = #{user_id,jdbcType=VARCHAR},
+            token_name      = #{token_name,jdbcType=VARCHAR},
+            token_value     = #{token_value,jdbcType=VARCHAR},
+            expiration_time = #{expiration_time,jdbcType=TIMESTAMP},
+            create_time     = #{create_time,jdbcType=TIMESTAMP},
+            is_del          = #{is_del,jdbcType=BOOLEAN},
+            `status`        = #{status,jdbcType=BOOLEAN},
+            api_times       = #{api_times,jdbcType=BIGINT},
+            create_id       = #{create_id,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="decreaseApiTimes" parameterType="java.lang.Integer">
+        UPDATE sys_user_token set api_times=api_times-1 WHERE id = #{id}
+    </update>
+
+</mapper>

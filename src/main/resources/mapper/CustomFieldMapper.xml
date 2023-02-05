@@ -11,35 +11,48 @@
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="fieldName" column="field_name" jdbcType="VARCHAR"/>
-        <result property="projectId" column="project_id" jdbcType="INTEGER"/>
+        <result property="projectId" column="project_id" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!--查询单个-->
     <select id="queryById" resultMap="CustomFieldMap">
-        select
-          id, user_id, `type`, scope, mandatory, create_time, update_time, field_name,project_id
+        select id,
+               user_id,
+               `type`,
+               scope,
+               mandatory,
+               create_time,
+               update_time,
+               field_name,
+               project_id
         from oneclick.custom_field
         where id = #{id}
     </select>
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="CustomFieldMap">
-        select
-          id, user_id,  `type`, scope, mandatory, create_time, update_time, field_name, project_id
-        from oneclick.custom_field
-        limit #{offset}, #{limit}
+        select id,
+               user_id,
+               `type`,
+               scope,
+               mandatory,
+               create_time,
+               update_time,
+               field_name,
+               project_id
+        from oneclick.custom_field limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="CustomFieldMap">
         select
-        id, user_id,  `type`, scope, mandatory, create_time, update_time, field_name, project_id
+        id, user_id, `type`, scope, mandatory, create_time, update_time, field_name, project_id
         from oneclick.custom_field
         <where>
             project_id = #{projectId}
             and user_id = #{userId}
             <if test="type != null and type != ''">
-                and  `type` = #{type}
+                and `type` = #{type}
             </if>
             <if test="scope != null and scope != ''">
                 and scope = #{scope}
@@ -60,7 +73,11 @@
         order by update_time desc
     </select>
     <select id="queryByFieldName" resultType="java.lang.Integer">
-        select count(1) from oneclick.custom_field where user_id = #{masterId} and field_name = #{fieldName} and project_id = #{projectId}
+        select count(1)
+        from oneclick.custom_field
+        where user_id = #{masterId}
+          and field_name = #{fieldName}
+          and project_id = #{projectId}
     </select>
 
     <!--新增所有列-->
@@ -147,7 +164,10 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from oneclick.custom_field where id = #{id} and user_id = #{userId}
+        delete
+        from oneclick.custom_field
+        where id = #{id}
+          and user_id = #{userId}
     </delete>
 
 </mapper>

@@ -5,6 +5,7 @@ import com.hu.oneclick.model.domain.Attachment;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 附件表(Attachment)表数据库访问层
@@ -20,7 +21,7 @@ public interface AttachmentDao {
      * @param id 主键
      * @return 实例对象
      */
-    Attachment queryById(@Param("masterId") String masterId,@Param("id") String id);
+    Attachment queryById(@Param("masterId") String masterId, @Param("id") String id);
 
     /**
      * 查询指定行数据
@@ -63,6 +64,8 @@ public interface AttachmentDao {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(@Param("id") String id,@Param("masterId") String masterId);
+    int deleteById(@Param("id") String id, @Param("masterId") String masterId);
+
+    List<Map<String,Object>> getUserAttachment(String userId, String areaType);
 
 }

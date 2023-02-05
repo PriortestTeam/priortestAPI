@@ -5,6 +5,8 @@ import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Sprint;
 import com.hu.oneclick.model.domain.dto.FeatureDto;
 import com.hu.oneclick.server.service.FeatureService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("feature")
+@Api(tags = "故事")
 public class FeatureController {
 
     private final FeatureService featureService;
@@ -23,6 +26,7 @@ public class FeatureController {
     }
 
     @GetMapping("queryById/{id}")
+    @ApiOperation("查询故事")
     public Resp<Feature> queryById(@PathVariable String id) {
         return featureService.queryById(id);
     }
@@ -34,7 +38,8 @@ public class FeatureController {
     }
 
     @PostMapping("insert")
-    public Resp<String> insert(@RequestBody Feature feature) {
+    @ApiOperation("插入故事")
+    public Resp<String> insert(@RequestBody FeatureDto feature) {
         return featureService.insert(feature);
     }
 
