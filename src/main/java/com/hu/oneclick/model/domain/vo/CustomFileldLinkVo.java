@@ -24,9 +24,14 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
     private String type;
 
     /**
-     * 字段名称
+     * 字段名称  - 中文名
      */
     private String fieldNameCn;
+
+    /**
+     * 字段名称 - 英文名
+     */
+    private String fieldNameEn;
 
     /**
      * 用户id，修改者
