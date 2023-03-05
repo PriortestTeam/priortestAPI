@@ -9,3 +9,14 @@ server:
   port: 8082
   servlet:
     context-path: /api
+
+# MyBatis-plus
+mybatis-plus:
+  # 搜索指定包别名
+  typeAliasesPackage: com.hu.oneclick.**.domain
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  global-config:
+    db-config:
+      # 只更新属性值不为空的字段
+      update-strategy: not_null
