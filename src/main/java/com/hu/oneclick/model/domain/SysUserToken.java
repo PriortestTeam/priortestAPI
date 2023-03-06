@@ -2,9 +2,10 @@ package com.hu.oneclick.model.domain;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * sys_user_token
@@ -19,37 +20,37 @@ public class SysUserToken implements Serializable {
      * 用户id
      */
     @ApiModelProperty(value="用户id")
-    private String user_id;
+    private String userId;
 
     /**
      * token名称
      */
     @ApiModelProperty(value="token名称")
-    private String token_name;
+    private String tokenName;
 
     /**
      * token值
      */
     @ApiModelProperty(value="token值")
-    private String token_value;
+    private String tokenValue;
 
     /**
      * 过期时间
      */
     @ApiModelProperty(value="过期时间")
-    private Date expiration_time;
+    private Date expirationTime;
 
     /**
      * 创建时间
      */
     @ApiModelProperty(value="创建时间")
-    private Date create_time;
+    private Date createTime;
 
     /**
      * 是否删除
      */
     @ApiModelProperty(value="是否删除")
-    private Boolean is_del;
+    private Boolean isDel;
 
     /**
      * 状态
@@ -61,13 +62,13 @@ public class SysUserToken implements Serializable {
      * 剩余调用api次数
      */
     @ApiModelProperty(value="剩余调用api次数")
-    private Long api_times;
+    private Long apiTimes;
 
     /**
      * 创建人
      */
     @ApiModelProperty(value="创建人")
-    private String create_id;
+    private String createId;
 
     private static final long serialVersionUID = 1L;
 }

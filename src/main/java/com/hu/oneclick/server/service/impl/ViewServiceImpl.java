@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -37,6 +38,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,44 +56,30 @@ public class ViewServiceImpl implements ViewService {
 
     private final static Logger logger = LoggerFactory.getLogger(ViewServiceImpl.class);
 
-    private final ViewDao viewDao;
-
-    private final JwtUserServiceImpl jwtUserService;
-
-    private final SysPermissionService sysPermissionService;
-
-    private final ViewDownChildParamsDao viewDownChildParamsDao;
-
-    private final RedissonClient redissonClient;
-
-    private final SysCustomFieldService sysCustomFieldService;
-
-    private final CustomFieldDataService customFieldDataService;
-
-    private final ProjectService projectService;
-
-    private final FeatureService featureService;
-
-    private final TestCycleService testCycleService;
-
-    private final TestCaseService testCaseService;
-
-    private final IssueService issueService;
-
-    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService, CustomFieldDataService customFieldDataService, ProjectService projectService, FeatureService featureService, TestCycleService testCycleService, TestCaseService testCaseService, IssueService issueService) {
-        this.viewDao = v;
-        this.jwtUserService = jwtUserService;
-        this.sysPermissionService = sysPermissionService;
-        this.viewDownChildParamsDao = viewDownChildParamsDao;
-        this.redissonClient = redissonClient;
-        this.sysCustomFieldService = sysCustomFieldService;
-        this.customFieldDataService = customFieldDataService;
-        this.projectService = projectService;
-        this.featureService = featureService;
-        this.testCycleService = testCycleService;
-        this.testCaseService = testCaseService;
-        this.issueService = issueService;
-    }
+    @Resource
+    private ViewDao viewDao;
+    @Resource
+    private JwtUserServiceImpl jwtUserService;
+    @Resource
+    private SysPermissionService sysPermissionService;
+    @Resource
+    private ViewDownChildParamsDao viewDownChildParamsDao;
+    @Resource
+    private RedissonClient redissonClient;
+    @Resource
+    private SysCustomFieldService sysCustomFieldService;
+    @Resource
+    private CustomFieldDataService customFieldDataService;
+    @Resource
+    private ProjectService projectService;
+    @Resource
+    private FeatureService featureService;
+    @Resource
+    private TestCycleService testCycleService;
+    @Resource
+    private TestCaseService testCaseService;
+    @Resource
+    private IssueService issueService;
 
     @Override
     public Resp<View> queryById(String id) {
@@ -706,7 +694,7 @@ public class ViewServiceImpl implements ViewService {
                 }
                 for (String testCaseId : testCaseIds) {
                     if (!testCaseList.stream().map(TestCase::getId).collect(Collectors.toSet()).contains(testCaseId)) {
-                        TestCase data = testCaseService.queryById(testCaseId).getData();
+                        TestCase data = testCaseService.queryById(Convert.toLong(testCaseId)).getData();
                         testCaseList.add(data);
                     }
                 }

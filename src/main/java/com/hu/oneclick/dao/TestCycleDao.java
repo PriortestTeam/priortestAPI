@@ -1,11 +1,10 @@
 package com.hu.oneclick.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import org.apache.ibatis.annotations.Param;
-import tk.mybatis.mapper.common.BaseMapper;
-
 import java.util.List;
 import java.util.Map;
 

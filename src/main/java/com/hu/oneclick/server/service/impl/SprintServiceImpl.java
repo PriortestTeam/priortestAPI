@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +34,8 @@ public class SprintServiceImpl implements SprintService {
 
     private final static Logger logger = LoggerFactory.getLogger(SprintServiceImpl.class);
 
-    private final SprintDao sprintDao;
+    @Resource
+    private SprintDao sprintDao;
 
     private final JwtUserServiceImpl jwtUserService;
 
@@ -40,8 +43,7 @@ public class SprintServiceImpl implements SprintService {
 
     private final QueryFilterService queryFilterService;
 
-    public SprintServiceImpl(SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService) {
-        this.sprintDao = sprintDao;
+    public SprintServiceImpl( JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService) {
         this.jwtUserService = jwtUserService;
         this.sysPermissionService = sysPermissionService;
         this.queryFilterService = queryFilterService;
@@ -141,7 +143,7 @@ public class SprintServiceImpl implements SprintService {
             sysPermissionService.featurePermission(OneConstant.PERMISSION.DELETE,OneConstant.SCOPE.ONE_SPRINT);
             Sprint sprint = new Sprint();
             sprint.setId(id);
-            return Result.deleteResult(sprintDao.delete(sprint));
+            return Result.deleteResult(sprintDao.delete(new LambdaQueryWrapper<Sprint>().eq(Sprint::getId, id)));
         }catch (BizException e){
             logger.error("class: SprintServiceImpl#delete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -161,8 +163,8 @@ public class SprintServiceImpl implements SprintService {
         sprint.setTitle(title);
         sprint.setProjectId(projectId);
         sprint.setId(null);
-        if (sprintDao.selectOne(sprint) != null){
-            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(),sprint.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
+        if (sprintDao.selectOne(new LambdaQueryWrapper<Sprint>().eq(Sprint::getTitle, sprint.getTitle()).eq(Sprint::getProjectId, sprint.getProjectId())) != null) {
+            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), sprint.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
         }
     }
 }

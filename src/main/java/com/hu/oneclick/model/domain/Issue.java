@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -8,7 +9,6 @@ import com.hu.oneclick.model.base.VerifyParam;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -93,11 +93,11 @@ public class Issue extends BaseEntity implements Serializable, VerifyParam {
 
     private Date updateTime;
 
-    @Transient
+    @TableField(exist = false)
     private String scope = OneConstant.SCOPE.ONE_ISSUE;
-    @Transient
+    @TableField(exist = false)
     private String testCaseTitle;
-    @Transient
+    @TableField(exist = false)
     private String testCycleTitle;
 
     /**

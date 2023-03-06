@@ -1,7 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
-import cn.hutool.core.util.ObjectUtil;
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Maps;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -11,10 +10,8 @@ import com.hu.oneclick.dao.CustomFieldsDao;
 import com.hu.oneclick.dao.CustomFileldLinkDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.CustomField;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.CustomFileldLink;
-import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.vo.ComponentAttributesVo;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
@@ -30,8 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -107,7 +106,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         BeanUtils.copyProperties(attributes, customField);
 
         customField.setCustomFieldId(SnowFlakeUtil.getFlowIdInstance().nextId());
-        int insertSelective = customFieldsDao.insertSelective(customField);
+        int insertSelective = customFieldsDao.insert(customField);
         if (insertSelective > 0) {
             List<CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
             int insertBatch = customFileldLinkDao.insertBatch(customFileldLinkList);
@@ -123,7 +122,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
         CustomFields customField = new CustomFields();
         customField.setCustomFieldId(customFieldVo.getCustomFieldId());
-        int count = customFieldsDao.selectCount(customField);
+        int count = customFieldsDao.selectCount(new LambdaQueryWrapper<CustomFields>().eq(CustomFields::getCustomFieldId, customFieldVo.getCustomFieldId())).intValue();
         if (count == 0) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "customFieldId不存在！");
         }
@@ -137,7 +136,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         if (row > 0) {
             List<CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
             // 先根据customFieldsId删除数据再新增
-            customFileldLinkDao.delete(new CustomFileldLink(customField.getCustomFieldId()));
+            customFileldLinkDao.delete(new LambdaQueryWrapper<CustomFileldLink>().eq(CustomFileldLink::getCustomFieldId, customField.getCustomFieldId()));
             int insertBatch = customFileldLinkDao.insertBatch(customFileldLinkList);
             row += insertBatch;
         }

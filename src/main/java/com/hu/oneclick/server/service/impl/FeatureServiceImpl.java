@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,32 +49,20 @@ public class FeatureServiceImpl implements FeatureService {
 
     private final static Logger logger = LoggerFactory.getLogger(SprintServiceImpl.class);
 
-
-    private final FeatureDao featureDao;
-
-    private final FeatureJoinSprintDao featureJoinSprintDao;
-
-    private final SprintDao sprintDao;
-
-    private final JwtUserServiceImpl jwtUserService;
-
-    private final SysPermissionService sysPermissionService;
-
-    private final QueryFilterService queryFilterService;
-
-    private final CustomFieldDataService customFieldDataService;
-
-
-    public FeatureServiceImpl(FeatureDao featureDao, FeatureJoinSprintDao featureJoinSprintDao, SprintDao sprintDao, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService, CustomFieldDataService customFieldDataService) {
-        this.featureDao = featureDao;
-        this.featureJoinSprintDao = featureJoinSprintDao;
-        this.sprintDao = sprintDao;
-        this.jwtUserService = jwtUserService;
-        this.sysPermissionService = sysPermissionService;
-        this.queryFilterService = queryFilterService;
-        this.customFieldDataService = customFieldDataService;
-    }
-
+    @Resource
+    private FeatureDao featureDao;
+    @Resource
+    private FeatureJoinSprintDao featureJoinSprintDao;
+    @Resource
+    private SprintDao sprintDao;
+    @Resource
+    private JwtUserServiceImpl jwtUserService;
+    @Resource
+    private SysPermissionService sysPermissionService;
+    @Resource
+    private QueryFilterService queryFilterService;
+    @Resource
+    private CustomFieldDataService customFieldDataService;
 
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -301,7 +291,7 @@ public class FeatureServiceImpl implements FeatureService {
             sysPermissionService.featurePermission(OneConstant.PERMISSION.DELETE, OneConstant.SCOPE.ONE_FEATURE);
             Feature feature = new Feature();
             feature.setId(id);
-            return Result.deleteResult(featureDao.delete(feature));
+            return Result.deleteResult(featureDao.deleteById(feature));
         } catch (BizException e) {
             logger.error("class: FeatureServiceImpl#delete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -361,7 +351,7 @@ public class FeatureServiceImpl implements FeatureService {
         feature.setTitle(title);
         feature.setProjectId(projectId);
         feature.setId(null);
-        if (featureDao.selectOne(feature) != null) {
+        if (featureDao.selectOne(new LambdaQueryWrapper<Feature>().eq(Feature::getTitle, feature.getTitle()).eq(Feature::getProjectId, feature.getProjectId())) != null) {
             throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), feature.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
         }
     }

@@ -1,9 +1,9 @@
 package com.hu.oneclick.dao;
 
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hu.oneclick.model.domain.Room;
 import org.apache.ibatis.annotations.Param;
-import tk.mybatis.mapper.common.BaseMapper;
 
 public interface RoomDao extends BaseMapper<Room> {
 
