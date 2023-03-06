@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,12 +26,12 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
 
     private final static Logger logger = LoggerFactory.getLogger(TestCaseStepServiceImpl.class);
 
-    private final TestCaseTemplateJsonDAO testCaseTemplateJsonDAO;
+    @Resource
+    private TestCaseTemplateJsonDAO testCaseTemplateJsonDAO;
 
     private final JwtUserServiceImpl jwtUserService;
 
-    public TestCaseTemplateJsonServiceImpl(TestCaseTemplateJsonDAO testCaseTemplateJsonDAO,JwtUserServiceImpl jwtUserService) {
-        this.testCaseTemplateJsonDAO = testCaseTemplateJsonDAO;
+    public TestCaseTemplateJsonServiceImpl(JwtUserServiceImpl jwtUserService) {
         this.jwtUserService = jwtUserService;
     }
 
@@ -41,7 +42,7 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
             testCaseTemplateJson.verify();
             testCaseTemplateJson.setUserId(jwtUserService.getMasterId());
             testCaseTemplateJson.setCreateTime(LocalDateTime.now());
-            return Result.addResult( testCaseTemplateJsonDAO.insertSelective(testCaseTemplateJson));
+            return Result.addResult( testCaseTemplateJsonDAO.insert(testCaseTemplateJson));
         }catch (BizException e){
             logger.error("class: TestCaseTemplateJsonServiceImpl#insert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

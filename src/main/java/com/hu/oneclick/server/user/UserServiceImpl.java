@@ -548,19 +548,19 @@ public class UserServiceImpl implements UserService {
         String token = RandomUtil.randomString(50);
 
         SysUserToken sysUserToken = new SysUserToken();
-        sysUserToken.setUser_id(userLoginInfo.getSysUser().getId());
+        sysUserToken.setUserId(userLoginInfo.getSysUser().getId());
         String tokenName = sysUserTokenDto.getTokenName();
-        sysUserToken.setToken_name(tokenName);
-        sysUserToken.setToken_value(token);
+        sysUserToken.setTokenName(tokenName);
+        sysUserToken.setTokenValue(token);
         Date expirationTime = sysUserTokenDto.getExpirationTime();
         Date nowDate = new Date();
         long datePoor3 = DateUtil.getDatePoor3(nowDate, expirationTime);
-        sysUserToken.setExpiration_time(expirationTime);
-        sysUserToken.setCreate_time(nowDate);
-        sysUserToken.setIs_del(false);
+        sysUserToken.setExpirationTime(expirationTime);
+        sysUserToken.setCreateTime(nowDate);
+        sysUserToken.setIsDel(false);
         sysUserToken.setStatus(false);
-        sysUserToken.setApi_times(0L);
-        sysUserToken.setCreate_id(userLoginInfo.getSysUser().getId());
+        sysUserToken.setApiTimes(0L);
+        sysUserToken.setCreateId(userLoginInfo.getSysUser().getId());
 
 
         RBucket<Object> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + tokenName);
@@ -647,7 +647,7 @@ public class UserServiceImpl implements UserService {
                 return false;
             }
             for (SysUserToken sysUserToken : sysUserTokens) {
-                if (sysUserToken.getApi_times() > 0) {
+                if (sysUserToken.getApiTimes() > 0) {
                     sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
                 }
             }

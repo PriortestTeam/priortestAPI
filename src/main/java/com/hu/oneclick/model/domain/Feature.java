@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -8,7 +9,6 @@ import com.hu.oneclick.model.base.VerifyParam;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -24,13 +24,13 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
     private static final long serialVersionUID = 495256750642592776L;
 
     /**
-     * 关联项目id
-     */
-    private String projectId;
-    /**
      * 记录
      */
     private String epic;
+    /**
+     * 关联项目id
+     */
+    private String projectId;
     /**
      * 指派给谁
      */
@@ -38,7 +38,7 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
     /**
      * 状态，（1 progress ，0 closed, 2 plan）
      */
-    @Transient
+    @TableField(exist = false)
     private Integer status;
     /**
      * 版本
@@ -76,23 +76,23 @@ public class Feature extends BaseEntity implements Serializable, VerifyParam {
     /**
      * 关联迭代表的title
      */
-    @Transient
+    @TableField(exist = false)
     private String sprintTitle;
 
 
-    @Transient
+    @TableField(exist = false)
     private String scope = OneConstant.SCOPE.ONE_FEATURE;
 
-    @Transient
+    @TableField(exist = false)
     List<Sprint> sprints;
 
-    @Transient
+    @TableField(exist = false)
     private String closeDateBegin;
-    @Transient
+    @TableField(exist = false)
     private String closeDateEnd;
-    @Transient
+    @TableField(exist = false)
     private String createTimeBegin;
-    @Transient
+    @TableField(exist = false)
     private String createTimeEnd;
 
     /**

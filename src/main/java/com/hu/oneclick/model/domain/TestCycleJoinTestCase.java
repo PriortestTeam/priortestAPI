@@ -1,6 +1,7 @@
 package com.hu.oneclick.model.domain;
 
-import javax.persistence.Transient;
+import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -67,7 +68,7 @@ public class TestCycleJoinTestCase implements Serializable {
         this.userId = userId;
     }
 
-    @Transient
+    @TableField(exist = false)
     private String executeStatus;
 
 

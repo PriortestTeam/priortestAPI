@@ -1,93 +1,61 @@
 package com.hu.oneclick.server.service.impl;
 
-import com.hu.oneclick.common.exception.BizException;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.dao.TestCaseStepDao;
-import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.TestCaseStep;
+import com.hu.oneclick.model.domain.dto.TestCaseStepSaveDto;
+import com.hu.oneclick.model.domain.param.TestCaseStepParam;
 import com.hu.oneclick.server.service.TestCaseStepService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import java.util.Date;
 import java.util.List;
 
 /**
  * @author qingyang
  */
 @Service
-public class TestCaseStepServiceImpl implements TestCaseStepService {
-
-
-    private final static Logger logger = LoggerFactory.getLogger(TestCaseStepServiceImpl.class);
-
-
-    private final TestCaseStepDao testCaseStepDao;
-
-    public TestCaseStepServiceImpl(TestCaseStepDao testCaseStepDao) {
-        this.testCaseStepDao = testCaseStepDao;
-    }
-
+@Slf4j
+public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCaseStep> implements TestCaseStepService {
 
     @Override
-    public Resp<TestCaseStep> queryById(String id,String testCaseId) {
-        TestCaseStep query = new TestCaseStep();
-        query.setTestCaseId(testCaseId);
-        query.setId(id);
-        TestCaseStep testCaseStep = testCaseStepDao.selectOne(query);
-        return new Resp.Builder<TestCaseStep>().setData(testCaseStep).ok();
+    public List<TestCaseStep> list(TestCaseStepParam param) {
+        return this.lambdaQuery()
+                .like(StrUtil.isNotBlank(param.getTestStep()), TestCaseStep::getTestStep, param.getTestStep())
+                .like(StrUtil.isNotBlank(param.getTestData()), TestCaseStep::getTestData, param.getTestData())
+                .like(StrUtil.isNotBlank(param.getExpectedResult()), TestCaseStep::getExpectedResult, param.getExpectedResult())
+                .list();
     }
 
     @Override
-    public Resp<List<TestCaseStep>> queryList(TestCaseStep testCaseStep) {
-        testCaseStep.queryListVerify();
-        List<TestCaseStep> select = testCaseStepDao.queryList(testCaseStep);
-        return new Resp.Builder<List<TestCaseStep>>().setData(select).total(select).ok();
+    public TestCaseStep save(TestCaseStepSaveDto dto) {
+        TestCaseStep testCaseStep = new TestCaseStep();
+        BeanUtil.copyProperties(dto, testCaseStep);
+        baseMapper.insert(testCaseStep);
+        return testCaseStep;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Resp<String> insert(TestCaseStep testCaseStep) {
-        try {
-            //验证参数
-            testCaseStep.verify();
-            testCaseStep.setCreateTime(new Date());
-            return Result.addResult(testCaseStepDao.insert(testCaseStep));
-        }catch (BizException e){
-            logger.error("class: TestCaseStepServiceImpl#insert,error []" + e.getMessage());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+    public TestCaseStep update(TestCaseStepSaveDto dto) {
+        TestCaseStep testCaseStep = baseMapper.selectById(dto.getId());
+        if (testCaseStep == null) {
+            throw new BaseException(StrUtil.format("测试用例步骤查询不到。ID：{}", dto.getId()));
         }
+        BeanUtil.copyProperties(dto, testCaseStep);
+        baseMapper.updateById(testCaseStep);
+        return testCaseStep;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Resp<String> update(TestCaseStep testCaseStep) {
-        try {
-            //验证参数
-            return Result.updateResult(testCaseStepDao.update(testCaseStep));
-        }catch (BizException e){
-            logger.error("class: TestCaseStepServiceImpl#update,error []" + e.getMessage());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+    public TestCaseStep info(Long id) {
+        TestCaseStep testCaseStep = baseMapper.selectById(id);
+        if (testCaseStep == null) {
+            throw new BaseException(StrUtil.format("测试用例步骤查询不到。ID：{}", id));
         }
+        return testCaseStep;
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Resp<String> delete(String id) {
-        try {
-            TestCaseStep query = new TestCaseStep();
-            query.setId(id);
-            return Result.deleteResult(testCaseStepDao.delete(query));
-        }catch (BizException e){
-            logger.error("class: TestCaseStepServiceImpl#delete,error []" + e.getMessage());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
-        }
-    }
 }
 

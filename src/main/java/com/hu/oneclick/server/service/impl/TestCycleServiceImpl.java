@@ -1,63 +1,33 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
-import com.hu.oneclick.dao.FeatureDao;
-import com.hu.oneclick.dao.IssueDao;
-import com.hu.oneclick.dao.SprintDao;
-import com.hu.oneclick.dao.TestCaseDao;
-import com.hu.oneclick.dao.TestCaseExcutionDao;
-import com.hu.oneclick.dao.TestCaseStepDao;
-import com.hu.oneclick.dao.TestCycleDao;
-import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
-import com.hu.oneclick.dao.TestCycleJoinTestStepDao;
-import com.hu.oneclick.dao.TestCycleScheduleDao;
-import com.hu.oneclick.dao.TestCycleScheduleModelDao;
+import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.CustomFieldData;
-import com.hu.oneclick.model.domain.Feature;
-import com.hu.oneclick.model.domain.Issue;
-import com.hu.oneclick.model.domain.ModifyRecord;
-import com.hu.oneclick.model.domain.Sprint;
-import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.TestCaseExcution;
-import com.hu.oneclick.model.domain.TestCaseStep;
-import com.hu.oneclick.model.domain.TestCycle;
-import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
-import com.hu.oneclick.model.domain.TestCycleJoinTestStep;
-import com.hu.oneclick.model.domain.TestCycleSchedule;
-import com.hu.oneclick.model.domain.TestCycleScheduleModel;
+import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.TestCycleDto;
-import com.hu.oneclick.server.service.CustomFieldDataService;
-import com.hu.oneclick.server.service.ModifyRecordsService;
-import com.hu.oneclick.server.service.QueryFilterService;
-import com.hu.oneclick.server.service.SystemConfigService;
-import com.hu.oneclick.server.service.TestCycleService;
+import com.hu.oneclick.server.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.ObjectUtils;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TestCycleServiceImpl implements TestCycleService {
@@ -65,37 +35,37 @@ public class TestCycleServiceImpl implements TestCycleService {
     private final static Logger logger = LoggerFactory.getLogger(TestCycleServiceImpl.class);
 
 
-    @Autowired
+    @Resource
     private ModifyRecordsService modifyRecordsService;
-    @Autowired
+    @Resource
     private JwtUserServiceImpl jwtUserService;
-    @Autowired
+    @Resource
     private TestCycleDao testCycleDao;
-    @Autowired
+    @Resource
     private TestCaseDao testCaseDao;
-    @Autowired
+    @Resource
     private TestCaseStepDao testCaseStepDao;
-    @Autowired
+    @Resource
     private FeatureDao featureDao;
-    @Autowired
+    @Resource
     private TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
-    @Autowired
+    @Resource
     private SprintDao sprintDao;
-    @Autowired
+    @Resource
     private QueryFilterService queryFilterService;
-    @Autowired
+    @Resource
     private TestCaseExcutionDao testCaseExcutionDao;
-    @Autowired
+    @Resource
     private TestCycleJoinTestStepDao testCycleJoinTestStepDao;
-    @Autowired
+    @Resource
     private IssueDao issueDao;
-    @Autowired
+    @Resource
     private TestCycleScheduleModelDao testCycleScheduleModelDao;
-    @Autowired
+    @Resource
     private TestCycleScheduleDao testCycleScheduleDao;
-    @Autowired
+    @Resource
     private SystemConfigService systemConfigService;
-    @Autowired
+    @Resource
     private CustomFieldDataService customFieldDataService;
 
 
@@ -195,7 +165,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         try {
             TestCycle testCycle = new TestCycle();
             testCycle.setId(id);
-            return Result.deleteResult(testCycleDao.delete(testCycle));
+            return Result.deleteResult(testCycleDao.delete(new LambdaQueryWrapper<TestCycle>().eq(TestCycle::getId, id)));
         } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#delete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -260,11 +230,11 @@ public class TestCycleServiceImpl implements TestCycleService {
         boolean flag = executeTestCaseDto.getStepStatus() == 2; //查看当前步骤用户选择成功还是失败
         try {
             //1 修改test case 最后一次执行的状态
-            TestCase testCase = new TestCase();
-            testCase.setId(executeTestCaseDto.getTestCaseId());
-            testCase.setLastRunStatus(executeTestCaseDto.getStepStatus());
-            testCase.setExecutedDate(date);
-            testCase.setUserId(userId);
+            //TestCase testCase = new TestCase();
+            //testCase.setId(executeTestCaseDto.getTestCaseId());
+            //testCase.setLastRunStatus(executeTestCaseDto.getStepStatus());
+            //testCase.setExecutedDate(date);
+            //testCase.setUserId(userId);
             //2 判断是否所有的test case 都被执行过，全部执行过后修改 test cycle 的status 为 complete
             List<Map<String, String>> select = testCycleJoinTestCaseDao.queryBindCaseRunStatus(executeTestCaseDto.getTestCycleId());
             for (Map<String, String> map : select) {
@@ -297,15 +267,15 @@ public class TestCycleServiceImpl implements TestCycleService {
             testCycle.setUserId(userId);
             //4 步骤状态
             TestCaseStep testCaseStep = new TestCaseStep();
-            testCaseStep.setId(executeTestCaseDto.getTestCaseStepId());
-            testCaseStep.setTestCaseId(executeTestCaseDto.getTestCaseId());
-            testCaseStep.setTestDate(date);
-            testCaseStep.setStatus(executeTestCaseDto.getStepStatus());
-            testCaseStep.setActualResult(executeTestCaseDto.getActualResult());
+            //testCaseStep.setId(executeTestCaseDto.getTestCaseStepId());
+            //testCaseStep.setTestCaseId(executeTestCaseDto.getTestCaseId());
+            //testCaseStep.setTestDate(date);
+            //testCaseStep.setStatus(executeTestCaseDto.getStepStatus());
+            //testCaseStep.setActualResult(executeTestCaseDto.getActualResult());
             //开始更新
-            return Result.updateResult(testCycleDao.update(testCycle),
-                    testCaseDao.update(testCase),
-                    testCaseStepDao.update(testCaseStep));
+            //return Result.updateResult(testCycleDao.update(testCycle),
+            //        testCaseDao.update(testCase),
+            //        testCaseStepDao.update(testCaseStep));
         } catch (BizException e) {
             logger.error("class: TestCycleServiceImpl#executeTestCase,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -395,6 +365,7 @@ public class TestCycleServiceImpl implements TestCycleService {
 //            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
 //        }
 //        return Result.updateResult();
+        return Result.updateResult();
     }
 
 
@@ -409,7 +380,7 @@ public class TestCycleServiceImpl implements TestCycleService {
         testCycle.setTitle(title);
         testCycle.setProjectId(projectId);
         testCycle.setId(null);
-        if (testCycleDao.selectOne(testCycle) != null) {
+        if (testCycleDao.selectOne(new LambdaQueryWrapper<TestCycle>().eq(TestCycle::getTitle, testCycle.getTitle()).eq(TestCycle::getProjectId, testCycle.getProjectId())) != null) {
             throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), testCycle.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
         }
     }
@@ -569,13 +540,13 @@ public class TestCycleServiceImpl implements TestCycleService {
             testCycleJoinTestCaseDao.updateTestCycleJoinTestCase(testCycleJoinTestCase);
 
             // 更新测试用例test_case表的状态为not run、执行时间、执行人等
-            TestCase testCase = new TestCase();
-            testCase.setId(executeTestCaseDto.getTestCaseId());
-            testCase.setExecutedDate(date);
-            testCase.setStepStatus(0);// 0:Not Run; 1:PASS; 2:Fail
-            testCase.setRunStatus(0);// 0:Not Run; 1:PASS; 2:Fail; 3:Un_Complete
-            testCase.setUserId(userId);
-            testCaseDao.update(testCase);
+            //TestCase testCase = new TestCase();
+            //testCase.setId(executeTestCaseDto.getTestCaseId());
+            //testCase.setExecutedDate(date);
+            //testCase.setStepStatus(0);// 0:Not Run; 1:PASS; 2:Fail
+            //testCase.setRunStatus(0);// 0:Not Run; 1:PASS; 2:Fail; 3:Un_Complete
+            //testCase.setUserId(userId);
+            //testCaseDao.update(testCase);
 
             // 更新测试周期下测试用例步骤运行次数
 
@@ -644,7 +615,7 @@ public class TestCycleServiceImpl implements TestCycleService {
                 resultTestCycleJoinTestCase.setRunDuration(executeTestCaseDto.getRunDuration());
                 resultTestCycleJoinTestCase.setStepStatus(executeTestCaseDto.getStepStatus());// 0:Not Run; 1:PASS; 2:Fail
 
-                testCase.setStepStatus(executeTestCaseDto.getStepStatus());// 0:Not Run; 1:PASS; 2:Fail
+                //testCase.setStepStatus(executeTestCaseDto.getStepStatus());// 0:Not Run; 1:PASS; 2:Fail
 
                 /**
                  * resultTestCycleJoinTestCase、testCycleJoinTestStep和TestCaseExcution的runCount同步
@@ -665,8 +636,8 @@ public class TestCycleServiceImpl implements TestCycleService {
             }
             testCycleJoinTestCaseDao.updateTestCycleJoinTestCase(resultTestCycleJoinTestCase);
 
-            testCase.setId(executeTestCaseDto.getTestCaseId());
-            testCase.setUserId(userId);
+            testCase.setId(Convert.toLong(executeTestCaseDto.getTestCaseId()));
+            testCase.setUserId(Convert.toLong(userId));
             testCase.setUpdateTime(date);
             testCaseDao.update(testCase);
 

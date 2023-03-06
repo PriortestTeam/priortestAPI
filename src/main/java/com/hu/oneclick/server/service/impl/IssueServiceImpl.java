@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,11 +37,13 @@ public class IssueServiceImpl implements IssueService {
 
     private final static Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 
-    private final IssueDao issueDao;
+    @Resource
+    private IssueDao issueDao;
 
     private final JwtUserServiceImpl jwtUserService;
 
-    private final IssueJoinTestCaseDao issueJoinTestCaseDao;
+    @Resource
+    private IssueJoinTestCaseDao issueJoinTestCaseDao;
 
     private final ModifyRecordsService modifyRecordsService;
 
@@ -50,10 +54,8 @@ public class IssueServiceImpl implements IssueService {
     private final CustomFieldDataService customFieldDataService;
 
 
-    public IssueServiceImpl(IssueDao issueDao, JwtUserServiceImpl jwtUserService, IssueJoinTestCaseDao issueJoinTestCaseDao, ModifyRecordsService modifyRecordsService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService, CustomFieldDataService customFieldDataService) {
-        this.issueDao = issueDao;
+    public IssueServiceImpl(JwtUserServiceImpl jwtUserService, ModifyRecordsService modifyRecordsService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService, CustomFieldDataService customFieldDataService) {
         this.jwtUserService = jwtUserService;
-        this.issueJoinTestCaseDao = issueJoinTestCaseDao;
         this.modifyRecordsService = modifyRecordsService;
         this.sysPermissionService = sysPermissionService;
         this.queryFilterService = queryFilterService;
@@ -139,7 +141,7 @@ public class IssueServiceImpl implements IssueService {
         try {
             Issue issue = new Issue();
             issue.setId(id);
-            return Result.deleteResult(issueDao.delete(issue));
+            return Result.deleteResult(issueDao.delete(new LambdaQueryWrapper<Issue>().eq(Issue::getId, id)));
         } catch (BizException e) {
             logger.error("class: IssueServiceImpl#delete,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -292,7 +294,7 @@ public class IssueServiceImpl implements IssueService {
         issue.setTitle(title);
         issue.setProjectId(projectId);
         issue.setId(null);
-        if (issueDao.selectOne(issue) != null) {
+        if (issueDao.selectOne(new LambdaQueryWrapper<Issue>().eq(Issue::getTitle, issue.getTitle()).eq(Issue::getProjectId, issue.getProjectId())) != null) {
             throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), issue.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
         }
     }

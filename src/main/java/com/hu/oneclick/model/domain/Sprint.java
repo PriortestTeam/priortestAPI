@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -7,7 +8,6 @@ import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -32,7 +32,7 @@ public class Sprint extends BaseEntity implements Serializable , VerifyParam {
     /**
      * 状态，（1 open ，0 close）
      */
-    @Transient
+    @TableField(exist = false)
     private Integer status;
     /**
      * 开始时间
@@ -61,7 +61,7 @@ public class Sprint extends BaseEntity implements Serializable , VerifyParam {
 
     private String module;
 
-    @Transient
+    @TableField(exist = false)
     private String scope = OneConstant.SCOPE.ONE_SPRINT;
 
     @Override

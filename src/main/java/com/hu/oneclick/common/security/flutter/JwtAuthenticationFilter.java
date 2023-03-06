@@ -77,13 +77,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         if (!org.springframework.util.StringUtils.isEmpty(sysUserToken)) {
-            Date expirationTime = sysUserToken.getExpiration_time();
+            Date expirationTime = sysUserToken.getExpirationTime();
             if (expirationTime.before(new Date())) {
                 response.setContentType("application/json;charset=UTF-8");
                 response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("token已过期")));
                 return;
             }
-            Authentication authentication = new ApiToken(true, sysUserToken.getToken_name());
+            Authentication authentication = new ApiToken(true, sysUserToken.getTokenName());
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             //第三方调用api
