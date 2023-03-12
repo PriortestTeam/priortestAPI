@@ -39,9 +39,14 @@ public class CustomFields implements Serializable {
     private Date updateTime;
 
     /**
-     * 字段名称
+     * 字段名称 - 中文名
      */
     private String fieldNameCn;
+
+    /**
+     * 字段名称 - 英文名
+     */
+    private String fieldNameEn;
 
     /**
      * 关联项目id
