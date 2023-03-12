@@ -15,7 +15,8 @@
         <result column="length" property="length"/>
         <result column="possible_value" property="possibleValue"/>
         <result column="field_type" property="fieldType"/>
-        <result column="field_type_cn" property="fieldTypeCn"/>
+        <result column="field_type_en" property="fieldTypeEn"/>
+
     </resultMap>
 
     <resultMap id="CustomFileldLinkVoResultMap" type="com.hu.oneclick.model.domain.vo.CustomFileldLinkVo">
@@ -33,30 +34,32 @@
         <result column="scope_name_cn" property="scopeNameCn"/>
         <result column="default_value" property="defaultValue"/>
         <result column="mandatory" property="mandatory"/>
+        <result column="field_name_en" property="fieldNameEn"/>
 
     </resultMap>
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         custom_field_id
-        , create_user, type, create_time, update_time, field_name_cn, project_id, modify_user, length, possible_value, field_type,field_type_cn
+        , create_user, type, create_time, update_time, field_name_cn, field_name_en, project_id, modify_user, length, possible_value, field_type,field_type_cn
     </sql>
 
     <sql id="Custom_Column_List">
-        cf.
-        custom_field_id,
-            cf.type,
-            cf.possible_value,
-            cf.field_type,
-            cf.field_type_cn,
-            cf.field_name_cn,
-            cf.project_id,
-            cf.length,
-            cfl.custom_field_link_id,
-            cfl.scope,
-            cfl.scope_id,
-            cfl.scope_name_cn,
-            cfl.default_value,
-            cfl.mandatory
+        cf.custom_field_id,
+        cf.type,
+        cf.possible_value,
+        cf.field_type,
+        cf.field_type_cn,
+        cf.field_name_cn,
+        cf.field_name_en,
+        cf.project_id,
+        cf.length,
+        cfl.custom_field_link_id,
+        cfl.scope,
+        cfl.scope_id,
+        cfl.scope_name_cn,
+        cfl.default_value,
+        cfl.mandatory
+
     </sql>
 
 
@@ -69,6 +72,7 @@
             <if test="null != createTime and '' != createTime">create_time = #{createTime},</if>
             <if test="null != updateTime and '' != updateTime">update_time = #{updateTime},</if>
             <if test="null != fieldNameCn and '' != fieldNameCn">field_name_cn = #{fieldNameCn},</if>
+            <if test="null != fieldNameEn and '' != fieldNameEn">field_name_cn = #{fieldNameEn},</if>
             <if test="null != projectId and '' != projectId">project_id = #{projectId},</if>
             <if test="null != modifyUser and '' != modifyUser">modify_user = #{modifyUser},</if>
             <if test="null != length and '' != length">length = #{length},</if>
@@ -106,6 +110,11 @@
             <if test="fieldNameCn != null and fieldNameCn != ''">
                 and field_name_cn = #{fieldNameCn}
             </if>
+
+            <if test="fieldNameEn != null and fieldNameEn != ''">
+                and field_name_en = #{fieldNameEn}
+            </if>
+
             <if test="modifyUser != null and modifyUser != ''">
                 and modify_user = #{modifyUser}
             </if>
