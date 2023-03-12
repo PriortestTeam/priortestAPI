@@ -4,18 +4,17 @@
 
     <resultMap type="com.hu.oneclick.model.domain.TestCycle" id="TestCycleMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="userId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="status" column="test_cycle_status" jdbcType="INTEGER"/>
         <result property="runStatus" column="run_status" jdbcType="INTEGER"/>
         <result property="lastRunDate" column="last_run_date" jdbcType="TIMESTAMP"/>
         <result property="lastModify" column="last_modify" jdbcType="TIMESTAMP"/>
-        <result property="version" column="version" jdbcType="VARCHAR"/>
+        <result property="version" column="test_version" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-        <result property="ped" column="ped" jdbcType="TIMESTAMP"/>
-        <result property="authorName" column="author_name" jdbcType="VARCHAR"/>
+
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="assignTo" column="assign_to" jdbcType="VARCHAR"/>
         <result property="notifiyList" column="notifiy_list" jdbcType="VARCHAR"/>
@@ -25,24 +24,22 @@
     <!--查询单个-->
     <select id="queryById" resultType="com.hu.oneclick.model.domain.TestCycle">
         select t.id            as id,
-               t.user_id       as userId,
+               t.create_user_id       as userId,
                t.project_id    as projectId,
                t.title         as title,
                t.status        as status,
                t.run_status    as runStatus,
                t.last_run_date as lastRunDate,
                t.last_modify   as lastModify,
-               t.version       as version,
+               t.test_version       as version,
                t.create_time   as createTime,
                t.update_time   as updateTime,
-               t.ped           as ped,
-               t.author_name   as authorName,
                t.description   as description,
                t.assign_to     as assignTo,
                t.notifiy_list  as notifiyList
         from test_cycle t
         where t.id = #{id}
-          and t.user_id = #{masterId}
+          and t.create_user_id = #{masterId}
     </select>
 
     <select id="queryTitles" resultType="com.hu.oneclick.model.domain.dto.LeftJoinDto">
@@ -63,15 +60,15 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="TestCycleMap">
         select
-        id, user_id, project_id, title, status, run_status, last_run_date, last_modify,description, version,
-        create_time, update_time, ped, author_name,assign_to,notifiy_list
+        id, create_user_id, project_id, title, test_cycle_status, run_status, last_run_date, last_modify,description, test_version,
+        create_time, update_time, assign_to,notifiy_list
         from oneclick.test_cycle
         <where>
             <if test="id != null">
                 and id = #{id}
             </if>
             <if test="userId != null">
-                and user_id = #{userId}
+                and create_user_id = #{userId}
             </if>
             <if test="projectId != null">
                 and project_id = #{projectId}
@@ -80,7 +77,7 @@
                 and title = #{title}
             </if>
             <if test="status != null">
-                and status = #{status}
+                and test_cycle_status = #{status}
             </if>
             <if test="runStatus != null">
                 and run_status = #{runStatus}
@@ -93,7 +90,7 @@
             </if>
 
             <if test="version != null and version != ''">
-                and version = #{version}
+                and test_version = #{version}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
@@ -101,12 +98,7 @@
             <if test="updateTime != null">
                 and update_time = #{updateTime}
             </if>
-            <if test="ped != null">
-                and ped = #{ped}
-            </if>
-            <if test="authorName != null and authorName != ''">
-                and author_name = #{authorName}
-            </if>
+
         </where>
     </select>
 
@@ -118,7 +110,7 @@
                 title = #{title},
             </if>
             <if test="status != null">
-                status = #{status},
+                test_cycle_status = #{status},
             </if>
             <if test="runStatus != null">
                 run_status = #{runStatus},
@@ -129,19 +121,13 @@
             <if test="lastModify != null">
                 last_modify = #{lastModify},
             </if>
-
             <if test="description != null and description != ''">
                 description = #{description},
             </if>
             <if test="version != null and version != ''">
-                version = #{version},
+                test_version = #{version},
             </if>
-            <if test="ped != null">
-                ped = #{ped},
-            </if>
-            <if test="authorName != null and authorName != ''">
-                author_name = #{authorName},
-            </if>
+
             <if test="notifiyList != null and notifiyList != ''">
                 notifiy_list = #{notifiyList},
             </if>
@@ -162,11 +148,11 @@
     </update>
 
     <select id="getTestCycleVersion" resultType="java.util.Map" parameterType="java.lang.String">
-        SELECT version, title
+        SELECT test_version, title
         FROM test_cycle
         WHERE project_id = #{projectId}
-          AND env = #{env}
-          AND version = #{version}
+          AND test_env = #{env}
+          AND test_version = #{version}
     </select>
 
     <select id="getAllTestCycle" resultType="java.util.Map">
@@ -175,16 +161,16 @@
                  JOIN test_cycle_join_test_case cy ON ca.id = cy.test_case_id
                  JOIN test_cycle tc on cy.test_cycle_id = tc.id
         WHERE ca.project_id = #{param1}
-          AND ca.version = #{param2}
-          and ca.env = #{param3}
+          AND ca.test_version = #{param2}
+          and ca.test_env = #{param3}
           and tc.title in (#{param4})
     </select>
     <select id="getTestCycleByProjectIdAndEvn" resultType="java.lang.String">
         SELECT `title`
         FROM test_cycle
         WHERE project_id = #{param1}
-          AND env = #{param2}
-          and currentReleaseVersion = #{param3}
+          AND test_env = #{param2}
+          and current_release = #{param3}
     </select>
 
 
