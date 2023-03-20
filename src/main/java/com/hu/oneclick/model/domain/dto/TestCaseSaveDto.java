@@ -2,6 +2,9 @@ package com.hu.oneclick.model.domain.dto;
 
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -22,6 +25,7 @@ import java.util.Date;
 @Setter
 @Getter
 @ApiModel("测试用例DTO")
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TestCaseSaveDto implements Serializable {
 
     private static final long serialVersionUID = -806606802497649838L;
@@ -203,6 +207,7 @@ public class TestCaseSaveDto implements Serializable {
      * 自定义字段值
      */
     @ApiModelProperty("自定义字段值")
+    @JsonProperty("customFieldDatas")
     private JSONObject customFieldDatas;
 
 }
