@@ -75,7 +75,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/applyForAnExtensionIn").anonymous()
                 .antMatchers("/user/verifyLinkString").anonymous()
                 .antMatchers("/swagger-ui.html").anonymous()
+                .antMatchers("/swagger-ui/**").anonymous()
                 .antMatchers("/v2/**").anonymous()
+                .antMatchers("/v3/**").anonymous()
                 .antMatchers("/swagger-resources/**").anonymous()
                 .antMatchers("/doc.html").anonymous()
                 .antMatchers("/webjars/**").anonymous()
@@ -101,7 +103,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/sendEmailRegisterCode","/user/activateAccount",
                         "/user/forgetThePassword","/user/forgetThePasswordIn",
                         "/user/applyForAnExtension","/user/applyForAnExtensionIn","/user/verifyLinkString",
-                        "/swagger-ui.html","/swagger-resources/**",
+                        "/swagger-ui.html","/swagger-resources/**","/swagger-ui/**","/v3/**",
                         "/doc.html","/webjars/**",
                         "/v2/**","/webjars/springfox-swagger-ui/**","/webjars/springfox-swagger-ui")
                 .and()

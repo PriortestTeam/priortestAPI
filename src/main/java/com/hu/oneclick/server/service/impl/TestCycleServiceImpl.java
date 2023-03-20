@@ -637,7 +637,7 @@ public class TestCycleServiceImpl implements TestCycleService {
             testCycleJoinTestCaseDao.updateTestCycleJoinTestCase(resultTestCycleJoinTestCase);
 
             testCase.setId(Convert.toLong(executeTestCaseDto.getTestCaseId()));
-            testCase.setUserId(Convert.toLong(userId));
+            testCase.setCreateUserId(Convert.toLong(userId));
             testCase.setUpdateTime(date);
             testCaseDao.update(testCase);
 
