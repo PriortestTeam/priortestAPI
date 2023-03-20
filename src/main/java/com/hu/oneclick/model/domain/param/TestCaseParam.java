@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -22,5 +23,9 @@ public class TestCaseParam implements Serializable {
 
     @ApiModelProperty("名称")
     private String title;
+
+    @ApiModelProperty("项目ID")
+    @NotNull(message = "项目ID不能为空")
+    private Long projectId;
 
 }

@@ -181,17 +181,17 @@ public class TestCase extends AssignBaseEntity implements Serializable {
     @ApiModelProperty("remarks")
     private String remarks;
 
-    /**
-     * 修改者
-     */
-    @ApiModelProperty("修改者")
-    private String updateUserId;
+//    /**
+//     * 修改者
+//     */
+//    @ApiModelProperty("修改者")
+//    private String updateUserId;
 
-    /**
-     * 创建者
-     */
-    @ApiModelProperty("创建者")
-    private Long userId;
+//    /**
+//     * 创建者
+//     */
+//    @ApiModelProperty("创建者")
+//    private Long userId;
 
     /**
      * 自定义字段值

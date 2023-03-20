@@ -3,6 +3,7 @@ package com.hu.oneclick.server.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -70,13 +71,13 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     @Resource
     private TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
     @Resource
-    private CustomFieldDataService customFieldDataService;
+    private CustomFieldsService customFieldsService;
 
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
         List<TestCase> list = this.lambdaQuery()
                 .eq(TestCase::getProjectId, projectId)
-                .eq(TestCase::getUserId, jwtUserService.getMasterId())
+                .eq(TestCase::getCreateUserId, jwtUserService.getMasterId())
                 .like(StrUtil.isNotBlank(title), TestCase::getTitle, title)
                 .list();
         if (CollUtil.isEmpty(list)) {
@@ -96,7 +97,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     @Override
     public Resp<TestCase> queryById(Long id) {
         TestCase testCase = this.getById(id);
-        testCase.setCustomFieldDatas(customFieldDataService.testCaseRenderingCustom(id.toString()));
+//        testCase.setCustomFieldDatas(customFieldDataService.testCaseRenderingCustom(id.toString()));
         return new Resp.Builder<TestCase>().setData(testCase).ok();
     }
 
@@ -104,7 +105,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     public Resp<List<TestCase>> queryList(TestCaseDto testCase) {
         try {
             String masterId = jwtUserService.getMasterId();
-            testCase.setUserId(Long.valueOf(masterId));
+            testCase.setCreateUserId(Long.valueOf(masterId));
             testCase.setFilter(queryFilterService.mysqlFilterProcess(testCase.getViewTreeDto(), masterId));
             List<TestCase> select = baseMapper.queryList(testCase);
             return new Resp.Builder<List<TestCase>>().setData(select).total(select).ok();
@@ -1015,6 +1016,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     public List<TestCase> list(TestCaseParam param) {
         return this.lambdaQuery()
                 .like(StrUtil.isNotBlank(param.getTitle()), TestCase::getTitle, param.getTitle())
+                .eq(TestCase::getProjectId, param.getProjectId())
                 .orderByDesc(TestCase::getCreateTime)
                 .list();
     }
@@ -1023,6 +1025,10 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     public TestCase save(TestCaseSaveDto dto) {
         TestCase testCase = new TestCase();
         BeanUtil.copyProperties(dto, testCase);
+        // 保存自定义字段
+        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
+            testCase.setTestcaseExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+        }
         baseMapper.insert(testCase);
         return testCase;
     }
@@ -1034,6 +1040,10 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
             throw new BaseException(StrUtil.format("测试用例查询不到。ID：{}", dto.getId()));
         }
         BeanUtil.copyProperties(dto, testCase);
+        // 修改自定义字段
+        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
+            testCase.setTestcaseExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+        }
         baseMapper.updateById(testCase);
         return testCase;
     }

@@ -1,8 +1,7 @@
 package com.hu.oneclick.model.domain.dto;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hu.oneclick.model.domain.CustomFieldData;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -10,9 +9,9 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 测试用例dto
@@ -36,6 +35,7 @@ public class TestCaseSaveDto implements Serializable {
      */
     @ApiModelProperty("关联项目id")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @NotNull(message = "项目ID不能为空")
     private Long projectId;
 
     /**
@@ -49,12 +49,14 @@ public class TestCaseSaveDto implements Serializable {
      * 优先级
      */
     @ApiModelProperty("优先级")
+    @NotBlank(message = "优先级不能为空")
     private String priority;
 
     /**
      * 故事id
      */
     @ApiModelProperty("故事id")
+    @NotBlank(message = "故事id不能为空")
     private String feature;
 
     /**
@@ -200,10 +202,7 @@ public class TestCaseSaveDto implements Serializable {
     /**
      * 自定义字段值
      */
-    @TableField(exist = false)
-    private List<CustomFieldData> customFieldDatas;
-
-    //@Transient
-    //private String scope = OneConstant.SCOPE.ONE_TEST_CASE;
+    @ApiModelProperty("自定义字段值")
+    private JSONObject customFieldDatas;
 
 }

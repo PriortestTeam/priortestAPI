@@ -19,19 +19,19 @@ public class AssignBaseEntity implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
-    //@JsonFormat(shape = JsonFormat.Shape.STRING)
-    //@TableField(fill = FieldFill.INSERT)
-    //@ApiModelProperty(value = "创建人ID")
-    //private Long createUserId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @TableField(fill = FieldFill.INSERT)
+    @ApiModelProperty(value = "创建人ID")
+    private Long createUserId;
     //
     //@TableField(fill = FieldFill.INSERT)
     //@ApiModelProperty(value = "创建人名")
     //private String createUserName;
-    //
-    //@JsonFormat(shape = JsonFormat.Shape.STRING)
-    //@ApiModelProperty(value = "更新人ID")
-    //@TableField(fill = FieldFill.INSERT_UPDATE)
-    //private Long updateUserId;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @ApiModelProperty(value = "更新人ID")
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Long updateUserId;
     //
     //@ApiModelProperty(value = "更新人名")
     //@TableField(fill = FieldFill.INSERT_UPDATE)

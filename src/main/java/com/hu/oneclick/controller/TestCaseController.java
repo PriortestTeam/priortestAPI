@@ -75,7 +75,7 @@ public class TestCaseController extends BaseController {
 
     @ApiOperation("列表")
     @PostMapping("/list")
-    public Resp<PageInfo<TestCase>> list(@RequestBody TestCaseParam param) {
+    public Resp<PageInfo<TestCase>> list(@RequestBody @Validated TestCaseParam param) {
         startPage();
         List<TestCase> testCaseList = testCaseService.list(param);
         return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
