@@ -187,4 +187,11 @@
         </where>
 
     </select>
+
+    <update id="updateValueDropDownBox">
+        update custom_fields set possible_value = #{customFieldsDto.possibleValue},
+        update_time = #{customFieldsDto.updateTime}, modify_user = #{customFieldsDto.modifyUserId}
+        where custom_field_id = #{customFieldsDto.customFieldId}
+    </update>
+
 </mapper>
