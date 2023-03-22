@@ -197,7 +197,7 @@ public class TestCase extends AssignBaseEntity implements Serializable {
      * 自定义字段值
      */
     @TableField(exist = false)
-    private List<CustomFieldData> customFieldDatas;
+    private List<CustomFieldData> customFieldDataList;
 
     //@Transient
     //private String scope = OneConstant.SCOPE.ONE_TEST_CASE;
