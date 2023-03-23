@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,10 @@ import java.util.Date;
 @NoArgsConstructor
 public class CustomFieldsDto {
 
+    @JsonProperty("custom_field_id")
     private Long customFieldId;
 
+    @JsonProperty("possible_value")
     private String possibleValue;
 
     private Date updateTime;
