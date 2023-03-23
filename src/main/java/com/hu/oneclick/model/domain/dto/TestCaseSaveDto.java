@@ -162,22 +162,10 @@ public class TestCaseSaveDto implements Serializable {
     private String testStatus;
 
     /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String comments;
-
-    /**
      * 测试执行状态
      */
     @ApiModelProperty("测试执行状态")
     private Integer runStatus;
-
-    /**
-     * severity
-     */
-    @ApiModelProperty("severity")
-    private String severity;
 
     /**
      * testcase_expand
