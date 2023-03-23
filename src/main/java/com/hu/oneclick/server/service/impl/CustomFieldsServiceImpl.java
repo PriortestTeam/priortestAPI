@@ -13,6 +13,7 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.CustomFileldLink;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.vo.ComponentAttributesVo;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
 import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
@@ -27,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -179,4 +177,11 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         return customFileldLinkList;
     }
 
+    @Override
+    public Resp<String> updateValueDropDownBox(CustomFieldsDto customFieldsDto) {
+        customFieldsDto.setUpdateTime(new Date());
+        customFieldsDto.setModifyUserId(Long.valueOf(jwtUserServiceImpl.getUserLoginInfo().getSysUser().getId()));
+        int row = customFieldsDao.updateValueDropDownBox(customFieldsDto);
+        return Result.updateResult(row >= 1 ? 1 : 0);
+    }
 }
