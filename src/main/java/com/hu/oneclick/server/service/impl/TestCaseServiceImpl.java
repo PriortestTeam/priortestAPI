@@ -1035,9 +1035,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
     @Override
     public TestCase update(TestCaseSaveDto dto) {
-        TestCase testCase = baseMapper.selectById(dto.getId());
+        TestCase testCase = baseMapper.getByIdAndProjectId(dto.getId(), dto.getProjectId());
         if (testCase == null) {
-            throw new BaseException(StrUtil.format("测试用例查询不到。ID：{}", dto.getId()));
+            throw new BaseException(StrUtil.format("测试用例查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
         }
         BeanUtil.copyProperties(dto, testCase);
         // 修改自定义字段

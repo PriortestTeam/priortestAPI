@@ -156,6 +156,12 @@ public class TestCase extends AssignBaseEntity implements Serializable {
     private Integer runStatus;
 
     /**
+     * reportTo
+     */
+    @ApiModelProperty("reportTo")
+    private String reportTo;
+
+    /**
      * testcase_expand
      */
     @ApiModelProperty("testcase_expand")
