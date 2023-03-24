@@ -194,4 +194,10 @@ public class TestCaseSaveDto implements Serializable {
     @ApiModelProperty("自定义字段值")
     private JSONObject customFieldDatas;
 
+    /**
+     * reportTo
+     */
+    @ApiModelProperty("reportTo")
+    private String reportTo;
+
 }
