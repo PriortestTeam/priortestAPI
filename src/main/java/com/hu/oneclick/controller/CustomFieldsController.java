@@ -1,6 +1,7 @@
 package com.hu.oneclick.controller;
 
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -94,6 +95,9 @@ public class CustomFieldsController {
     public Resp<String> updateValueDropDownBox(@RequestBody CustomFieldsDto customFieldsDto) {
         if (null == customFieldsDto.getCustomFieldId()) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "customFieldId" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+        if (StrUtil.isBlank(customFieldsDto.getFieldType())) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "fieldType" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
         log.info("updateValueDropDownBox==>customFieldsDto:{}", JSON.toJSONString(customFieldsDto));
         return customFieldsService.updateValueDropDownBox(customFieldsDto);
