@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Maps;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -179,9 +180,47 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
     @Override
     public Resp<String> updateValueDropDownBox(CustomFieldsDto customFieldsDto) {
+        // 检验参数
+        updateValidParam(customFieldsDto);
         customFieldsDto.setUpdateTime(new Date());
         customFieldsDto.setModifyUserId(Long.valueOf(jwtUserServiceImpl.getUserLoginInfo().getSysUser().getId()));
         int row = customFieldsDao.updateValueDropDownBox(customFieldsDto);
         return Result.updateResult(row >= 1 ? 1 : 0);
+    }
+
+    private void updateValidParam(CustomFieldsDto customFieldsDto) {
+        String fieldType = customFieldsDto.getFieldType();
+        CustomFields entity = this.customFieldsDao.getByCustomFieldId(customFieldsDto.getCustomFieldId());
+        if (null == entity) {
+            throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "customFieldId不存在");
+        }
+
+        if (!fieldType.equals(entity.getFieldType())) {
+            throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "fieldType与请求修改记录不符合");
+        }
+
+        if (CustomFieldsDto.NOT_PARENT_LIST_ID.contains(fieldType)) {
+            JSONObject jsonObject = JSONObject.parseObject(customFieldsDto.getPossibleValue());
+            Object others = jsonObject.get("others");
+            if (null != others) {
+                Object parentListId = JSONObject.parseObject(JSONObject.toJSONString(others)).get("parentListId");
+                if (null != parentListId) {
+                    throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "parentListId不应该出现");
+                }
+            }
+        }
+
+        if (CustomFieldsDto.NEED_PARENT_LIST_ID.contains(fieldType)) {
+            JSONObject jsonObject = JSONObject.parseObject(customFieldsDto.getPossibleValue());
+            Object others = jsonObject.get("others");
+            if (null == others) {
+                throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "possibleValue格式不对。因为缺少parentListId");
+            } else {
+                Object parentListId = JSONObject.parseObject(JSONObject.toJSONString(others)).get("parentListId");
+                if (null == parentListId) {
+                    throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "possibleValue格式不对。因为缺少parentListId");
+                }
+            }
+        }
     }
 }

@@ -39,4 +39,6 @@ public interface CustomFieldsDao extends BaseMapper<CustomFields> {
     List<CustomFileldLinkVo> getDropDownBox(@Param("customFieldDto") CustomFieldDto customFieldDto);
 
     int updateValueDropDownBox(@Param("customFieldsDto") CustomFieldsDto customFieldsDto);
+
+    CustomFields getByCustomFieldId(@Param("customFieldId") Long customFieldId);
 }
