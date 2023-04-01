@@ -50,9 +50,9 @@
         insert into sys_user_token (user_id, token_name, token_value,
                                     expiration_time, create_time, is_del,
                                     `status`, api_times, create_id)
-        values (#{user_id,jdbcType=VARCHAR}, #{token_name,jdbcType=VARCHAR}, #{token_value,jdbcType=VARCHAR},
-                #{expiration_time,jdbcType=TIMESTAMP}, #{create_time,jdbcType=TIMESTAMP}, #{is_del,jdbcType=BOOLEAN},
-                #{status,jdbcType=BOOLEAN}, #{api_times,jdbcType=BIGINT}, #{create_id,jdbcType=VARCHAR})
+        values (#{userId,jdbcType=VARCHAR}, #{tokenName,jdbcType=VARCHAR}, #{tokenValue,jdbcType=VARCHAR},
+                #{expirationTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=BOOLEAN},
+                #{status,jdbcType=BOOLEAN}, #{apiTimes,jdbcType=BIGINT}, #{createId,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
             parameterType="com.hu.oneclick.model.domain.SysUserToken" useGeneratedKeys="true">
