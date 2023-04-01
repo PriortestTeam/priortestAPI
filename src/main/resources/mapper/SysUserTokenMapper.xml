@@ -49,7 +49,7 @@
             useGeneratedKeys="true">
         insert into sys_user_token (user_id, token_name, token_value,
                                     expiration_time, create_time, is_del,
-                                    `status`, api_times, create_id)
+                                    status, api_times, create_id)
         values (#{userId,jdbcType=VARCHAR}, #{tokenName,jdbcType=VARCHAR}, #{tokenValue,jdbcType=VARCHAR},
                 #{expirationTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=BOOLEAN},
                 #{status,jdbcType=BOOLEAN}, #{apiTimes,jdbcType=BIGINT}, #{createId,jdbcType=VARCHAR})
