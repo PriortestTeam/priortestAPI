@@ -3,8 +3,10 @@ package com.hu.oneclick.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Set;
 
@@ -35,4 +37,8 @@ public interface CustomFieldsDao extends BaseMapper<CustomFields> {
     List<String> getFieldTypeByProjectId(@Param("projectId") Long projectId);
 
     List<CustomFileldLinkVo> getDropDownBox(@Param("customFieldDto") CustomFieldDto customFieldDto);
+
+    int updateValueDropDownBox(@Param("customFieldsDto") CustomFieldsDto customFieldsDto);
+
+    CustomFields getByCustomFieldId(@Param("customFieldId") Long customFieldId);
 }

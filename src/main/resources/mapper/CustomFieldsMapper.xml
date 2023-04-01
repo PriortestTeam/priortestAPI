@@ -187,4 +187,18 @@
         </where>
 
     </select>
+
+    <update id="updateValueDropDownBox">
+        update custom_fields set possible_value = #{customFieldsDto.possibleValue},
+        update_time = #{customFieldsDto.updateTime}, modify_user = #{customFieldsDto.modifyUserId}
+        where custom_field_id = #{customFieldsDto.customFieldId}
+    </update>
+
+    <select id="getByCustomFieldId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM custom_fields
+        where custom_field_id = #{customFieldId}
+    </select>
+
 </mapper>
