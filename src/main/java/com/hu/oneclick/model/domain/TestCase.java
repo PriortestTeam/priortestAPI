@@ -1,6 +1,5 @@
 package com.hu.oneclick.model.domain;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hu.oneclick.model.base.AssignBaseEntity;
@@ -12,7 +11,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 测试用例
@@ -152,22 +150,16 @@ public class TestCase extends AssignBaseEntity implements Serializable {
     private String testStatus;
 
     /**
-     * 备注
-     */
-    @ApiModelProperty("备注")
-    private String comments;
-
-    /**
      * 测试执行状态
      */
     @ApiModelProperty("测试执行状态")
     private Integer runStatus;
 
     /**
-     * severity
+     * reportTo
      */
-    @ApiModelProperty("severity")
-    private String severity;
+    @ApiModelProperty("reportTo")
+    private String reportTo;
 
     /**
      * testcase_expand
@@ -180,26 +172,5 @@ public class TestCase extends AssignBaseEntity implements Serializable {
      */
     @ApiModelProperty("remarks")
     private String remarks;
-
-//    /**
-//     * 修改者
-//     */
-//    @ApiModelProperty("修改者")
-//    private String updateUserId;
-
-//    /**
-//     * 创建者
-//     */
-//    @ApiModelProperty("创建者")
-//    private Long userId;
-
-    /**
-     * 自定义字段值
-     */
-    @TableField(exist = false)
-    private List<CustomFieldData> customFieldDatas;
-
-    //@Transient
-    //private String scope = OneConstant.SCOPE.ONE_TEST_CASE;
 
 }

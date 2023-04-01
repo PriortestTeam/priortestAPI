@@ -1,13 +1,14 @@
 package com.hu.oneclick.controller;
 
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
 import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 import com.hu.oneclick.server.service.CustomFieldsService;
@@ -88,6 +89,18 @@ public class CustomFieldsController {
         }
         log.info("getDropDownBox==>customFieldDto:{}", JSON.toJSONString(customFieldDto));
         return customFieldsService.getDropDownBox(customFieldDto);
+    }
+
+    @PostMapping("/updateValueDropDownBox")
+    public Resp<String> updateValueDropDownBox(@RequestBody CustomFieldsDto customFieldsDto) {
+        if (null == customFieldsDto.getCustomFieldId()) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "customFieldId" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+        if (StrUtil.isBlank(customFieldsDto.getFieldType())) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "fieldType" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+        log.info("updateValueDropDownBox==>customFieldsDto:{}", JSON.toJSONString(customFieldsDto));
+        return customFieldsService.updateValueDropDownBox(customFieldsDto);
     }
 
 
