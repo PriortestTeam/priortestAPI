@@ -124,4 +124,18 @@ public class TestCaseController extends BaseController {
         return new Resp.Builder<TestCase>().ok();
     }
 
+    @ApiOperation("克隆")
+    @PostMapping("/clone")
+    public Resp<?> clone(@RequestBody @Validated Long[] ids) {
+        try {
+            for (Long id:ids){
+               testCaseService.clone(id);
+            }
+            return new Resp.Builder<TestCase>().ok();
+        } catch (Exception e) {
+            log.error("克隆测试用例失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<TestCase>().fail();
+        }
+    }
+
 }
