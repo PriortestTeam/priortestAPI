@@ -72,6 +72,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     private TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
     @Resource
     private CustomFieldsService customFieldsService;
+    @Resource
+    private  TestCaseDao testCaseDao;
 
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -1057,4 +1059,19 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         return testCase;
     }
 
+    @Override
+    public TestCase clone(Long id) {
+        TestCase testCase = baseMapper.selectById(id);
+        if (testCase == null) {
+            throw new BaseException(StrUtil.format("测试用例查询不到。ID：{}", id));
+        }
+        TestCase testCaseClone = new TestCase();
+        BeanUtil.copyProperties(testCase, testCaseClone);
+        Long uuid= Long.valueOf(UUID.randomUUID().toString().replaceAll("-","").hashCode());
+        uuid = uuid < 0 ? -uuid : uuid;//String.hashCode() 值会为负
+        System.out.println("===================="+uuid);
+        testCaseClone.setId(uuid);
+        baseMapper.insert(testCaseClone);
+        return testCaseClone;
+    }
 }
