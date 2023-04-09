@@ -1,4 +1,4 @@
-package com.hu.oneclick.model.domain.param;
+package com.hu.oneclick.model.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -9,21 +9,21 @@ import lombok.Setter;
 import java.io.Serializable;
 
 /**
- * 测试用例步骤Param
+ * 测试用例步骤子步骤DTO
  *
  * @author xiaohai
- * @date 2023/03/06
+ * @date 2023/04/09
  */
 @Setter
 @Getter
-@ApiModel("测试用例步骤Param")
-public class TestCaseStepParam implements Serializable {
+@ApiModel("测试用例步骤子步骤DTO")
+public class TestCaseStepSaveSubDto implements Serializable {
 
-    private static final long serialVersionUID = -8652622701616802765L;
+    private static final long serialVersionUID = 2326317164248935852L;
 
-    @ApiModelProperty("关联testcase id")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Long testCaseId;
+    @ApiModelProperty(value = "主键id")
+    private Long id;
 
     @ApiModelProperty("步骤")
     private String testStep;
@@ -33,5 +33,11 @@ public class TestCaseStepParam implements Serializable {
 
     @ApiModelProperty("测试数据")
     private String testData;
+
+    @ApiModelProperty("remarks")
+    private String remarks;
+
+    @ApiModelProperty("test_step_id")
+    private Long testStepId;
 
 }

@@ -21,10 +21,10 @@ import java.util.List;
  * 测试用例步骤控制器
  *
  * @author xiaohai
- * @date 2023/03/06
+ * @date 2023/04/09
  */
 @RestController
-@RequestMapping("testCaseStep")
+@RequestMapping("testCase/step")
 @Slf4j
 @Api(tags = "测试用例步骤")
 public class TestCaseStepController extends BaseController {
@@ -44,11 +44,11 @@ public class TestCaseStepController extends BaseController {
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated TestCaseStepSaveDto dto) {
         try {
-            TestCaseStep testCaseStep = testCaseStepService.save(dto);
-            return new Resp.Builder<TestCaseStep>().setData(testCaseStep).ok();
+            testCaseStepService.save(dto);
+            return new Resp.Builder<>().ok();
         } catch (Exception e) {
             log.error("新增测试用例步骤失败，原因：" + e.getMessage(), e);
-            return new Resp.Builder<TestCaseStep>().fail();
+            return new Resp.Builder<>().fail();
         }
     }
 
@@ -56,11 +56,11 @@ public class TestCaseStepController extends BaseController {
     @PutMapping("/update")
     public Resp<?> update(@RequestBody @Validated TestCaseStepSaveDto dto) {
         try {
-            TestCaseStep testCaseStep = testCaseStepService.update(dto);
-            return new Resp.Builder<TestCaseStep>().setData(testCaseStep).ok();
+            testCaseStepService.update(dto);
+            return new Resp.Builder<>().ok();
         } catch (Exception e) {
             log.error("修改测试用例步骤失败，原因：" + e.getMessage(), e);
-            return new Resp.Builder<TestCaseStep>().fail();
+            return new Resp.Builder<>().fail();
         }
     }
 
