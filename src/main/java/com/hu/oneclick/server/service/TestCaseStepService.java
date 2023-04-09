@@ -14,9 +14,9 @@ public interface TestCaseStepService extends IService<TestCaseStep> {
 
     List<TestCaseStep> list(TestCaseStepParam param);
 
-    TestCaseStep save(TestCaseStepSaveDto dto);
+    void save(TestCaseStepSaveDto dto);
 
-    TestCaseStep update(TestCaseStepSaveDto dto);
+    void update(TestCaseStepSaveDto dto);
 
     TestCaseStep info(Long id);
 
