@@ -62,6 +62,6 @@ public interface TestCaseService extends IService<TestCase> {
 
     TestCase info(Long id);
 
-    TestCase clone(Long id);
+    void clone(List<Long> ids);
 
 }

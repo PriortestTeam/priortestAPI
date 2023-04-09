@@ -128,13 +128,11 @@ public class TestCaseController extends BaseController {
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {
-            for (Long id:ids){
-               testCaseService.clone(id);
-            }
-            return new Resp.Builder<TestCase>().ok();
+            testCaseService.clone(Arrays.asList(ids));
+            return new Resp.Builder<>().ok();
         } catch (Exception e) {
             log.error("克隆测试用例失败，原因：" + e.getMessage(), e);
-            return new Resp.Builder<TestCase>().fail();
+            return new Resp.Builder<>().fail();
         }
     }
 
