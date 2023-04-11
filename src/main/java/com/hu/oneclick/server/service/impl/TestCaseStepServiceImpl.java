@@ -42,8 +42,8 @@ public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCa
             BeanUtil.copyProperties(step, testCaseStep);
             testCaseStep.setTestCaseId(dto.getTestCaseId());
             // 保存自定义字段
-            if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-                testCaseStep.setTeststepExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+            if (!JSONUtil.isNull(step.getCustomFieldDatas())) {
+                testCaseStep.setTeststepExpand(JSONUtil.toJsonStr(step.getCustomFieldDatas()));
             }
             testCaseStepList.add(testCaseStep);
         }
@@ -58,8 +58,8 @@ public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCa
             BeanUtil.copyProperties(step, testCaseStep);
             testCaseStep.setTestCaseId(dto.getTestCaseId());
             // 修改自定义字段
-            if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-                testCaseStep.setTeststepExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+            if (!JSONUtil.isNull(step.getCustomFieldDatas())) {
+                testCaseStep.setTeststepExpand(JSONUtil.toJsonStr(step.getCustomFieldDatas()));
             }
             testCaseStepList.add(testCaseStep);
         }

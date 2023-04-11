@@ -67,4 +67,10 @@ public class TestCaseStep extends AssignIdEntity implements Serializable {
     @ApiModelProperty("teststep_expand")
     private String teststepExpand;
 
+    /**
+     * 执行条件
+     */
+    @ApiModelProperty("执行条件")
+    private String teststepCondition;
+
 }
