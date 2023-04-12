@@ -83,4 +83,10 @@ public class TestCaseStepController extends BaseController {
         return new Resp.Builder<TestCaseStep>().ok();
     }
 
+    @ApiOperation("查询测试用例关联的所有测试用例步骤")
+    @GetMapping("/of/testCase/{testCaseId}")
+    public Resp<List<TestCaseStep>> getTestCaseSteps(@PathVariable Long testCaseId) {
+        return new Resp.Builder<List<TestCaseStep>>().setData(testCaseStepService.lambdaQuery().eq(TestCaseStep::getTestCaseId, testCaseId).list()).ok();
+    }
+
 }
