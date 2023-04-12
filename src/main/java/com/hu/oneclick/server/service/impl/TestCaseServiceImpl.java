@@ -74,6 +74,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     private CustomFieldsService customFieldsService;
     @Resource
     private  TestCaseDao testCaseDao;
+    @Resource
+    private TestCaseStepService testCaseStepService;
 
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -1056,6 +1058,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         if (testCase == null) {
             throw new BaseException(StrUtil.format("测试用例查询不到。ID：{}", id));
         }
+        //  查询测试用例关联步骤
+        List<TestCaseStep> testCaseStepList = testCaseStepService.lambdaQuery().eq(TestCaseStep::getTestCaseId, testCase.getId()).list();
+        testCase.setTestCaseStepList(testCaseStepList);
         return testCase;
     }
 
