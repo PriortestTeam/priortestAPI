@@ -81,7 +81,7 @@ public class IssueController extends BaseController {
         try {
             this.issueService.removeByIds(Arrays.asList(ids));
         } catch (Exception e) {
-            log.error("删除测试用例失败，原因：" + e.getMessage(), e);
+            log.error("删除缺陷用例失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<Issue>().fail();
         }
         return new Resp.Builder<Issue>().ok();
@@ -95,7 +95,7 @@ public class IssueController extends BaseController {
             this.issueService.clone(Arrays.asList(ids));
             return new Resp.Builder<>().ok();
         } catch (Exception e) {
-            log.error("克隆测试用例失败，原因：" + e.getMessage(), e);
+            log.error("克隆缺陷用例失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
         }
     }
