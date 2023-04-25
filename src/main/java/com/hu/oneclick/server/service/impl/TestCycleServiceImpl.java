@@ -645,11 +645,11 @@ public class TestCycleServiceImpl implements TestCycleService {
             String issueId = getRandom(10000);
             if (executeTestCaseDto.getStepStatus() == 2) {// 如果失败则新增issue表
                 Issue issue = new Issue();
-                issue.setUserId(jwtUserService.getMasterId());
-                issue.setAuthor(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
+//                issue.setUserId(jwtUserService.getMasterId());
+//                issue.setAuthor(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
                 issue.setCreateTime(date);
                 issue.setUpdateTime(date);
-                issue.setId(issueId);
+//                issue.setId(issueId);
                 testCaseExcutionDao.insertIssue(issue);
             }
 
@@ -694,7 +694,7 @@ public class TestCycleServiceImpl implements TestCycleService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<Map<String, Object>> queryIssueByIdOrName(Issue issue) {
         try {
-            issue.setUserId(jwtUserService.getMasterId());
+//            issue.setUserId(jwtUserService.getMasterId());
             List<Issue> list = testCaseExcutionDao.queryIssueList(issue);
             Map<String, Object> resultMap = new HashMap<String, Object>();
             resultMap.put("issueList", list);
@@ -712,7 +712,7 @@ public class TestCycleServiceImpl implements TestCycleService {
 
         try {
             //验证是否存在
-            issue.setUserId(jwtUserService.getMasterId());
+//            issue.setUserId(jwtUserService.getMasterId());
             return Result.updateResult(testCaseExcutionDao.mergeIssue(issue));
         } catch (BizException e) {
             logger.error("class: IssueServiceImpl#update,error []" + e.getMessage());
