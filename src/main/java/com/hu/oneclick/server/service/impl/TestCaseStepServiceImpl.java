@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author qingyang
@@ -47,6 +49,13 @@ public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCa
             }
             testCaseStepList.add(testCaseStep);
         }
+        // 删除更新的测试用例步骤
+        List<Long> testCaseStepIdList = testCaseStepList.stream().map(TestCaseStep::getId).collect(Collectors.toList());
+        if (CollUtil.isEmpty(testCaseStepIdList)) {
+            // 如果为空,说明需要删除该测试用例下的所有步骤
+            testCaseStepIdList.add(1L);
+        }
+        this.lambdaUpdate().eq(TestCaseStep::getTestCaseId, dto.getTestCaseId()).notIn(TestCaseStep::getId, testCaseStepIdList).remove();
         this.saveOrUpdateBatch(testCaseStepList);
     }
 

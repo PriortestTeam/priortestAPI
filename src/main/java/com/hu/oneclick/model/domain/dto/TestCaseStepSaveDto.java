@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class TestCaseStepSaveDto implements Serializable {
     private Long testCaseId;
 
     @ApiModelProperty("用例步骤集合")
-    @Size(min = 1, max = 100, message = "用例步骤集合不能为空")
+//    @Size(min = 1, max = 100, message = "用例步骤集合不能为空")
     private List<TestCaseStepSaveSubDto> steps;
 
 }
