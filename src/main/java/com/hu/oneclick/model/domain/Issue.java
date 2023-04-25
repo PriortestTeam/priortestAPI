@@ -1,17 +1,12 @@
 package com.hu.oneclick.model.domain;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.hu.oneclick.common.constant.OneConstant;
-import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.exception.BizException;
-import com.hu.oneclick.model.base.BaseEntity;
-import com.hu.oneclick.model.base.VerifyParam;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hu.oneclick.model.base.AssignBaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 缺陷(Issue)实体类
@@ -20,108 +15,74 @@ import java.util.List;
  * @since 2021-02-17 16:20:43
  */
 @Data
-public class Issue extends BaseEntity implements Serializable, VerifyParam {
+public class Issue extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = 418948698502600149L;
+
     /**
-     * 项目id
+     * 关联项目id
      */
-    private String projectId;
-    /**
-     * 用户id
-     */
-    private String userId;
+    @ApiModelProperty("关联项目id")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long projectId;
+
     /**
      * 名称
      */
+    @ApiModelProperty("名称")
     private String title;
+
     /**
-     * 创建人
+     * 计划修复时间
      */
-    private String author;
-    /**
-     * 状态
-     */
-    private Integer status;
-    /**
-     * 计划发行日期
-     */
-    private Date plannedReleaseDate;
-    /**
-     * 关闭日期
-     */
+    @ApiModelProperty("计划修复时间")
+    private Date planFixDate;
+
+    @ApiModelProperty("关闭时间")
     private Date closeDate;
-    /**
-     * 关联测试用例
-     */
-    private String testCase;
-    /**
-     * 关联测试周期
-     */
-    private String testCycle;
-    /**
-     * 关联故事
-     */
-    private String feature;
-    /**
-     * 优先级
-     */
+
+    @ApiModelProperty("关联测试用例")
+    private String verifiedResult;
+
+    @ApiModelProperty("优先级")
     private String priority;
-    /**
-     * 环境
-     */
+
+    @ApiModelProperty("环境")
     private String env;
-    /**
-     * 浏览器
-     */
+
+    @ApiModelProperty("浏览器")
     private String browser;
-    /**
-     * 平台
-     */
+
+    @ApiModelProperty("平台")
     private String platform;
-    /**
-     * 版本
-     */
-    private String version;
-    /**
-     * 用例分类
-     */
+
+    @ApiModelProperty("版本")
+    private String issueVersion;
+
+    @ApiModelProperty("用例分类")
     private String caseCategory;
 
+    @ApiModelProperty("描述")
     private String description;
 
-    private Date createTime;
+    @ApiModelProperty("状态")
+    private String issueStatus;
 
-    private Date updateTime;
+    @ApiModelProperty("模块")
+    private String module;
 
-    @TableField(exist = false)
-    private String scope = OneConstant.SCOPE.ONE_ISSUE;
-    @TableField(exist = false)
-    private String testCaseTitle;
-    @TableField(exist = false)
-    private String testCycleTitle;
+    @ApiModelProperty("当前负责人")
+    private String reportTo;
 
-    /**
-     * 自定义字段值
-     */
-    private List<CustomFieldData> customFieldDatas;
+    @ApiModelProperty("issue_expand")
+    private String issueExpand;
 
-    @Override
-    public void verify() throws BizException {
-        if(StringUtils.isEmpty(projectId)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目ID" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if(StringUtils.isEmpty(title)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"缺陷名称" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }
-    }
+    @ApiModelProperty("缺陷修改版本号")
+    private String fixVersion;
 
-    public void queryListVerify() {
+    @ApiModelProperty("severity")
+    private String severity;
 
-        if(StringUtils.isEmpty(projectId)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目ID" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }
-        super.setId(null);
-
-    }
-
+    @ApiModelProperty("测试设备")
+    private String testDevice;
 
 }

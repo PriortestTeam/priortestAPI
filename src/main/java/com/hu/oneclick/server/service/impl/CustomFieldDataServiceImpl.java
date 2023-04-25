@@ -180,9 +180,9 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
             CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
 
-            String projectId = issue.getProjectId();
-            fieldData.setProjectId(projectId);
-            fieldData.setScopeId(issue.getId());
+//            String projectId = issue.getProjectId();
+//            fieldData.setProjectId(projectId);
+//            fieldData.setScopeId(issue.getId());
             fieldData.setScope(FieldConstant.ISSUE);
 
             insertFlag = customFieldDataDao.insert(fieldData);
