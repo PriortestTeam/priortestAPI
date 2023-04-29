@@ -21,14 +21,7 @@ import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
-import com.hu.oneclick.server.service.CustomFieldDataService;
-import com.hu.oneclick.server.service.FeatureService;
-import com.hu.oneclick.server.service.IssueService;
-import com.hu.oneclick.server.service.ProjectService;
-import com.hu.oneclick.server.service.SysCustomFieldService;
-import com.hu.oneclick.server.service.TestCaseService;
-import com.hu.oneclick.server.service.TestCycleService;
-import com.hu.oneclick.server.service.ViewService;
+import com.hu.oneclick.server.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -39,13 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -738,8 +725,8 @@ public class ViewServiceImpl implements ViewService {
                 }
                 for (String issueId : issueIdSet) {
                     if (!issueList.stream().map(Issue::getId).collect(Collectors.toSet()).contains(issueId)) {
-                        Issue data = issueService.queryById(issueId).getData();
-                        issueList.add(data);
+//                        Issue data = issueService.queryById(issueId).getData();
+                        issueList.add(new Issue());
                     }
                 }
                 return new Resp.Builder<>().setData(issueList).ok();

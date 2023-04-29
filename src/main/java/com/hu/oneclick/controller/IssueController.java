@@ -1,21 +1,27 @@
 package com.hu.oneclick.controller;
 
-import com.hu.oneclick.model.annotation.Page;
+import com.github.pagehelper.PageInfo;
+import com.hu.oneclick.common.exception.BaseException;
+import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Issue;
-import com.hu.oneclick.model.domain.IssueJoinTestCase;
-import com.hu.oneclick.model.domain.dto.IssueDto;
+import com.hu.oneclick.model.domain.dto.IssueSaveDto;
+import com.hu.oneclick.model.domain.param.IssueParam;
 import com.hu.oneclick.server.service.IssueService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
 @RequestMapping("issue")
 @Api(tags = "缺陷")
-public class IssueController {
+@Slf4j
+public class IssueController extends BaseController {
 
     private final IssueService issueService;
 
@@ -23,50 +29,75 @@ public class IssueController {
         this.issueService = issueService;
     }
 
-    @GetMapping("queryById/{id}")
-    @ApiOperation("查询缺陷")
-    public Resp<Issue> queryById(@PathVariable String id) {
-        return issueService.queryById(id);
+    @ApiOperation("列表")
+    @PostMapping("/list")
+    public Resp<PageInfo<Issue>> list(@RequestBody IssueParam param) {
+        if (null == param) {
+            param = new IssueParam();
+        }
+        startPage();
+        List<Issue> dataList = this.issueService.list(param);
+        return new Resp.Builder<PageInfo<Issue>>().setData(PageInfo.of(dataList)).ok();
     }
 
 
-    @PostMapping("queryList")
-    public Resp<List<Issue>> queryList(@RequestBody IssueDto issue) {
-        return issueService.queryList(issue);
+    @ApiOperation("新增")
+    @PostMapping("/save")
+    public Resp<?> save(@RequestBody @Validated IssueSaveDto dto) {
+        try {
+            Issue issue = this.issueService.add(dto);
+            return new Resp.Builder<Issue>().setData(issue).ok();
+        } catch (Exception e) {
+            log.error("新增缺陷失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<Issue>().fail();
+        }
     }
 
-    @PostMapping("insert")
-    @ApiOperation("插入缺陷")
-    public Resp<String> insert(@RequestBody Issue issue) {
-        return issueService.insert(issue);
+    @ApiOperation("修改")
+    @PutMapping("/update")
+    public Resp<Issue> update(@RequestBody @Validated IssueSaveDto dto) {
+        try {
+            if (null == dto.getId()) {
+                throw new BaseException("id不能为空");
+            }
+            Issue issue = this.issueService.edit(dto);
+            return new Resp.Builder<Issue>().setData(issue).ok();
+        } catch (Exception e) {
+            log.error("修改缺陷失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<Issue>().fail();
+        }
     }
 
-    @PostMapping("update")
-    public Resp<String> update(@RequestBody Issue issue) {
-        return issueService.update(issue);
+    @ApiOperation("详情")
+    @GetMapping("/info/{id}")
+    public Resp<Issue> info(@PathVariable Long id) {
+        Issue issue = this.issueService.info(id);
+        return new Resp.Builder<Issue>().setData(issue).ok();
     }
 
-    @DeleteMapping("delete/{id}")
-    public Resp<String> delete(@PathVariable String id) {
-        return issueService.delete(id);
+    @ApiOperation("删除")
+    @DeleteMapping("/delete/{ids}")
+    public Resp<?> delete(@PathVariable Long[] ids) {
+        try {
+            this.issueService.removeByIds(Arrays.asList(ids));
+        } catch (Exception e) {
+            log.error("删除缺陷用例失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<Issue>().fail();
+        }
+        return new Resp.Builder<Issue>().ok();
     }
 
 
-
-    @Page
-    @PostMapping("queryBindCaseList")
-    public  Resp<List<Issue>> queryBindCaseList(@RequestParam String issueId) {
-        return issueService.queryBindCaseList(issueId);
-    }
-
-    @PostMapping("bindCaseInsert")
-    public Resp<String> bindCaseInsert(@RequestBody IssueJoinTestCase issueJoinTestCase) {
-        return issueService.bindCaseInsert(issueJoinTestCase);
-    }
-
-    @DeleteMapping("bindCaseDelete/{id}")
-    public Resp<String> bindCaseDelete(@PathVariable String id) {
-        return issueService.bindCaseDelete(id);
+    @ApiOperation("克隆")
+    @PostMapping("/clone")
+    public Resp<?> clone(@RequestBody @Validated Long[] ids) {
+        try {
+            this.issueService.clone(Arrays.asList(ids));
+            return new Resp.Builder<>().ok();
+        } catch (Exception e) {
+            log.error("克隆缺陷用例失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<>().fail();
+        }
     }
 
 
