@@ -1,6 +1,6 @@
 package com.hu.oneclick.model.domain.dto;
 
-import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONArray;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -45,6 +45,6 @@ public class TestCaseStepSaveSubDto implements Serializable {
     private String teststepCondition;
 
     @ApiModelProperty("自定义字段值")
-    private JSONObject customFieldDatas;
+    private JSONArray customFieldDatas;
 
 }
