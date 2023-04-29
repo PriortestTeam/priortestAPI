@@ -1,30 +1,63 @@
 package com.hu.oneclick.server.service;
 
-import com.hu.oneclick.model.base.Resp;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.model.domain.Issue;
-import com.hu.oneclick.model.domain.IssueJoinTestCase;
-import com.hu.oneclick.model.domain.dto.IssueDto;
+import com.hu.oneclick.model.domain.dto.IssueSaveDto;
+import com.hu.oneclick.model.domain.param.IssueParam;
 
 import java.util.List;
 
-public interface IssueService {
+public interface IssueService extends IService<Issue> {
 
-    Resp<Issue> queryById(String id);
+//    Resp<Issue> queryById(String id);
+//
+//    Resp<List<Issue>> queryList(IssueDto issue);
+//
+//    Resp<String> insert(Issue issue);
+//
+//    Resp<String> update(Issue issue);
+//
+//    Resp<String> delete(String id);
+//
+//
+//
+//    Resp<List<Issue>> queryBindCaseList(String issueId);
+//
+//    Resp<String> bindCaseInsert(IssueJoinTestCase issueJoinTestCase);
+//
+//    Resp<String> bindCaseDelete(String testCaseId);
 
-    Resp<List<Issue>> queryList(IssueDto issue);
+    /**
+     * 列表
+     *
+     * @param param
+     * @return
+     */
+    List<Issue> list(IssueParam param);
 
-    Resp<String> insert(Issue issue);
+    /**
+     * 新增
+     *
+     * @param dto
+     * @return
+     */
+    Issue add(IssueSaveDto dto);
 
-    Resp<String> update(Issue issue);
+    /**
+     * 修改
+     *
+     * @param dto
+     * @return
+     */
+    Issue edit(IssueSaveDto dto);
 
-    Resp<String> delete(String id);
+    /**
+     * 详情
+     *
+     * @param id
+     * @return
+     */
+    Issue info(Long id);
 
-
-
-    Resp<List<Issue>> queryBindCaseList(String issueId);
-
-    Resp<String> bindCaseInsert(IssueJoinTestCase issueJoinTestCase);
-
-    Resp<String> bindCaseDelete(String testCaseId);
-
+    void clone(List<Long> ids);
 }

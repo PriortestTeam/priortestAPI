@@ -9,40 +9,19 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
-import com.hu.oneclick.dao.IssueDao;
-import com.hu.oneclick.dao.ProjectDao;
-import com.hu.oneclick.dao.ProjectSignOffDao;
-import com.hu.oneclick.dao.SubUserProjectDao;
-import com.hu.oneclick.dao.ViewDao;
+import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.Attachment;
-import com.hu.oneclick.model.domain.CustomFieldData;
-import com.hu.oneclick.model.domain.Issue;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.ProjectSignOff;
-import com.hu.oneclick.model.domain.SubUserProject;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
-import com.hu.oneclick.server.service.AttachmentService;
-import com.hu.oneclick.server.service.CustomFieldDataService;
-import com.hu.oneclick.server.service.MailService;
-import com.hu.oneclick.server.service.ProjectService;
-import com.hu.oneclick.server.service.QueryFilterService;
-import com.hu.oneclick.server.service.TestCycleService;
+import com.hu.oneclick.server.service.*;
 import com.spire.xls.FileFormat;
 import com.spire.xls.Workbook;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
-import org.apache.poi.hssf.usermodel.HSSFPatriarch;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -60,12 +39,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -462,7 +437,7 @@ public class ProjectServiceImpl implements ProjectService {
                 String testCaseId = map.get("test_case_id");
                 String testCycleId = map.get("test_cycle_id");
                 Issue issue = issueDao.queryCycleAndTest(testCaseId, testCycleId);
-                if (issue != null && issue.getStatus() == 4 && "高".equals(issue.getPriority())) {
+                if (issue != null && issue.getIssueStatus() == "4" && "高".equals(issue.getPriority())) {
                     issuesList.add(issue);
                 }
             }
