@@ -10,7 +10,6 @@
         <result property="featureStatus" column="feature_status" jdbcType="INTEGER"/>
         <result property="version" column="version" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>

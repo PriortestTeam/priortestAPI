@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 故事(Feature)实体类
@@ -53,17 +52,9 @@ public class Feature extends AssignBaseEntity implements Serializable {
      */
     @ApiModelProperty("描述")
     private String description;
-    /**
-     * 关闭时间
-     */
-    @ApiModelProperty("关闭时间")
-    private Date closeDate;
 
     @ApiModelProperty("模块")
     private String moudle;
-
-    @ApiModelProperty("上报人姓名")
-    private String reportName;
 
     @ApiModelProperty("备注")
     private String remarks;
