@@ -54,7 +54,7 @@ public class FeatureSaveDto {
     private String title;
 
 
-    private String moudle;
+    private String module;
 
     private String remarks;
 

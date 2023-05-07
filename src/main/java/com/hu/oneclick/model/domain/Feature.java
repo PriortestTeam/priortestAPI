@@ -54,7 +54,7 @@ public class Feature extends AssignBaseEntity implements Serializable {
     private String description;
 
     @ApiModelProperty("模块")
-    private String moudle;
+    private String module;
 
     @ApiModelProperty("备注")
     private String remarks;
