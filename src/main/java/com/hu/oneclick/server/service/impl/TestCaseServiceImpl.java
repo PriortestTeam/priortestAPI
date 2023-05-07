@@ -842,7 +842,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
         Feature feature = new Feature();
         feature.setTitle(title);
-        feature.setProjectId(projectId);
+        feature.setProjectId(Long.valueOf(projectId));
         feature.setId(null);
         return featureDao.selectOne(new LambdaQueryWrapper<Feature>().eq(Feature::getTitle, feature.getTitle()).eq(Feature::getProjectId, feature.getProjectId()));
     }
