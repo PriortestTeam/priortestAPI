@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 /**
  * 故事(Feature)实体类
@@ -48,10 +47,6 @@ public class FeatureSaveDto {
      * 描述
      */
     private String description;
-    /**
-     * 关闭时间
-     */
-    private Date closeDate;
 
     /**
      * 名称
@@ -60,8 +55,6 @@ public class FeatureSaveDto {
 
 
     private String moudle;
-
-    private String reportName;
 
     private String remarks;
 
