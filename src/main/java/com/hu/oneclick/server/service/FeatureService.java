@@ -1,41 +1,50 @@
 package com.hu.oneclick.server.service;
 
-import com.hu.oneclick.model.base.Resp;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.model.domain.Feature;
-import com.hu.oneclick.model.domain.FeatureJoinSprint;
-import com.hu.oneclick.model.domain.Sprint;
-import com.hu.oneclick.model.domain.dto.FeatureDto;
-import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.FeatureSaveDto;
+import com.hu.oneclick.model.domain.param.FeatureParam;
 
 import java.util.List;
 
 /**
  * @author qingyang
  */
-public interface FeatureService {
+public interface FeatureService extends IService<Feature> {
 
-    Resp< List<LeftJoinDto>> queryTitles(String projectId, String title);
+    /**
+     * 列表
+     *
+     * @param param
+     * @return
+     */
+    List<Feature> list(FeatureParam param);
 
-    Resp<Feature> queryById(String id);
+    /**
+     * 新增
+     *
+     * @param dto
+     * @return
+     */
+    Feature add(FeatureSaveDto dto);
 
-    Resp<List<Feature>> queryList(FeatureDto feature);
+    /**
+     * 修改
+     *
+     * @param dto
+     * @return
+     */
+    Feature edit(FeatureSaveDto dto);
 
-    Resp<String> insert(FeatureDto feature);
+    Feature getByIdAndProjectId(Long id, Long projectId);
 
-    Resp<String> update(Feature feature);
+    /**
+     * 详情
+     *
+     * @param id
+     * @return
+     */
+    Feature info(Long id);
 
-    Resp<String> closeUpdate(String id);
-
-    Resp<String> delete(String id);
-
-
-    Resp<List<Sprint>> queryBindSprints(String featureId);
-
-    Resp<String> bindSprintInsert(FeatureJoinSprint featureJoinSprint);
-
-    Resp<String> bindSprintDelete(String sprint,String featureId);
-
-    Resp<List<Sprint>> querySprintList(String title);
-
-    List<Feature> findAllByFeature(Feature feature);
+    void clone(List<Long> ids);
 }

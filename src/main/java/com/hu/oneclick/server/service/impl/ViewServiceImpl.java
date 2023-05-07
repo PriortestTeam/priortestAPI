@@ -594,7 +594,7 @@ public class ViewServiceImpl implements ViewService {
                 }
                 for (String featureId : featureIdSet) {
                     if (!features.stream().map(Feature::getId).collect(Collectors.toSet()).contains(featureId)) {
-                        Feature data = featureService.queryById(featureId).getData();
+                        Feature data = featureService.info(Long.valueOf(featureId));
                         features.add(data);
                     }
                 }
