@@ -956,7 +956,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
      */
     @Override
     public Resp<String> addTestCase(TestCycleDto testCycleDto) {
-        String testCycleId = testCycleDto.getId();
+//        String testCycleId = testCycleDto.getId();
 
         //查询testcycle是否存在
         //Resp<TestCycle> testCycleResp = testCycleService.queryById(testCycleId);
@@ -977,7 +977,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         //}
 
         //插入自定义字段值
-        List<CustomFieldData> customFieldDatas = testCycleDto.getCustomFieldDatas();
+//        List<CustomFieldData> customFieldDatas = testCycleDto.getCustomFieldDatas();
         //customFieldDataService.insertTestCaseCustomData(customFieldDatas, testCases);
         return new Resp.Builder<String>().ok();
     }
@@ -1065,6 +1065,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void clone(List<Long> ids) {
         List<TestCase> testCaseList = new ArrayList<>();
         for (Long id : ids) {
