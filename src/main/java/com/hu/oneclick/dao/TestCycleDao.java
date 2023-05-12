@@ -1,10 +1,12 @@
 package com.hu.oneclick.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,5 +27,13 @@ public interface TestCycleDao extends BaseMapper<TestCycle> {
     List<Map<String,String>> getAllTestCycle(String projectId, String version, String env, String testCycleVersion);
 
     List<String> getTestCycleByProjectIdAndEvn(String projectId, String env, String testCycle);
+
+    default TestCycle getByIdAndProjectId(@Param("id") Long id, @Param("projectId") Long projectId) {
+        return new LambdaQueryChainWrapper<>(this)
+                .eq(TestCycle::getId, id)
+                .eq(TestCycle::getProjectId, projectId)
+                .last("LIMIT 1")
+                .one();
+    }
 
 }
