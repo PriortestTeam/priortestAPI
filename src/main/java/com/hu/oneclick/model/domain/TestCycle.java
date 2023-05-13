@@ -136,5 +136,8 @@ public class TestCycle extends AssignBaseEntity implements Serializable {
     @ApiModelProperty("browser")
     private String browser;
 
+    @ApiModelProperty("test_frame")
+    private String testFrame;
+
 
 }
