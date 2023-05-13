@@ -58,7 +58,7 @@ public class TestCycle extends AssignBaseEntity implements Serializable {
      * 版本
      */
     @ApiModelProperty("版本")
-    private String testVersion;
+    private String version;
     /**
      * 计划执行时间
      */
@@ -85,30 +85,24 @@ public class TestCycle extends AssignBaseEntity implements Serializable {
      * 用例执行人
      */
     @ApiModelProperty("用例执行人")
-    private String assignTo;
+    private String reportTo;
     /**
      * 关注者
      */
-    @ApiModelProperty("关注者")
-    private String notifiyList;
+    @ApiModelProperty("测试方法")
+    private String testMethod;
     /**
      * 平台
      */
     @ApiModelProperty("平台")
-    private String platform;
+    private String testPlatform;
     /**
      * 环境
      */
     @ApiModelProperty("环境")
-    private String testEnv;
-    /**
-     * 自动化运job
-     */
-    @ApiModelProperty("自动化运job")
-    private String buildUrl;
-    /**
-     * allure 报告
-     */
+    private String env;
+
+
     @ApiModelProperty("allure 报告")
     private String allureReportUrl;
     @ApiModelProperty("instance_count")
@@ -119,16 +113,10 @@ public class TestCycle extends AssignBaseEntity implements Serializable {
     private String testCycleStatus;
     @ApiModelProperty("计划运行job url")
     private String autoJobLink;
-    /**
-     * auto_job_start
-     */
     @ApiModelProperty("auto_job_start")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date autoJobStart;
-    /**
-     * auto_job_end
-     */
     @ApiModelProperty("auto_job_end")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -137,14 +125,16 @@ public class TestCycle extends AssignBaseEntity implements Serializable {
     private String frequency;
     @ApiModelProperty("remarks")
     private String remarks;
-    /**
-     * auto_job_run_time
-     */
+
     @ApiModelProperty("auto_job_run_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date autoJobRunTime;
     @ApiModelProperty("testcycle_expand")
     private String testcycleExpand;
+
+    @ApiModelProperty("browser")
+    private String browser;
+
 
 }
