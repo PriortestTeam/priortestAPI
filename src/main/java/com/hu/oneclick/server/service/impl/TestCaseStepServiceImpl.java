@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hu.oneclick.common.exception.BaseException;
+import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.dao.TestCaseStepDao;
 import com.hu.oneclick.model.domain.TestCaseStep;
 import com.hu.oneclick.model.domain.dto.TestCaseStepSaveDto;
@@ -79,7 +79,7 @@ public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCa
     public TestCaseStep info(Long id) {
         TestCaseStep testCaseStep = baseMapper.selectById(id);
         if (testCaseStep == null) {
-            throw new BaseException(StrUtil.format("测试用例步骤查询不到。ID：{}", id));
+            throw new BizException(StrUtil.format("测试用例步骤查询不到。ID：{}", id));
         }
         return testCaseStep;
     }

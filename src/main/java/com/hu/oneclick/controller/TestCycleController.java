@@ -108,8 +108,8 @@ public class TestCycleController extends BaseController {
 //    }
 
     @ApiOperation("列表")
-    @GetMapping("/list")
-    public Resp<PageInfo<TestCycle>> list(@Validated TestCycleParam param) {
+    @PostMapping("/list")
+    public Resp<PageInfo<TestCycle>> list(@RequestBody @Validated TestCycleParam param) {
         startPage();
         List<TestCycle> testCycleList = testCycleService.list(param);
         return new Resp.Builder<PageInfo<TestCycle>>().setData(PageInfo.of(testCycleList)).ok();

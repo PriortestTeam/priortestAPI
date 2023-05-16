@@ -64,7 +64,7 @@ public class TestCycleSaveDto implements Serializable {
      * 版本
      */
     @ApiModelProperty("版本")
-    private String testVersion;
+    private String version;
     /**
      * 计划执行时间
      */
@@ -91,27 +91,22 @@ public class TestCycleSaveDto implements Serializable {
      * 用例执行人
      */
     @ApiModelProperty("用例执行人")
-    private String assignTo;
+    private String reportTo;
     /**
      * 关注者
      */
-    @ApiModelProperty("关注者")
-    private String notifiyList;
+    @ApiModelProperty("测试方法")
+    private String testMethod;
     /**
      * 平台
      */
     @ApiModelProperty("平台")
-    private String platform;
+    private String testPlatform;
     /**
      * 环境
      */
     @ApiModelProperty("环境")
-    private String testEnv;
-    /**
-     * 自动化运job
-     */
-    @ApiModelProperty("自动化运job")
-    private String buildUrl;
+    private String env;
     /**
      * allure 报告
      */
@@ -150,6 +145,10 @@ public class TestCycleSaveDto implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date autoJobRunTime;
+    @ApiModelProperty("browser")
+    private String browser;
+    @ApiModelProperty("test_frame")
+    private String testFrame;
     @ApiModelProperty("testcycle_expand")
     private String testcycleExpand;
     /**
