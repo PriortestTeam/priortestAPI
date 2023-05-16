@@ -4,12 +4,10 @@
 
     <resultMap type="com.hu.oneclick.model.domain.Sprint" id="SprintMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="startDate" column="start_date" jdbcType="TIMESTAMP"/>
         <result property="endDate" column="end_date" jdbcType="TIMESTAMP"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="authorName" column="author_name" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
@@ -20,7 +18,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="SprintMap">
         select
-        id, user_id, title, start_date, end_date, description, author_name, create_time, update_time,
+        id, create_user_id, title, start_date, end_date, description, create_time, update_time,
         project_id,epic,`module`
         from oneclick.sprint
         <where>
@@ -42,9 +40,7 @@
             <if test="description != null and description != ''">
                 and description = #{description}
             </if>
-            <if test="authorName != null and authorName != ''">
-                and author_name = #{authorName}
-            </if>
+
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
@@ -65,7 +61,7 @@
     <!--查询单个-->
     <select id="queryById" resultMap="SprintMap">
         select id,
-               user_id,
+               create_user_id,
                title,
                start_date,
                end_date,
@@ -77,7 +73,7 @@
                epic,
                `module`
         from sprint
-        where id = #{id} and user_id = #{masterId}
+        where id = #{id} and create_user_id = #{masterId}
     </select>
     <select id="queryTitles" resultType="com.hu.oneclick.model.domain.dto.LeftJoinDto">
         select id,
@@ -141,9 +137,7 @@
             <if test="module != null and module != ''">
                 `module`= #{module},
             </if>
-            <if test="authorName != null and authorName != ''">
-                author_name = #{authorName},
-            </if>
+
             <if test="epic != null and epic != ''">
                 epic = #{epic},
             </if>
