@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.exception.BaseException;
+import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
@@ -934,7 +935,7 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
     public TestCycle info(Long id) {
         TestCycle testCycle = baseMapper.selectById(id);
         if (testCycle == null) {
-            throw new BaseException(StrUtil.format("测试周期查询不到。ID：{}", id));
+            throw new BizException(StrUtil.format("测试周期查询不到。ID：{}", id));
         }
         return testCycle;
     }

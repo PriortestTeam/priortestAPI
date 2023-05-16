@@ -1056,7 +1056,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     public TestCase info(Long id) {
         TestCase testCase = baseMapper.selectById(id);
         if (testCase == null) {
-            throw new BaseException(StrUtil.format("测试用例查询不到。ID：{}", id));
+            throw new BizException(StrUtil.format("测试用例查询不到。ID：{}", id));
         }
         //  查询测试用例关联步骤
         List<TestCaseStep> testCaseStepList = testCaseStepService.lambdaQuery().eq(TestCaseStep::getTestCaseId, testCase.getId()).list();
