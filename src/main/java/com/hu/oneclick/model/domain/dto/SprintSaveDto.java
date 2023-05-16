@@ -1,27 +1,31 @@
-package com.hu.oneclick.model.domain;
+package com.hu.oneclick.model.domain.dto;
 
+import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serializable;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
- * 迭代(Sprint)实体类
- *
- * @author makejava
- * @since 2021-02-03 09:36:08
+ * @Author: jhh
+ * @Date: 2023/5/16
  */
 @Data
-public class Sprint extends AssignBaseEntity implements Serializable {
-    private static final long serialVersionUID = -33132559253115264L;
+public class SprintSaveDto {
+
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @ApiModelProperty(value = "主键id")
+    private Long id;
 
     /**
      * 关联项目id
      */
     @ApiModelProperty("关联项目id")
+    @NotNull(message = "项目ID不能为空")
     private Long projectId;
     /**
      * 名称
@@ -34,12 +38,16 @@ public class Sprint extends AssignBaseEntity implements Serializable {
      */
     @ApiModelProperty("开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "开始时间不能为空")
     private Date startDate;
     /**
      * 结束时间
      */
     @ApiModelProperty("结束时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "结束时间不能为空")
     private Date endDate;
     /**
      * 描述
@@ -59,7 +67,10 @@ public class Sprint extends AssignBaseEntity implements Serializable {
     @ApiModelProperty("状态")
     private String sprintStatus;
 
-    @ApiModelProperty("扩展数据")
-    private String sprintExpand;
 
+    /**
+     * 自定义字段值
+     */
+    @ApiModelProperty("自定义字段值")
+    private JSONObject customFieldDatas;
 }

@@ -37,7 +37,8 @@ public class LeftJoinController {
     @GetMapping("querySprintTitles")
     public Resp<List<LeftJoinDto>> querySprintTitles(@RequestParam String projectId,
                                                      @RequestParam String title){
-        return sprintService.queryTitles(projectId,title);
+//        return sprintService.queryTitles(projectId,title);
+        return null;
     }
 
     @GetMapping("queryFeatureTitles")
