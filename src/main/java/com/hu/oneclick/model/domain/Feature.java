@@ -60,5 +60,5 @@ public class Feature extends AssignBaseEntity implements Serializable {
     private String remarks;
 
     @ApiModelProperty("扩展数据")
-    private String featureExpend;
+    private String featureExpand;
 }

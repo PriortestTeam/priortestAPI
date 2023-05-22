@@ -59,7 +59,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
         BeanUtil.copyProperties(dto, feature);
         // 保存自定义字段
         if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            feature.setFeatureExpend(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+            feature.setFeatureExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
         }
         this.baseMapper.insert(feature);
         return feature;
@@ -75,7 +75,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
         BeanUtil.copyProperties(dto, feature);
         // 保存自定义字段
         if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            feature.setFeatureExpend(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+            feature.setFeatureExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
         }
         this.baseMapper.updateById(feature);
         return feature;
