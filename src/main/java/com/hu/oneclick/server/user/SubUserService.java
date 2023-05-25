@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.SubUserProject;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 
@@ -54,5 +55,11 @@ public interface SubUserService {
      * @Date: 2022/2/8
      */
     Resp<SubUserProject> getSubUserProject(String userId);
+
+    /**
+     * 返回当前用户的项目列表
+     * @return ...
+     */
+    Resp<List<Project>> getProjectByUserId();
 }
 
