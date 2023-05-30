@@ -83,4 +83,9 @@ public class SubUserController {
         return subUserService.getSubUserProject(userId);
     }
 
+    @GetMapping("queryForProjectsbyUser")
+    @ApiOperation("返回当前用户的项目列表")
+    public Resp<List<Project>> getThePersonInCharge() {
+        return subUserService.getProjectByUserId();
+    }
 }
