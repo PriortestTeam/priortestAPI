@@ -139,4 +139,13 @@ public interface ProjectDao {
      */
     List<Project> findAllByProject(Project project);
 
+    /**
+     * 查询指定行数据
+     *
+     * @param offset 查询起始位置
+     * @param limit  查询条数
+     * @return 对象列表
+     */
+    @Page
+    List<Project> queryAllByIds(@Param("projectIdList") List<String> projectIdList);
 }
