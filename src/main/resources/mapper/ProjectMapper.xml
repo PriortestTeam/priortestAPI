@@ -456,5 +456,31 @@
             order by create_time desc
         </where>
     </select>
-
+    <!--查询指定行数据-->
+    <select id="queryAllByIds" resultMap="ProjectMap">
+        select id,
+               create_user_id,
+               room_id,
+               title,
+               plan_release_date,
+               description,
+               create_time,
+               update_time,
+               report_to,
+               test_frame,
+               project_category,
+               customer,
+               project_expand,
+               project_status,
+               update_user_id,
+               remarks
+        from oneclick.project
+        where id in (
+            <foreach collection="projectIdList" item="id" separator=",">
+                #{id}
+            </foreach>
+        )
+        order by id desc
+    </select>
 </mapper>
+<!--        limit #{offset}, #{limit}-->

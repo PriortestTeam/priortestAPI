@@ -435,4 +435,19 @@ public class SubUserServiceImpl implements SubUserService {
         SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
         return new Resp.Builder<SubUserProject>().setData(subUserProject).ok();
     }
+
+    @Override
+    public Resp<List<Project>> getProjectByUserId() {
+        SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
+        String userId = sysUser.getId();
+
+        SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
+        String projectIds = subUserProject.getProjectId();
+        List<String> projectIdList = Arrays.asList(projectIds.split(","));
+
+        List<Project> projectList = projectDao.queryAllByIds(projectIdList);
+
+
+        return new Resp.Builder<List<Project>>().setData(projectList).total(projectList).ok();
+    }
 }
