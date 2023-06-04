@@ -34,6 +34,7 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
 
     @Override
     public List<ProjectManage> listAll(ProjectManageParam param) {
+        param.setRoomId(jwtUserService.getUserLoginInfo().getSysUser().getRoomId());
         return this.list(param.getQueryCondition());
     }
 
