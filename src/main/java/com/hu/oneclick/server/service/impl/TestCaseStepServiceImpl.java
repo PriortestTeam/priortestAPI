@@ -1,7 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,10 +10,13 @@ import com.hu.oneclick.model.domain.TestCaseStep;
 import com.hu.oneclick.model.domain.dto.TestCaseStepSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCaseStepSaveSubDto;
 import com.hu.oneclick.model.domain.param.TestCaseStepParam;
+import com.hu.oneclick.relation.enums.RelationCategoryEnum;
+import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.TestCaseStepService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +27,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCaseStep> implements TestCaseStepService {
+
+    @Resource
+    private RelationService relationService;
 
     @Override
     public List<TestCaseStep> list(TestCaseStepParam param) {
@@ -49,14 +54,17 @@ public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCa
             }
             testCaseStepList.add(testCaseStep);
         }
-        // 删除更新的测试用例步骤
-        List<Long> testCaseStepIdList = testCaseStepList.stream().map(TestCaseStep::getId).collect(Collectors.toList());
-        if (CollUtil.isEmpty(testCaseStepIdList)) {
-            // 如果为空,说明需要删除该测试用例下的所有步骤
-            testCaseStepIdList.add(1L);
-        }
-        this.lambdaUpdate().eq(TestCaseStep::getTestCaseId, dto.getTestCaseId()).notIn(TestCaseStep::getId, testCaseStepIdList).remove();
+        // 更新的测试用例步骤
         this.saveOrUpdateBatch(testCaseStepList);
+        // 更新绑定关系
+        List<String> testCaseStepIdList = testCaseStepList.stream().map(TestCaseStep::getId).map(String::valueOf).collect(Collectors.toList());
+        relationService.saveRelationBatchWithClear(dto.getTestCaseId().toString(), testCaseStepIdList, RelationCategoryEnum.TEST_CASE_TO_STEP.getValue());
+//        if (CollUtil.isEmpty(testCaseStepIdList)) {
+//            // 如果为空,说明需要删除该测试用例下的所有步骤
+//            testCaseStepIdList.add(1L);
+//        }
+//        this.lambdaUpdate().eq(TestCaseStep::getTestCaseId, dto.getTestCaseId()).notIn(TestCaseStep::getId, testCaseStepIdList).remove();
+//        this.saveOrUpdateBatch(testCaseStepList);
     }
 
     @Override
