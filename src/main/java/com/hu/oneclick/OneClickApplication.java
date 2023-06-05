@@ -10,7 +10,7 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
  * @author qingyang
  */
 @SpringBootApplication
-@MapperScan("com.hu.oneclick.dao")
+@MapperScan("com.hu.oneclick.**.dao")
 @EnableScheduling
 @EnableOpenApi
 public class OneClickApplication {

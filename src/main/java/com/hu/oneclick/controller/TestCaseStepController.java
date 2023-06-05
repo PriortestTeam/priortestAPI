@@ -1,11 +1,15 @@
 package com.hu.oneclick.controller;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCaseStep;
 import com.hu.oneclick.model.domain.dto.TestCaseStepSaveDto;
 import com.hu.oneclick.model.domain.param.TestCaseStepParam;
+import com.hu.oneclick.relation.enums.RelationCategoryEnum;
+import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.TestCaseStepService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 测试用例步骤控制器
@@ -31,6 +36,8 @@ public class TestCaseStepController extends BaseController {
 
     @Resource
     private TestCaseStepService testCaseStepService;
+    @Resource
+    private RelationService relationService;
 
     @ApiOperation("列表")
     @PostMapping("/list")
@@ -86,7 +93,12 @@ public class TestCaseStepController extends BaseController {
     @ApiOperation("查询测试用例关联的所有测试用例步骤")
     @GetMapping("/of/testCase/{testCaseId}")
     public Resp<List<TestCaseStep>> getTestCaseSteps(@PathVariable Long testCaseId) {
-        return new Resp.Builder<List<TestCaseStep>>().setData(testCaseStepService.lambdaQuery().eq(TestCaseStep::getTestCaseId, testCaseId).list()).ok();
+//        return new Resp.Builder<List<TestCaseStep>>().setData(testCaseStepService.lambdaQuery().eq(TestCaseStep::getTestCaseId, testCaseId).list()).ok();
+        List<String> testCaseStepIdList = relationService.getRelationTargetIdListByObjectIdAndCategory(testCaseId.toString(), RelationCategoryEnum.TEST_CASE_TO_STEP.getValue());
+        if (CollUtil.isEmpty(testCaseStepIdList)) {
+            return new Resp.Builder<List<TestCaseStep>>().setData(ListUtil.list(false)).ok();
+        }
+        return new Resp.Builder<List<TestCaseStep>>().setData(testCaseStepService.lambdaQuery().in(TestCaseStep::getId, testCaseStepIdList.stream().map(Long::valueOf).collect(Collectors.toList())).list()).ok();
     }
 
 }
