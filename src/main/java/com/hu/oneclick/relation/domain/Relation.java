@@ -1,6 +1,9 @@
 package com.hu.oneclick.relation.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +19,9 @@ import lombok.Setter;
 public class Relation {
 
     /** id */
-    private String id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long id;
 
     /** 对象id */
     private String objectId;
