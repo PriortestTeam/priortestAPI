@@ -9,14 +9,23 @@ import lombok.Getter;
  * @date 2023/06/05
  */
 @Getter
+@SwaggerDisplayEnum
 public enum RelationCategoryEnum {
 
     /** 测试用例与步骤关系 */
-    TEST_CASE_TO_STEP("TEST_CASE_TO_STEP");
+    TEST_CASE_TO_STEP("测试用例与步骤关系", "TEST_CASE_TO_STEP");
 
+    private final String name;
     private final String value;
 
-    RelationCategoryEnum(String value) {
+    RelationCategoryEnum(String name, String value) {
+        this.name = name;
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return name + ": " + value;
+    }
+
 }
