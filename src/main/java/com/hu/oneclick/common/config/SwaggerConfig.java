@@ -1,7 +1,6 @@
 package com.hu.oneclick.common.config;
 
 import cn.hutool.core.util.StrUtil;
-import com.fasterxml.classmate.ResolvedType;
 import com.hu.oneclick.relation.enums.SwaggerDisplayEnum;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -94,7 +93,7 @@ public class SwaggerConfig implements ModelPropertyBuilderPlugin {
         }
 
         //没有@ApiModelProperty 或者 notes 属性没有值，直接返回
-        if (!optional.isPresent() || StrUtil.isEmpty(optional.get().notes())) {
+        if (optional.isEmpty() || StrUtil.isEmpty(optional.get().notes())) {
             return;
         }
 
@@ -127,20 +126,19 @@ public class SwaggerConfig implements ModelPropertyBuilderPlugin {
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
-        String joinText = " (" + String.join("; ", displayValues) + ")";
+        String joinText = " (" + String.join(";", displayValues) + ")";
         try {
             // 拿到字段上原先的描述
             Field mField = ModelPropertyBuilder.class.getDeclaredField("description");
             mField.setAccessible(true);
             // context 中的 builder 对象保存了字段的信息
-            joinText = mField.get(context.getBuilder()) + joinText;
+            joinText = mField.get(context.getSpecificationBuilder()) + joinText;
         } catch (Exception e) {
             log.error(e.getMessage());
         }
 
-        // 设置新的字段说明并且设置字段类型
-        final ResolvedType resolvedType = context.getResolver().resolve(fieldType);
-        context.getBuilder().description(joinText).type(resolvedType);
+        // 设置新的字段说明
+        context.getSpecificationBuilder().description(joinText);
     }
 
     @Override

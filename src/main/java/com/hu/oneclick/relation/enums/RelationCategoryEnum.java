@@ -1,5 +1,6 @@
 package com.hu.oneclick.relation.enums;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.Getter;
 
 /**
@@ -13,7 +14,10 @@ import lombok.Getter;
 public enum RelationCategoryEnum {
 
     /** 测试用例与步骤关系 */
-    TEST_CASE_TO_STEP("测试用例与步骤关系", "TEST_CASE_TO_STEP");
+    TEST_CASE_TO_STEP("测试用例与步骤关系", "TEST_CASE_TO_STEP"),
+    /** 测试周期与用例关系 */
+    TEST_CYCLE_TO_CASE("测试周期与用例关系", "TEST_CYCLE_TO_CASE"),
+    ;
 
     private final String name;
     private final String value;
@@ -25,7 +29,7 @@ public enum RelationCategoryEnum {
 
     @Override
     public String toString() {
-        return name + ": " + value;
+        return StrUtil.format("{}[{}]", value, name);
     }
 
 }
