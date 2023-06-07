@@ -1,6 +1,5 @@
 package com.hu.oneclick.relation.controller;
 
-import cn.hutool.core.util.DesensitizedUtil;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
@@ -54,7 +53,6 @@ public class RelationController extends BaseController {
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated Relation dto) {
         try {
-            DesensitizedUtil.idCardNum("51343620000320711X", 1, 2);
             relationService.saveRelationWithAppend(dto.getObjectId(), dto.getTargetId(), dto.getCategory());
             return new Resp.Builder<>().ok();
         } catch (Exception e) {
