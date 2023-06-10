@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * (Project)实体类
@@ -52,7 +51,7 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
     /**
      * 删除标记 0 默认， 1 删除
      */
-    private Integer delFlag;
+//    private Integer delFlag;
 
     private String testFrame;
     private String projectCategory;
@@ -61,9 +60,9 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
 
     private Date updateTime;
 
-    private Date closeDate;
+//    private Date closeDate;
 
-    private String closeDesc;
+//    private String closeDesc;
 
     private String customer;
 
@@ -75,14 +74,14 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
     /**
      * 项目绑定的权限
      */
-    private String operationAuthIds;
+//    private String operationAuthIds;
 
-    List<SysOperationAuthority> sysOperationAuthorities;
+//    List<SysOperationAuthority> sysOperationAuthorities;
 
     /**
      * 自定义字段值
      */
-    private List<CustomFieldData> customFieldDatas;
+//    private List<CustomFieldData> customFieldDatas;
 
     @Override
     public void verify() throws BizException {

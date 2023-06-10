@@ -103,8 +103,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Resp<Project> queryById(String id) {
         Project project = projectDao.queryById(id);
-        List<CustomFieldData> customFieldData = customFieldDataService.projectRenderingCustom(project.getId());
-        project.setCustomFieldDatas(customFieldData);
+//        List<CustomFieldData> customFieldData = customFieldDataService.projectRenderingCustom(project.getId());
+//        project.setCustomFieldDatas(customFieldData);
         return new Resp.Builder<Project>().setData(project).ok();
     }
 
@@ -170,8 +170,8 @@ public class ProjectServiceImpl implements ProjectService {
             int insert = projectDao.insert(project);
             if (insert > 0) {
                 //插入用户自定义值
-                List<CustomFieldData> customFieldDatas = project.getCustomFieldDatas();
-                insert = customFieldDataService.insertProjectCustomData(customFieldDatas, project);
+//                List<CustomFieldData> customFieldDatas = project.getCustomFieldDatas();
+//                insert = customFieldDataService.insertProjectCustomData(customFieldDatas, project);
             }
             return Result.addResult(insert);
         } catch (BizException e) {
@@ -245,8 +245,8 @@ public class ProjectServiceImpl implements ProjectService {
             project.setUserId(jwtUserService.getMasterId());
             project.setId(id);
             project.setStatus("关闭");
-            project.setCloseDate(new Date());
-            project.setCloseDesc(closeDesc);
+//            project.setCloseDate(new Date());
+//            project.setCloseDesc(closeDesc);
             return Result.updateResult(projectDao.update(project));
         } catch (BizException e) {
             logger.error("class: ProjectServiceImpl#getCloseProject,error []" + e.getMessage());
