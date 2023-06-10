@@ -62,7 +62,7 @@ public class RoleController {
         return arr;
     }
 
-    @GetMapping(value = "/allList")
+    @GetMapping(value = "/roleList")
     @ApiOperation(value = "查询全部角色列表")
     public Resp<List<SysRole>> allList() {
         return sysRoleService.queryRoles();
