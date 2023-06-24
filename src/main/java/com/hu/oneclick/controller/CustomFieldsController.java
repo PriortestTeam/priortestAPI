@@ -82,6 +82,19 @@ public class CustomFieldsController {
         return customFieldsService.getAllCustomList(customFieldDto);
     }
 
+    @GetMapping("/getAllCustomListByScopeId")
+    public Resp<List<CustomFileldLinkVo>> getAllCustomListByScopeId(Long scopeId) {
+        if (null == scopeId) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "scopeId" + SysConstantEnum.PARAM_EMPTY.getValue());
+        }
+        if (1000001 != scopeId) {
+            throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "scopeId与设定值不相符" + SysConstantEnum.PARAMETER_ABNORMAL.getValue());
+        }
+        log.info("getAllCustomListByScopeId==>scopeId:{}", scopeId);
+        List<CustomFileldLinkVo> dataList = customFieldsService.getAllCustomListByScopeId(scopeId);
+        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(dataList).ok();
+    }
+
     @GetMapping("/getDropDownBox")
     public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
         if (customFieldDto.getProjectId() == null) {

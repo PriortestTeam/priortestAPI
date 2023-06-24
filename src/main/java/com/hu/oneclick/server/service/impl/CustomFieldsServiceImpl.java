@@ -157,6 +157,12 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     }
 
     @Override
+    public List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId) {
+
+        return customFieldsDao.getAllCustomListByScopeId(scopeId);
+    }
+
+    @Override
     public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
         List<CustomFileldLinkVo> dropDownBox = customFieldsDao.getDropDownBox(customFieldDto);
         return new Resp.Builder<List<CustomFileldLinkVo>>().setData(dropDownBox).ok();
