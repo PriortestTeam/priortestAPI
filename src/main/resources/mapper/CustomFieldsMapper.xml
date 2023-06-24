@@ -151,6 +151,19 @@
 
     </select>
 
+    <select id="getAllCustomListByScopeId" resultMap="CustomFileldLinkVoResultMap">
+        SELECT
+        <include refid="Custom_Column_List"/>
+        FROM
+        custom_fileld_link cfl
+        LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        <where>
+            (cfl.scope_id = #{scopeId})
+            OR (cf.type="sField" AND cfl.scope_id = #{scopeId})
+            ORDER BY sort DESC
+        </where>
+    </select>
+
     <select id="getFieldTypeByProjectId" resultType="java.lang.String" parameterType="java.lang.Long">
         SELECT DISTINCT cf.field_type
         FROM custom_fileld_link cfl

@@ -32,4 +32,6 @@ public interface CustomFieldsService {
     Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto);
 
     Resp<String> updateValueDropDownBox(CustomFieldsDto customFieldsDto);
+
+    List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId);
 }
