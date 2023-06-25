@@ -28,7 +28,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
     /**
      * 关联用户id （主用户）
      */
-    private String userId;
+    private String createUserId;
     /**
      * 关联项目id
      */
@@ -48,7 +48,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
     /**
      * 创建人
      */
-    private String owner;
+    private String creater;
     /**
      * {},自定义json 对象
      */
@@ -63,7 +63,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
     /**
      * 修改人
      */
-    private String modifyUser;
+    private String updateUser;
     /**
      * 修改时间
      */
@@ -74,6 +74,8 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
     private Date updateTime;
 
     private String parentId;
+
+    private String scopeName;
 
     private Integer level;
 
