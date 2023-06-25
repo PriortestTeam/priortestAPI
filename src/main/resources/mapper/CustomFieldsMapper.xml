@@ -158,8 +158,7 @@
         custom_fileld_link cfl
         LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
         <where>
-            (cfl.scope_id = #{scopeId})
-            OR (cf.type="sField" AND cfl.scope_id = #{scopeId})
+            cf.type="sField" AND cfl.scope_id = #{scopeId}
             ORDER BY sort DESC
         </where>
     </select>
