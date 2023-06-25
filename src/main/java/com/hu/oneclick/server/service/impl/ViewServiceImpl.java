@@ -90,7 +90,7 @@ public class ViewServiceImpl implements ViewService {
         sysPermissionService.viewPermission(null, convertPermission(view.getScope()));
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         view.verifyUserType(sysUser.getManager());
-        view.setUserId(jwtUserService.getMasterId());
+        view.setCreateUserId(jwtUserService.getMasterId());
 
         List<View> queryViews = viewDao.queryAll(view);
 
@@ -162,9 +162,9 @@ public class ViewServiceImpl implements ViewService {
             }
 
             Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScope()), view.getTitle());
-            view.setUserId(masterId);
+            view.setCreateUserId(masterId);
             view.setProjectId(projectId);
-            view.setOwner(sysUser.getUserName());
+            view.setCreater(sysUser.getUserName());
             return Result.addResult(viewDao.insert(view));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#addView,error []" + e.getMessage());
@@ -189,8 +189,9 @@ public class ViewServiceImpl implements ViewService {
                 Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScope()), view.getTitle());
             }
 
-            view.setModifyUser(sysUser.getUserName());
+            view.setUpdateUser(sysUser.getUserName());
             view.setModifyDate(new Date());
+            view.setUpdateTime(new Date());
             return Result.updateResult(viewDao.update(view));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#updateView,error []" + e.getMessage());
@@ -357,9 +358,9 @@ public class ViewServiceImpl implements ViewService {
 
             List<OneFilter> oneFilter = view.getOneFilters();
             view.setFilter(JSON.toJSONString(oneFilter));
-            view.setUserId(masterId);
+            view.setCreateUserId(masterId);
             view.setProjectId(projectId);
-            view.setOwner(sysUser.getUserName());
+            view.setCreater(sysUser.getUserName());
             //设置sql
             String sql = appendSql(oneFilter, view);
 
@@ -407,7 +408,7 @@ public class ViewServiceImpl implements ViewService {
 
         }
         stringBuilder.append("where ");
-        stringBuilder.append("user_id = ").append(view.getUserId());
+        stringBuilder.append("user_id = ").append(view.getCreateUserId());
         if (!scope.equals(FieldConstant.PROJECT)) {
             stringBuilder.append(" and ").append("project_id = ").append(view.getProjectId());
         }
