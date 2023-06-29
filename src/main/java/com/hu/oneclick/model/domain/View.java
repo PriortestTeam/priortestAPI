@@ -75,7 +75,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
 
     private String parentId;
 
-    private String scopeName;
+    private String scopeId;
 
     private Integer level;
 
