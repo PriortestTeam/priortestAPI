@@ -87,7 +87,7 @@ public class ViewServiceImpl implements ViewService {
         } else if (StringUtils.isEmpty(view.getProjectId())) {
             return new Resp.Builder<List<View>>().buildResult("项目ID不能为空。");
         }
-        sysPermissionService.viewPermission(null, convertPermission(view.getScope()));
+      //  sysPermissionService.viewPermission(null, convertPermission(view.getScope()));
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         view.verifyUserType(sysUser.getManager());
         view.setCreateUserId(jwtUserService.getMasterId());
@@ -177,7 +177,7 @@ public class ViewServiceImpl implements ViewService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateView(View view) {
         try {
-            sysPermissionService.viewPermission(OneConstant.PERMISSION.EDIT, convertPermission(view.getScope()));
+            //sysPermissionService.viewPermission(OneConstant.PERMISSION.EDIT, convertPermission(view.getScope()));
             view.verifyOneFilter();
             SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
             String projectId = sysUser.getUserUseOpenProject().getProjectId();
@@ -207,7 +207,7 @@ public class ViewServiceImpl implements ViewService {
             if (view == null) {
                 return Result.deleteResult(0);
             }
-            sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE, convertPermission(view.getScope()));
+           // sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE, convertPermission(view.getScope()));
             return Result.deleteResult(viewDao.deleteById(jwtUserService.getMasterId(), id));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#deleteView,error []" + e.getMessage());
