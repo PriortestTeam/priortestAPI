@@ -194,7 +194,7 @@
         <where>
            (project_id = #{customFieldDto.projectId} or type ='sField')
             AND field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
-            AND (JSON_TYPE(possible_value->'$.order_1') != 'NULL' OR JSON_TYPE(possible_value->'$.others') != 'NULL')
+            <!--AND (JSON_TYPE(possible_value->'$.order_1') != 'NULL' OR JSON_TYPE(possible_value->'$.others') != 'NULL') -->
             order by create_time
         </where>
 
