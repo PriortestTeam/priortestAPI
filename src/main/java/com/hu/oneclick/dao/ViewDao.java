@@ -78,17 +78,17 @@ public interface ViewDao {
     int queryTitleIsExist(@Param("masterId") String masterId,
                               @Param("title") String title,
                               @Param("projectId") String projectId,
-                              @Param("scope")String scope);
+                              @Param("scopeName")String scopeName);
 
     List<View> queryViewParents(@Param("masterId") String masterId,
-                                @Param("scope") String scope,
+                                @Param("scopeName") String scopeName,
                                 @Param("projectId") String projectId);
 
     String queryTitleByParentId(@Param("parentId") String parentId);
 
     List<ViewTreeDto> queryViewByScopeAll(@Param("masterId") String masterId,
                                           @Param("projectId") String projectId,
-                                          @Param("scope") String scope);
+                                          @Param("scopeName") String scopeName);
 
     List<ViewTreeDto> queryViewTreeById(@Param("masterId") String masterId,@Param("viewId") String viewId);
 
