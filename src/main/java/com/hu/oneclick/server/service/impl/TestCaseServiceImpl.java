@@ -548,7 +548,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         jsonArray.add(filterJson);
         View view = new View();
         view.setFilter(jsonArray.toJSONString());
-        view.setScope("TestCase");
+        view.setScopeName("TestCase");
         view.setIsPrivate(0);
         view.setTitle("创建时间：" + nowString + "-" + nowString);
 //        viewService.addView(view);
