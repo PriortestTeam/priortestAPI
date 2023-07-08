@@ -1007,8 +1007,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         } else if (actionType.equals(ActionConstant.REMOVE)) {
             for (String id : testCaseId) {
                 TestCycleJoinTestCase tc = new TestCycleJoinTestCase();
-                tc.setTestCycleId(testCycleId);
-                tc.setTestCaseId(id);
+//                tc.setTestCycleId(testCycleId);
+//                tc.setTestCaseId(id);
                 //如果是remove就删除
                 //testCycleJoinbaseMapper.delete(tc);
             }
@@ -1021,6 +1021,14 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         return this.lambdaQuery()
                 .like(StrUtil.isNotBlank(param.getTitle()), TestCase::getTitle, param.getTitle())
                 .eq(TestCase::getProjectId, param.getProjectId())
+                .orderByDesc(TestCase::getCreateTime)
+                .list();
+    }
+
+    @Override
+    public List<TestCase> listExtend(TestCaseParam param) {
+        return this.lambdaQuery()
+                .in(CollUtil.isNotEmpty(param.getTestCaseIdList()), TestCase::getId, param.getTestCaseIdList())
                 .orderByDesc(TestCase::getCreateTime)
                 .list();
     }

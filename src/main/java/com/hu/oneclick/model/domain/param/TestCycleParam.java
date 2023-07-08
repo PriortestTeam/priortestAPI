@@ -28,4 +28,7 @@ public class TestCycleParam implements Serializable {
     @NotNull(message = "项目ID不能为空")
     private Long projectId;
 
+    @ApiModelProperty("项目周期ID")
+    private Long testCycleId;
+
 }

@@ -67,5 +67,4 @@ public interface TestCycleService extends IService<TestCycle> {
     TestCycle info(Long id);
 
     void clone(List<Long> ids);
-
 }
