@@ -40,7 +40,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
     /**
      * 使用区域
      */
-    private String scope;
+    private String scopeName;
     /**
      * 公开还是私有,默认 0 公开
      */
@@ -75,7 +75,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
 
     private String parentId;
 
-    private String scopeName;
+    private String scopeId;
 
     private Integer level;
 
@@ -99,7 +99,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
      * 验证OneFilter 参数格式
      */
     public void verifyOneFilter(){
-        if(StringUtils.isEmpty(scope)) {
+        if(StringUtils.isEmpty(scopeName)) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "作用域" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
         if (oneFilters == null || oneFilters.size() == 0){

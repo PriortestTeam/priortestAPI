@@ -6,30 +6,30 @@
 
     <resultMap type="com.hu.oneclick.model.domain.View" id="ViewMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="createUserId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="scope" column="scope" jdbcType="VARCHAR"/>
+        <result property="scopeName" column="scope_name" jdbcType="VARCHAR"/>
         <result property="isPrivate" column="is_private" jdbcType="INTEGER"/>
-        <result property="owner" column="owner" jdbcType="VARCHAR"/>
+        <result property="creater" column="creater" jdbcType="VARCHAR"/>
         <result property="filter" column="filter" jdbcType="VARCHAR"/>
-        <result property="modifyUser" column="modify_user" jdbcType="VARCHAR"/>
-        <result property="modifyDate" column="modify_date" jdbcType="TIMESTAMP"/>
+        <result property="updateUser" column="update_user" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
+        <result property="scopeId" column="scope_id" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="base_sql">
-        id, user_id, project_id, title, `scope`, is_private, owner, filter, `sql`,modify_user, modify_date, create_time, update_time,parent_id,`level`
+        id, create_user_id, project_id, title, `scope_name`, is_private, creater, filter, `sql`, update_user,create_time, update_time,parent_id,`level`
     </sql>
     <!--查询单个-->
     <select id="queryById" resultMap="ViewMap">
         select
-          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id,`level`
+          id, create_user_id, project_id, title, scope_name, is_private, creater, filter, update_user, create_time, update_time,parent_id,`level`
         from oneclick.view
-        where id = #{id} and user_id = #{masterId}
+        where id = #{id} and create_user_id = #{masterId}
     </select>
 
     <!--查询单个-->
@@ -43,7 +43,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ViewMap">
         select
-          id, user_id, project_id, title, scope, is_private, owner, filter, modify_user, modify_date, create_time, update_time,parent_id,`level`
+          id, create_user_id, project_id, title, scope_name, is_private, creater, filter, update_user, create_time, update_time,parent_id,`level`
         from oneclick.view
         limit #{offset}, #{limit}
     </select>
@@ -51,21 +51,22 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ViewMap">
         select
-        id, user_id, project_id, title, scope, is_private, owner,filter ,modify_user, modify_date, create_time,
+        id, create_user_id, project_id, title, scope_name, is_private, creater,filter ,update_user, create_time,
         update_time,parent_id,`level`
         from oneclick.view
         <where>
-            user_id = #{userId}
+            create_user_id = #{createUserId}
             and project_id = #{projectId}
             <if test="title != null and title != ''">
                 and title = #{title}
             </if>
-            <if test="scope != null and scope != ''">
-                and scope = #{scope}
+            <if test="scopeName != null and scopeName != ''">
+                and scope_name = #{scopeName}
             </if>
             <if test="isPrivate != null">
                 and is_private = #{isPrivate}
             </if>
+
         </where>
         order by create_time desc
     </select>
@@ -74,9 +75,9 @@
             count(1)
         from oneclick.view
         where
-            user_id = #{masterId}
+        create_user_id = #{masterId}
             and project_id = #{projectId}
-            and scope = #{scope}
+            and scope_name = #{scopeName}
             and title = #{title}
             <!-- and is_private = #{isPrivate}-->
     </select>
@@ -86,9 +87,9 @@
             id
         from oneclick.view
         <where>
-            user_id = #{masterId}
+            create_user_id = #{masterId}
             and project_id = #{projectId}
-            and scope = #{scope}
+            and scope_name = #{scopeName}
             and parent_id is null
             and is_private = 0
         </where>
@@ -104,58 +105,57 @@
 
     <resultMap type="com.hu.oneclick.model.domain.dto.ViewTreeDto" id="queryViewByScopeAllMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="createUserId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="scope" column="scope" jdbcType="VARCHAR"/>
+        <result property="scopeName" column="scope_name" jdbcType="VARCHAR"/>
         <result property="isPrivate" column="is_private" jdbcType="INTEGER"/>
-        <result property="owner" column="owner" jdbcType="VARCHAR"/>
+        <result property="creater" column="creater" jdbcType="VARCHAR"/>
         <result property="filter" column="filter" jdbcType="VARCHAR"/>
-        <result property="modifyUser" column="modify_user" jdbcType="VARCHAR"/>
-        <result property="modifyDate" column="modify_date" jdbcType="TIMESTAMP"/>
+        <result property="updateUser" column="update_user" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
+        <result property="scopeId" column="scope_id" jdbcType="INTEGER"/>
     </resultMap>
 
     <select id="queryViewByScopeAll" resultMap="queryViewByScopeAllMap">
         select
-        id, user_id, project_id, title, scope, is_private, owner ,modify_user, modify_date, create_time,
+        id, create_user_id, project_id, title, scope_name, is_private, update_user , create_time,
         update_time,parent_id,`level`
         from oneclick.view
         where
-        user_id = #{masterId}
+        create_user_id = #{masterId}
         and project_id = #{projectId}
-        and scope = #{scope}
+        and scope_name = #{scopeName}
     </select>
 
 
     <resultMap type="com.hu.oneclick.model.domain.dto.ViewTreeDto" id="queryViewTreeByIdMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="createUserId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="scope" column="scope" jdbcType="VARCHAR"/>
+        <result property="scopeName" column="scope_name" jdbcType="VARCHAR"/>
         <result property="isPrivate" column="is_private" jdbcType="INTEGER"/>
-        <result property="owner" column="owner" jdbcType="VARCHAR"/>
+        <result property="creater" column="creater" jdbcType="VARCHAR"/>
         <result property="filter" column="filter" jdbcType="VARCHAR"/>
-        <result property="modifyUser" column="modify_user" jdbcType="VARCHAR"/>
-        <result property="modifyDate" column="modify_date" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
-        <collection property="childViews" ofType="com.hu.oneclick.model.domain.dto.ViewTreeDto" select="queryViewTreeById" column="{viewId=parent_id,masterId=user_id}"></collection>
+        <result property="scopeId" column="scope_id" jdbcType="INTEGER"/>
+        <collection property="childViews" ofType="com.hu.oneclick.model.domain.dto.ViewTreeDto" select="queryViewTreeById" column="{viewId=parent_id,masterId=create_user_id}"></collection>
     </resultMap>
 
     <select id="queryViewTreeById" resultMap="queryViewTreeByIdMap">
             select
-            id, user_id, project_id, title, scope, is_private, owner,filter ,modify_user, modify_date, create_time,
+            id, create_user_id, project_id, title, scope_name, is_private, owner,filter , create_time,
             update_time,parent_id,`level`
             from oneclick.view
             where
-            user_id = #{masterId}
+        create_user_id = #{masterId}
             and
             id = #{viewId}
     </select>
@@ -167,8 +167,8 @@
             <if test="id != null">
                 id,
             </if>
-            <if test="userId != null">
-                user_id,
+            <if test="createUserId != null">
+                create_user_id,
             </if>
             <if test="projectId != null">
                 project_id,
@@ -176,14 +176,14 @@
             <if test="title != null and title != ''">
                 title,
             </if>
-            <if test="scope != null and scope != ''">
-                scope,
+            <if test="scopeName != null and scopeName != ''">
+                scope_name,
             </if>
             <if test="isPrivate != null">
                 is_private,
             </if>
-            <if test="owner != null and owner != ''">
-                owner,
+            <if test="creater != null and creater != ''">
+                creater,
             </if>
             <if test="filter != null and filter != ''">
                 filter,
@@ -191,12 +191,10 @@
             <if test="sql != null and sql != ''">
                 `sql`,
             </if>
-            <if test="modifyUser != null and modifyUser != ''">
-                modify_user,
+            <if test="updateUser != null and updateUser != ''">
+                update_user,
             </if>
-            <if test="modifyDate != null">
-                modify_date,
-            </if>
+
             <if test="parentId != null and parentId != ''">
                 parent_id,
             </if>
@@ -210,8 +208,8 @@
             <if test="id != null">
                 #{id},
             </if>
-            <if test="userId != null">
-                #{userId},
+            <if test="createUserId != null">
+                #{createUserId},
             </if>
             <if test="projectId != null">
                 #{projectId},
@@ -219,14 +217,14 @@
             <if test="title != null and title != ''">
                 #{title},
             </if>
-            <if test="scope != null and scope != ''">
-                #{scope},
+            <if test="scopeName != null and scopeName != ''">
+                #{scopeName},
             </if>
             <if test="isPrivate != null">
                 #{isPrivate},
             </if>
-            <if test="owner != null and owner != ''">
-                #{owner},
+            <if test="creater != null and creater != ''">
+                #{creater},
             </if>
             <if test="filter != null and filter != ''">
                 #{filter},
@@ -234,11 +232,11 @@
             <if test="sql != null and sql != ''">
                 #{sql},
             </if>
-            <if test="modifyUser != null and modifyUser != ''">
-                #{modifyUser},
+            <if test="updateUser != null and updateUser != ''">
+                #{updateUser},
             </if>
-            <if test="modifyDate != null">
-                #{modifyDate},
+            <if test="updateTime != null">
+                #{updateTime},
             </if>
             <if test="parentId != null and parentId != ''">
                 #{parentId},
@@ -265,11 +263,11 @@
             <if test="filter != null and filter != ''">
                 filter = #{filter},
             </if>
-            <if test="modifyUser != null and modifyUser != ''">
-                modify_user = #{modifyUser},
+            <if test="updateUser != null and updateUser != ''">
+                update_user = #{updateUser},
             </if>
-            <if test="modifyDate != null">
-                modify_date = #{modifyDate},
+            <if test="updateTime != null">
+                update_time = #{updateTime},
             </if>
             <if test="parentId != null and parentId != ''">
                 parent_id = #{parentId},
@@ -281,7 +279,7 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from oneclick.view where user_id = #{masterId} and id = #{id}
+        delete from oneclick.view where create_user_id = #{masterId} and id = #{id}
     </delete>
 
     <select id="sql" resultType="com.hu.oneclick.model.domain.Project" parameterType="java.lang.String">

@@ -82,12 +82,12 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     public Resp<List<View>> list(View view) {
-        if (StringUtils.isEmpty(view.getScope())) {
-            return new Resp.Builder<List<View>>().buildResult("scope 不能为空。");
+        if (StringUtils.isEmpty(view.getScopeName())) {
+            return new Resp.Builder<List<View>>().buildResult("范围 不能为空。");
         } else if (StringUtils.isEmpty(view.getProjectId())) {
             return new Resp.Builder<List<View>>().buildResult("项目ID不能为空。");
         }
-        sysPermissionService.viewPermission(null, convertPermission(view.getScope()));
+      //  sysPermissionService.viewPermission(null, convertPermission(view.getScope()));
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         view.verifyUserType(sysUser.getManager());
         view.setCreateUserId(jwtUserService.getMasterId());
@@ -161,7 +161,7 @@ public class ViewServiceImpl implements ViewService {
                 }
             }
 
-            Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScope()), view.getTitle());
+            Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
             view.setCreateUserId(masterId);
             view.setProjectId(projectId);
             view.setCreater(sysUser.getUserName());
@@ -177,7 +177,7 @@ public class ViewServiceImpl implements ViewService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateView(View view) {
         try {
-            sysPermissionService.viewPermission(OneConstant.PERMISSION.EDIT, convertPermission(view.getScope()));
+            //sysPermissionService.viewPermission(OneConstant.PERMISSION.EDIT, convertPermission(view.getScope()));
             view.verifyOneFilter();
             SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
             String projectId = sysUser.getUserUseOpenProject().getProjectId();
@@ -186,7 +186,7 @@ public class ViewServiceImpl implements ViewService {
             }
             //修改视图名称要进行验证
             if (view.getTitle() != null) {
-                Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScope()), view.getTitle());
+                Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
             }
 
             view.setUpdateUser(sysUser.getUserName());
@@ -207,7 +207,7 @@ public class ViewServiceImpl implements ViewService {
             if (view == null) {
                 return Result.deleteResult(0);
             }
-            sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE, convertPermission(view.getScope()));
+           // sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE, convertPermission(view.getScope()));
             return Result.deleteResult(viewDao.deleteById(jwtUserService.getMasterId(), id));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#deleteView,error []" + e.getMessage());
@@ -387,7 +387,7 @@ public class ViewServiceImpl implements ViewService {
         List<OneFilter> collect = oneFilter.stream().filter(f -> "sys".equals(f.getCustomType())).collect(Collectors.toList());
 
         StringBuilder stringBuilder = new StringBuilder("select * from ");
-        String scope = view.getScope();
+        String scope = view.getScopeName();
         switch (scope) {
             case FieldConstant.PROJECT:
                 stringBuilder.append("project ");
@@ -509,7 +509,7 @@ public class ViewServiceImpl implements ViewService {
 
 
         String filter = view.getFilter();
-        String scope = view.getScope();
+        String scope = view.getScopeName();
         switch (scope) {
             case FieldConstant.PROJECT:
                 List<Project> projectList = JSONArray.parseArray(this.sql(sql), Project.class);
