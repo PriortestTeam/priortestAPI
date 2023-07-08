@@ -33,4 +33,7 @@ public interface TestCycleJoinTestCaseDao extends BaseMapper<TestCycleJoinTestCa
 
     int updateTestCycleJoinTestCase(TestCycleJoinTestCase testCycleJoinTestCase);
 
+    void deleteByParam(@Param("projectId") Long projectId, @Param("testCycleId") Long testCycleId, @Param("testCaseId") Long testCaseId);
+
+    List<Long> getCaseIdListByCycleId(@Param("testCycleId") Long testCycleId);
 }

@@ -1,11 +1,20 @@
 package com.hu.oneclick.controller;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ArrayUtil;
 import com.github.pagehelper.PageInfo;
+import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
+import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleSaveDto;
+import com.hu.oneclick.model.domain.param.TestCaseParam;
 import com.hu.oneclick.model.domain.param.TestCycleParam;
+import com.hu.oneclick.server.service.TestCaseService;
+import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
 import com.hu.oneclick.server.service.TestCycleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -25,6 +35,12 @@ public class TestCycleController extends BaseController {
 
     @Resource
     private TestCycleService testCycleService;
+
+    @Resource
+    private TestCaseService testCaseService;
+
+    @Resource
+    private TestCycleJoinTestCaseService testCycleJoinTestCaseService;
 
 
 //    @GetMapping("queryById/{id}")
@@ -169,5 +185,54 @@ public class TestCycleController extends BaseController {
             return new Resp.Builder<>().fail();
         }
     }
+
+    @ApiOperation("列表")
+    @PostMapping("/instance/listByTestCycle")
+    public Resp<PageInfo<TestCase>> listByTestCycle(@RequestBody TestCycleParam param) {
+        if (null == param.getTestCycleId()) {
+            throw new BaseException("测试周期ID不能为空");
+        }
+        TestCaseParam tmpParam = new TestCaseParam();
+        List<Long> caseIdList = this.testCycleJoinTestCaseService.getCaseIdListByCycleId(param.getTestCycleId());
+        if (CollUtil.isEmpty(caseIdList)) {
+            return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(Collections.EMPTY_LIST)).ok();
+        }
+        tmpParam.setTestCaseIdList(caseIdList);
+        startPage();
+        List<TestCase> testCaseList = testCaseService.listExtend(tmpParam);
+        return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
+    }
+
+
+    @ApiOperation("绑定测试用例到测试周期")
+    @PostMapping("/instance/saveInstance")
+    public Resp<?> saveInstance(@RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
+        try {
+            if (ArrayUtil.isEmpty(dto.getTestCaseIds())) {
+                throw new BaseException("请选择至少一个测试用例进行绑定");
+            }
+            return new Resp.Builder<Boolean>().setData(testCycleJoinTestCaseService.saveInstance(dto)).ok();
+        } catch (Exception e) {
+            log.error("绑定测试用例到测试周期失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<TestCycleJoinTestCase>().fail();
+        }
+    }
+
+    @ApiOperation("删除测试周期绑定的测试用例")
+    @DeleteMapping("/instance/deleteInstance")
+    public Resp<?> deleteInstance(@RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
+        try {
+            if (ArrayUtil.isEmpty(dto.getTestCaseIds())) {
+                throw new BaseException("请选择至少一个测试用例进行删除");
+            }
+            testCycleJoinTestCaseService.deleteInstance(dto);
+        } catch (Exception e) {
+            log.error("删除测试周期绑定的测试用例失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<Boolean>().fail();
+        }
+        return new Resp.Builder<Boolean>().ok();
+    }
+
+
 
 }

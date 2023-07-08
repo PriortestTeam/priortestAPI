@@ -31,6 +31,12 @@
         from test_cycle_join_test_case
         where test_case_id = #{testCaseId}
     </delete>
+    <delete id="deleteByParam">
+        delete
+        from test_cycle_join_test_case
+        where test_case_id = #{testCaseId} and project_id = #{projectId}
+        and test_cycle_id = #{testCycleId}
+    </delete>
     <select id="queryBindCaseList" resultType="com.hu.oneclick.model.domain.TestCase">
         select t.id as id,
                t.title as title,
@@ -112,6 +118,9 @@
                 and test_case_id = #{testCaseId}
             </if>
         </where>
+    </select>
+    <select id="getCaseIdListByCycleId" resultType="java.lang.Long">
+        select test_case_id from test_cycle_join_test_case where test_cycle_id = #{testCycleId}
     </select>
     <!-- 新增 WJK END-->
 </mapper>

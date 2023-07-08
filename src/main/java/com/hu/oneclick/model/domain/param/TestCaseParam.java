@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 测试用例Param
@@ -27,5 +28,7 @@ public class TestCaseParam implements Serializable {
     @ApiModelProperty("项目ID")
     @NotNull(message = "项目ID不能为空")
     private Long projectId;
+
+    private List<Long> testCaseIdList;
 
 }
