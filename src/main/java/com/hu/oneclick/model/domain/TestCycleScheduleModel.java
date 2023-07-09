@@ -26,25 +26,25 @@ public class TestCycleScheduleModel implements Serializable {
      * 开始时间天
      */
     @ApiModelProperty(value="开始时间天")
-    private Date startTimeDate;
+    private Date autoJobStart;
 
     /**
      * 开始时间时分秒
      */
     @ApiModelProperty(value="开始时间时分秒")
-    private Date runTime;
+    private Date autoJobRun;
 
     /**
      * 执行路径
      */
     @ApiModelProperty(value="执行路径")
-    private String jenkinsUrl;
+    private String autoJobLink;
 
     /**
      * 结束时间
      */
     @ApiModelProperty(value="结束时间")
-    private Date endTime;
+    private Date autoJobEnd;
 
     /**
      * 重复方式
