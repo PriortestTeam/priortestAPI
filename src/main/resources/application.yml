@@ -43,3 +43,9 @@ mybatis-plus:
     db-config:
       # 只更新属性值不为空的字段
       update-strategy: not_null
+
+# Jenkins 配置
+jenkins:
+  url: http://43.139.159.146:8080
+  username: jenkins
+  password: jenkins
