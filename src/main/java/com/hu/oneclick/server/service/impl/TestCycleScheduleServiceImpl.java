@@ -9,7 +9,6 @@ import com.hu.oneclick.model.domain.TestCycleSchedule;
 import com.hu.oneclick.model.domain.TestCycleScheduleModel;
 import com.hu.oneclick.server.service.TestCycleScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -46,7 +45,8 @@ public class TestCycleScheduleServiceImpl implements TestCycleScheduleService {
                 TestCycleScheduleModel testCycleScheduleModel = testCycleScheduleModelDao.selectByPrimaryKey(scheduleModelId);
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(testCycleScheduleModel.getJenkinsUrl())).build();
+//                        .uri(URI.create(testCycleScheduleModel.getJenkinsUrl())).build();
+                        .uri(URI.create("")).build();
                 HttpResponse<String> response = null;
                 try {
                     response = client.send(request, HttpResponse.BodyHandlers.ofString());
