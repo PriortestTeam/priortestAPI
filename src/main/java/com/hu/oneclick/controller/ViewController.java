@@ -1,5 +1,6 @@
 package com.hu.oneclick.controller;
 
+import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
@@ -7,15 +8,10 @@ import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.ViewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -25,15 +21,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("view")
 @Api(tags = "视图管理")
+@Slf4j
 public class ViewController {
 
-    private final ViewService viewService;
-
-
-    public ViewController(ViewService viewService) {
-        this.viewService = viewService;
-    }
-
+    @Resource
+    private ViewService viewService;
+    @Resource
+    private JwtUserServiceImpl jwtUserService;
 
 
     @GetMapping("queryDoesExistByTitle")
@@ -69,6 +63,7 @@ public class ViewController {
 
 
     @PostMapping("queryViews")
+    @ApiOperation("查询以当前项目的所有视图")
     private Resp<List<View>> queryViews(@RequestBody View view){
         return viewService.list(view);
     }
@@ -82,13 +77,26 @@ public class ViewController {
 
     @PostMapping("addViewRE")
     @ApiOperation("添加视图(新)")
-    private Resp<String> addViewRE(@RequestBody View view){
-        return viewService.addViewRE(view);
+    private Resp<?> addViewRE(@RequestBody View view){
+        try {
+            view = viewService.addViewRE(view);
+            return new Resp.Builder<>().setData(view).ok();
+        } catch (Exception e) {
+            log.error("新增失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<>().fail();
+        }
     }
 
     @PostMapping("updateView")
-    private Resp<String> updateView(@RequestBody View view){
-        return viewService.updateView(view);
+    @ApiOperation("修改视图")
+    private Resp<?> updateView(@RequestBody View view){
+        try {
+            view = viewService.updateView(view);
+            return new Resp.Builder<>().setData(view).ok();
+        } catch (Exception e) {
+            log.error("修改失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<>().fail();
+        }
     }
 
     @DeleteMapping("deleteView/{viewId}")
