@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -69,6 +70,10 @@ public class View extends AssignBaseEntity implements Serializable {
     private String scopeId;
 
     private Integer level;
+
+    @ApiModelProperty(value = "Default:0, 自渲染1")
+    @TableField(exist = false)
+    private Integer isAuto;
 
     public String getFilter() {
         if (CollUtil.isNotEmpty(oneFilters)) {
