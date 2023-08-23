@@ -1,5 +1,7 @@
 package com.hu.oneclick.controller;
 
+import com.github.pagehelper.PageInfo;
+import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.View;
@@ -22,7 +24,7 @@ import java.util.Map;
 @RequestMapping("view")
 @Api(tags = "视图管理")
 @Slf4j
-public class ViewController {
+public class ViewController extends BaseController {
 
     @Resource
     private ViewService viewService;
@@ -33,51 +35,56 @@ public class ViewController {
     @GetMapping("queryDoesExistByTitle")
     public Resp<String> queryDoesExistByTitle(@RequestParam("projectId") String projectId,
                                               @RequestParam("title") String title,
-                                              @RequestParam("scope") String scope){
-        return viewService.queryDoesExistByTitle(projectId,title,scope);
+                                              @RequestParam("scope") String scope) {
+        return viewService.queryDoesExistByTitle(projectId, title, scope);
     }
 
     @GetMapping("queryById/{id}")
-    public Resp<View> queryById(@PathVariable String id){
+    public Resp<View> queryById(@PathVariable String id) {
         return viewService.queryById(id);
     }
 
     @GetMapping("getViewScopeChildParams")
     @ApiOperation("根据范围搜索所有字段(弃用)请使用getViewScope")
-    public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope){
+    public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope) {
         return viewService.getViewScopeChildParams(scope);
     }
 
     /**
      * @Param: [scope]
-     * @return: com.hu.oneclick.model.base.Resp<java.util.Map<java.lang.String,java.lang.Object>>
+     * @return: com.hu.oneclick.model.base.Resp<java.util.Map < java.lang.String, java.lang.Object>>
      * @Author: MaSiyi
      * @Date: 2021/12/29
      */
     @GetMapping("getViewScope")
     @ApiOperation("根据范围搜索所有字段")
-    public Resp<Map<String,Object>> getViewScope(@RequestParam String scope){
+    public Resp<Map<String, Object>> getViewScope(@RequestParam String scope) {
         return viewService.getViewScope(scope);
     }
 
-
-
     @PostMapping("queryViews")
     @ApiOperation("查询以当前项目的所有视图")
-    private Resp<List<View>> queryViews(@RequestBody View view){
-        return viewService.list(view);
+    private Resp<PageInfo<View>> queryViews(@RequestBody View view) {
+        try {
+            startPage();
+            List<View> list = viewService.list(view);
+            return new Resp.Builder<PageInfo<View>>().setData(PageInfo.of(list)).ok();
+        } catch (Exception e) {
+            log.error("查询失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<PageInfo<View>>().fail();
+        }
     }
 
     @PostMapping("addView")
     @ApiOperation("添加视图(已弃用)请使用addViewRE")
-    private Resp<String> addView(@RequestBody View view){
+    private Resp<String> addView(@RequestBody View view) {
         return viewService.addView(view);
     }
 
 
     @PostMapping("addViewRE")
     @ApiOperation("添加视图(新)")
-    private Resp<?> addViewRE(@RequestBody View view){
+    private Resp<?> addViewRE(@RequestBody View view) {
         try {
             view = viewService.addViewRE(view);
             return new Resp.Builder<>().setData(view).ok();
@@ -89,7 +96,7 @@ public class ViewController {
 
     @PostMapping("updateView")
     @ApiOperation("修改视图")
-    private Resp<?> updateView(@RequestBody View view){
+    private Resp<?> updateView(@RequestBody View view) {
         try {
             view = viewService.updateView(view);
             return new Resp.Builder<>().setData(view).ok();
@@ -100,26 +107,32 @@ public class ViewController {
     }
 
     @DeleteMapping("deleteView/{viewId}")
-    private Resp<String> deleteView(@PathVariable String viewId){
+    private Resp<String> deleteView(@PathVariable String viewId) {
         return viewService.deleteView(viewId);
     }
 
 
     @GetMapping("queryViewParents")
     @ApiOperation("查询父视图")
-    private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String projectId){
-        return viewService.queryViewParents(scope,projectId);
+    private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String projectId) {
+        try {
+            List<View> views = viewService.queryViewParents(scope, projectId);
+            return new Resp.Builder<List<View>>().setData(views).ok();
+        } catch (Exception e) {
+            log.error("查询失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<List<View>>().fail();
+        }
     }
 
     @GetMapping("queryViewTrees")
     @ApiOperation("查询视图树")
-    private Resp<List<ViewTreeDto>> queryViewTrees(@RequestParam String scope){
+    private Resp<List<ViewTreeDto>> queryViewTrees(@RequestParam String scope) {
         return viewService.queryViewTrees(scope);
     }
 
     @PostMapping("renderingView")
     @ApiOperation("渲染视图")
-    public Resp<Object> renderingView(@RequestBody String viewId){
+    public Resp<Object> renderingView(@RequestBody String viewId) {
         try {
             return viewService.renderingView(viewId);
         } catch (Exception e) {
@@ -129,11 +142,9 @@ public class ViewController {
     }
 
 
-
-
     @PostMapping("getViewFilter")
     @ApiOperation("获取filter字段")
-    public Resp<Object> getViewFilter(){
+    public Resp<Object> getViewFilter() {
         return viewService.getViewFilter();
     }
 

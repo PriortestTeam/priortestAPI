@@ -17,7 +17,7 @@ public interface ViewService extends IService<View> {
     Resp<View> queryById(String id);
 
 
-    Resp<List<View>> list(View view);
+    List<View> list(View view);
 
 
     Resp<String> queryDoesExistByTitle(String projectId, String title, String scope);
@@ -33,7 +33,7 @@ public interface ViewService extends IService<View> {
     Resp<List<ViewScopeChildParams>> getViewScopeChildParams(String scope);
 
 
-    Resp<List<View>> queryViewParents(String scope, String projectId);
+    List<View> queryViewParents(String scope, String projectId);
 
     Resp<List<ViewTreeDto>> queryViewTrees(String scope);
 

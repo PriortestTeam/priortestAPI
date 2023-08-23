@@ -84,27 +84,14 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
     }
 
     @Override
-    public Resp<List<View>> list(View view) {
+    public List<View> list(View view) {
         if (StringUtils.isEmpty(view.getScopeName())) {
-            return new Resp.Builder<List<View>>().buildResult("范围不能为空。");
+            throw new BaseException(StrUtil.format("范围不能为空。"));
         } else if (StringUtils.isEmpty(view.getProjectId())) {
-            return new Resp.Builder<List<View>>().buildResult("项目ID不能为空。");
+            throw new BaseException(StrUtil.format("项目ID不能为空。"));
         }
-        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-//        view.verifyUserType(sysUser.getManager());
-//        view.setCreateUserId(jwtUserService.getMasterId());
-
-        List<View> queryViews = viewDao.queryAll(view);
-
-        //防止mybatis 缓存数据变更
-        List<View> views = coverViews(queryViews);
-
-        views.forEach(e -> {
-//            e.setParentTitle(queryParentTitle(e.getParentId()));
-            e.setOneFilters(TwoConstant.convertToList(e.getFilter(), OneFilter.class));
-            e.setFilter("");
-        });
-        return new Resp.Builder<List<View>>().setData(views).total(queryViews).ok();
+        view.setCreateUserId(Long.valueOf(jwtUserService.getMasterId()));
+        return viewDao.queryAll(view);
     }
 
     /**
@@ -187,7 +174,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         if (view.getTitle() != null) {
             Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
         }
-        this.updateById(view);
+        baseMapper.updateById(view);
         return view;
     }
 
@@ -229,13 +216,13 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
     }
 
     @Override
-    public Resp<List<View>> queryViewParents(String scope, String projectId) {
+    public List<View> queryViewParents(String scope, String projectId) {
         if (StringUtils.isEmpty(scope)) {
-            return new Resp.Builder<List<View>>().buildResult("scope" + SysConstantEnum.PARAM_EMPTY.getValue());
+            throw new BaseException(StrUtil.format("scope{}", SysConstantEnum.PARAM_EMPTY.getValue()));
         }
         String masterId = jwtUserService.getMasterId();
         List<View> result = viewDao.queryViewParents(masterId, scope, projectId);
-        return new Resp.Builder<List<View>>().setData(result).totalSize(result.size()).ok();
+        return result;
     }
 
     /**
@@ -347,7 +334,17 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
             throw new BaseException(StrUtil.format("请选择一个项目"));
         }
         view.setProjectId(projectId);
-        this.save(view);
+        // 设置为子视图
+        if (StrUtil.isNotBlank(view.getParentId())) {
+            view.setLevel(1);
+        }
+        baseMapper.insert(view);
+        // 添加子视图
+        if (1 == view.getIsAuto() && view.getLevel() == 0) {
+            // 查询项目范围内的自定义字段
+            // 添加oneFilters集合
+            // 保存子视图
+        }
         return view;
         //设置sql
 //            String sql = appendSql(oneFilter, view);

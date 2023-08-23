@@ -1,7 +1,6 @@
 package com.hu.oneclick.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import org.apache.ibatis.annotations.Param;
@@ -41,24 +40,23 @@ public interface ViewDao extends BaseMapper<View> {
      * @param view 实例对象
      * @return 对象列表
      */
-    @Page
     List<View> queryAll(View view);
 
-    /**
-     * 新增数据
-     *
-     * @param view 实例对象
-     * @return 影响行数
-     */
-    int insert(View view);
+//    /**
+//     * 新增数据
+//     *
+//     * @param view 实例对象
+//     * @return 影响行数
+//     */
+//    int insert(View view);
 
-    /**
-     * 修改数据
-     *
-     * @param view 实例对象
-     * @return 影响行数
-     */
-    int update(View view);
+//    /**
+//     * 修改数据
+//     *
+//     * @param view 实例对象
+//     * @return 影响行数
+//     */
+//    int update(View view);
 
     /**
      * 通过主键删除数据
@@ -90,7 +88,7 @@ public interface ViewDao extends BaseMapper<View> {
 
     List<ViewTreeDto> queryViewByScopeAll(@Param("masterId") String masterId,
                                           @Param("projectId") String projectId,
-                                          @Param("scopeName") String scopeName);
+                                          @Param("scopeId") String scopeId);
 
     List<ViewTreeDto> queryViewTreeById(@Param("masterId") String masterId, @Param("viewId") String viewId);
 
