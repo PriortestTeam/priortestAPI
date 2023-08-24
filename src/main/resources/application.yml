@@ -49,3 +49,7 @@ jenkins:
   url: http://43.139.159.146:8080
   username: jenkins
   password: jenkins
+
+logging:
+  level:
+    cn.zhxu.bs: DEBUG

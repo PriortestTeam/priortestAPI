@@ -22,6 +22,10 @@ public class OneFilter implements VerifyParam, Serializable {
 
     private String fieldName;
 
+    private String fieldNameEn;
+
+    private String fieldType;
+
     /**
      * and || or
      */
