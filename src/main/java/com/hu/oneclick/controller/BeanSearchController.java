@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,8 +55,7 @@ public class BeanSearchController {
     @ApiOperation("通用查询")
     @GetMapping("/{scope}/{viewId}")
     public Resp<PageInfo<?>> generalQuery(@ApiParam("范围") @PathVariable String scope,
-                                           @ApiParam("视图ID") @PathVariable Long viewId,
-                                           HttpServletRequest request
+                                           @ApiParam("视图ID") @PathVariable Long viewId
     ) {
         ScopeEnum scopeEnum = ScopeEnum.getByName(scope);
         if (scopeEnum == null) {
