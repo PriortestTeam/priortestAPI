@@ -36,7 +36,7 @@ public class TableSupport {
     public static PageDomain buildPageRequest() {
         PageDomain pageDomain = new PageDomain();
         pageDomain.setPageNum(Convert.toInt(ServletUtils.getParameter(PAGE_NUM), 1));
-        pageDomain.setPageSize(Convert.toInt(ServletUtils.getParameter(PAGE_SIZE), 10));
+        pageDomain.setPageSize(Convert.toInt(ServletUtils.getParameter(PAGE_SIZE), 20));
         return pageDomain;
     }
 }
