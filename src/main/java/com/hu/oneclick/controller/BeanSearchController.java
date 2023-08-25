@@ -55,7 +55,7 @@ public class BeanSearchController {
 
     @ApiOperation("通用查询")
     @GetMapping("/{scope}/{viewId}")
-    public Resp<PageInfo<?>> queryTestCase(@ApiParam("范围") @PathVariable String scope,
+    public Resp<PageInfo<?>> generalQuery(@ApiParam("范围") @PathVariable String scope,
                                            @ApiParam("视图ID") @PathVariable Long viewId,
                                            HttpServletRequest request
     ) {
