@@ -1,7 +1,5 @@
 package com.hu.oneclick.quartz;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.quartz.domain.JobDetails;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -50,19 +48,15 @@ public class QuartzManager {
      * @param jobGroupName 任务组名
      * @param jobCron      cron表达式(如：0/5 * * * * ? )
      */
-    public void addJob(Class<? extends QuartzJobBean> jobClass, String jobName, String jobGroupName, String jobCron, Map<String, Object> jobDataMap) {
-        try {
-            JobDetail jobDetail = JobBuilder.newJob(jobClass).withIdentity(jobName, jobGroupName).setJobData(new JobDataMap(jobDataMap)).build();
-            Trigger trigger = TriggerBuilder.newTrigger().withIdentity(jobName, jobGroupName).usingJobData(new JobDataMap(jobDataMap))
-                    .startAt(DateBuilder.futureDate(1, DateBuilder.IntervalUnit.SECOND))
-                    .withSchedule(CronScheduleBuilder.cronSchedule(jobCron)).startNow().build();
+    public void addJob(Class<? extends QuartzJobBean> jobClass, String jobName, String jobGroupName, String jobCron, Map<String, Object> jobDataMap) throws SchedulerException {
+        JobDetail jobDetail = JobBuilder.newJob(jobClass).withIdentity(jobName, jobGroupName).setJobData(new JobDataMap(jobDataMap)).build();
+        Trigger trigger = TriggerBuilder.newTrigger().withIdentity(jobName, jobGroupName).usingJobData(new JobDataMap(jobDataMap))
+                .startAt(DateBuilder.futureDate(1, DateBuilder.IntervalUnit.SECOND))
+                .withSchedule(CronScheduleBuilder.cronSchedule(jobCron)).startNow().build();
 
-            scheduler.scheduleJob(jobDetail, trigger);
-            if (!scheduler.isShutdown()) {
-                scheduler.start();
-            }
-        } catch (SchedulerException e) {
-            e.printStackTrace();
+        scheduler.scheduleJob(jobDetail, trigger);
+        if (!scheduler.isShutdown()) {
+            scheduler.start();
         }
     }
 
@@ -101,17 +95,13 @@ public class QuartzManager {
         }
     }
 
-    public void updateJob(String jobName, String jobGroupName, String jobTime, Map<String, Object> jobDataMap) {
-        try {
-            TriggerKey triggerKey = TriggerKey.triggerKey(jobName, jobGroupName);
-            CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
-            trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).usingJobData(new JobDataMap(jobDataMap))
-                    .withSchedule(CronScheduleBuilder.cronSchedule(jobTime)).build();
-            // 重启触发器
-            scheduler.rescheduleJob(triggerKey, trigger);
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        }
+    public void updateJob(String jobName, String jobGroupName, String jobTime, Map<String, Object> jobDataMap) throws SchedulerException {
+        TriggerKey triggerKey = TriggerKey.triggerKey(jobName, jobGroupName);
+        CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+        trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).usingJobData(new JobDataMap(jobDataMap))
+                .withSchedule(CronScheduleBuilder.cronSchedule(jobTime)).build();
+        // 重启触发器
+        scheduler.rescheduleJob(triggerKey, trigger);
     }
 
     /**
@@ -120,14 +110,10 @@ public class QuartzManager {
      * @param jobName      任务名称
      * @param jobGroupName 任务组名
      */
-    public void deleteJob(String jobName, String jobGroupName) {
-        try {
-            scheduler.pauseTrigger(TriggerKey.triggerKey(jobName, jobGroupName));
-            scheduler.unscheduleJob(TriggerKey.triggerKey(jobName, jobGroupName));
-            scheduler.deleteJob(new JobKey(jobName, jobGroupName));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void deleteJob(String jobName, String jobGroupName) throws SchedulerException {
+        scheduler.pauseTrigger(TriggerKey.triggerKey(jobName, jobGroupName));
+        scheduler.unscheduleJob(TriggerKey.triggerKey(jobName, jobGroupName));
+        scheduler.deleteJob(new JobKey(jobName, jobGroupName));
     }
 
     /**
@@ -136,13 +122,9 @@ public class QuartzManager {
      * @param jobName
      * @param jobGroupName
      */
-    public void pauseJob(String jobName, String jobGroupName) {
-        try {
-            JobKey jobKey = JobKey.jobKey(jobName, jobGroupName);
-            scheduler.pauseJob(jobKey);
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        }
+    public void pauseJob(String jobName, String jobGroupName) throws SchedulerException {
+        JobKey jobKey = JobKey.jobKey(jobName, jobGroupName);
+        scheduler.pauseJob(jobKey);
     }
 
     /**
@@ -151,13 +133,9 @@ public class QuartzManager {
      * @param jobName
      * @param jobGroupName
      */
-    public void resumeJob(String jobName, String jobGroupName) {
-        try {
-            JobKey jobKey = JobKey.jobKey(jobName, jobGroupName);
-            scheduler.resumeJob(jobKey);
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        }
+    public void resumeJob(String jobName, String jobGroupName) throws SchedulerException {
+        JobKey jobKey = JobKey.jobKey(jobName, jobGroupName);
+        scheduler.resumeJob(jobKey);
     }
 
     /**
@@ -166,48 +144,67 @@ public class QuartzManager {
      * @param jobName
      * @param jobGroupName
      */
-    public void runAJobNow(String jobName, String jobGroupName) {
-        try {
-            JobKey jobKey = JobKey.jobKey(jobName, jobGroupName);
-            scheduler.triggerJob(jobKey);
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        }
+    public void runAJobNow(String jobName, String jobGroupName) throws SchedulerException {
+        JobKey jobKey = JobKey.jobKey(jobName, jobGroupName);
+        scheduler.triggerJob(jobKey);
     }
 
-    public PageInfo<JobDetails> queryAllJobBean(int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<JobDetails> jobList = null;
-        try {
-            GroupMatcher<JobKey> matcher = GroupMatcher.anyJobGroup();
-            Set<JobKey> jobKeys = scheduler.getJobKeys(matcher);
-            jobList = new ArrayList<>();
-            for (JobKey jobKey : jobKeys) {
-                List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
-                for (Trigger trigger : triggers) {
-                    JobDetails jobDetails = new JobDetails();
-                    if (trigger instanceof CronTrigger) {
-                        CronTrigger cronTrigger = (CronTrigger) trigger;
-                        jobDetails.setCronExpression(cronTrigger.getCronExpression());
-                        jobDetails.setTimeZone(cronTrigger.getTimeZone().getDisplayName());
-                    }
-                    jobDetails.setTriggerGroupName(trigger.getKey().getName());
-                    jobDetails.setTriggerName(trigger.getKey().getGroup());
-                    jobDetails.setJobGroupName(jobKey.getGroup());
-                    jobDetails.setJobName(jobKey.getName());
-                    jobDetails.setStartTime(trigger.getStartTime());
-                    jobDetails.setJobClassName(scheduler.getJobDetail(jobKey).getJobClass().getName());
-                    jobDetails.setNextFireTime(trigger.getNextFireTime());
-                    jobDetails.setPreviousFireTime(trigger.getPreviousFireTime());
-                    jobDetails.setStatus(scheduler.getTriggerState(trigger.getKey()).name());
-                    jobDetails.setJobDataMap(trigger.getJobDataMap());
-                    jobList.add(jobDetails);
+    public List<JobDetails> queryAllJobBean() throws SchedulerException {
+        GroupMatcher<JobKey> matcher = GroupMatcher.anyJobGroup();
+        Set<JobKey> jobKeys = scheduler.getJobKeys(matcher);
+        List<JobDetails> jobList = new ArrayList<>();
+        for (JobKey jobKey : jobKeys) {
+            List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+            for (Trigger trigger : triggers) {
+                JobDetails jobDetails = new JobDetails();
+                if (trigger instanceof CronTrigger) {
+                    CronTrigger cronTrigger = (CronTrigger) trigger;
+                    jobDetails.setCronExpression(cronTrigger.getCronExpression());
+                    jobDetails.setTimeZone(cronTrigger.getTimeZone().getDisplayName());
                 }
+                jobDetails.setTriggerGroupName(trigger.getKey().getName());
+                jobDetails.setTriggerName(trigger.getKey().getGroup());
+                jobDetails.setJobGroupName(jobKey.getGroup());
+                jobDetails.setJobName(jobKey.getName());
+                jobDetails.setStartTime(trigger.getStartTime());
+                jobDetails.setJobClassName(scheduler.getJobDetail(jobKey).getJobClass().getName());
+                jobDetails.setNextFireTime(trigger.getNextFireTime());
+                jobDetails.setPreviousFireTime(trigger.getPreviousFireTime());
+                jobDetails.setStatus(scheduler.getTriggerState(trigger.getKey()).name());
+                jobDetails.setJobDataMap(trigger.getJobDataMap());
+                jobList.add(jobDetails);
             }
-        } catch (SchedulerException e) {
-            e.printStackTrace();
         }
-        return new PageInfo<>(jobList);
+        return jobList;
+    }
+
+    public List<JobDetails> queryAllJobBeanByGroup(String groupName) throws SchedulerException {
+        GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals(groupName);
+        Set<JobKey> jobKeys = scheduler.getJobKeys(matcher);
+        List<JobDetails> jobList = new ArrayList<>();
+        for (JobKey jobKey : jobKeys) {
+            List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+            for (Trigger trigger : triggers) {
+                JobDetails jobDetails = new JobDetails();
+                if (trigger instanceof CronTrigger) {
+                    CronTrigger cronTrigger = (CronTrigger) trigger;
+                    jobDetails.setCronExpression(cronTrigger.getCronExpression());
+                    jobDetails.setTimeZone(cronTrigger.getTimeZone().getDisplayName());
+                }
+                jobDetails.setTriggerGroupName(trigger.getKey().getName());
+                jobDetails.setTriggerName(trigger.getKey().getGroup());
+                jobDetails.setJobGroupName(jobKey.getGroup());
+                jobDetails.setJobName(jobKey.getName());
+                jobDetails.setStartTime(trigger.getStartTime());
+                jobDetails.setJobClassName(scheduler.getJobDetail(jobKey).getJobClass().getName());
+                jobDetails.setNextFireTime(trigger.getNextFireTime());
+                jobDetails.setPreviousFireTime(trigger.getPreviousFireTime());
+                jobDetails.setStatus(scheduler.getTriggerState(trigger.getKey()).name());
+                jobDetails.setJobDataMap(trigger.getJobDataMap());
+                jobList.add(jobDetails);
+            }
+        }
+        return jobList;
     }
 
     public JobDetails jobInfo(String jobName, String jobGroupName) {
