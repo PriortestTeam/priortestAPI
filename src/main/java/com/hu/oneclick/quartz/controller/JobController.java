@@ -1,6 +1,6 @@
 package com.hu.oneclick.quartz.controller;
 
-import com.github.pagehelper.PageInfo;
+import com.hu.oneclick.common.util.PageUtil;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.quartz.QuartzManager;
 import com.hu.oneclick.quartz.domain.JobDetails;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -107,15 +108,14 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("查询任务规则")
+    @ApiOperation("查询任务列表")
     @GetMapping(value = "/queryJob")
-    public Resp<?> queryJob(@RequestParam(value = "pageNum", defaultValue = "1", required = false) Integer pageNum,
-                            @RequestParam(value = "pageSize", defaultValue = "20", required = false) Integer pageSize) {
+    public Resp<?> queryJob() {
         try {
-            PageInfo<JobDetails> jobAndTrigger = qtzManager.queryAllJobBean(pageNum, pageSize);
+            List<JobDetails> jobAndTrigger = qtzManager.queryAllJobBean();
             Map<String, Object> map = new HashMap<String, Object>();
-            map.put("JobAndTrigger", jobAndTrigger);
-            map.put("number", jobAndTrigger.getTotal());
+            map.put("number", jobAndTrigger.size());
+            map.put("JobAndTrigger", PageUtil.manualPaging(jobAndTrigger));
             return new Resp.Builder<>().setData(map).ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
