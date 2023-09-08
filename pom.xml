@@ -236,10 +236,7 @@
             <artifactId>itextpdf</artifactId>
             <version>5.5.13</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
+
         <!-- https://mvnrepository.com/artifact/e-iceblue/spire.xls.free -->
         <dependency>
             <groupId>e-iceblue</groupId>
