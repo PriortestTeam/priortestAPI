@@ -13,7 +13,7 @@ spring:
             class: org.quartz.impl.jdbcjobstore.JobStoreTX
             driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
             tablePrefix: QRTZ_
-            isClustered: true
+            isClustered: false
             clusterCheckinInterval: 10000
             useProperties: false
           threadPool:
