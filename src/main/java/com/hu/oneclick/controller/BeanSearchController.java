@@ -7,6 +7,7 @@ import cn.zhxu.bs.MapSearcher;
 import cn.zhxu.bs.util.MapUtils;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.enums.ScopeEnum;
+import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.PageUtil;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.OneFilter;
@@ -50,6 +51,8 @@ public class BeanSearchController {
     private BeanSearcher beanSearcher;
     @Resource
     private ViewService viewService;
+    @Resource
+    private JwtUserServiceImpl jwtUserService;
 
 
     @ApiOperation("通用查询")
@@ -70,6 +73,12 @@ public class BeanSearchController {
             log.error("根据范围寻找具体查询类失败");
             return new Resp.Builder<PageInfo<?>>().fail();
         }
+        // 获取当前用户projectId
+        String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+        if (StrUtil.isBlank(projectId)) {
+            log.error("获取项目异常");
+            return new Resp.Builder<PageInfo<?>>().ok();
+        }
 
         // 查询视图
         View view = viewService.getById(viewId);
@@ -80,17 +89,21 @@ public class BeanSearchController {
         }
         // 构建过滤参数参数
         Map<String, Object> params = new LinkedHashMap<>();
+        params.put("P0.projectId", projectId);
+        params.put("P0.projectId-op", "eq");
         for (int i = 0; i < oneFilters.size(); i++) {
-            params.put(StrUtil.format("A{}.{}", i, oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getSourceVal());
-            params.put(StrUtil.format("A{}.{}-op", i, oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getCondition());
+            params.put(StrUtil.format("A{}.{}", i, oneFilters.get(i).getFieldNameEnCamelCase()), oneFilters.get(i).getSourceVal());
+            params.put(StrUtil.format("A{}.{}-op", i, oneFilters.get(i).getFieldNameEnCamelCase()), oneFilters.get(i).getCondition());
         }
         // 参数增加逻辑关系
         StringBuilder gexpr = new StringBuilder();
+        gexpr.append("P0&(");
         gexpr.append("A0");
         for (int i = 1; i < oneFilters.size(); i++) {
             gexpr.append(oneFilters.get(i).getAndOr().equals("and") ? "&" : "|");
             gexpr.append(StrUtil.format("A{}", i));
         }
+        gexpr.append(")");
         params.put("gexpr", gexpr.toString());
 
         List<Map<String, Object>> list = mapSearcher.searchAll(scopeClass, params);
