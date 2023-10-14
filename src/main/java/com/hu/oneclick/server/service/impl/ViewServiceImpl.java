@@ -2,13 +2,16 @@ package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
@@ -39,7 +42,7 @@ import java.util.stream.Collectors;
  * @author qingyang
  */
 @Service
-public class ViewServiceImpl implements ViewService {
+public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewService {
 
     private final static Logger logger = LoggerFactory.getLogger(ViewServiceImpl.class);
 
@@ -76,33 +79,19 @@ public class ViewServiceImpl implements ViewService {
         BeanUtils.copyProperties(queryView, view);
         view.setOneFilters(TwoConstant.convertToList(view.getFilter(), OneFilter.class));
         view.setFilter("");
-        view.setParentTitle(queryParentTitle(view.getParentId()));
+//        view.setParentTitle(queryParentTitle(view.getParentId()));
         return new Resp.Builder<View>().setData(view).ok();
     }
 
     @Override
-    public Resp<List<View>> list(View view) {
+    public List<View> list(View view) {
         if (StringUtils.isEmpty(view.getScopeName())) {
-            return new Resp.Builder<List<View>>().buildResult("范围 不能为空。");
+            throw new BaseException(StrUtil.format("范围不能为空。"));
         } else if (StringUtils.isEmpty(view.getProjectId())) {
-            return new Resp.Builder<List<View>>().buildResult("项目ID不能为空。");
+            throw new BaseException(StrUtil.format("项目ID不能为空。"));
         }
-      //  sysPermissionService.viewPermission(null, convertPermission(view.getScope()));
-        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        view.verifyUserType(sysUser.getManager());
-        view.setCreateUserId(jwtUserService.getMasterId());
-
-        List<View> queryViews = viewDao.queryAll(view);
-
-        //防止mybatis 缓存数据变更
-        List<View> views = coverViews(queryViews);
-
-        views.forEach(e -> {
-            e.setParentTitle(queryParentTitle(e.getParentId()));
-            e.setOneFilters(TwoConstant.convertToList(e.getFilter(), OneFilter.class));
-            e.setFilter("");
-        });
-        return new Resp.Builder<List<View>>().setData(views).total(queryViews).ok();
+        view.setCreateUserId(Long.valueOf(jwtUserService.getMasterId()));
+        return viewDao.queryAll(view);
     }
 
     /**
@@ -144,7 +133,7 @@ public class ViewServiceImpl implements ViewService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> addView(View view) {
         try {
-            view.verify();
+//            view.verify();
 //            sysPermissionService.viewPermission(OneConstant.PERMISSION.ADD, convertPermission(view.getScope()));
             SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
             String projectId = sysUser.getUserUseOpenProject().getProjectId();
@@ -162,7 +151,7 @@ public class ViewServiceImpl implements ViewService {
             }
 
             Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
-            view.setCreateUserId(masterId);
+//            view.setCreateUserId(masterId);
             view.setProjectId(projectId);
             view.setCreater(sysUser.getUserName());
             return Result.addResult(viewDao.insert(view));
@@ -175,28 +164,18 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> updateView(View view) {
-        try {
-            //sysPermissionService.viewPermission(OneConstant.PERMISSION.EDIT, convertPermission(view.getScope()));
-            view.verifyOneFilter();
-            SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-            String projectId = sysUser.getUserUseOpenProject().getProjectId();
-            if (StringUtils.isEmpty(projectId)) {
-                return new Resp.Builder<String>().buildResult("请选择一个项目");
-            }
-            //修改视图名称要进行验证
-            if (view.getTitle() != null) {
-                Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
-            }
-
-            view.setUpdateUser(sysUser.getUserName());
-            view.setModifyDate(new Date());
-            view.setUpdateTime(new Date());
-            return Result.updateResult(viewDao.update(view));
-        } catch (BizException e) {
-            logger.error("class: ViewServiceImpl#updateView,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+    public View updateView(View view) {
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
+        if (StringUtils.isEmpty(projectId)) {
+            throw new BaseException(StrUtil.format("请选择一个项目"));
         }
+        //修改视图名称要进行验证
+        if (view.getTitle() != null) {
+            Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
+        }
+        baseMapper.updateById(view);
+        return view;
     }
 
     @Override
@@ -207,7 +186,7 @@ public class ViewServiceImpl implements ViewService {
             if (view == null) {
                 return Result.deleteResult(0);
             }
-           // sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE, convertPermission(view.getScope()));
+            // sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE, convertPermission(view.getScope()));
             return Result.deleteResult(viewDao.deleteById(jwtUserService.getMasterId(), id));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#deleteView,error []" + e.getMessage());
@@ -237,13 +216,13 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public Resp<List<View>> queryViewParents(String scope, String projectId) {
+    public List<View> queryViewParents(String scope, String projectId) {
         if (StringUtils.isEmpty(scope)) {
-            return new Resp.Builder<List<View>>().buildResult("scope" + SysConstantEnum.PARAM_EMPTY.getValue());
+            throw new BaseException(StrUtil.format("scope{}", SysConstantEnum.PARAM_EMPTY.getValue()));
         }
         String masterId = jwtUserService.getMasterId();
         List<View> result = viewDao.queryViewParents(masterId, scope, projectId);
-        return new Resp.Builder<List<View>>().setData(result).totalSize(result.size()).ok();
+        return result;
     }
 
     /**
@@ -282,7 +261,7 @@ public class ViewServiceImpl implements ViewService {
         //循环找父级
         treeAll.forEach(e -> {
             if (verifyParentId(e.getParentId())) {
-                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
+//                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
                 result.add(e);
             }
         });
@@ -301,7 +280,7 @@ public class ViewServiceImpl implements ViewService {
             //取反
             if (!verifyParentId(e.getParentId())
                     && e.getParentId().equals(id)) {
-                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
+//                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
                 result.add(e);
             }
         });
@@ -341,36 +320,36 @@ public class ViewServiceImpl implements ViewService {
      * 添加视图
      *
      * @param view
+     * @return
      * @Param: [view]
-     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
      * @Date: 2021/11/27
      */
     @Override
-    public Resp<String> addViewRE(View view) {
-        try {
-            SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-            String projectId = sysUser.getUserUseOpenProject().getProjectId();
-            String masterId = jwtUserService.getMasterId();
-            if (StringUtils.isEmpty(projectId)) {
-                return new Resp.Builder<String>().buildResult("请选择一个项目");
-            }
-
-            List<OneFilter> oneFilter = view.getOneFilters();
-            view.setFilter(JSON.toJSONString(oneFilter));
-            view.setCreateUserId(masterId);
-            view.setProjectId(projectId);
-            view.setCreater(sysUser.getUserName());
-            //设置sql
-            String sql = appendSql(oneFilter, view);
-
-            view.setSql(sql);
-            return Result.addResult(viewDao.insert(view));
-        } catch (BizException e) {
-            logger.error("class: ViewServiceImpl#addView,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+    @Transactional(rollbackFor = Exception.class)
+    public View addViewRE(View view) {
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
+        if (StringUtils.isEmpty(projectId)) {
+            throw new BaseException(StrUtil.format("请选择一个项目"));
         }
-
+        view.setProjectId(projectId);
+        // 设置为子视图
+        if (StrUtil.isNotBlank(view.getParentId())) {
+            view.setLevel(1);
+        }
+        baseMapper.insert(view);
+        // 添加子视图
+        if (1 == view.getIsAuto() && view.getLevel() == 0) {
+            // 查询项目范围内的自定义字段
+            // 添加oneFilters集合
+            // 保存子视图
+        }
+        return view;
+        //设置sql
+//            String sql = appendSql(oneFilter, view);
+//
+//            view.setSql(sql);
     }
 
     /**

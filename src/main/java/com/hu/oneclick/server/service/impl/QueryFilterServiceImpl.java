@@ -31,7 +31,7 @@ public class QueryFilterServiceImpl implements QueryFilterService {
         if (viewTr == null){
             return null;
         }
-        List<ViewTreeDto> viewTreeDtoList = viewDao.queryViewTreeById(masterId, viewTr.getId());
+        List<ViewTreeDto> viewTreeDtoList = viewDao.queryViewTreeById(masterId, viewTr.getId().toString());
         if (viewTreeDtoList == null || viewTreeDtoList.size() <= 0){
             return null;
         }

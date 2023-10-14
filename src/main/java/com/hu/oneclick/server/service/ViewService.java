@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.View;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
@@ -11,20 +12,20 @@ import java.util.Map;
 /**
  * @author qingyang
  */
-public interface ViewService {
+public interface ViewService extends IService<View> {
 
     Resp<View> queryById(String id);
 
 
-    Resp<List<View>> list(View view);
+    List<View> list(View view);
 
 
-    Resp<String> queryDoesExistByTitle(String projectId,String title,String scope);
+    Resp<String> queryDoesExistByTitle(String projectId, String title, String scope);
 
     @Deprecated
     Resp<String> addView(View view);
 
-    Resp<String> updateView(View view);
+    View updateView(View view);
 
     Resp<String> deleteView(String id);
 
@@ -32,19 +33,23 @@ public interface ViewService {
     Resp<List<ViewScopeChildParams>> getViewScopeChildParams(String scope);
 
 
-    Resp<List<View>> queryViewParents(String scope, String projectId);
+    List<View> queryViewParents(String scope, String projectId);
 
     Resp<List<ViewTreeDto>> queryViewTrees(String scope);
 
-    /** 添加视图
+    /**
+     * 添加视图
+     *
+     * @return
      * @Param: [view]
-     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
      * @Date: 2021/11/27
      */
-    Resp<String> addViewRE(View view);
+    View addViewRE(View view);
 
-    /** 渲染视图
+    /**
+     * 渲染视图
+     *
      * @Param: [viewId]
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
@@ -52,7 +57,9 @@ public interface ViewService {
      */
     Resp<Object> renderingView(String viewId) throws Exception;
 
-    /** 获取filter字段
+    /**
+     * 获取filter字段
+     *
      * @Param: []
      * @return: com.hu.oneclick.model.base.Resp<java.lang.Object>
      * @Author: MaSiyi
@@ -60,11 +67,13 @@ public interface ViewService {
      */
     Resp<Object> getViewFilter();
 
-    /** 根据范围搜索所有字段
+    /**
+     * 根据范围搜索所有字段
+     *
      * @Param: [scope]
-     * @return: com.hu.oneclick.model.base.Resp<java.util.List<java.lang.Object>>
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List < java.lang.Object>>
      * @Author: MaSiyi
      * @Date: 2021/12/29
      */
-    Resp<Map<String,Object>> getViewScope(String scope);
+    Resp<Map<String, Object>> getViewScope(String scope);
 }
