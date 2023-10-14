@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import cn.zhxu.bs.bean.DbIgnore;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -177,6 +178,7 @@ public class TestCase extends AssignBaseEntity implements Serializable {
 
     @ApiModelProperty("测试用例步骤集合")
     @TableField(exist = false)
+    @DbIgnore
     private List<TestCaseStep> testCaseStepList;
 
 }

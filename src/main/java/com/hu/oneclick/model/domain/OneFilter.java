@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import cn.hutool.core.util.StrUtil;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -21,6 +22,12 @@ public class OneFilter implements VerifyParam, Serializable {
     private String type;
 
     private String fieldName;
+
+    private String fieldNameEn;
+    // 字段小驼峰格式
+    private String fieldNameEnCamelCase;
+
+    private String fieldType;
 
     /**
      * and || or
@@ -159,5 +166,10 @@ public class OneFilter implements VerifyParam, Serializable {
         this.sourceVal = null;
     }
 
-
+    public String getFieldNameEnCamelCase() {
+        if (StrUtil.isNotEmpty(fieldNameEn)) {
+            return StrUtil.toCamelCase(fieldNameEn);
+        }
+        return fieldNameEnCamelCase;
+    }
 }

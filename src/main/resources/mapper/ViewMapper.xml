@@ -55,18 +55,15 @@
         update_time,parent_id,`level`
         from oneclick.view
         <where>
-            create_user_id = #{createUserId}
+            (create_user_id = #{createUserId} and is_private = 1)
+            or is_private = 0
             and project_id = #{projectId}
             <if test="title != null and title != ''">
-                and title = #{title}
+                and title like concat('%',#{title},'%')
             </if>
             <if test="scopeName != null and scopeName != ''">
                 and scope_name = #{scopeName}
             </if>
-            <if test="isPrivate != null">
-                and is_private = #{isPrivate}
-            </if>
-
         </where>
         order by create_time desc
     </select>
@@ -82,16 +79,14 @@
             <!-- and is_private = #{isPrivate}-->
     </select>
     <select id="queryViewParents" resultType="com.hu.oneclick.model.domain.View">
-           select
-            title,
-            id
+        select
+        title,
+        id
         from oneclick.view
         <where>
-            create_user_id = #{masterId}
-            and project_id = #{projectId}
-            and scope_name = #{scopeName}
-            and parent_id is null
-            and is_private = 0
+            (create_user_id = #{masterId} and is_private = 1 and project_id=#{projectId} and scope_name = #{scopeName}
+            and level=0)
+            or (is_private = 0 and project_id = #{projectId} and scope_name = #{scopeName} and level =0)
         </where>
     </select>
     <select id="queryTitleByParentId" resultType="java.lang.String">
@@ -128,7 +123,7 @@
         where
         create_user_id = #{masterId}
         and project_id = #{projectId}
-        and scope_name = #{scopeName}
+        and scope_id = #{scopeId}
     </select>
 
 
@@ -161,121 +156,121 @@
     </select>
 
     <!--新增所有列-->
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into oneclick.view
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                id,
-            </if>
-            <if test="createUserId != null">
-                create_user_id,
-            </if>
-            <if test="projectId != null">
-                project_id,
-            </if>
-            <if test="title != null and title != ''">
-                title,
-            </if>
-            <if test="scopeName != null and scopeName != ''">
-                scope_name,
-            </if>
-            <if test="isPrivate != null">
-                is_private,
-            </if>
-            <if test="creater != null and creater != ''">
-                creater,
-            </if>
-            <if test="filter != null and filter != ''">
-                filter,
-            </if>
-            <if test="sql != null and sql != ''">
-                `sql`,
-            </if>
-            <if test="updateUser != null and updateUser != ''">
-                update_user,
-            </if>
+<!--    <insert id="insert" keyProperty="id" useGeneratedKeys="true">-->
+<!--        insert into oneclick.view-->
+<!--        <trim prefix="(" suffix=")" suffixOverrides=",">-->
+<!--            <if test="id != null">-->
+<!--                id,-->
+<!--            </if>-->
+<!--            <if test="createUserId != null">-->
+<!--                create_user_id,-->
+<!--            </if>-->
+<!--            <if test="projectId != null">-->
+<!--                project_id,-->
+<!--            </if>-->
+<!--            <if test="title != null and title != ''">-->
+<!--                title,-->
+<!--            </if>-->
+<!--            <if test="scopeName != null and scopeName != ''">-->
+<!--                scope_name,-->
+<!--            </if>-->
+<!--            <if test="isPrivate != null">-->
+<!--                is_private,-->
+<!--            </if>-->
+<!--            <if test="creater != null and creater != ''">-->
+<!--                creater,-->
+<!--            </if>-->
+<!--            <if test="filter != null and filter != ''">-->
+<!--                filter,-->
+<!--            </if>-->
+<!--            <if test="sql != null and sql != ''">-->
+<!--                `sql`,-->
+<!--            </if>-->
+<!--            <if test="updateUser != null and updateUser != ''">-->
+<!--                update_user,-->
+<!--            </if>-->
 
-            <if test="parentId != null and parentId != ''">
-                parent_id,
-            </if>
-            <if test="level != null">
-                `level`,
-            </if>
-            create_time,
-            update_time
-        </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                #{id},
-            </if>
-            <if test="createUserId != null">
-                #{createUserId},
-            </if>
-            <if test="projectId != null">
-                #{projectId},
-            </if>
-            <if test="title != null and title != ''">
-                #{title},
-            </if>
-            <if test="scopeName != null and scopeName != ''">
-                #{scopeName},
-            </if>
-            <if test="isPrivate != null">
-                #{isPrivate},
-            </if>
-            <if test="creater != null and creater != ''">
-                #{creater},
-            </if>
-            <if test="filter != null and filter != ''">
-                #{filter},
-            </if>
-            <if test="sql != null and sql != ''">
-                #{sql},
-            </if>
-            <if test="updateUser != null and updateUser != ''">
-                #{updateUser},
-            </if>
-            <if test="updateTime != null">
-                #{updateTime},
-            </if>
-            <if test="parentId != null and parentId != ''">
-                #{parentId},
-            </if>
-            <if test="level != null">
-                #{level},
-            </if>
-            NOW(),
-            NOW()
-        </trim>
-    </insert>
+<!--            <if test="parentId != null and parentId != ''">-->
+<!--                parent_id,-->
+<!--            </if>-->
+<!--            <if test="level != null">-->
+<!--                `level`,-->
+<!--            </if>-->
+<!--            create_time,-->
+<!--            update_time-->
+<!--        </trim>-->
+<!--        <trim prefix="values (" suffix=")" suffixOverrides=",">-->
+<!--            <if test="id != null">-->
+<!--                #{id},-->
+<!--            </if>-->
+<!--            <if test="createUserId != null">-->
+<!--                #{createUserId},-->
+<!--            </if>-->
+<!--            <if test="projectId != null">-->
+<!--                #{projectId},-->
+<!--            </if>-->
+<!--            <if test="title != null and title != ''">-->
+<!--                #{title},-->
+<!--            </if>-->
+<!--            <if test="scopeName != null and scopeName != ''">-->
+<!--                #{scopeName},-->
+<!--            </if>-->
+<!--            <if test="isPrivate != null">-->
+<!--                #{isPrivate},-->
+<!--            </if>-->
+<!--            <if test="creater != null and creater != ''">-->
+<!--                #{creater},-->
+<!--            </if>-->
+<!--            <if test="filter != null and filter != ''">-->
+<!--                #{filter},-->
+<!--            </if>-->
+<!--            <if test="sql != null and sql != ''">-->
+<!--                #{sql},-->
+<!--            </if>-->
+<!--            <if test="updateUser != null and updateUser != ''">-->
+<!--                #{updateUser},-->
+<!--            </if>-->
+<!--            <if test="updateTime != null">-->
+<!--                #{updateTime},-->
+<!--            </if>-->
+<!--            <if test="parentId != null and parentId != ''">-->
+<!--                #{parentId},-->
+<!--            </if>-->
+<!--            <if test="level != null">-->
+<!--                #{level},-->
+<!--            </if>-->
+<!--            NOW(),-->
+<!--            NOW()-->
+<!--        </trim>-->
+<!--    </insert>-->
 
 
     <!--通过主键修改数据-->
-    <update id="update">
-        update oneclick.view
-        <set>
-            <if test="title != null and title != ''">
-                title = #{title},
-            </if>
-            <if test="isPrivate != null and isPrivate != ''">
-                is_private = #{isPrivate},
-            </if>
-            <if test="filter != null and filter != ''">
-                filter = #{filter},
-            </if>
-            <if test="updateUser != null and updateUser != ''">
-                update_user = #{updateUser},
-            </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime},
-            </if>
-            <if test="parentId != null and parentId != ''">
-                parent_id = #{parentId},
-            </if>
-            update_time = NOW()
-        </set>
-        where id = #{id}
-    </update>
+<!--    <update id="update">-->
+<!--        update oneclick.view-->
+<!--        <set>-->
+<!--            <if test="title != null and title != ''">-->
+<!--                title = #{title},-->
+<!--            </if>-->
+<!--            <if test="isPrivate != null and isPrivate != ''">-->
+<!--                is_private = #{isPrivate},-->
+<!--            </if>-->
+<!--            <if test="filter != null and filter != ''">-->
+<!--                filter = #{filter},-->
+<!--            </if>-->
+<!--            <if test="updateUser != null and updateUser != ''">-->
+<!--                update_user = #{updateUser},-->
+<!--            </if>-->
+<!--            <if test="updateTime != null">-->
+<!--                update_time = #{updateTime},-->
+<!--            </if>-->
+<!--            <if test="parentId != null and parentId != ''">-->
+<!--                parent_id = #{parentId},-->
+<!--            </if>-->
+<!--            update_time = NOW()-->
+<!--        </set>-->
+<!--        where id = #{id}-->
+<!--    </update>-->
 
     <!--通过主键删除-->
     <delete id="deleteById">
