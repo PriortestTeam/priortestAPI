@@ -32,7 +32,7 @@ public class RetrieveTestCycleAsTitleController {
     private RetrieveTestCycleAsTitleService rtcatService;
 
     @GetMapping("/getId")
-    public Resp<TestCycleVo> getIdByTitle(@RequestParam String title, @RequestParam("project_id") Long projectId) {
+    public Resp<TestCycleVo> getIdByTitle(@RequestParam String title, @RequestParam() Long projectId) {
         if (title == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "title不能为空");
         }
@@ -43,6 +43,4 @@ public class RetrieveTestCycleAsTitleController {
         log.info("getIdByTitle ==> projectId:{}", JSON.toJSONString(projectId));
         return rtcatService.getIdForTitle(title, projectId);
     }
-
-
 }
