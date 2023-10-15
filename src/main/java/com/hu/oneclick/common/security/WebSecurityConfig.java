@@ -83,7 +83,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/webjars/**").anonymous()
                 .antMatchers("/webjars/springfox-swagger-ui").anonymous()
                 .antMatchers("/webjars/springfox-swagger-ui/**").anonymous()
-                .antMatchers("/retrieveTestCycleAsTitle/**").anonymous()
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
@@ -106,7 +105,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/applyForAnExtension","/user/applyForAnExtensionIn","/user/verifyLinkString",
                         "/swagger-ui.html","/swagger-resources/**","/swagger-ui/**","/v3/**",
                         "/doc.html","/webjars/**",
-                        "/retrieveTestCycleAsTitle/**",
                         "/v2/**","/webjars/springfox-swagger-ui/**","/webjars/springfox-swagger-ui")
                 .and()
                 .logout()
