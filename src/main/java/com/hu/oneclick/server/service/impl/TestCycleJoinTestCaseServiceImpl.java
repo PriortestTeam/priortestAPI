@@ -1,5 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
@@ -26,6 +28,11 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
     public Boolean saveInstance(TestCycleJoinTestCaseSaveDto dto) {
         TestCycleJoinTestCase joinTestCase = null;
         for (Long testCaseId : dto.getTestCaseIds()) {
+            List<TestCycleJoinTestCase> entityList = this.getByProjectIdAndCycleIdAndCaseId(dto.getProjectId(), dto.getTestCycleId(), testCaseId);
+            if (CollUtil.isNotEmpty(entityList)) {
+//                throw new BaseException(StrUtil.format("该测试用例已关联"));
+                continue;
+            }
             joinTestCase = new TestCycleJoinTestCase();
             joinTestCase.setProjectId(dto.getProjectId());
             joinTestCase.setTestCycleId(dto.getTestCycleId());
@@ -33,6 +40,14 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
             this.testCycleJoinTestCaseDao.insert(joinTestCase);
         }
         return true;
+    }
+
+    private List<TestCycleJoinTestCase> getByProjectIdAndCycleIdAndCaseId(Long projectId, Long testCycleId, Long testCaseId) {
+        LambdaQueryWrapper<TestCycleJoinTestCase> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TestCycleJoinTestCase::getProjectId, projectId)
+                .eq(TestCycleJoinTestCase::getTestCycleId, testCycleId)
+                .eq(TestCycleJoinTestCase::getTestCaseId, testCaseId);
+        return this.list(queryWrapper);
     }
 
     @Override
