@@ -173,5 +173,12 @@
           and current_release = #{param3}
     </select>
 
+    <select id="getIdByTitle" resultType="java.lang.Long">
+        SELECT id
+        FROM test_cycle
+        WHERE title= #{title}
+          AND project_id = #{projectId}
+    </select>
+
 
 </mapper>

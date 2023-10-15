@@ -35,7 +35,7 @@ public class SwaggerConfig implements ModelPropertyBuilderPlugin {
     @Bean
     public Docket customDocket() {
         ParameterBuilder ticketPar = new ParameterBuilder();
-        List<Parameter> pars = new ArrayList<Parameter>();
+        List<Parameter> pars = new ArrayList<>();
         ticketPar.name("Authorization").description("user Token")//Token 以及Authorization 为自定义的参数，session保存的名字是哪个就可以写成那个
                 .modelRef(new ModelRef("string")).parameterType("header")
                 .required(false).build(); //header中的ticket参数非必填，传空也可以

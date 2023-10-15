@@ -15,6 +15,8 @@ public interface TestCycleDao extends BaseMapper<TestCycle> {
 
     TestCycle queryById(@Param("id") String id,@Param("masterId")  String masterId);
 
+    Long getIdByTitle(@Param("title") String title,@Param("projectId") Long projectId);
+
     @Page
     List<TestCycle> queryAll(TestCycle testCycle);
 
