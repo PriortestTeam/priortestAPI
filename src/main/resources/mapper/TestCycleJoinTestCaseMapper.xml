@@ -122,5 +122,8 @@
     <select id="getCaseIdListByCycleId" resultType="java.lang.Long">
         select test_case_id from test_cycle_join_test_case where test_cycle_id = #{testCycleId}
     </select>
+    <select id="countByTestCaseIdInt" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM test_cycle_join_test_case WHERE test_case_id = #{testCaseId}
+    </select>
     <!-- 新增 WJK END-->
 </mapper>

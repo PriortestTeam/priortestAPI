@@ -28,4 +28,6 @@ public interface TestCycleJoinTestCaseService extends IService<TestCycleJoinTest
     void deleteInstance(TestCycleJoinTestCaseSaveDto dto);
 
     List<Long> getCaseIdListByCycleId(Long testCycleId);
+
+    int countCycleIdByCaseId(Long testCaseId);
 }
