@@ -62,4 +62,9 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
 
         return this.testCycleJoinTestCaseDao.getCaseIdListByCycleId(testCycleId);
     }
+
+    @Override
+    public int countCycleIdByCaseId(Long testCaseId) {
+        return this.testCycleJoinTestCaseDao.countByTestCaseIdInt(testCaseId);
+    }
 }
