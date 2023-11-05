@@ -118,7 +118,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
         Algorithm algorithm = Algorithm.HMAC256(salt);
         //设置1小时后过期
         Date date = new Date(System.currentTimeMillis() + 3600 * 1000);
-        //创建token
+        //创建token，这个是用户信息
         String sign = JWT.create()
                 .withSubject(user.getUsername())
                 .withExpiresAt(date)
@@ -131,6 +131,8 @@ public class JwtUserServiceImpl implements UserDetailsService {
         }
         bucket.set(s);
         bucket.expire(1, TimeUnit.HOURS);
+
+        // todo 这里添加登陆后用户的token，用于只能有一个设备登陆验证；
         return sign;
     }
 
