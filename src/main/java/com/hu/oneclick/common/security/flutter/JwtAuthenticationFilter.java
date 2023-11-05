@@ -115,6 +115,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             try {
                 String token = getJwtToken(request);
+                // todo 这里添加读取redis逻辑，如果有这个token，继续往下走，如果没有，则认为失效，或者有其他设备登陆被踢了
 
 
                 if (StringUtils.isNotBlank(token)) {
