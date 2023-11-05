@@ -1,11 +1,14 @@
 package com.hu.oneclick.common.security.service;
 
 import cn.hutool.core.util.ObjectUtil;
+
 import com.alibaba.fastjson.JSONObject;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.constant.OneConstant.REDIS_KEY_PREFIX;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.security.ApiToken;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
@@ -45,10 +48,10 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
     private final ProjectDao projectDao;
 
-
     private final RedissonClient redisClient;
 
-    public JwtUserServiceImpl(SysUserDao sysUserDao, RedissonClient redisClient, SysProjectPermissionDao sysProjectPermissionDao, ProjectDao projectDao) {
+    public JwtUserServiceImpl(SysUserDao sysUserDao, RedissonClient redisClient,
+        SysProjectPermissionDao sysProjectPermissionDao, ProjectDao projectDao) {
         this.projectDao = projectDao;
         this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         this.sysUserDao = sysUserDao;
@@ -75,10 +78,10 @@ public class JwtUserServiceImpl implements UserDetailsService {
         //管理员的token
         if (org.springframework.util.StringUtils.isEmpty(authentication.getPrincipal())) {
             //这里的name为tokenname
-            ApiToken apiToken = (ApiToken) authentication;
+            ApiToken apiToken = (ApiToken)authentication;
             name = apiToken.getTokenName();
         } else {
-            DecodedJWT token = ((JwtAuthenticationToken) authentication).getToken();
+            DecodedJWT token = ((JwtAuthenticationToken)authentication).getToken();
             //这里的name为username
             name = token.getSubject();
         }
@@ -102,7 +105,6 @@ public class JwtUserServiceImpl implements UserDetailsService {
         return bucket.get() != null;
     }
 
-
     public String getMasterId() {
         return getUserLoginInfo().getSysUser().getId();
     }
@@ -110,7 +112,6 @@ public class JwtUserServiceImpl implements UserDetailsService {
     public String getId() {
         return getUserLoginInfo().getSysUser().getId();
     }
-
 
     public String saveUserLoginInfo(AuthLoginUser user) {
         //正式开发时可以调用该方法实时生成加密的salt,BCrypt.gensalt
@@ -120,10 +121,10 @@ public class JwtUserServiceImpl implements UserDetailsService {
         Date date = new Date(System.currentTimeMillis() + 3600 * 1000);
         //创建token，这个是用户信息
         String sign = JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(date)
-                .withIssuedAt(new Date())
-                .sign(algorithm);
+            .withSubject(user.getUsername())
+            .withExpiresAt(date)
+            .withIssuedAt(new Date())
+            .sign(algorithm);
         String s = JSONObject.toJSONString(user);
         RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + user.getUsername());
         if (bucket.isExists()) {
@@ -132,7 +133,12 @@ public class JwtUserServiceImpl implements UserDetailsService {
         bucket.set(s);
         bucket.expire(1, TimeUnit.HOURS);
 
-        // todo 这里添加登陆后用户的token，用于只能有一个设备登陆验证；
+        // 这里添加登陆后用户的token，用于只能有一个设备登陆验证；
+        bucket = redisClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + user.getUsername());
+        bucket.set(sign);
+        // 登陆后，如果无操作，最长保存时间
+        int loginKeepTime = 30;
+        bucket.expire(loginKeepTime, TimeUnit.MINUTES);
         return sign;
     }
 
@@ -194,6 +200,5 @@ public class JwtUserServiceImpl implements UserDetailsService {
         bucket.delete();
         SecurityContextHolder.clearContext();
     }
-
 
 }
