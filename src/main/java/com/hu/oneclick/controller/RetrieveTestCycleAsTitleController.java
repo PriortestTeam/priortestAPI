@@ -1,6 +1,8 @@
 package com.hu.oneclick.controller;
 
 import com.alibaba.fastjson.JSON;
+
+import com.github.pagehelper.util.StringUtil;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.Resp;
@@ -8,6 +10,7 @@ import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.server.service.RetrieveTestCycleAsTitleService;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,11 +36,13 @@ public class RetrieveTestCycleAsTitleController {
 
     @GetMapping("/getId")
     public Resp<TestCycleVo> getIdByTitle(@RequestParam String title, @RequestParam() Long projectId) {
-        if (title == null) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "title不能为空");
+        if (StringUtil.isEmpty(title)) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "title不能为空",
+                HttpStatus.BAD_REQUEST.value());
         }
-        if (projectId == null) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId不能为空");
+        if (projectId == null || projectId == 0L) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId不能为空",
+                HttpStatus.BAD_REQUEST.value());
         }
         log.info("getIdByTitle ==> title:{}", JSON.toJSONString(title));
         log.info("getIdByTitle ==> projectId:{}", JSON.toJSONString(projectId));
