@@ -29,5 +29,5 @@ public interface TestCycleJoinTestCaseService extends IService<TestCycleJoinTest
 
     List<Long> getCaseIdListByCycleId(Long testCycleId);
 
-    int countCycleIdByCaseId(Long testCaseId);
+    int countCycleIdByCaseId(Long caseId, Long projectId, Long cycleId);
 }
