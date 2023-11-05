@@ -36,7 +36,7 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		} else if (exception instanceof UsernameNotFoundException) {
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.USERNAME_ERROR.getValue()).fail());
 	    } else {
-			result = "系统异常。";
+			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).httpBadRequest().fail());
 		}
 		response.getWriter().write(result);
 	}

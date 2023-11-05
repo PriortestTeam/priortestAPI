@@ -68,6 +68,7 @@ public interface OneConstant {
      */
     interface REDIS_KEY_PREFIX {
         String LOGIN = "login_";
+        String LOGIN_JWT = "login_jwt_";
 
         String REGISTRY = "register_send_email";
         String MODIFY_PASSWORD = "modify_password_send_email";

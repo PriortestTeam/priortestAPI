@@ -1,15 +1,20 @@
 package com.hu.oneclick.common.security.flutter;
 
 import com.alibaba.fastjson.JSONObject;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.hu.oneclick.common.constant.OneConstant.REDIS_KEY_PREFIX;
 import com.hu.oneclick.common.security.ApiToken;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUserToken;
+import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.server.user.UserService;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -30,6 +35,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserService userService;
     @Autowired
     private SysUserTokenDao sysUserTokenDao;
-
+    @Autowired
+    private RedissonClient redisClient;
 
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
@@ -71,16 +78,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
         SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authorization);
-
 
         if (!org.springframework.util.StringUtils.isEmpty(sysUserToken)) {
             Date expirationTime = sysUserToken.getExpirationTime();
             if (expirationTime.before(new Date())) {
                 response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("token已过期")));
+                response.getWriter().write(
+                    JSONObject.toJSONString(new Resp.Builder<String>().buildResult("token已过期")));
                 return;
             }
             Authentication authentication = new ApiToken(true, sysUserToken.getTokenName());
@@ -91,12 +98,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.isNotBlank(emailId)) {
                 if (!userService.getUserAccountInfo(emailId)) {
                     response.setContentType("application/json;charset=UTF-8");
-                    response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("权限认证失败")));
+                    response.getWriter().write(
+                        JSONObject.toJSONString(new Resp.Builder<String>().buildResult("权限认证失败")));
                     return;
                 }
             } else {
                 response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("必须填写emailid")));
+                response.getWriter().write(
+                    JSONObject.toJSONString(new Resp.Builder<String>().buildResult("必须填写emailid")));
                 return;
             }
         } else {
@@ -110,17 +119,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
                 //否则失败
                 response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write(JSONObject.toJSONString(new Resp.Builder<String>().buildResult("请填写账号密码")));
+                response.getWriter().write(
+                    JSONObject.toJSONString(new Resp.Builder<String>().buildResult("请填写账号密码")));
                 return;
             }
             try {
                 String token = getJwtToken(request);
-                // todo 这里添加读取redis逻辑，如果有这个token，继续往下走，如果没有，则认为失效，或者有其他设备登陆被踢了
-
 
                 if (StringUtils.isNotBlank(token)) {
                     JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
                     authResult = this.getAuthenticationManager().authenticate(authToken);
+                    // 这里添加读取redis逻辑，如果有这个token，继续往下走，如果没有，则认为失效，或者有其他设备登陆被踢了
+                    String username = ((AuthLoginUser)authResult.getPrincipal()).getUsername();
+                    RBucket<String> bucket = redisClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + username);
+                    String redisToken = bucket.get();
+                    if (!StringUtils.equals(redisToken, token)) {
+                        authResult = null;
+                    }
                 } else {
                     failed = new InsufficientAuthenticationException("JWT is Empty");
                 }
@@ -141,15 +156,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     protected void unsuccessfulAuthentication(HttpServletRequest request,
-                                              HttpServletResponse response, AuthenticationException failed)
-            throws IOException, ServletException {
+        HttpServletResponse response, AuthenticationException failed)
+        throws IOException, ServletException {
         SecurityContextHolder.clearContext();
         failureHandler.onAuthenticationFailure(request, response, failed);
     }
 
     protected void successfulAuthentication(HttpServletRequest request,
-                                            HttpServletResponse response, FilterChain chain, Authentication authResult)
-            throws IOException, ServletException {
+        HttpServletResponse response, FilterChain chain, Authentication authResult)
+        throws IOException, ServletException {
         SecurityContextHolder.getContext().setAuthentication(authResult);
         successHandler.onAuthenticationSuccess(request, response, authResult);
     }
@@ -163,7 +178,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     protected boolean requiresAuthentication(HttpServletRequest request,
-                                             HttpServletResponse response) {
+        HttpServletResponse response) {
         return requiresAuthenticationRequestMatcher.matches(request);
     }
 
@@ -189,13 +204,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     public void setAuthenticationSuccessHandler(
-            AuthenticationSuccessHandler successHandler) {
+        AuthenticationSuccessHandler successHandler) {
         Assert.notNull(successHandler, "successHandler cannot be null");
         this.successHandler = successHandler;
     }
 
     public void setAuthenticationFailureHandler(
-            AuthenticationFailureHandler failureHandler) {
+        AuthenticationFailureHandler failureHandler) {
         Assert.notNull(failureHandler, "failureHandler cannot be null");
         this.failureHandler = failureHandler;
     }
