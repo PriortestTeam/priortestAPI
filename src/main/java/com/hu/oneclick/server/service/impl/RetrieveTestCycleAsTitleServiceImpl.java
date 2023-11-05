@@ -1,5 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
+import java.util.HashMap;
+
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.dao.TestCycleDao;
@@ -24,10 +26,10 @@ public class RetrieveTestCycleAsTitleServiceImpl implements RetrieveTestCycleAsT
     @Override
     public Resp<TestCycleVo> getIdForTitle(String title, Long projectId) {
         Long id = testCycleDao.getIdByTitle(title, projectId);
-        if (id == null) {
-            throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "查询失败，参数有误");
-        }
         TestCycleVo testCycleVo = new TestCycleVo();
+        if (id == null) {
+            return new Resp.Builder<TestCycleVo>().setData(testCycleVo).ok();
+        }
         testCycleVo.setId(id);
         return new Resp.Builder<TestCycleVo>().setData(testCycleVo).ok();
     }
