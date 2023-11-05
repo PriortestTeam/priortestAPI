@@ -2,6 +2,7 @@ package com.hu.oneclick.model.base;
 
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.enums.SysConstantEnum;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class Resp<T> {
     private String code;
     private String msg;
     private Long total;
+    private int httpCode;
     private T data;
 
     public Resp(){}
@@ -22,12 +24,14 @@ public class Resp<T> {
         this.msg = builder.msg;
         this.data = builder.data;
         this.total = builder.total;
+        this.httpCode = builder.httpCode;
     }
 
     public static class  Builder<T> {
         private String code;
         private String msg;
         private Long total;
+        private int httpCode;
         private T data;
 
 
@@ -52,11 +56,13 @@ public class Resp<T> {
         public Resp<T> ok(){
             this.code= SysConstantEnum.SUCCESS.getCode();
             this.msg= SysConstantEnum.SUCCESS.getValue();
+            this.httpCode = HttpStatus.OK.value();
             return new Resp<T>(this);
         }
         public Resp<T> fail(){
             this.code= SysConstantEnum.FAILED.getCode();
             this.msg= SysConstantEnum.FAILED.getValue();
+            this.httpCode = HttpStatus.FORBIDDEN.value();
             return new Resp<T>(this);
         }
         public Builder<T> totalSize(Integer total){
@@ -75,6 +81,22 @@ public class Resp<T> {
         }
         public Builder<T> setData(T data){
             this.data=data;
+            return this;
+        }
+        public Builder<T> httpOk(){
+            this.httpCode = HttpStatus.OK.value();
+            return this;
+        }
+        public Builder<T> httpDeny(){
+            this.httpCode = HttpStatus.FORBIDDEN.value();
+            return this;
+        }
+        public Builder<T> httpBadRequest(){
+            this.httpCode = HttpStatus.BAD_REQUEST.value();
+            return this;
+        }
+        public Builder<T> httpNotFound(){
+            this.httpCode = HttpStatus.NOT_FOUND.value();
             return this;
         }
     }
@@ -110,5 +132,13 @@ public class Resp<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public int getHttpCode() {
+        return httpCode;
+    }
+
+    public void setHttpCode(int httpCode) {
+        this.httpCode = httpCode;
     }
 }
