@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
 import java.util.List;
 
 /**
@@ -19,7 +20,8 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinTestCaseDao, TestCycleJoinTestCase> implements TestCycleJoinTestCaseService {
+public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinTestCaseDao, TestCycleJoinTestCase>
+    implements TestCycleJoinTestCaseService {
 
     @Resource
     private TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
@@ -28,9 +30,10 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
     public Boolean saveInstance(TestCycleJoinTestCaseSaveDto dto) {
         TestCycleJoinTestCase joinTestCase = null;
         for (Long testCaseId : dto.getTestCaseIds()) {
-            List<TestCycleJoinTestCase> entityList = this.getByProjectIdAndCycleIdAndCaseId(dto.getProjectId(), dto.getTestCycleId(), testCaseId);
+            List<TestCycleJoinTestCase> entityList = this.getByProjectIdAndCycleIdAndCaseId(dto.getProjectId(),
+                dto.getTestCycleId(), testCaseId);
             if (CollUtil.isNotEmpty(entityList)) {
-//                throw new BaseException(StrUtil.format("该测试用例已关联"));
+                //                throw new BaseException(StrUtil.format("该测试用例已关联"));
                 continue;
             }
             joinTestCase = new TestCycleJoinTestCase();
@@ -42,11 +45,12 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
         return true;
     }
 
-    private List<TestCycleJoinTestCase> getByProjectIdAndCycleIdAndCaseId(Long projectId, Long testCycleId, Long testCaseId) {
+    private List<TestCycleJoinTestCase> getByProjectIdAndCycleIdAndCaseId(Long projectId, Long testCycleId,
+        Long testCaseId) {
         LambdaQueryWrapper<TestCycleJoinTestCase> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TestCycleJoinTestCase::getProjectId, projectId)
-                .eq(TestCycleJoinTestCase::getTestCycleId, testCycleId)
-                .eq(TestCycleJoinTestCase::getTestCaseId, testCaseId);
+            .eq(TestCycleJoinTestCase::getTestCycleId, testCycleId)
+            .eq(TestCycleJoinTestCase::getTestCaseId, testCaseId);
         return this.list(queryWrapper);
     }
 
@@ -64,7 +68,7 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
     }
 
     @Override
-    public int countCycleIdByCaseId(Long testCaseId) {
-        return this.testCycleJoinTestCaseDao.countByTestCaseIdInt(testCaseId);
+    public int countCycleIdByCaseId(Long testCaseId, Long projectid, Long cycleId) {
+        return this.testCycleJoinTestCaseDao.countByTestCaseIdInt(testCaseId, projectid, cycleId);
     }
 }

@@ -123,7 +123,12 @@
         select test_case_id from test_cycle_join_test_case where test_cycle_id = #{testCycleId}
     </select>
     <select id="countByTestCaseIdInt" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM test_cycle_join_test_case WHERE test_case_id = #{testCaseId}
+        SELECT COUNT(*)
+            FROM test_cycle_join_test_case
+        WHERE
+            test_case_id = #{caseId}
+            AND project_id = #{projectId}
+            AND test_cycle_id = #{cycleId}
     </select>
     <!-- 新增 WJK END-->
 </mapper>

@@ -2,8 +2,6 @@ package com.hu.oneclick.controller;
 
 import javax.annotation.Resource;
 
-import com.alibaba.fastjson.JSON;
-
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.Resp;
@@ -20,19 +18,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/retrieveTCInTestCycle")
-public class RetrieveTestCycleInTestCycle {
+public class RetrieveTestCycleInTestCycleController {
 
     @Resource
     private TestCycleJoinTestCaseService testCycleJoinTestCaseService;
 
     @GetMapping("/hasCaseId")
-    public Resp<Boolean> hasCaseId(@RequestParam Long caseId) {
-
-        if (caseId == null) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "caseId不能为空");
+    public Resp<Boolean> hasCaseId(@RequestParam Long caseId, @RequestParam Long projectId,
+        @RequestParam Long cycleId) {
+        if (caseId == null || projectId == null || cycleId == null) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "caseId projectId cycleId 不能为空");
         }
-        log.info("getcaseId ==> caseId:{}", JSON.toJSONString(caseId));
-        int count = testCycleJoinTestCaseService.countCycleIdByCaseId(caseId);
+        log.info("hasCaseId ==> caseId: {}, projectId: {}, cycleId: {}", caseId, projectId, cycleId);
+        int count = testCycleJoinTestCaseService.countCycleIdByCaseId(caseId, projectId, cycleId);
         return new Resp.Builder<Boolean>().setData(count > 0).ok();
     }
 }
