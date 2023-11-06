@@ -69,8 +69,11 @@ public class ApiAdpaderController {
         log.info("hasCaseId ==> caseId: {}, projectId: {}, cycleId: {}", testCaseId, projectId, testCycleId);
         TestCycleJoinTestCase cycle = testCycleJoinTestCaseService.getCycleJoinTestCaseByCaseId(
             testCaseId, projectId, testCycleId);
-        TestCycleVo cycleVo = new TestCycleVo();
-        cycleVo.setId(cycle.getId());
+        TestCycleVo cycleVo = null;
+        if (cycle != null) {
+            cycleVo = new TestCycleVo();
+            cycleVo.setId(cycle.getId());
+        }
         return new Resp.Builder<TestCycleVo>().setData(cycleVo).ok();
     }
 
