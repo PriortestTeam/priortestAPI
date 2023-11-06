@@ -44,4 +44,7 @@ public interface TestCycleJoinTestCaseDao extends BaseMapper<TestCycleJoinTestCa
     int countByTestCaseIdInt(@Param("caseId") Long caseId, @Param("projectId") Long projectId,
         @Param("cycleId") Long cycleId);
 
+    TestCycleJoinTestCase getCycleJoinTestCaseByCaseId(@Param("caseId") Long caseId, @Param("projectId") Long projectId,
+        @Param("cycleId") Long cycleId);
+
 }

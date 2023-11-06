@@ -1,5 +1,9 @@
 package com.hu.oneclick.server.service.impl;
 
+import java.util.List;
+
+import javax.annotation.Resource;
+
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -9,10 +13,6 @@ import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-
-import java.util.List;
 
 /**
  * @Author: jhh
@@ -70,5 +70,10 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
     @Override
     public int countCycleIdByCaseId(Long testCaseId, Long projectid, Long cycleId) {
         return this.testCycleJoinTestCaseDao.countByTestCaseIdInt(testCaseId, projectid, cycleId);
+    }
+
+    @Override
+    public TestCycleJoinTestCase getCycleJoinTestCaseByCaseId(Long caseId, Long projectId, Long cycleId) {
+        return this.testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(caseId, projectId, cycleId);
     }
 }

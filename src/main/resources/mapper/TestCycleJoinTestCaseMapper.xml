@@ -130,5 +130,16 @@
             AND project_id = #{projectId}
             AND test_cycle_id = #{cycleId}
     </select>
+    <select id="getCycleJoinTestCaseByCaseId" resultMap="TestCycleJoinTestCaseMap">
+        SELECT *
+            FROM test_cycle_join_test_case
+        WHERE
+            test_case_id = #{caseId}
+            AND project_id = #{projectId}
+            AND test_cycle_id = #{cycleId}
+        ORDER BY
+            id DESC
+        LIMIT 1
+    </select>
     <!-- 新增 WJK END-->
 </mapper>
