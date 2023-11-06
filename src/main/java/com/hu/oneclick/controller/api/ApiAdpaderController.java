@@ -10,6 +10,7 @@ import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Issue;
+import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.server.service.IssueService;
@@ -56,17 +57,21 @@ public class ApiAdpaderController {
         log.info("getIdByTitle ==> projectId:{}", JSON.toJSONString(projectId));
         return rtcatService.getIdForTitle(title, projectId);
     }
-    @GetMapping("/{projectId}/testRun/retrieveTCInTestCycle/hasCaseId")
-    public Resp<Boolean> hasCaseId(
-        @PathVariable Long projectId, @RequestParam Long caseId, @RequestParam Long cycleId
+
+    @GetMapping("/{projectId}/testRun/retrieveTCInTestCycle/getCaseId")
+    public Resp<TestCycleVo> hasCaseId(
+        @PathVariable Long projectId, @RequestParam Long testCaseId, @RequestParam Long testCycleId
     ) {
-        if (caseId == null || projectId == null || cycleId == null) {
+        if (testCaseId == null || projectId == null || testCycleId == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "caseId projectId cycleId 不能为空",
                 HttpStatus.BAD_REQUEST.value());
         }
-        log.info("hasCaseId ==> caseId: {}, projectId: {}, cycleId: {}", caseId, projectId, cycleId);
-        int count = testCycleJoinTestCaseService.countCycleIdByCaseId(caseId, projectId, cycleId);
-        return new Resp.Builder<Boolean>().setData(count > 0).ok();
+        log.info("hasCaseId ==> caseId: {}, projectId: {}, cycleId: {}", testCaseId, projectId, testCycleId);
+        TestCycleJoinTestCase cycle = testCycleJoinTestCaseService.getCycleJoinTestCaseByCaseId(
+            testCaseId, projectId, testCycleId);
+        TestCycleVo cycleVo = new TestCycleVo();
+        cycleVo.setId(cycle.getId());
+        return new Resp.Builder<TestCycleVo>().setData(cycleVo).ok();
     }
 
     @ApiOperation("新增")

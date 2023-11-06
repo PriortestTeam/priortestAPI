@@ -1,10 +1,10 @@
 package com.hu.oneclick.server.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
-
-import java.util.List;
 
 /**
  * @Author: jhh
@@ -30,4 +30,6 @@ public interface TestCycleJoinTestCaseService extends IService<TestCycleJoinTest
     List<Long> getCaseIdListByCycleId(Long testCycleId);
 
     int countCycleIdByCaseId(Long caseId, Long projectId, Long cycleId);
+
+    TestCycleJoinTestCase getCycleJoinTestCaseByCaseId(Long caseId, Long projectId, Long cycleId);
 }
