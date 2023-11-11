@@ -55,7 +55,7 @@
         update_time,parent_id,`level`
         from oneclick.view
         <where>
-            (create_user_id = #{createUserId} and is_private = 1)
+            (create_user_id = #{createUserId} and is_private = 1 and scope_name = #{scopeName})
             or is_private = 0
             and project_id = #{projectId}
             <if test="title != null and title != ''">
