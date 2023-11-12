@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class TestCycleVo {
 
-    private Long id;
+    private String id;
 }
