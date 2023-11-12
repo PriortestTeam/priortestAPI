@@ -18,6 +18,7 @@ import com.hu.oneclick.server.service.RetrieveTestCycleAsTitleService;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -64,15 +65,16 @@ public class ApiAdpaderController {
     ) {
         if (testCaseId == null || projectId == null || testCycleId == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "caseId projectId cycleId 不能为空",
-                HttpStatus.BAD_REQUEST.value());
+                    HttpStatus.BAD_REQUEST.value());
         }
         log.info("hasCaseId ==> caseId: {}, projectId: {}, cycleId: {}", testCaseId, projectId, testCycleId);
         TestCycleJoinTestCase cycle = testCycleJoinTestCaseService.getCycleJoinTestCaseByCaseId(
-            testCaseId, projectId, testCycleId);
-        TestCycleVo cycleVo = null;
+                testCaseId, projectId, testCycleId);
+        TestCycleVo cycleVo = new TestCycleVo();
         if (cycle != null) {
-            cycleVo = new TestCycleVo();
-            cycleVo.setId(cycle.getId());
+            cycleVo.setId(String.valueOf(cycle.getId()));
+        } else {
+            cycleVo.setId(Strings.EMPTY);
         }
         return new Resp.Builder<TestCycleVo>().setData(cycleVo).ok();
     }

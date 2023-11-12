@@ -30,7 +30,7 @@ public class RetrieveTestCycleAsTitleServiceImpl implements RetrieveTestCycleAsT
         if (id == null) {
             return new Resp.Builder<TestCycleVo>().setData(testCycleVo).ok();
         }
-        testCycleVo.setId(id);
+        testCycleVo.setId(String.valueOf(id));
         return new Resp.Builder<TestCycleVo>().setData(testCycleVo).ok();
     }
 }
