@@ -77,7 +77,7 @@
         );
     </insert>
 
-    <update id="update">
+    <update id="updateByPrimaryKeySelective">
         update test_cases_execution
         <set>
             <if test="runCount != null and runCount != ''">

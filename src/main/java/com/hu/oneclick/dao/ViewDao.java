@@ -64,7 +64,7 @@ public interface ViewDao extends BaseMapper<View> {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(@Param("masterId") String masterId, @Param("id") String id);
+    int deleteByPrimaryKey(@Param("masterId") String masterId, @Param("id") String id);
 
     /**
      * 查询项目是否存在

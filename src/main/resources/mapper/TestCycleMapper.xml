@@ -103,7 +103,7 @@
     </select>
 
     <!--通过主键修改数据-->
-    <update id="update">
+    <update id="updateByPrimaryKeySelective">
         update oneclick.test_cycle
         <set>
             <if test="title != null and title != ''">

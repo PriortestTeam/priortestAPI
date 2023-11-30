@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface TestCaseStepDao extends BaseMapper<TestCaseStep> {
 
-    int update(TestCaseStep testCaseStep);
+    int updateByPrimaryKeySelective(TestCaseStep testCaseStep);
 
     List<TestCaseStep> queryList(TestCaseStep testCaseStep);
 }

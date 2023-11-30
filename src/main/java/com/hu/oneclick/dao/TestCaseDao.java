@@ -16,7 +16,7 @@ public interface TestCaseDao extends BaseMapper<TestCase> {
 
     TestCase queryById(@Param("id") String id, @Param("masterId") String masterId);
 
-    int update(TestCase testCase);
+    int updateByPrimaryKeySelective(TestCase testCase);
 
 
     List<LeftJoinDto> queryTitles(@Param("projectId") String projectId, @Param("title") String title, @Param("masterId") String masterId);
