@@ -42,7 +42,7 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
             testCaseTemplateJson.verify();
             testCaseTemplateJson.setUserId(jwtUserService.getMasterId());
             testCaseTemplateJson.setCreateTime(LocalDateTime.now());
-            return Result.addResult( testCaseTemplateJsonDAO.insert(testCaseTemplateJson));
+            return Result.addResult( testCaseTemplateJsonDAO.insertOne(testCaseTemplateJson));
         }catch (BizException e){
             logger.error("class: TestCaseTemplateJsonServiceImpl#insert,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -56,7 +56,7 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
         try {
             testCaseTemplateJson.verify();
             testCaseTemplateJson.setUpdateTime(LocalDateTime.now());
-            return Result.updateResult(testCaseTemplateJsonDAO.update(testCaseTemplateJson));
+            return Result.updateResult(testCaseTemplateJsonDAO.updateByPrimaryKeySelective(testCaseTemplateJson));
         }catch (BizException e){
             logger.error("class: TestCaseTemplateJsonServiceImpl#update,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -78,7 +78,7 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
             TestCaseTemplateJson testCaseTemplateJson = new TestCaseTemplateJson();
             testCaseTemplateJson.setId(id);
             testCaseTemplateJson.setDelFlag(1);
-            return Result.deleteResult(testCaseTemplateJsonDAO.update(testCaseTemplateJson));
+            return Result.deleteResult(testCaseTemplateJsonDAO.updateByPrimaryKeySelective(testCaseTemplateJson));
         }catch (BizException e){
             logger.error("class: TestCaseTemplateJsonServiceImpl#deleteById,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
@@ -87,6 +87,6 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
 
     @Override
     public Resp<TestCaseTemplateJson> queryById(String id) {
-        return new Resp.Builder<TestCaseTemplateJson>().setData(testCaseTemplateJsonDAO.selectById(id)).ok();
+        return new Resp.Builder<TestCaseTemplateJson>().setData(testCaseTemplateJsonDAO.selectByPrimaryKey(id)).ok();
     }
 }

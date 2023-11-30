@@ -9,7 +9,7 @@ import java.util.List;
 public interface TestCaseExcutionDao extends BaseMapper<TestCaseExcution> {
 
     public int createTestCaseExcutionDate();
-    public int update(TestCaseExcution testCaseExcution);
+    public int updateByPrimaryKeySelective(TestCaseExcution testCaseExcution);
 
     public int insertIssue(Issue issue);
 

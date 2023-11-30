@@ -15,7 +15,7 @@ public interface FeatureDao extends BaseMapper<Feature> {
 
     Feature queryById(@Param("id") String id,@Param("masterId") String masterId);
 
-    int update(Feature feature);
+    int updateByPrimaryKeySelective(Feature feature);
 
     List<LeftJoinDto> queryTitles(@Param("projectId")String projectId, @Param("title") String title, @Param("masterId") String masterId);
 

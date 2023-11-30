@@ -84,7 +84,7 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>-->
 
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCaseTemplateJson" useGeneratedKeys="true">
+  <insert id="insertOne" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCaseTemplateJson" useGeneratedKeys="true">
     insert into test_case_template_json (template_name, user_id, del_flag, 
       if_default, create_time, update_time, 
       json_content)
@@ -264,7 +264,7 @@
     </where>
   </select>
 
-  <select id="selectById"  resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs">
     select
     <include refid="Base_Column_List" />
     ,
@@ -277,7 +277,7 @@
     </where>
   </select>
 
-  <update id="update">
+  <update id="updateByPrimaryKeySelective">
     update test_case_template_json
     <set>
       <if test="templateName != null">

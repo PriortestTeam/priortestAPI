@@ -20,7 +20,7 @@ import java.util.Set;
  */
 public interface CustomFieldsDao extends BaseMapper<CustomFields> {
 
-    int update(CustomFields customFields);
+    int updateByPrimaryKeySelective(CustomFields customFields);
 
     int deleteBatchByKey(@Param("customFieldIds") Set<Long> customFieldsIds);
 

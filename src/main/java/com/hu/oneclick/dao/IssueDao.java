@@ -12,7 +12,7 @@ public interface IssueDao extends BaseMapper<Issue> {
 
     Issue queryById(@Param("id") String id,@Param("masterId") String masterId);
 
-    int update(Issue issue);
+    int updateByPrimaryKeySelective(Issue issue);
 
     @Page
     List<Issue> queryList(Issue issue);

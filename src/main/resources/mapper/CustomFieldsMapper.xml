@@ -63,7 +63,7 @@
     </sql>
 
 
-    <update id="update" parameterType="com.hu.oneclick.model.domain.CustomFields">
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.CustomFields">
         UPDATE custom_fields
         <set>
             <if test="null != customFieldId and '' != customFieldId">custom_field_id = #{customFieldId},</if>

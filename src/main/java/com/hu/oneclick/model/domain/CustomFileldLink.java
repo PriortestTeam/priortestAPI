@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class CustomFileldLink implements Serializable {
     /**
      * 主键
      */
+    @TableId
     private Long customFieldLinkId;
 
     private Long customFieldId;
