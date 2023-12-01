@@ -130,7 +130,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         customField.setModifyUser(Long.parseLong(jwtUserServiceImpl.getMasterId()));
         CustomFieldVo.Attributes attributes = customFieldVo.getAttributes();
         BeanUtils.copyProperties(attributes, customField);
-        int row = customFieldsDao.update(customField);
+        int row = customFieldsDao.updateByPrimaryKeySelective(customField);
 
         if (row > 0) {
             List<CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);

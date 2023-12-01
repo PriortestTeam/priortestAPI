@@ -128,7 +128,7 @@
 
 
     <!--通过主键修改数据-->
-    <update id="update">
+    <update id="updateByPrimaryKeySelective">
         update issue
         <set>
             <if test="title != null and title != ''">

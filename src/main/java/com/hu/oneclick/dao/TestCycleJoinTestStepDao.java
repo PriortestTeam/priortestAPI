@@ -8,7 +8,7 @@ import java.util.List;
 public interface TestCycleJoinTestStepDao extends BaseMapper<TestCycleJoinTestCase> {
     List<TestCycleJoinTestStep> queryList(TestCycleJoinTestStep testCycleJoinTestStep);
 
-    int update(TestCycleJoinTestStep testCycleJoinTestStep);
+    int updateByIdsSelective(TestCycleJoinTestStep testCycleJoinTestStep);
 
     int updateRunCount(TestCycleJoinTestStep testCycleJoinTestStep);
 }

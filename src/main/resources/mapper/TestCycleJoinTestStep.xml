@@ -33,7 +33,7 @@
     </select>
 
     <!--通过主键修改数据-->
-    <update id="update">
+    <update id="updateByIdsSelective">
         update test_cycle_join_test_step
         <set>
             <if test="runCount != null and runCount != ''">

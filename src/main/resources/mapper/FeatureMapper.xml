@@ -138,7 +138,7 @@
     </select>
 
     <!--通过主键修改数据-->
-    <update id="update">
+    <update id="updateByPrimaryKeySelective">
         update feature
         <set>
             <if test="epic != null and epic != ''">

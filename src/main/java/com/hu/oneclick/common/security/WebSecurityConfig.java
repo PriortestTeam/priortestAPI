@@ -31,7 +31,6 @@ import java.util.Collections;
  * @author qingyang
  */
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 

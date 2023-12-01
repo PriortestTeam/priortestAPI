@@ -187,7 +187,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
                 return Result.deleteResult(0);
             }
             // sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE, convertPermission(view.getScope()));
-            return Result.deleteResult(viewDao.deleteById(jwtUserService.getMasterId(), id));
+            return Result.deleteResult(viewDao.deleteByPrimaryKey(jwtUserService.getMasterId(), id));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#deleteView,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
