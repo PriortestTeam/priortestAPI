@@ -1,5 +1,6 @@
 package com.hu.oneclick.model.domain;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,6 +18,7 @@ public class CustomFields implements Serializable {
     /**
      * 主键
      */
+    @TableId
     private Long customFieldId;
     /**
      * 用户id， 创建字段者

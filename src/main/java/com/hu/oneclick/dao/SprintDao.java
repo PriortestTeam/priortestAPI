@@ -16,7 +16,7 @@ public interface SprintDao extends BaseMapper<Sprint> {
 
     Sprint queryById(@Param("id") String id,@Param("masterId")String masterId);
 
-    int update(Sprint sprint);
+    int updateByPrimaryKeySelective(Sprint sprint);
 
     List<LeftJoinDto> queryTitles(@Param("projectId") String projectId, @Param("title") String title, @Param("masterId") String masterId);
 

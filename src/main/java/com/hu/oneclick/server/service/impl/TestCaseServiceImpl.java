@@ -153,7 +153,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
             //testCase.setUserId(jwtUserService.getMasterId());
             //新增修改字段记录
             modifyRecord(testCase);
-            return Result.updateResult(baseMapper.update(testCase));
+            return Result.updateResult(baseMapper.updateByPrimaryKeySelective(testCase));
         } catch (BizException e) {
             log.error("class: TestCaseServiceImpl#update,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

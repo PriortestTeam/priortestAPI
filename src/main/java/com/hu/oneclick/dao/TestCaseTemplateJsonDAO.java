@@ -13,12 +13,12 @@ public interface TestCaseTemplateJsonDAO extends BaseMapper<TestCaseTemplateJson
 
     List<TestCaseTemplateJson> queryByUserId(@Param("masterId") String masterId);
 
-    int insert(TestCaseTemplateJson testCaseTemplateJson);
+    int insertOne(TestCaseTemplateJson testCaseTemplateJson);
 
 
-    int update(TestCaseTemplateJson testCaseTemplateJson);
+    int updateByPrimaryKeySelective(TestCaseTemplateJson testCaseTemplateJson);
 
     int deleteById(String id);
 
-    TestCaseTemplateJson selectById(@Param("id") String id);
+    TestCaseTemplateJson selectByPrimaryKey(@Param("id") String id);
 }

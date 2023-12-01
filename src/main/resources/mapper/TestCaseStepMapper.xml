@@ -43,7 +43,7 @@
             </if>
         </where>
     </select>
-    <update id="update">
+    <update id="updateByPrimaryKeySelective">
         update test_case_step
         <set>
             <if test="step != null and step != ''">
