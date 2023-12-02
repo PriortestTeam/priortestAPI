@@ -148,11 +148,11 @@
     </update>
 
     <select id="getTestCycleVersion" resultType="java.util.Map" parameterType="java.lang.String">
-        SELECT test_version, title
+        SELECT version, title
         FROM test_cycle
         WHERE project_id = #{projectId}
-          AND test_env = #{env}
-          AND test_version = #{version}
+          AND env = #{env}
+          AND version = #{version}
     </select>
 
     <select id="getAllTestCycle" resultType="java.util.Map">

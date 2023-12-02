@@ -213,4 +213,10 @@
         where custom_field_id = #{customFieldId}
     </select>
 
+    <select id="getPossBile" resultType="com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto">
+        select possible_value
+        from custom_fields
+        where type = "sField"
+          and field_name_en = #{fieldName}
+    </select>
 </mapper>

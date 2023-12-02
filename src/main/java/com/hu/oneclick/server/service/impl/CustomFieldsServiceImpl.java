@@ -14,6 +14,7 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.CustomFileldLink;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
 import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.vo.ComponentAttributesVo;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
@@ -29,6 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -160,6 +163,12 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     public List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId) {
 
         return customFieldsDao.getAllCustomListByScopeId(scopeId);
+    }
+
+    @Override
+    public Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName) {
+        List<CustomFieldPossBileDto> list = customFieldsDao.getPossBile(fieldName);
+        return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(list).ok();
     }
 
     @Override

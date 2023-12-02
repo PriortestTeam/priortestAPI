@@ -1,12 +1,14 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.ProjectSignOff;
+import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.server.service.AttachmentService;
+import com.hu.oneclick.server.service.CustomFieldsService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.ProjectSignOffService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -50,17 +54,19 @@ public class SignOffController {
     private ProjectSignOffService signOffService;
     @Autowired
     UserProjectService userProjectService;
+    @Autowired
+    CustomFieldsService customFieldsService;
 
 
     @GetMapping("/getProjectEnv")
-    public Resp<SysCustomFieldVo> getProjectEnv() {
-        return sysCustomFieldService.getSysCustomField("test_env");
+    public Resp<List<CustomFieldPossBileDto>> getProjectEnv() {
+        return customFieldsService.getPossBile("env");
     }
 
 
     @GetMapping("/getProjectVersion")
-    public Resp<SysCustomFieldVo> getProjectVersion() {
-        return sysCustomFieldService.getSysCustomField("versions");
+    public Resp<List<CustomFieldPossBileDto>> getProjectVersion()  {
+        return customFieldsService.getPossBile("version");
     }
 
 
