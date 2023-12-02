@@ -1,7 +1,9 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.ProjectSignOff;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.server.service.AttachmentService;
@@ -10,6 +12,7 @@ import com.hu.oneclick.server.service.ProjectSignOffService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleService;
+import com.hu.oneclick.server.service.UserProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,8 @@ public class SignOffController {
     private SysCustomFieldService sysCustomFieldService;
     @Autowired
     private ProjectSignOffService signOffService;
+    @Autowired
+    UserProjectService userProjectService;
 
 
     @GetMapping("/getProjectEnv")
@@ -103,4 +108,10 @@ public class SignOffController {
     }
 
 
+    @GetMapping("getProjectListByUser")
+    @ApiOperation("获取当前用户下title列表")
+    public Resp<List<LeftJoinDto>> getProjectListByUser()
+    {
+        return userProjectService.getUserByProject();
+    }
 }
