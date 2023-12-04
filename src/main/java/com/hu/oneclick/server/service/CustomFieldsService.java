@@ -7,8 +7,6 @@ import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
 import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
