@@ -9,6 +9,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleSaveDto;
 import com.hu.oneclick.model.domain.param.TestCaseParam;
@@ -16,9 +17,11 @@ import com.hu.oneclick.model.domain.param.TestCycleParam;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
 import com.hu.oneclick.server.service.TestCycleService;
+import com.hu.oneclick.server.service.TestCycleTcService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +45,12 @@ public class TestCycleController extends BaseController {
     @Resource
     private TestCycleJoinTestCaseService testCycleJoinTestCaseService;
 
+    private TestCycleTcService testCycleTcService;
+
+    @Autowired
+    public void setTestCycleTcService(TestCycleTcService testCycleTcService) {
+        this.testCycleTcService = testCycleTcService;
+    }
 
 //    @GetMapping("queryById/{id}")
 //    @ApiOperation("查询测试周期")
@@ -96,10 +105,11 @@ public class TestCycleController extends BaseController {
 //        return testCycleService.bindCaseDelete(id);
 //    }
 //    /* WJK新增 BEGIN*/
-//    @PostMapping("runTestCycleTc")
-//    public Resp<Map<String,Object>> runTestCycleTc(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
-//        return testCycleService.runTestCycleTc(executeTestCaseDto);
-//    }
+    @PostMapping("runTestCycleTc")
+    public Resp<String> runTestCycleTc(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
+        System.out.println(executeTestCaseDto.getTestCaseId());
+        return testCycleTcService.runTestCycleTc(executeTestCaseDto);
+    }
 //
 //    @PostMapping("excute")
 //    public Resp<Map<String,Object>> excute(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
