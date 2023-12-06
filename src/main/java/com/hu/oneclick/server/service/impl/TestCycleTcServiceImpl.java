@@ -37,7 +37,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         Date currentDate = new Date();
         // 将当前时间转换为 Timestamp 对象
         executeTestCaseDto.setCreateTime(new Timestamp(currentDate.getTime()));
-        System.out.println(executeTestCaseDto);
+
         int i = testCycleTcDao.addTestCaseExecution(sysUser.getId(), executeTestCaseDto);
 
         if (i > 0) {
