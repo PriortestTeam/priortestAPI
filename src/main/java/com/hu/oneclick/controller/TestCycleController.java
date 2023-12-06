@@ -105,7 +105,7 @@ public class TestCycleController extends BaseController {
 //        return testCycleService.bindCaseDelete(id);
 //    }
 //    /* WJK新增 BEGIN*/
-    @PostMapping("runTestCycleTc")
+    @PostMapping("caseRun/step")
     public Resp<String> runTestCycleTc(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
         System.out.println(executeTestCaseDto.getTestCaseId());
         return testCycleTcService.runTestCycleTc(executeTestCaseDto);
