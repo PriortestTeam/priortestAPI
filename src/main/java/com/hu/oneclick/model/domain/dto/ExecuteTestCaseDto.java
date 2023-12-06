@@ -15,7 +15,7 @@ public class ExecuteTestCaseDto {
     private String testData;
     private String remarks;
     private Integer testStepId;
-    private Integer stepStatus;
+    private String statusCode;
     private String teststepExpand;
     private String projectId;
     private Date createTime;
