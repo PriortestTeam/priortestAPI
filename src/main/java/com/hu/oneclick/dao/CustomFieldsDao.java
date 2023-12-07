@@ -3,6 +3,7 @@ package com.hu.oneclick.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
 import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 import org.apache.ibatis.annotations.Param;
@@ -43,4 +44,6 @@ public interface CustomFieldsDao extends BaseMapper<CustomFields> {
     CustomFields getByCustomFieldId(@Param("customFieldId") Long customFieldId);
 
     List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId);
+
+   List<CustomFieldPossBileDto> getPossBile(String fieldName);
 }

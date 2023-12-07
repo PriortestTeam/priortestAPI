@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.TestCycleTcDao">
+    <insert id="addTestCaseExecution" parameterType="com.hu.oneclick.dao.TestCycleTcDao">
+        insert into test_cases_execution
+        (create_user_id,
+         test_cycle_id,
+         test_case_id,
+         status_code,
+         test_step,
+         expected_result,
+         actual_result,
+         test_data,
+         remarks,
+         test_step_id,
+         teststep_condition,
+         teststep_expand,
+         project_id,
+         create_time)
+        values (#{param1},
+                #{param2.testCaseId},
+                #{param2.testCycleId},
+                #{param2.statusCode},
+                #{param2.testStep},
+                #{param2.expectedResult},
+                #{param2.actualResult},
+                #{param2.testData},
+                #{param2.remarks},
+                #{param2.testStepId},
+                #{param2.teststepCondition},
+                #{param2.teststepExpand},
+                #{param2.projectId},
+                #{param2.createTime});
+    </insert>
+</mapper>

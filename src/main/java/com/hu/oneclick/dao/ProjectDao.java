@@ -3,6 +3,7 @@ package com.hu.oneclick.dao;
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -148,4 +149,6 @@ public interface ProjectDao {
      */
     @Page
     List<Project> queryAllByIds(@Param("projectIdList") List<String> projectIdList);
+
+    List<LeftJoinDto> queryTitleByIds(@Param("projectIdList") List<String> projectIdList);
 }
