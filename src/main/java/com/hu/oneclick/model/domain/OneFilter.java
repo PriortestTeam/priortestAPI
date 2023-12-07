@@ -1,6 +1,7 @@
 package com.hu.oneclick.model.domain;
 
 import cn.hutool.core.util.StrUtil;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -14,14 +15,17 @@ import java.io.Serializable;
 /**
  * @author qingyang todo
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
 public class OneFilter implements VerifyParam, Serializable {
+
+    private String id;
     /**
      * 类型，
      */
     private String type;
 
-    private String fieldName;
+    private String fieldNameCn;
 
     private String fieldNameEn;
     // 字段小驼峰格式
@@ -83,6 +87,10 @@ public class OneFilter implements VerifyParam, Serializable {
      */
     private String customType;
 
+    /**
+     * 自定义字段的ID
+     */
+    private String customFieldId;
 
     @Override
     public void verify() throws BizException {
@@ -167,9 +175,6 @@ public class OneFilter implements VerifyParam, Serializable {
     }
 
     public String getFieldNameEnCamelCase() {
-        if (StrUtil.isNotEmpty(fieldNameEn)) {
-            return StrUtil.toCamelCase(fieldNameEn);
-        }
         return fieldNameEnCamelCase;
     }
 }

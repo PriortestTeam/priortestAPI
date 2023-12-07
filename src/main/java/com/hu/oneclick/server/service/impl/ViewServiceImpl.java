@@ -91,7 +91,8 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
             throw new BaseException(StrUtil.format("项目ID不能为空。"));
         }
         view.setCreateUserId(Long.valueOf(jwtUserService.getMasterId()));
-        return viewDao.queryAll(view);
+        List<View> list = viewDao.queryAll(view);
+        return list;
     }
 
     /**
@@ -154,6 +155,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
 //            view.setCreateUserId(masterId);
             view.setProjectId(projectId);
             view.setCreater(sysUser.getUserName());
+            view.setFilter(view.getFilterByManual(view.getOneFilters()));
             return Result.addResult(viewDao.insert(view));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#addView,error []" + e.getMessage());
@@ -174,6 +176,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         if (view.getTitle() != null) {
             Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
         }
+        view.setFilter(view.getFilterByManual(view.getOneFilters()));
         baseMapper.updateById(view);
         return view;
     }
@@ -338,6 +341,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         if (StrUtil.isNotBlank(view.getParentId())) {
             view.setLevel(1);
         }
+        view.setFilter(view.getFilterByManual(view.getOneFilters()));
         baseMapper.insert(view);
         // 添加子视图
         if (1 == view.getIsAuto() && view.getLevel() == 0) {
@@ -412,7 +416,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
              *   Include 包含
              *   Exclude 不包含
              */
-            stringBuilder.append(filter.getFieldName());
+            stringBuilder.append(filter.getFieldNameCn());
             switch (condition) {
                 case "Is":
                     stringBuilder.append(" = ");
@@ -503,7 +507,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
@@ -548,7 +552,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.FEATURE, fieldName);
@@ -591,7 +595,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
@@ -635,7 +639,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
@@ -679,7 +683,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
