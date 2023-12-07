@@ -60,7 +60,7 @@ public class QueryFilterServiceImpl implements QueryFilterService {
         for (OneFilter oneFilter : oneFilters) {
             if (oneFilter == null){continue;}
             //驼峰转下划线
-            String fieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, oneFilter.getFieldName());
+            String fieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, oneFilter.getFieldNameCn());
             //4 取type
             switch (oneFilter.getType()){
                 case "fString":

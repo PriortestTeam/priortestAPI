@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -20,6 +21,7 @@ import java.util.List;
  * @author xiaohai
  * @date 2023/08/20
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ApiModel("视图实体")
@@ -76,9 +78,13 @@ public class View extends AssignBaseEntity implements Serializable {
     @TableField(exist = false)
     private Integer isAuto;
 
-    public String getFilter() {
-        if (CollUtil.isNotEmpty(oneFilters)) {
-            return JSON.toJSONString(oneFilters);
+    /**
+     * 手动赋值的意义在于，DB插入的时候需要filter，但是api返回的时候不需要filter
+     * DB插入或更新前在filter的set方法里调用此方法
+     */
+    public String getFilterByManual(List<OneFilter> oneFilters2) {
+        if (CollUtil.isNotEmpty(oneFilters2)) {
+            return JSON.toJSONString(oneFilters2);
         }
         return filter;
     }
