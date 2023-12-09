@@ -92,6 +92,10 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         }
         view.setCreateUserId(Long.valueOf(jwtUserService.getMasterId()));
         List<View> list = viewDao.queryAll(view);
+        for (View v: list) {
+            v.setOneFilters(v.getOneFilters());
+            v.setFilter(null);
+        }
         return list;
     }
 
