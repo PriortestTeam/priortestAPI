@@ -87,7 +87,7 @@ public class ViewController extends BaseController {
     private Resp<?> addViewRE(@RequestBody View view) {
         try {
             view = viewService.addViewRE(view);
-            return new Resp.Builder<>().setData(view).ok();
+            return new Resp.Builder<>().ok();
         } catch (Exception e) {
             log.error("新增失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
@@ -99,7 +99,7 @@ public class ViewController extends BaseController {
     private Resp<?> updateView(@RequestBody View view) {
         try {
             view = viewService.updateView(view);
-            return new Resp.Builder<>().setData(view).ok();
+            return new Resp.Builder<>().ok();
         } catch (Exception e) {
             log.error("修改失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
