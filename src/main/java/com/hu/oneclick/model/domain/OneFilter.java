@@ -28,8 +28,6 @@ public class OneFilter implements VerifyParam, Serializable {
     private String fieldNameCn;
 
     private String fieldNameEn;
-    // 字段小驼峰格式
-    private String fieldNameEnCamelCase;
 
     private String fieldType;
 
@@ -174,7 +172,5 @@ public class OneFilter implements VerifyParam, Serializable {
         this.sourceVal = null;
     }
 
-    public String getFieldNameEn() {
-        return fieldNameEn;
-    }
+
 }
