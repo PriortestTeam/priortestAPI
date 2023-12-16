@@ -174,7 +174,7 @@ public class OneFilter implements VerifyParam, Serializable {
         this.sourceVal = null;
     }
 
-    public String getFieldNameEnCamelCase() {
-        return fieldNameEnCamelCase;
+    public String getFieldNameEn() {
+        return fieldNameEn;
     }
 }

@@ -92,8 +92,8 @@ public class BeanSearchController {
         params.put("P0.projectId", projectId);
         params.put("P0.projectId-op", "eq");
         for (int i = 0; i < oneFilters.size(); i++) {
-            params.put(StrUtil.format("A{}.{}", i, oneFilters.get(i).getFieldNameEnCamelCase()), oneFilters.get(i).getSourceVal());
-            params.put(StrUtil.format("A{}.{}-op", i, oneFilters.get(i).getFieldNameEnCamelCase()), oneFilters.get(i).getCondition());
+            params.put(StrUtil.format("A{}.{}", i, oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getSourceVal());
+            params.put(StrUtil.format("A{}.{}-op", i, oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getCondition());
         }
         // 参数增加逻辑关系
         StringBuilder gexpr = new StringBuilder();
