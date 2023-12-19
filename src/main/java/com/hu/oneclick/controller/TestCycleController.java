@@ -6,10 +6,10 @@ import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
+import com.hu.oneclick.model.domain.dto.TestCaseBisDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleSaveDto;
 import com.hu.oneclick.model.domain.param.TestCaseParam;
@@ -198,11 +198,11 @@ public class TestCycleController extends BaseController {
 
     @ApiOperation("列表")
     @PostMapping("/instance/listByTestCycle")
-    public Resp<PageInfo<TestCase>> listByTestCycle(@RequestBody TestCycleParam param) {
+    public Resp<PageInfo<TestCaseBisDto>> listByTestCycle(@RequestBody TestCycleParam param) {
         if (null == param.getTestCycleId()) {
             throw new BaseException("测试周期ID不能为空");
         }
-        TestCaseParam tmpParam = new TestCaseParam();
+        /*** TestCaseParam tmpParam = new TestCaseParam();
         List<Long> caseIdList = this.testCycleJoinTestCaseService.getCaseIdListByCycleId(param.getTestCycleId());
         if (CollUtil.isEmpty(caseIdList)) {
             return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(Collections.EMPTY_LIST)).ok();
@@ -210,7 +210,10 @@ public class TestCycleController extends BaseController {
         tmpParam.setTestCaseIdList(caseIdList);
         startPage();
         List<TestCase> testCaseList = testCaseService.listExtend(tmpParam);
-        return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
+        **/
+        List<TestCaseBisDto> testCaseAllByCycleId = testCaseService.getTestCaseAllByCycleId(param.getTestCycleId());
+        startPage();
+        return new Resp.Builder<PageInfo<TestCaseBisDto>>().setData(PageInfo.of(testCaseAllByCycleId)).ok();
     }
 
 

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
+import com.hu.oneclick.model.domain.dto.TestCaseDataDto;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
@@ -34,5 +35,7 @@ public interface TestCaseDao extends BaseMapper<TestCase> {
                 .last("LIMIT 1")
                 .one();
     }
+
+    List<TestCaseDataDto> getSelectAll(Long testCycleId);
 
 }
