@@ -250,6 +250,7 @@
                t1.run_status,
                t1.update_time,
                t1.create_user_id,
+               t1.update_user_id,
                t2.*
         FROM test_cycle_join_test_case t1
                  LEFT JOIN test_case t2 ON t1.test_case_id = t2.id

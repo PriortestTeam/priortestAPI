@@ -113,9 +113,9 @@ public class TestCaseDataDto {
     private String testStatus;
 
     /**
-     * 测试执行状态
+     * 测试执行状态,默认5 未执行
      */
-    private String runStatus;
+    private int runStatus = 5;
 
     /**
      * reportTo
@@ -137,4 +137,6 @@ public class TestCaseDataDto {
     private Date updateTime;
 
     private BigInteger createUserId;
+
+    private BigInteger updateUserId;
 }

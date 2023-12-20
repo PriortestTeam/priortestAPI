@@ -11,7 +11,8 @@ import java.util.Date;
 @Component
 public class testCaseDataRunDto {
     private int runCount;
-    private String runStatus;
+    private int runStatus;
     private Date updateTime;
     private BigInteger createUserId;
+    private BigInteger updateUserId;
 }
