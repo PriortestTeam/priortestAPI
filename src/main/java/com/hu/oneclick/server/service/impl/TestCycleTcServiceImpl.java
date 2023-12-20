@@ -4,7 +4,6 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.dto.ExecuteRunTestCaseDto;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.server.service.TestCycleTcService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +44,5 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             return new Resp.Builder<java.lang.String>().ok();
         }
         return new Resp.Builder<java.lang.String>().fail();
-    }
-
-    @Override
-    public Resp<String> runTestCycle(ExecuteRunTestCaseDto executeRunTestCaseDto) {
-        System.out.println(executeRunTestCaseDto.isRunCountIndicator());
-        return null;
     }
 }

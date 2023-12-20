@@ -6,9 +6,9 @@ import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
-import com.hu.oneclick.model.domain.dto.ExecuteRunTestCaseDto;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCaseBisDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
@@ -111,10 +111,6 @@ public class TestCycleController extends BaseController {
         System.out.println(executeTestCaseDto.getTestCaseId());
         return testCycleTcService.runTestCycleTc(executeTestCaseDto);
     }
-    @PostMapping("caseRun/execute")
-    public Resp<String> runTestCycleExecute(@RequestBody ExecuteRunTestCaseDto executeRunTestCaseDto) {
-        return testCycleTcService.runTestCycle(executeRunTestCaseDto);
-    }
 //
 //    @PostMapping("excute")
 //    public Resp<Map<String,Object>> excute(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
@@ -208,14 +204,14 @@ public class TestCycleController extends BaseController {
             throw new BaseException("测试周期ID不能为空");
         }
         /*** TestCaseParam tmpParam = new TestCaseParam();
-        List<Long> caseIdList = this.testCycleJoinTestCaseService.getCaseIdListByCycleId(param.getTestCycleId());
-        if (CollUtil.isEmpty(caseIdList)) {
-            return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(Collections.EMPTY_LIST)).ok();
-        }
-        tmpParam.setTestCaseIdList(caseIdList);
-        startPage();
-        List<TestCase> testCaseList = testCaseService.listExtend(tmpParam);
-        **/
+         List<Long> caseIdList = this.testCycleJoinTestCaseService.getCaseIdListByCycleId(param.getTestCycleId());
+         if (CollUtil.isEmpty(caseIdList)) {
+         return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(Collections.EMPTY_LIST)).ok();
+         }
+         tmpParam.setTestCaseIdList(caseIdList);
+         startPage();
+         List<TestCase> testCaseList = testCaseService.listExtend(tmpParam);
+         **/
         List<TestCaseBisDto> testCaseAllByCycleId = testCaseService.getTestCaseAllByCycleId(param.getTestCycleId());
         startPage();
         return new Resp.Builder<PageInfo<TestCaseBisDto>>().setData(PageInfo.of(testCaseAllByCycleId)).ok();
