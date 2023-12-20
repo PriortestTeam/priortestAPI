@@ -31,7 +31,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     JwtUserServiceImpl jwtUserService;
 
     /**
-     * 构造函数初始化userId 和 currentTime
+     * 构造函数初始化 currentTime
      *
      * @author Johson
      * @date 2023/12/20 18:47
