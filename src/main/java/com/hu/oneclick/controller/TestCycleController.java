@@ -1,19 +1,17 @@
 package com.hu.oneclick.controller;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
+import com.hu.oneclick.model.domain.dto.ExecuteTestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCaseBisDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleSaveDto;
-import com.hu.oneclick.model.domain.param.TestCaseParam;
 import com.hu.oneclick.model.domain.param.TestCycleParam;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -110,6 +107,11 @@ public class TestCycleController extends BaseController {
     public Resp<String> runTestCycleTc(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
         System.out.println(executeTestCaseDto.getTestCaseId());
         return testCycleTcService.runTestCycleTc(executeTestCaseDto);
+    }
+
+    @PostMapping("caseRun/execute")
+    public Resp<ExecuteTestCaseDto> runExecuteTestCase(@RequestBody ExecuteTestCaseRunDto executeTestCaseRunDto) {
+        return testCycleTcService.runExecuteTestCase(executeTestCaseRunDto);
     }
 //
 //    @PostMapping("excute")

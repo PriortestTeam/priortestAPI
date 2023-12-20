@@ -16,10 +16,11 @@
          teststep_condition,
          teststep_expand,
          project_id,
-         create_time)
+         create_time,
+         run_count)
         values (#{param1},
-                #{param2.testCaseId},
                 #{param2.testCycleId},
+                #{param2.testCaseId},
                 #{param2.statusCode},
                 #{param2.testStep},
                 #{param2.expectedResult},
@@ -30,6 +31,22 @@
                 #{param2.teststepCondition},
                 #{param2.teststepExpand},
                 #{param2.projectId},
-                #{param2.createTime});
+                #{param2.createTime},
+                #{param2.runCount});
     </insert>
+
+    <select id="queryList" resultType="com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto">
+        select *
+        from test_cases_execution
+        where test_case_id = #{testCaseId}
+          and test_cycle_id = #{testCycleId}
+          and project_id = #{projectId}
+          and run_count = (
+                select MAX(run_count)
+                from test_cases_execution
+                where test_case_id = #{testCaseId}
+                and test_cycle_id = #{testCycleId}
+                and project_id = #{projectId}
+            );
+    </select>
 </mapper>

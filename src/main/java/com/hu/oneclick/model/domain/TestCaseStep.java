@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
@@ -20,6 +21,7 @@ import java.io.Serializable;
 @Data
 @ApiModel("测试用例步骤")
 @TableName("test_case_step")
+@Component
 public class TestCaseStep extends AssignIdEntity implements Serializable {
 
     private static final long serialVersionUID = -2725298116058101604L;
@@ -73,4 +75,6 @@ public class TestCaseStep extends AssignIdEntity implements Serializable {
     @ApiModelProperty("执行条件")
     private String teststepCondition;
 
+    @ApiModelProperty("status_code")
+    private int statusCode;
 }

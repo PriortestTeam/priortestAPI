@@ -5,19 +5,14 @@
     <resultMap type="com.hu.oneclick.model.domain.TestCaseStep" id="TestCaseStepMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="testCaseId" column="test_case_id" jdbcType="INTEGER"/>
-        <result property="step" column="step" jdbcType="VARCHAR"/>
-        <result property="testDate" column="test_date" jdbcType="TIMESTAMP"/>
         <result property="expectedResult" column="expected_result" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
-        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-        <result property="actualResult" column="actual_result" jdbcType="VARCHAR"/>
+        <result property="statusCode" column="status_code" jdbcType="INTEGER"/>
     </resultMap>
 
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="TestCaseStepMap">
-        select
-        id, test_case_id, step, test_date, expected_result, status, create_time,actual_result
+        select *
         from oneclick.test_case_step
         <where>
             <if test="id != null">
@@ -26,40 +21,19 @@
             <if test="testCaseId != null">
                 and test_case_id = #{testCaseId}
             </if>
-            <if test="step != null and step != ''">
-                and step = #{step}
-            </if>
-            <if test="testDate != null">
-                and test_date = #{testDate}
-            </if>
             <if test="expectedResult != null and expectedResult != ''">
                 and expected_result = #{expectedResult}
-            </if>
-            <if test="status != null">
-                and status = #{status}
-            </if>
-            <if test="createTime != null">
-                and create_time = #{createTime}
             </if>
         </where>
     </select>
     <update id="updateByPrimaryKeySelective">
         update test_case_step
         <set>
-            <if test="step != null and step != ''">
-                step=#{step},
-            </if>
             <if test="expectedResult != null and expectedResult != ''">
                 expected_result=#{expectedResult},
             </if>
-            <if test="status != null and status != ''">
-                status=#{status},
-            </if>
-            <if test="testDate != null">
-                test_date=#{testDate},
-            </if>
-            <if test="actualResult != null and actualResult != ''">
-                actual_result = #{actualResult},
+            <if test="statusCode != null and status != ''">
+                status_code=#{statusCode},
             </if>
         </set>
         where id = #{id} and test_case_id = #{testCaseId}
