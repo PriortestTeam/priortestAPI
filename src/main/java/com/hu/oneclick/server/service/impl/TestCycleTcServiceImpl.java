@@ -50,6 +50,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     public Resp<String> runTestCycleTc(ExecuteTestCaseDto executeTestCaseDto) {
 
         executeTestCaseDto.setCreateTime(currentTime);
+        executeTestCaseDto.setRunCount(1);
         int i = testCycleTcDao.addTestCaseExecution(jwtUserService.getUserLoginInfo().getSysUser().getId(), executeTestCaseDto);
 
         if (i > 0) {
