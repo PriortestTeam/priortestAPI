@@ -110,7 +110,7 @@ public class TestCycleController extends BaseController {
     }
 
     @PostMapping("caseRun/execute")
-    public Resp<ExecuteTestCaseDto> runExecuteTestCase(@RequestBody ExecuteTestCaseRunDto executeTestCaseRunDto) {
+    public Resp<PageInfo<Object>> runExecuteTestCase(@RequestBody ExecuteTestCaseRunDto executeTestCaseRunDto) {
         return testCycleTcService.runExecuteTestCase(executeTestCaseRunDto);
     }
 //

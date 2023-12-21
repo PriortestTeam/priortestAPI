@@ -66,7 +66,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     TestCaseStep testCaseStep;
 
     @Override
-    public Resp runExecuteTestCase(ExecuteTestCaseRunDto executeTestCaseRunDto) {
+    public Resp<PageInfo<Object>> runExecuteTestCase(ExecuteTestCaseRunDto executeTestCaseRunDto) {
 
         List<ExecuteTestCaseDto> execute = testCycleTcDao.queryList(executeTestCaseRunDto);
         ArrayList<Object> retList = new ArrayList<>();
