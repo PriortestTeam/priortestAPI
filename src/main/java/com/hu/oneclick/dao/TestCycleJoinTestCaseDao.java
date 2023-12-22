@@ -47,4 +47,8 @@ public interface TestCycleJoinTestCaseDao extends BaseMapper<TestCycleJoinTestCa
     TestCycleJoinTestCase getCycleJoinTestCaseByCaseId(@Param("caseId") Long caseId, @Param("projectId") Long projectId,
         @Param("cycleId") Long cycleId);
 
+    int updateRunStatus(long testCaseId, long testCycleId, byte runStatusId, String updateUserId, String projectId);
+
+
+
 }

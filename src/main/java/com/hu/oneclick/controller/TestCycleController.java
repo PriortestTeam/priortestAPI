@@ -10,6 +10,7 @@ import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCaseBisDto;
+import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleSaveDto;
 import com.hu.oneclick.model.domain.param.TestCycleParam;
@@ -112,6 +113,11 @@ public class TestCycleController extends BaseController {
     @PostMapping("caseRun/execute")
     public Resp<PageInfo<Object>> runExecuteTestCase(@RequestBody ExecuteTestCaseRunDto executeTestCaseRunDto) {
         return testCycleTcService.runExecuteTestCase(executeTestCaseRunDto);
+    }
+
+    @PostMapping("caseRun/testCase")
+    public Resp<String> runTestCase(@RequestBody TestCaseRunDto testCaseRunDto) {
+        return testCycleTcService.runTestCase(testCaseRunDto);
     }
 //
 //    @PostMapping("excute")

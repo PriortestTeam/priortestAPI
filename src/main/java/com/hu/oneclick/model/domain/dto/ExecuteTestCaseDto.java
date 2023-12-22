@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Data
@@ -26,4 +27,5 @@ public class ExecuteTestCaseDto {
     private String projectId;
     private Date createTime;
     private int runCount;
+    private Long testCaseStepId;
 }

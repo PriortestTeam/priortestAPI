@@ -141,5 +141,15 @@
             id DESC
         LIMIT 1
     </select>
+
+    <update id="updateRunStatus">
+        update test_cycle_join_test_case
+        set run_status     = #{param3},
+            update_user_id = #{param4},
+            update_time    = NOW()
+        where test_case_id = #{param1}
+          and test_cycle_id = #{param2}
+          and project_id = #{param5}
+    </update>
     <!-- 新增 WJK END-->
 </mapper>
