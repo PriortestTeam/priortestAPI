@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static com.hu.oneclick.common.util.PageUtil.startPage;
 import static jodd.util.Util.containsElement;
@@ -127,7 +128,8 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         // 更新 execute 状态
         int upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
         // 更新 testCycleJoinTestCase 表的 状态
-        int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto.getTestCaseId(), testCaseRunDto.getTestCycleId(), calculateStatusCode(testCaseRunDto, execute), jwtUserService.getUserLoginInfo().getSysUser().getId(), testCaseRunDto.getProjectId());
+        byte runCode = (byte) testCaseRunDto.getStatusCode();
+        int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto.getTestCaseId(), testCaseRunDto.getTestCycleId(), calculateStatusCode(runCode, execute), jwtUserService.getUserLoginInfo().getSysUser().getId(), testCaseRunDto.getProjectId());
         if (upExecute > 0 && upJoinRunStatus > 0) {
             return new Resp.Builder<String>().ok();
         }
@@ -141,45 +143,41 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         return testCycleTcDao.queryList(executeTestCaseRunDto);
     }
 
-    private byte calculateStatusCode(TestCaseRunDto testCaseRunDto, List<ExecuteTestCaseDto> execute) {
-        byte runCode = (byte) testCaseRunDto.getStatusCode();
-        if (runCode != StatusCode.FAIL.getValue()) {
+    private byte calculateStatusCode(byte runCode, List<ExecuteTestCaseDto> execute) {
+        if (!Objects.equals(runCode, StatusCode.FAIL.getValue())) {
             byte passNum = 0, invalidNum = 0, skipNUm = 0; //初始化 成功、无效、跳过 的次数
             byte lastCode = runCode; // 最近更新的状态
             for (ExecuteTestCaseDto testCaseDto : execute) {
-                int statusCode = testCaseDto.getStatusCode(); // 将状态码存储在变量中
-                // 有一个是失败就是失败
-                if (statusCode == StatusCode.FAIL.getValue()) {
-                    runCode = StatusCode.FAIL.getValue();
-                    break;
-                }
-                // 没有失败 有一个是停滞就是停滞
-                if (statusCode == StatusCode.BLOCKED.getValue()) {
-                    runCode = StatusCode.BLOCKED.getValue();
-                    break;
-                }
-                // 不存在失败、停滞、有一个未执行 就是未完成
-                if (statusCode == StatusCode.NO_RUN.getValue()) {
-                    runCode = StatusCode.NOT_COMPLETED.getValue();
-                    break;
-                }
-                // 统计 跳过、成功、无效 出现的次数
-                if (statusCode == StatusCode.SKIP.getValue()) {
-                    skipNUm++;
-                } else if (statusCode == StatusCode.PASS.getValue()) {
-                    passNum++;
-                } else if (statusCode == StatusCode.INVALID.getValue()) {
-                    invalidNum++;
+                byte statusCode = (byte) (testCaseDto.getStatusCode()); // 将状态码存储在变量中
+                switch (Objects.requireNonNull(StatusCode.getByValue(statusCode))) {
+                    case FAIL:
+                        runCode = StatusCode.FAIL.getValue();
+                        break;
+                    case BLOCKED:
+                        runCode = StatusCode.BLOCKED.getValue();
+                        break;
+                    case NO_RUN:
+                        runCode = StatusCode.NOT_COMPLETED.getValue();
+                        break;
+                    case SKIP:
+                        skipNUm++;
+                        break;
+                    case PASS:
+                        passNum++;
+                        break;
+                    case INVALID:
+                        invalidNum++;
+                        break;
                 }
             }
             byte[] arr = {StatusCode.FAIL.getValue(), StatusCode.BLOCKED.getValue(), StatusCode.NOT_COMPLETED.getValue()};
             if (!containsElement(arr, runCode)) {
                 int executeSize = execute.size();
-                if (executeSize == skipNUm) {
+                if (Objects.equals(executeSize, skipNUm)) {
                     runCode = StatusCode.SKIP.getValue(); // 全部为跳过，则直接返回
-                } else if (executeSize == passNum) {
+                } else if (Objects.equals(executeSize, passNum)) {
                     runCode = StatusCode.PASS.getValue(); // 全部为成功，则直接返回
-                } else if (executeSize == invalidNum) {
+                } else if (Objects.equals(executeSize, invalidNum)) {
                     runCode = StatusCode.INVALID.getValue(); // 全部为无效，则直接返回
                 } else {
                     runCode = lastCode; // 默认使用最后一次的状态码
