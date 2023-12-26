@@ -54,18 +54,12 @@
 
     <update id="upExecuteStatusCode">
         update test_cases_execution
-        set status_code   = #{statusCode},
-            actual_result = #{actualResult}
-        where test_case_id = #{testCaseId}
-          and test_cycle_id = #{testCycleId}
-          and project_id = #{projectId}
-          and test_case_step_id = #{testCaseStepId}
-          and run_count = (
-            select MAX(run_count)
-            from test_cases_execution
-            where test_case_id = #{testCaseId}
-              and test_cycle_id = #{testCycleId}
-              and project_id = #{projectId}
-        );
+        set status_code   = #{param1.statusCode},
+            actual_result = #{param1.actualResult}
+        where test_case_id = #{param1.testCaseId}
+          and test_cycle_id = #{param1.testCycleId}
+          and project_id = #{param1.projectId}
+          and test_case_step_id = #{param1.testCaseStepId}
+          and run_count = #{param2}
     </update>
 </mapper>

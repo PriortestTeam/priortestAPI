@@ -11,5 +11,5 @@ public interface TestCycleTcDao {
 
     List<ExecuteTestCaseDto> queryList(ExecuteTestCaseRunDto executeTestCaseRunDto);
 
-    int upExecuteStatusCode(TestCaseRunDto testCaseRunDto);
+    int upExecuteStatusCode(TestCaseRunDto testCaseRunDto, int runCount);
 }

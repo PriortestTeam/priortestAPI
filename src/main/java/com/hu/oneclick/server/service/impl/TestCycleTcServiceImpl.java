@@ -121,26 +121,29 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) {
+        // 查询最新一轮的execute记录
+        List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
+        int runCount = execute.stream().findFirst().isPresent() ? execute.stream().findFirst().get().getRunCount() : 0;
         // 更新 execute 状态
-        int upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto);
+        int upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount);
         // 更新 testCycleJoinTestCase 表的 状态
-        byte runCode = calculateStatusCode(testCaseRunDto);
-        String userId = jwtUserService.getUserLoginInfo().getSysUser().getId();
-        int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto.getTestCaseId(), testCaseRunDto.getTestCycleId(), runCode, userId, testCaseRunDto.getProjectId());
+        int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto.getTestCaseId(), testCaseRunDto.getTestCycleId(), calculateStatusCode(testCaseRunDto, execute), jwtUserService.getUserLoginInfo().getSysUser().getId(), testCaseRunDto.getProjectId());
         if (upExecute > 0 && upJoinRunStatus > 0) {
             return new Resp.Builder<String>().ok();
         }
         return new Resp.Builder<String>().fail();
     }
 
-    private byte calculateStatusCode(TestCaseRunDto testCaseRunDto) {
+    private List<ExecuteTestCaseDto> getExecuteTestCaseList(TestCaseRunDto testCaseRunDto) {
+        executeTestCaseRunDto.setTestCycleId(testCaseRunDto.getTestCycleId());
+        executeTestCaseRunDto.setTestCaseId(testCaseRunDto.getTestCaseId());
+        executeTestCaseRunDto.setProjectId(testCaseRunDto.getProjectId());
+        return testCycleTcDao.queryList(executeTestCaseRunDto);
+    }
+
+    private byte calculateStatusCode(TestCaseRunDto testCaseRunDto, List<ExecuteTestCaseDto> execute) {
         byte runCode = (byte) testCaseRunDto.getStatusCode();
         if (runCode != StatusCode.FAIL.getValue()) {
-            // 查询最新一轮的execute记录
-            executeTestCaseRunDto.setTestCycleId(testCaseRunDto.getTestCycleId());
-            executeTestCaseRunDto.setTestCaseId(testCaseRunDto.getTestCaseId());
-            executeTestCaseRunDto.setProjectId(testCaseRunDto.getProjectId());
-            List<ExecuteTestCaseDto> execute = testCycleTcDao.queryList(executeTestCaseRunDto);
             byte passNum = 0, invalidNum = 0, skipNUm = 0; //初始化 成功、无效、跳过 的次数
             byte lastCode = runCode; // 最近更新的状态
             for (ExecuteTestCaseDto testCaseDto : execute) {
