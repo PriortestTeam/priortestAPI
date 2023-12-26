@@ -54,7 +54,8 @@
 
     <update id="upExecuteStatusCode">
         update test_cases_execution
-        set status_code = #{statusCode}
+        set status_code   = #{statusCode},
+            actual_result = #{actualResult}
         where test_case_id = #{testCaseId}
           and test_cycle_id = #{testCycleId}
           and project_id = #{projectId}

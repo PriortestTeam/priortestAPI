@@ -17,4 +17,5 @@ public class TestCaseRunDto {
     private String projectId;
     private int statusCode;
     private Long testCaseStepId;
+    private String actualResult;
 }
