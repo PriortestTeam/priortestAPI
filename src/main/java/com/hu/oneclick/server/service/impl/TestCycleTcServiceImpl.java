@@ -125,7 +125,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
         int runCount = execute.stream().findFirst().isPresent() ? execute.stream().findFirst().get().getRunCount() : 0;
         // 更新 execute 状态
-        int upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount);
+        int upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
         // 更新 testCycleJoinTestCase 表的 状态
         int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto.getTestCaseId(), testCaseRunDto.getTestCycleId(), calculateStatusCode(testCaseRunDto, execute), jwtUserService.getUserLoginInfo().getSysUser().getId(), testCaseRunDto.getProjectId());
         if (upExecute > 0 && upJoinRunStatus > 0) {

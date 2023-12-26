@@ -59,7 +59,9 @@
         where test_case_id = #{param1.testCaseId}
           and test_cycle_id = #{param1.testCycleId}
           and project_id = #{param1.projectId}
-          and test_case_step_id = #{param1.testCaseStepId}
           and run_count = #{param2}
+        <if test="testCaseStepId != null and testCaseStepId != ''">
+           and test_case_step_id = #{param1.testCaseStepId}
+        </if>
     </update>
 </mapper>
