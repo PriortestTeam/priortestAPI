@@ -60,5 +60,12 @@
           and test_cycle_id = #{testCycleId}
           and project_id = #{projectId}
           and test_case_step_id = #{testCaseStepId}
+          and run_count = (
+            select MAX(run_count)
+            from test_cases_execution
+            where test_case_id = #{testCaseId}
+              and test_cycle_id = #{testCycleId}
+              and project_id = #{projectId}
+        );
     </update>
 </mapper>
