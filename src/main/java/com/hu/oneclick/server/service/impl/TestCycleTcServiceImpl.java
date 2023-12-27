@@ -79,7 +79,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         ArrayList<Object> retList = new ArrayList<>();
         if (executeTestCaseRunDto.isRunCountIndicator()) {
             // 为true 先查询是否存在execute记录，有则查询runCount当前最大值，没有则直接插入，然后将插入的内容返回
-            int currentCount = !execute.isEmpty() ? execute.get(0).getRunCount() : executeTestCaseDto.getRunCount();
+            int currentCount = !execute.isEmpty() ? execute.get(0).getRunCount() : 0;
             currentCount++;
             testCaseStep.setTestCaseId(executeTestCaseRunDto.getTestCaseId());
             List<TestCaseStep> testCaseSteps = testCaseStepDao.queryList(testCaseStep);
