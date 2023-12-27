@@ -76,6 +76,8 @@ public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCa
             TestCaseStep testCaseStep = new TestCaseStep();
             BeanUtil.copyProperties(step, testCaseStep);
             testCaseStep.setTestCaseId(dto.getTestCaseId());
+            // 设置statusCode默认值
+            testCaseStep.setStatusCode(5);
             // 修改自定义字段
             if (!JSONUtil.isNull(step.getCustomFieldDatas())) {
                 testCaseStep.setTeststepExpand(JSONUtil.toJsonStr(step.getCustomFieldDatas()));
