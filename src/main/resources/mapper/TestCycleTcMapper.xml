@@ -32,7 +32,7 @@
                 #{param2.teststepCondition},
                 #{param2.teststepExpand},
                 #{param2.projectId},
-                #{param2.createTime},
+                Now(),
                 #{param2.runCount},
                 #{param2.testCaseStepId});
     </insert>

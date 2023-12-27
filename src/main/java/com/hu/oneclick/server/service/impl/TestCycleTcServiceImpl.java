@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,21 +29,8 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     private TestCycleTcDao testCycleTcDao;
 
-    private final Timestamp currentTime;
-
     @Resource
     JwtUserServiceImpl jwtUserService;
-
-    /**
-     * 构造函数初始化 currentTime
-     *
-     * @author Johson
-     * @date 2023/12/20 18:47
-     */
-    TestCycleTcServiceImpl() {
-        Date currentDate = new Date();
-        currentTime = new Timestamp(currentDate.getTime());
-    }
 
     @Autowired
     public void setTestCycleTcDao(TestCycleTcDao testCycleTcDao) {
@@ -55,7 +40,6 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     @Override
     public Resp<String> runTestCycleTc(ExecuteTestCaseDto executeTestCaseDto) {
 
-        executeTestCaseDto.setCreateTime(currentTime);
         executeTestCaseDto.setRunCount(1);
         int i = testCycleTcDao.addTestCaseExecution(jwtUserService.getUserLoginInfo().getSysUser().getId(), executeTestCaseDto);
 
@@ -83,23 +67,33 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             currentCount++;
             testCaseStep.setTestCaseId(executeTestCaseRunDto.getTestCaseId());
             List<TestCaseStep> testCaseSteps = testCaseStepDao.queryList(testCaseStep);
-            for (TestCaseStep caseStep : testCaseSteps) {
+            //获取用户id
+            String userId = jwtUserService.getUserLoginInfo().getSysUser().getId();
+            if (testCaseSteps.isEmpty()) {
                 executeTestCaseDto.setTestCycleId(executeTestCaseRunDto.getTestCycleId());
-                executeTestCaseDto.setTestCaseId(executeTestCaseRunDto.getTestCaseId());
-                executeTestCaseDto.setTestStep(caseStep.getTestStep());
-                executeTestCaseDto.setExpectedResult(caseStep.getExpectedResult());
-                executeTestCaseDto.setTeststepCondition(caseStep.getTeststepCondition());
-                executeTestCaseDto.setTestData(caseStep.getTestData());
-                executeTestCaseDto.setRemarks(caseStep.getRemarks());
-                executeTestCaseDto.setTestStepId(caseStep.getTestStepId());
-                executeTestCaseDto.setStatusCode(caseStep.getStatusCode());
-                executeTestCaseDto.setTeststepExpand(caseStep.getTeststepExpand());
                 executeTestCaseDto.setProjectId(executeTestCaseRunDto.getProjectId());
-                executeTestCaseDto.setCreateTime(currentTime);
+                executeTestCaseDto.setTestCaseId(executeTestCaseRunDto.getTestCaseId());
+                executeTestCaseDto.setStatusCode(5);
                 executeTestCaseDto.setRunCount(currentCount);
-                executeTestCaseDto.setTestCaseStepId(caseStep.getId());
-                retList.add(executeTestCaseDto);
-                testCycleTcDao.addTestCaseExecution(jwtUserService.getUserLoginInfo().getSysUser().getId(), executeTestCaseDto);
+                testCycleTcDao.addTestCaseExecution(userId, executeTestCaseDto);
+            } else {
+                for (TestCaseStep caseStep : testCaseSteps) {
+                    executeTestCaseDto.setTestCycleId(executeTestCaseRunDto.getTestCycleId());
+                    executeTestCaseDto.setTestCaseId(executeTestCaseRunDto.getTestCaseId());
+                    executeTestCaseDto.setTestStep(caseStep.getTestStep());
+                    executeTestCaseDto.setExpectedResult(caseStep.getExpectedResult());
+                    executeTestCaseDto.setTeststepCondition(caseStep.getTeststepCondition());
+                    executeTestCaseDto.setTestData(caseStep.getTestData());
+                    executeTestCaseDto.setRemarks(caseStep.getRemarks());
+                    executeTestCaseDto.setTestStepId(caseStep.getTestStepId());
+                    executeTestCaseDto.setStatusCode(caseStep.getStatusCode());
+                    executeTestCaseDto.setTeststepExpand(caseStep.getTeststepExpand());
+                    executeTestCaseDto.setProjectId(executeTestCaseRunDto.getProjectId());
+                    executeTestCaseDto.setRunCount(currentCount);
+                    executeTestCaseDto.setTestCaseStepId(caseStep.getId());
+                    retList.add(executeTestCaseDto);
+                    testCycleTcDao.addTestCaseExecution(userId, executeTestCaseDto);
+                }
             }
         } else {
             // 为false 则查询要执行的指定用例
