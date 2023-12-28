@@ -147,7 +147,6 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             for (ExecuteTestCaseDto testCaseDto : execute) {
                 // 将状态码存储在变量中
                 byte statusCode = (byte) (testCaseDto.getStatusCode());
-                System.out.println("列表中出现的状态"+statusCode);
                 switch (Objects.requireNonNull(StatusCode.getByValue(statusCode))) {
                     case FAIL:
                         return StatusCode.FAIL.getValue();
