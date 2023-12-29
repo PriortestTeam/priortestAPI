@@ -3,10 +3,14 @@ package com.hu.oneclick.model.domain;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
+@Component
 public class TestCycleJoinTestCase extends AssignBaseEntity implements Serializable {
 
 

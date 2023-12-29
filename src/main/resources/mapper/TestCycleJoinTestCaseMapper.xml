@@ -86,9 +86,6 @@
             <if test="runCount != null and runCount != ''">
                 run_count = #{runCount},
             </if>
-            <if test="userId != null and userId != ''">
-                user_id = #{userId},
-            </if>
             <if test="runDuration != null and runDuration != ''">
                 run_duration = #{runDuration},
             </if>
@@ -102,6 +99,7 @@
         </set>
         where test_cycle_id = #{testCycleId}
         and test_case_id = #{testCaseId}
+        and project_id = #{projectId}
     </update>
 
     <!--通过实体作为筛选条件查询-->

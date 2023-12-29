@@ -8,6 +8,7 @@ import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCaseStep;
+import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
@@ -56,6 +57,8 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     TestCaseStepDao testCaseStepDao;
     @Resource
     TestCaseStep testCaseStep;
+    @Resource
+    TestCycleJoinTestCase testCycleJoinTestCase;
 
     @Override
     public Resp<PageInfo<Object>> runExecuteTestCase(ExecuteTestCaseRunDto executeTestCaseRunDto) {
@@ -74,7 +77,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                 executeTestCaseDto.setTestCycleId(executeTestCaseRunDto.getTestCycleId());
                 executeTestCaseDto.setProjectId(executeTestCaseRunDto.getProjectId());
                 executeTestCaseDto.setTestCaseId(executeTestCaseRunDto.getTestCaseId());
-                executeTestCaseDto.setStatusCode(5);
+                executeTestCaseDto.setStatusCode(StatusCode.NO_RUN.getValue());
                 executeTestCaseDto.setRunCount(currentCount);
                 testCycleTcDao.addTestCaseExecution(userId, executeTestCaseDto);
             } else {
@@ -96,6 +99,13 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                     testCycleTcDao.addTestCaseExecution(userId, executeTestCaseDto);
                 }
             }
+            // 将 join 表的 count 同步更新并重置 status为 5
+            testCycleJoinTestCase.setTestCaseId(executeTestCaseRunDto.getTestCaseId());
+            testCycleJoinTestCase.setTestCycleId(executeTestCaseRunDto.getTestCycleId());
+            testCycleJoinTestCase.setProjectId(Long.valueOf(executeTestCaseRunDto.getProjectId()));
+            testCycleJoinTestCase.setRunCount(currentCount);
+            testCycleJoinTestCase.setRunStatus((int) StatusCode.NO_RUN.getValue());
+            testCycleJoinTestCaseDao.updateTestCycleJoinTestCase(testCycleJoinTestCase);
         } else {
             // 为false 则查询要执行的指定用例
             for (ExecuteTestCaseDto executeTestCaseDto : execute) {
