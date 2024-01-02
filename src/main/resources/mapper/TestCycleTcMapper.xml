@@ -55,7 +55,8 @@
     <update id="upExecuteStatusCode">
         update test_cases_execution
         set status_code = #{param1.statusCode},
-        actual_result = #{param1.actualResult}
+        actual_result = #{param1.actualResult},
+        step_update_time = now()
         where test_case_id = #{param1.testCaseId}
         and test_cycle_id = #{param1.testCycleId}
         and project_id = #{param1.projectId}
