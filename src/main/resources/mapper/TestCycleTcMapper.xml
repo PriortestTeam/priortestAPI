@@ -76,7 +76,7 @@
     </update>
 
     <select id="getLatest" resultType="com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto">
-        select create_time, step_update_time, rerun_time
+        select create_time, step_update_time, rerun_time, case_run_duration
         from test_cases_execution
         where test_case_id = #{testCaseId}
         and test_cycle_id = #{testCycleId}

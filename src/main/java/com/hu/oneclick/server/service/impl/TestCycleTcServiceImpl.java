@@ -113,7 +113,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         } else {
             // 为false 则查询要执行的指定用例
             for (ExecuteTestCaseDto executeTestCaseDto : execute) {
-                new ExecuteTestCaseDto(executeTestCaseDto.getTestCycleId(), executeTestCaseDto.getTestCaseId(), executeTestCaseDto.getTestStep(), executeTestCaseDto.getExpectedResult(), executeTestCaseDto.getActualResult(), executeTestCaseDto.getTeststepCondition(), executeTestCaseDto.getTestData(), executeTestCaseDto.getRemarks(), executeTestCaseDto.getTestStepId(), executeTestCaseDto.getStatusCode(), executeTestCaseDto.getTeststepExpand(), executeTestCaseDto.getProjectId(), executeTestCaseDto.getCreateTime(), executeTestCaseDto.getRunCount(), executeTestCaseDto.getTestCaseStepId(),executeTestCaseDto.getRerunTime(),executeTestCaseDto.getStepUpdateTime());
+                new ExecuteTestCaseDto(executeTestCaseDto.getTestCycleId(), executeTestCaseDto.getTestCaseId(), executeTestCaseDto.getTestStep(), executeTestCaseDto.getExpectedResult(), executeTestCaseDto.getActualResult(), executeTestCaseDto.getTeststepCondition(), executeTestCaseDto.getTestData(), executeTestCaseDto.getRemarks(), executeTestCaseDto.getTestStepId(), executeTestCaseDto.getStatusCode(), executeTestCaseDto.getTeststepExpand(), executeTestCaseDto.getProjectId(), executeTestCaseDto.getCreateTime(), executeTestCaseDto.getRunCount(), executeTestCaseDto.getTestCaseStepId(), executeTestCaseDto.getRerunTime(), executeTestCaseDto.getStepUpdateTime(), executeTestCaseDto.getCase_run_duration());
                 retList.add(executeTestCaseDto);
             }
             testCycleTcDao.updateRerunTime(executeTestCaseRunDto);
@@ -133,7 +133,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) throws ParseException {
         // 获取最新的时间信息
         ExecuteTestCaseDto latestExe = testCycleTcDao.getLatest(testCaseRunDto);
-        long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime());
+        long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime(), latestExe.getCase_run_duration());
         testCaseRunDto.setCaseRunDuration(caseRunDuration);
         // 查询最新一轮的execute记录
         List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
@@ -205,28 +205,36 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     @Resource
     SimpleDateFormat simpleDateFormat;
+
     @Bean
     public SimpleDateFormat simpleDateFormat() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
+
     /**
      * 计算当前步骤运行时间
      *
      * @param createTime     createTime 创建时间
      * @param rerunTime      rerunTime 再次执行时间
+     * @param duration       duration
      * @return long
      * @author Johnson
      */
-    private long calculateCurrentStepRunningTime(Date createTime, Date rerunTime) throws ParseException {
+    private long calculateCurrentStepRunningTime(Date createTime, Date rerunTime, long duration) throws ParseException {
+        long differenceInMillis = 0, date1 = (new Date()).getTime();
         // 如果再次执行时间不为空，则开始时间为再次执行时间
-        Date startTime = Objects.nonNull(rerunTime) ? rerunTime : createTime;
-        Date date1 = simpleDateFormat.parse(simpleDateFormat.format(startTime));
+        Date startTime;
+        if (Objects.nonNull(rerunTime)) {
+            startTime = rerunTime;
+            differenceInMillis += duration;
+        } else {
+            startTime = createTime;
+        }
 
-        // 获取当前时间毫秒
-        long date2 = (new Date()).getTime();
+        Date date2 = simpleDateFormat.parse(simpleDateFormat.format(startTime));
 
         // 计算时间差
-        long differenceInMillis = Math.subtractExact(date2, date1.getTime());
+        differenceInMillis += Math.subtractExact(date2.getTime(), date1);
 
         return differenceInMillis > 0 ? differenceInMillis : 0;
     }
