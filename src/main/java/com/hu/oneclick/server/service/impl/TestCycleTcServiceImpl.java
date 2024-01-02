@@ -233,10 +233,10 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             startTime = createTime;
         }
 
-        Date date2 = simpleDateFormat.parse(simpleDateFormat.format(startTime));
+        long date2 = simpleDateFormat.parse(simpleDateFormat.format(startTime)).getTime();
 
         // 计算时间差
-        differenceInMillis += Math.subtractExact(date2.getTime(), date1);
+        differenceInMillis += Math.subtractExact(date1, date2);
 
         return differenceInMillis > 0 ? differenceInMillis : 0;
     }
