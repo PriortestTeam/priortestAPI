@@ -19,4 +19,5 @@ public class TestCaseRunDto {
     private Long testCaseStepId;
     private String actualResult;
     private Long caseRunDuration;
+    private Long caseTotalPeriod;
 }

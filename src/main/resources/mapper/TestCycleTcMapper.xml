@@ -57,7 +57,8 @@
         set status_code = #{param1.statusCode},
         actual_result = #{param1.actualResult},
         step_update_time = now(),
-        case_run_duration = #{param1.caseRunDuration}
+        case_run_duration = #{param1.caseRunDuration},
+        case_total_period = #{param1.caseTotalPeriod}
         where test_case_id = #{param1.testCaseId}
         and test_cycle_id = #{param1.testCycleId}
         and project_id = #{param1.projectId}
@@ -76,7 +77,7 @@
     </update>
 
     <select id="getLatest" resultType="com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto">
-        select create_time, step_update_time, rerun_time, case_run_duration
+        select create_time, step_update_time, rerun_time, case_run_duration, case_total_period
         from test_cases_execution
         where test_case_id = #{testCaseId}
         and test_cycle_id = #{testCycleId}
