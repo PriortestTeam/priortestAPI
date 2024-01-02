@@ -133,7 +133,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) throws ParseException {
         // 获取最新的时间信息
         ExecuteTestCaseDto latestExe = testCycleTcDao.getLatest(testCaseRunDto);
-        Long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime());
+        long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime());
         testCaseRunDto.setCaseRunDuration(caseRunDuration);
         // 查询最新一轮的execute记录
         List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
@@ -144,7 +144,8 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         byte runCode = (byte) testCaseRunDto.getStatusCode();
         // 数据变更后再查询新的数据进行逻辑处理
         execute = getExecuteTestCaseList(testCaseRunDto);
-        int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto.getTestCaseId(), testCaseRunDto.getTestCycleId(), calculateStatusCode(runCode, execute), jwtUserService.getUserLoginInfo().getSysUser().getId(), testCaseRunDto.getProjectId());
+        testCaseRunDto.setStatusCode(calculateStatusCode(runCode, execute));
+        int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
         if (upExecute > 0 && upJoinRunStatus > 0) {
             return new Resp.Builder<String>().ok();
         }
