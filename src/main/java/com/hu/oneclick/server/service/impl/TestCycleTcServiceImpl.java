@@ -14,10 +14,14 @@ import com.hu.oneclick.model.domain.dto.ExecuteTestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
 import com.hu.oneclick.server.service.TestCycleTcService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -109,7 +113,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         } else {
             // 为false 则查询要执行的指定用例
             for (ExecuteTestCaseDto executeTestCaseDto : execute) {
-                new ExecuteTestCaseDto(executeTestCaseDto.getTestCycleId(), executeTestCaseDto.getTestCaseId(), executeTestCaseDto.getTestStep(), executeTestCaseDto.getExpectedResult(), executeTestCaseDto.getActualResult(), executeTestCaseDto.getTeststepCondition(), executeTestCaseDto.getTestData(), executeTestCaseDto.getRemarks(), executeTestCaseDto.getTestStepId(), executeTestCaseDto.getStatusCode(), executeTestCaseDto.getTeststepExpand(), executeTestCaseDto.getProjectId(), executeTestCaseDto.getCreateTime(), executeTestCaseDto.getRunCount(), executeTestCaseDto.getTestCaseStepId());
+                new ExecuteTestCaseDto(executeTestCaseDto.getTestCycleId(), executeTestCaseDto.getTestCaseId(), executeTestCaseDto.getTestStep(), executeTestCaseDto.getExpectedResult(), executeTestCaseDto.getActualResult(), executeTestCaseDto.getTeststepCondition(), executeTestCaseDto.getTestData(), executeTestCaseDto.getRemarks(), executeTestCaseDto.getTestStepId(), executeTestCaseDto.getStatusCode(), executeTestCaseDto.getTeststepExpand(), executeTestCaseDto.getProjectId(), executeTestCaseDto.getCreateTime(), executeTestCaseDto.getRunCount(), executeTestCaseDto.getTestCaseStepId(),executeTestCaseDto.getRerunTime(),executeTestCaseDto.getStepUpdateTime());
                 retList.add(executeTestCaseDto);
             }
             testCycleTcDao.updateRerunTime(executeTestCaseRunDto);
@@ -124,9 +128,13 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     @Resource
     TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
-    
+
     @Override
-    public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) {
+    public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) throws ParseException {
+        // 获取最新的时间信息
+        ExecuteTestCaseDto latestExe = testCycleTcDao.getLatest(testCaseRunDto);
+        Long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime());
+        testCaseRunDto.setCaseRunDuration(caseRunDuration);
         // 查询最新一轮的execute记录
         List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
         int runCount = execute.stream().findFirst().isPresent() ? execute.stream().findFirst().get().getRunCount() : 0;
@@ -192,5 +200,33 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             }
         }
         return runCode;
+    }
+
+    @Resource
+    SimpleDateFormat simpleDateFormat;
+    @Bean
+    public SimpleDateFormat simpleDateFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    }
+    /**
+     * 计算当前步骤运行时间
+     *
+     * @param createTime     createTime 创建时间
+     * @param rerunTime      rerunTime 再次执行时间
+     * @return long
+     * @author Johnson
+     */
+    private long calculateCurrentStepRunningTime(Date createTime, Date rerunTime) throws ParseException {
+        // 如果再次执行时间不为空，则开始时间为再次执行时间
+        Date startTime = Objects.nonNull(rerunTime) ? rerunTime : createTime;
+        Date date1 = simpleDateFormat.parse(simpleDateFormat.format(startTime));
+
+        // 获取当前时间毫秒
+        long date2 = (new Date()).getTime();
+
+        // 计算时间差
+        long differenceInMillis = Math.subtractExact(date2, date1.getTime());
+
+        return differenceInMillis > 0 ? differenceInMillis : 0;
     }
 }

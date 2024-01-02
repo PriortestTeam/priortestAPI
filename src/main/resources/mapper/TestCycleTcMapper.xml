@@ -56,7 +56,8 @@
         update test_cases_execution
         set status_code = #{param1.statusCode},
         actual_result = #{param1.actualResult},
-        step_update_time = now()
+        step_update_time = now(),
+        case_run_duration = #{param1.caseRunDuration}
         where test_case_id = #{param1.testCaseId}
         and test_cycle_id = #{param1.testCycleId}
         and project_id = #{param1.projectId}
@@ -73,4 +74,21 @@
           and test_case_id = #{testCaseId}
           and project_id = #{projectId}
     </update>
+
+    <select id="getLatest" resultType="com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto">
+        select create_time, step_update_time, rerun_time
+        from test_cases_execution
+        where test_case_id = #{testCaseId}
+        and test_cycle_id = #{testCycleId}
+        and project_id = #{projectId}
+        <if test="testCaseStepId != null and testCaseStepId != ''">
+            and test_case_step_id = #{testCaseStepId}
+        </if>
+        and run_count = (select MAX(run_count)
+        from test_cases_execution
+        where test_case_id = #{testCaseId}
+        and test_cycle_id = #{testCycleId}
+        and project_id = #{projectId})
+        order by step_update_time desc limit 1;
+    </select>
 </mapper>

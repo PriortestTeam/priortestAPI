@@ -7,11 +7,12 @@ import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
 
+import java.text.ParseException;
 
 public interface TestCycleTcService {
     Resp<String> runTestCycleTc(ExecuteTestCaseDto executeTestCaseDto);
 
     Resp<PageInfo<Object>> runExecuteTestCase(ExecuteTestCaseRunDto executeTestCaseRunDto);
 
-    Resp<String> runTestCase(TestCaseRunDto testCaseRunDto);
+    Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) throws ParseException;
 }

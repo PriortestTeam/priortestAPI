@@ -14,4 +14,6 @@ public interface TestCycleTcDao {
 
     int upExecuteStatusCode(TestCaseRunDto testCaseRunDto, int runCount, @Param("testCaseStepId") Long testCaseStepId);
     int updateRerunTime(ExecuteTestCaseRunDto executeTestCaseRunDto);
+
+    ExecuteTestCaseDto getLatest(TestCaseRunDto testCaseRunDto);
 }

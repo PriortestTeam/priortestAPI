@@ -18,4 +18,5 @@ public class TestCaseRunDto {
     private int statusCode;
     private Long testCaseStepId;
     private String actualResult;
+    private Long caseRunDuration;
 }
