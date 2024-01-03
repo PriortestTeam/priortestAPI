@@ -145,7 +145,7 @@
         set run_status     = #{param1.statusCode},
             update_user_id = #{param2},
             case_run_duration = #{param1.caseRunDuration},
-            case_total_period = case_total_period + #{param1.caseTotalPeriod}, # 自增
+            case_total_period = case_total_period + #{param1.caseTotalPeriod},
             update_time    = NOW()
         where test_case_id = #{param1.testCaseId}
           and test_cycle_id = #{param1.testCycleId}
