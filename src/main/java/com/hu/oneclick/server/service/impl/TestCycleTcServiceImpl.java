@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +37,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     private TestCycleTcDao testCycleTcDao;
 
+    private long totalPeriod = 0;
     @Resource
     JwtUserServiceImpl jwtUserService;
 
@@ -113,7 +116,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         } else {
             // 为false 则查询要执行的指定用例
             for (ExecuteTestCaseDto executeTestCaseDto : execute) {
-                new ExecuteTestCaseDto(executeTestCaseDto.getTestCycleId(), executeTestCaseDto.getTestCaseId(), executeTestCaseDto.getTestStep(), executeTestCaseDto.getExpectedResult(), executeTestCaseDto.getActualResult(), executeTestCaseDto.getTeststepCondition(), executeTestCaseDto.getTestData(), executeTestCaseDto.getRemarks(), executeTestCaseDto.getTestStepId(), executeTestCaseDto.getStatusCode(), executeTestCaseDto.getTeststepExpand(), executeTestCaseDto.getProjectId(), executeTestCaseDto.getCreateTime(), executeTestCaseDto.getRunCount(), executeTestCaseDto.getTestCaseStepId(), executeTestCaseDto.getRerunTime(), executeTestCaseDto.getStepUpdateTime(), executeTestCaseDto.getCaseRunDuration(),executeTestCaseDto.getCaseTotalPeriod());
+                new ExecuteTestCaseDto(executeTestCaseDto.getTestCycleId(), executeTestCaseDto.getTestCaseId(), executeTestCaseDto.getTestStep(), executeTestCaseDto.getExpectedResult(), executeTestCaseDto.getActualResult(), executeTestCaseDto.getTeststepCondition(), executeTestCaseDto.getTestData(), executeTestCaseDto.getRemarks(), executeTestCaseDto.getTestStepId(), executeTestCaseDto.getStatusCode(), executeTestCaseDto.getTeststepExpand(), executeTestCaseDto.getProjectId(), executeTestCaseDto.getCreateTime(), executeTestCaseDto.getRunCount(), executeTestCaseDto.getTestCaseStepId(), executeTestCaseDto.getRerunTime(), executeTestCaseDto.getStepUpdateTime(), executeTestCaseDto.getCaseRunDuration(), executeTestCaseDto.getCaseTotalPeriod());
                 retList.add(executeTestCaseDto);
             }
             testCycleTcDao.updateRerunTime(executeTestCaseRunDto);
@@ -133,10 +136,13 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) throws ParseException {
         // 获取最新的时间信息
         ExecuteTestCaseDto latestExe = testCycleTcDao.getLatest(testCaseRunDto);
-        long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime(), latestExe.getCaseRunDuration());
+        long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime(), latestExe.getCaseRunDuration(),latestExe.getCaseTotalPeriod());
         testCaseRunDto.setCaseRunDuration(caseRunDuration);
-        //todo 再次执行时需要计算新的
-        testCaseRunDto.setCaseTotalPeriod(caseRunDuration);
+        // 初次执行
+        testCaseRunDto.setCaseTotalPeriod(totalPeriod);
+        if (Objects.isNull(latestExe.getRerunTime())) {
+            testCaseRunDto.setCaseTotalPeriod(caseRunDuration);
+        }
         // 查询最新一轮的execute记录
         List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
         int runCount = execute.stream().findFirst().isPresent() ? execute.stream().findFirst().get().getRunCount() : 0;
@@ -222,22 +228,90 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
      * @return long
      * @author Johnson
      */
-    private long calculateCurrentStepRunningTime(Date createTime, Date rerunTime, long duration) throws ParseException {
-        long differenceInMillis = 0, date1 = (new Date()).getTime();
+    private long calculateCurrentStepRunningTime(Date createTime, Date rerunTime, long duration, long totalPeriod) throws ParseException {
+        long differenceInMillis = 0;
+        Date date1 = new Date();
         // 如果再次执行时间不为空，则开始时间为再次执行时间
-        Date startTime;
+        Date startTime = createTime;
         if (Objects.nonNull(rerunTime)) {
             startTime = rerunTime;
             differenceInMillis += duration;
-        } else {
-            startTime = createTime;
+            long weekends = filterWeekends(startTime, date1);
+            this.totalPeriod = Math.addExact(weekends, totalPeriod);
         }
-
         long date2 = simpleDateFormat.parse(simpleDateFormat.format(startTime)).getTime();
 
         // 计算时间差
-        differenceInMillis += Math.subtractExact(date1, date2);
+        differenceInMillis += Math.subtractExact(date1.getTime(), date2);
 
         return differenceInMillis > 0 ? differenceInMillis : 0;
+    }
+
+    /**
+     * 获取时间段内 所有日期
+     * @author Johnson
+     *
+     * @param startDate startDate
+     * @param endDate endDate
+     * @return java.util.List<java.util.Date>
+     */
+    private List<Date> getDatesBetween(Date startDate, Date endDate) {
+        List<Date> dates = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        while (calendar.getTime().before(endDate)) {
+            Date date = calendar.getTime();
+            dates.add(date);
+            calendar.add(Calendar.DATE, 1);
+        }
+        return dates;
+    }
+
+    /**
+     * 计算给定日期的周末天数
+     * @author Johnson
+     *
+     * @param dates dates
+     * @return int
+     */
+    private int countWeekends(List<Date> dates) {
+        int count = 0;
+        for (Date date : dates) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            if (Objects.equals(dayOfWeek, Calendar.SATURDAY) || Objects.equals(dayOfWeek, Calendar.SUNDAY)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 扣除周末后的剩余毫秒数按照每天 8 小时计算剩余时间
+     * @author Johnson
+     *
+     * @param startDate startDate
+     * @param endDate endDate
+     * @return long
+     */
+    private long filterWeekends(Date startDate, Date endDate) {
+        // 该时间段的总毫秒数
+        long totalTime = Math.subtractExact(endDate.getTime(), startDate.getTime());
+        List<Date> dates = getDatesBetween(startDate, endDate);
+        // 统计周末出现的天数
+        int weekends = countWeekends(dates);
+        // 获取一天的毫秒数
+        long dayMilliseconds = ChronoUnit.DAYS.getDuration().toMillis();
+        // 周末总毫秒数
+        long weekendsMillis = Math.multiplyExact(dayMilliseconds, weekends);
+        // 当前用例剩余毫秒数 = 总毫秒数 - 周末毫秒数
+        long surplusMillis = Math.subtractExact(totalTime, weekendsMillis);
+        // 剩余天数 = 用例剩余毫秒数 / 一天的毫秒数
+        long surplusDays = Math.floorDiv(surplusMillis, dayMilliseconds);
+        // 一小时的毫秒数
+        long oneHourMilliseconds = ChronoUnit.HOURS.getDuration().toMillis();
+        // 剩余天数按照每天 8小时，计算出最终毫秒数
+        return Math.multiplyExact(surplusDays, Math.multiplyExact(oneHourMilliseconds, 8));
     }
 }
