@@ -86,8 +86,8 @@
             <if test="userId != null and userId != ''">
                 user_id = #{userId},
             </if>
-            <if test="runDuration != null and runDuration != ''">
-                run_duration = #{runDuration},
+            <if test="caseRunDuration != null and caseRunDuration != ''">
+                case_run_duration = #{caseRunDuration},
             </if>
             <if test="runStatus != null and runStatus != ''">
                 run_status = #{runStatus},
