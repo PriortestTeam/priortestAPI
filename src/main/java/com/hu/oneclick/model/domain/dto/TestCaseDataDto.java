@@ -139,4 +139,8 @@ public class TestCaseDataDto {
     private BigInteger createUserId;
 
     private BigInteger updateUserId;
+
+    private BigInteger caseRunDuration;
+
+    private BigInteger caseTotalPeriod;
 }
