@@ -86,9 +86,6 @@
             <if test="runCount != null and runCount != ''">
                 run_count = #{runCount},
             </if>
-            <if test="userId != null and userId != ''">
-                user_id = #{userId},
-            </if>
             <if test="runDuration != null and runDuration != ''">
                 run_duration = #{runDuration},
             </if>
@@ -102,6 +99,7 @@
         </set>
         where test_cycle_id = #{testCycleId}
         and test_case_id = #{testCaseId}
+        and project_id = #{projectId}
     </update>
 
     <!--通过实体作为筛选条件查询-->
@@ -144,12 +142,14 @@
 
     <update id="updateRunStatus">
         update test_cycle_join_test_case
-        set run_status     = #{param3},
-            update_user_id = #{param4},
+        set run_status     = #{param1.statusCode},
+            update_user_id = #{param2},
+            case_run_duration = #{param1.caseRunDuration},
+            case_total_period = case_total_period + #{param1.caseTotalPeriod},
             update_time    = NOW()
-        where test_case_id = #{param1}
-          and test_cycle_id = #{param2}
-          and project_id = #{param5}
+        where test_case_id = #{param1.testCaseId}
+          and test_cycle_id = #{param1.testCycleId}
+          and project_id = #{param1.projectId}
     </update>
     <!-- 新增 WJK END-->
 </mapper>

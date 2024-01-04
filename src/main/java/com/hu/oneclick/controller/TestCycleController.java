@@ -26,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -116,7 +117,7 @@ public class TestCycleController extends BaseController {
     }
 
     @PostMapping("caseRun/testCase")
-    public Resp<String> runTestCase(@RequestBody TestCaseRunDto testCaseRunDto) {
+    public Resp<String> runTestCase(@RequestBody TestCaseRunDto testCaseRunDto) throws ParseException {
         return testCycleTcService.runTestCase(testCaseRunDto);
     }
 //

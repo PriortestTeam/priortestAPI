@@ -3,6 +3,7 @@ package com.hu.oneclick.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -47,8 +48,7 @@ public interface TestCycleJoinTestCaseDao extends BaseMapper<TestCycleJoinTestCa
     TestCycleJoinTestCase getCycleJoinTestCaseByCaseId(@Param("caseId") Long caseId, @Param("projectId") Long projectId,
         @Param("cycleId") Long cycleId);
 
-    int updateRunStatus(long testCaseId, long testCycleId, byte runStatusId, String updateUserId, String projectId);
-
+    int updateRunStatus(TestCaseRunDto testCaseRunDto, String userId);
 
 
 }

@@ -27,4 +27,8 @@ public class ExecuteTestCaseDto {
     private Date createTime;
     private int runCount;
     private Long testCaseStepId;
+    private Date rerunTime;
+    private Date stepUpdateTime;
+    private long caseRunDuration;
+    private long caseTotalPeriod;
 }
