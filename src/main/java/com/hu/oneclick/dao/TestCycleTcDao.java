@@ -13,7 +13,7 @@ public interface TestCycleTcDao {
     List<ExecuteTestCaseDto> queryList(ExecuteTestCaseRunDto executeTestCaseRunDto);
 
     int upExecuteStatusCode(TestCaseRunDto testCaseRunDto, int runCount, @Param("testCaseStepId") Long testCaseStepId);
-    int updateRerunTime(ExecuteTestCaseRunDto executeTestCaseRunDto);
+    int updateRerunTime(ExecuteTestCaseRunDto executeTestCaseRunDto, int runCount);
 
     ExecuteTestCaseDto getLatest(TestCaseRunDto testCaseRunDto);
 }

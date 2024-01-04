@@ -15,4 +15,6 @@ public class testCaseDataRunDto {
     private Date updateTime;
     private BigInteger createUserId;
     private BigInteger updateUserId;
+    private BigInteger caseRunDuration;
+    private BigInteger caseTotalPeriod;
 }

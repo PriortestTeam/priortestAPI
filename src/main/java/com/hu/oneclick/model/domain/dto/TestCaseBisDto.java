@@ -14,12 +14,14 @@ public class TestCaseBisDto {
     @Resource
     com.hu.oneclick.model.domain.dto.testCaseDataRunDto testCaseRun;
 
-    public void setTestCaseRun(int run, int status, Date updateTime, BigInteger createUserId,BigInteger updateUserId) {
+    public void setTestCaseRun(int run, int status, Date updateTime, BigInteger createUserId,BigInteger updateUserId,BigInteger caseRunDuration,BigInteger caseTotalPeriod) {
         testCaseRun.setRunCount(run);
         testCaseRun.setRunStatus(status);
         testCaseRun.setUpdateTime(updateTime);
         testCaseRun.setCreateUserId(createUserId);
         testCaseRun.setUpdateUserId(updateUserId);
+        testCaseRun.setCaseRunDuration(caseRunDuration);
+        testCaseRun.setCaseTotalPeriod(caseTotalPeriod);
     }
 
     @Resource
