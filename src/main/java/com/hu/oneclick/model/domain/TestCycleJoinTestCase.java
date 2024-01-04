@@ -26,7 +26,7 @@ public class TestCycleJoinTestCase extends AssignBaseEntity implements Serializa
 
     private Integer stepStatus;
 
-    private Integer runDuration;
+    private Integer caseRunDuration;
 
     private Integer runCount;
 
