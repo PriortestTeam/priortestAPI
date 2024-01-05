@@ -140,7 +140,6 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime(), latestExe.getCaseRunDuration(),latestExe.getCaseTotalPeriod());
         testCaseRunDto.setCaseRunDuration(caseRunDuration);
         // 初次执行
-        testCaseRunDto.setCaseTotalPeriod(totalPeriod);
         if (Objects.isNull(latestExe.getRerunTime())) {
             testCaseRunDto.setCaseTotalPeriod(caseRunDuration);
         }
