@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.enums.StatusCode;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -8,6 +9,7 @@ import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCaseStep;
+import com.hu.oneclick.model.domain.TestCasesExecution;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto;
 import com.hu.oneclick.model.domain.dto.ExecuteTestCaseRunDto;
@@ -66,15 +68,17 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     TestCaseStep testCaseStep;
     @Resource
     TestCycleJoinTestCase testCycleJoinTestCase;
+    @Resource
+    TestCasesExecution testCasesExecution;
 
     @Override
     public Resp<PageInfo<Object>> runExecuteTestCase(ExecuteTestCaseRunDto executeTestCaseRunDto) {
 
         List<ExecuteTestCaseDto> execute = testCycleTcDao.queryList(executeTestCaseRunDto);
+        int currentCount = !execute.isEmpty() ? execute.get(0).getRunCount() : 0;
         ArrayList<Object> retList = new ArrayList<>();
         if (executeTestCaseRunDto.isRunCountIndicator()) {
             // 为true 先查询是否存在execute记录，有则查询runCount当前最大值，没有则直接插入，然后将插入的内容返回
-            int currentCount = !execute.isEmpty() ? execute.get(0).getRunCount() : 0;
             currentCount++;
             testCaseStep.setTestCaseId(executeTestCaseRunDto.getTestCaseId());
             List<TestCaseStep> testCaseSteps = testCaseStepDao.queryList(testCaseStep);
@@ -119,8 +123,15 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                 new ExecuteTestCaseDto(executeTestCaseDto.getTestCycleId(), executeTestCaseDto.getTestCaseId(), executeTestCaseDto.getTestStep(), executeTestCaseDto.getExpectedResult(), executeTestCaseDto.getActualResult(), executeTestCaseDto.getTeststepCondition(), executeTestCaseDto.getTestData(), executeTestCaseDto.getRemarks(), executeTestCaseDto.getTestStepId(), executeTestCaseDto.getStatusCode(), executeTestCaseDto.getTeststepExpand(), executeTestCaseDto.getProjectId(), executeTestCaseDto.getCreateTime(), executeTestCaseDto.getRunCount(), executeTestCaseDto.getTestCaseStepId(), executeTestCaseDto.getRerunTime(), executeTestCaseDto.getStepUpdateTime(), executeTestCaseDto.getCaseRunDuration(), executeTestCaseDto.getCaseTotalPeriod());
                 retList.add(executeTestCaseDto);
             }
-            int runCount = execute.stream().findFirst().isPresent() ? execute.stream().findFirst().get().getRunCount() : 0;
-            testCycleTcDao.updateRerunTime(executeTestCaseRunDto, runCount);
+            testCasesExecution.setRerunTime(new Date());
+            LambdaUpdateWrapper<TestCasesExecution> wrapper = new LambdaUpdateWrapper<TestCasesExecution>()
+                    .eq(TestCasesExecution::getTestCaseId, executeTestCaseRunDto.getTestCaseId())
+                    .eq(TestCasesExecution::getTestCycleId, executeTestCaseRunDto.getTestCycleId())
+                    .eq(TestCasesExecution::getProjectId, executeTestCaseRunDto.getProjectId())
+                    .eq(TestCasesExecution::getRunCount, currentCount)
+                    .set(TestCasesExecution::getRerunTime, testCasesExecution.getRerunTime());
+            //执行更新
+            testCycleTcDao.update(null, wrapper);
         }
 
         startPage();

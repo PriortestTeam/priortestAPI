@@ -68,15 +68,6 @@
         </if>
     </update>
 
-    <update id="updateRerunTime">
-        update test_cases_execution
-        set rerun_time = now()
-        where test_cycle_id = #{param1.testCycleId}
-          and test_case_id = #{param1.testCaseId}
-          and project_id = #{param1.projectId}
-          and run_count = #{param2}
-    </update>
-
     <select id="getLatest" resultType="com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto">
         select create_time, step_update_time, rerun_time, case_run_duration, case_total_period
         from test_cases_execution
