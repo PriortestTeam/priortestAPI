@@ -142,7 +142,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         // 初次执行
         testCaseRunDto.setCaseTotalPeriod(totalPeriod);
         if (Objects.isNull(latestExe.getRerunTime())) {
-            testCaseRunDto.setCaseTotalPeriod(caseRunDuration);
+            testCaseRunDto.setCaseTotalPeriod(Math.addExact(caseRunDuration, latestExe.getCaseTotalPeriod()));
         }
         // 查询最新一轮的execute记录
         List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
