@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -124,12 +125,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                 retList.add(executeTestCaseDto);
             }
             testCasesExecution.setRerunTime(new Date());
-            LambdaUpdateWrapper<TestCasesExecution> wrapper = new LambdaUpdateWrapper<TestCasesExecution>()
-                    .eq(TestCasesExecution::getTestCaseId, executeTestCaseRunDto.getTestCaseId())
-                    .eq(TestCasesExecution::getTestCycleId, executeTestCaseRunDto.getTestCycleId())
-                    .eq(TestCasesExecution::getProjectId, executeTestCaseRunDto.getProjectId())
-                    .eq(TestCasesExecution::getRunCount, currentCount)
-                    .set(TestCasesExecution::getRerunTime, testCasesExecution.getRerunTime());
+            LambdaUpdateWrapper<TestCasesExecution> wrapper = new LambdaUpdateWrapper<TestCasesExecution>().eq(TestCasesExecution::getTestCaseId, executeTestCaseRunDto.getTestCaseId()).eq(TestCasesExecution::getTestCycleId, executeTestCaseRunDto.getTestCycleId()).eq(TestCasesExecution::getProjectId, executeTestCaseRunDto.getProjectId()).eq(TestCasesExecution::getRunCount, currentCount).set(TestCasesExecution::getRerunTime, testCasesExecution.getRerunTime());
             //执行更新
             testCycleTcDao.update(null, wrapper);
         }
@@ -148,7 +144,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) throws ParseException {
         // 获取最新的时间信息
         ExecuteTestCaseDto latestExe = testCycleTcDao.getLatest(testCaseRunDto);
-        long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime(), latestExe.getCaseRunDuration(),latestExe.getCaseTotalPeriod());
+        long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime(), latestExe.getCaseRunDuration(), latestExe.getCaseTotalPeriod());
         testCaseRunDto.setCaseRunDuration(caseRunDuration);
         // 初次执行
         testCaseRunDto.setCaseTotalPeriod(totalPeriod);
@@ -251,6 +247,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         if (Objects.nonNull(rerunTime)) {
             startTime = rerunTime;
             differenceInMillis += duration;
+            //todo 此处将会做改动哦！！！
             long weekends = filterWeekends(startTime, date1);
             this.totalPeriod = Math.addExact(weekends, totalPeriod);
         }
@@ -259,7 +256,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         // 计算时间差
         differenceInMillis += Math.subtractExact(date1.getTime(), date2);
 
-        return differenceInMillis > 0 ? differenceInMillis : 0;
+        return differenceInMillis < 0 ? 0 : differenceInMillis;
     }
 
     /**
@@ -303,7 +300,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     }
 
     /**
-     * 扣除周末后的剩余毫秒数按照每天 8 小时计算剩余时间
+     * 扣除周末后的剩余毫秒数
      * @author Johnson
      *
      * @param startDate startDate
@@ -322,11 +319,60 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         long weekendsMillis = Math.multiplyExact(dayMilliseconds, weekends);
         // 当前用例剩余毫秒数 = 总毫秒数 - 周末毫秒数
         long surplusMillis = Math.subtractExact(totalTime, weekendsMillis);
-        // 剩余天数 = 用例剩余毫秒数 / 一天的毫秒数
-        long surplusDays = Math.floorDiv(surplusMillis, dayMilliseconds);
-        // 一小时的毫秒数
-        long oneHourMilliseconds = ChronoUnit.HOURS.getDuration().toMillis();
-        // 剩余天数按照每天 8小时，计算出最终毫秒数
-        return Math.multiplyExact(surplusDays, Math.multiplyExact(oneHourMilliseconds, 8));
+        // 当扣除周末后结果<0,则加 24小时
+        return surplusMillis < 0 ? Math.addExact(surplusMillis, dayMilliseconds) : surplusMillis;
+    }
+
+    /**
+     * 计算 caseTotalPeriod
+     * @author Johnson
+     *
+     * @param upMinusRerunTime  step_update time (新）- rerunTime
+     * @param caseTotalPeriod caseTotalPeriod 上次执行所用的 total
+     * @param naturalTime naturalTime 自然时间
+     */
+    private int calculateTotalPeriod(int upMinusRerunTime, int caseTotalPeriod, int naturalTime) {
+        int[] numbers = {upMinusRerunTime, caseTotalPeriod, naturalTime};
+        return Arrays.stream(numbers).sum();
+    }
+
+    /**
+     * 获取自然时间
+     * @author Johnson
+     *
+     * @param newStepUpdateTime newStepUpdateTime 当前时间
+     * @param preStepUpdateTime preStepUpdateTime 上次执行时间
+     * @return long
+     */
+    private long calculateNaturalTime(Date newStepUpdateTime, Date preStepUpdateTime) {
+        // 扣除周末后的毫秒数
+        long deductingWeekendMillisecond = filterWeekends(preStepUpdateTime, newStepUpdateTime);
+        // 获取八小时的毫秒数
+        long eightHoursMilliseconds = Math.multiplyExact(ChronoUnit.HOURS.getDuration().toMillis(), 8);
+        // 获取一天的毫秒数
+        long oneDayMilliseconds = ChronoUnit.DAYS.getDuration().toMillis();
+        // 获取两天的毫秒数
+        long twoDayMilliseconds = Math.multiplyExact(oneDayMilliseconds, 2);
+        // 扣除一天的毫秒数
+        long deductionOneDayMilliseconds = Math.subtractExact(deductingWeekendMillisecond, oneDayMilliseconds);
+        // 扣除两天天的毫秒数
+        long deductionTwoDayMilliseconds = Math.subtractExact(deductingWeekendMillisecond, twoDayMilliseconds);
+
+        // 如果自然时间大于 48小时
+        if (deductingWeekendMillisecond > twoDayMilliseconds) {
+            // 扣除 48小时，结果大于 8小时 则等于 8小时，否则还为该计算值
+            return Math.min(deductionTwoDayMilliseconds, eightHoursMilliseconds);
+        }
+        // 如果 自然时间 大于 24小时，且小于48小时，则扣除一天的毫秒数
+        if (deductingWeekendMillisecond > oneDayMilliseconds && deductingWeekendMillisecond < twoDayMilliseconds) {
+            // 扣除 24小时， 结果大于 8小时 则等于 8小时，否则还为该计算值
+            return Math.min(deductionOneDayMilliseconds, eightHoursMilliseconds);
+        }
+        // 如果 自然时间 大于 8小时，且小于等于24小时，或者自然时间等于 48小时，则等于 8 小时
+        if ((deductingWeekendMillisecond > eightHoursMilliseconds && deductingWeekendMillisecond <= oneDayMilliseconds) || (Objects.equals(deductingWeekendMillisecond, twoDayMilliseconds))) {
+            return eightHoursMilliseconds;
+        }
+        // 默认为
+        return deductingWeekendMillisecond;
     }
 }
