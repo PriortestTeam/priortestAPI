@@ -165,6 +165,9 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         // 数据变更后再查询新的数据进行逻辑处理
         execute = getExecuteTestCaseList(testCaseRunDto);
         testCaseRunDto.setStatusCode(calculateStatusCode(runCode, execute));
+
+        // runCount = 1时不累加
+        testCaseRunDto.setCaseTotalPeriod(latestExe.getRunCount() > 1 ? Math.addExact(testCaseRunDto.getCaseTotalPeriod(), latestExe.getCaseTotalPeriod()) : testCaseRunDto.getCaseTotalPeriod());
         int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
         if (upExecute > 0 && upJoinRunStatus > 0) {
             return new Resp.Builder<String>().ok();
