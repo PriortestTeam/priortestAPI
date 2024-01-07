@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Data
 @Component
-public class testCaseDataCaseDto {
+public class TestCaseDataCaseDto {
     /**
      * id
      */

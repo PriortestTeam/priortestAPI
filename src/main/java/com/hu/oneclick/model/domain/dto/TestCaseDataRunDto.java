@@ -9,7 +9,7 @@ import java.util.Date;
 
 @Data
 @Component
-public class testCaseDataRunDto {
+public class TestCaseDataRunDto {
     private int runCount;
     private int runStatus;
     private Date updateTime;

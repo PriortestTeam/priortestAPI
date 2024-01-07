@@ -1092,13 +1092,13 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
     @Resource
     TestCaseDao testCase;
-    @Resource
-    TestCaseBisDto testCaseBisDto;
+
     @Override
     public List<TestCaseBisDto> getTestCaseAllByCycleId(Long testCycleId) {
         List<TestCaseDataDto> list = testCase.getSelectAll(testCycleId);
         List<TestCaseBisDto> arrList = new ArrayList<>();
         for (TestCaseDataDto testCaseDataDto : list) {
+            TestCaseBisDto testCaseBisDto = new TestCaseBisDto();
             testCaseBisDto.setTestCaseRun(testCaseDataDto.getRunCount(), testCaseDataDto.getRunStatus(), testCaseDataDto.getUpdateTime(), testCaseDataDto.getCreateUserId(), testCaseDataDto.getUpdateUserId(), testCaseDataDto.getCaseRunDuration(), testCaseDataDto.getCaseTotalPeriod());
             testCaseBisDto.setTestCase(testCaseDataDto.getId(), testCaseDataDto.getProjectId(), testCaseDataDto.getTitle(), testCaseDataDto.getPriority(), testCaseDataDto.getFeature(), testCaseDataDto.getDescription(), testCaseDataDto.getExecuteTime(), testCaseDataDto.getBrowser(), testCaseDataDto.getPlatform(), testCaseDataDto.getVersion(), testCaseDataDto.getCaseCategory(), testCaseDataDto.getTestType(), testCaseDataDto.getTestCondition(), testCaseDataDto.getEnv(), testCaseDataDto.getExternalLinkId(), testCaseDataDto.getLastRunStatus(), testCaseDataDto.getModule(), testCaseDataDto.getTestDevice(), testCaseDataDto.getTestData(), testCaseDataDto.getTestMethod(), testCaseDataDto.getTestStatus(), testCaseDataDto.getReportTo(), testCaseDataDto.getTestcaseExpand(), testCaseDataDto.getRemarks());
             arrList.add(testCaseBisDto);
