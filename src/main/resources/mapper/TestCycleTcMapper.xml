@@ -56,7 +56,7 @@
         update test_cases_execution
         set status_code = #{param1.statusCode},
         actual_result = #{param1.actualResult},
-        step_update_time = now(),
+        step_update_time = #{param1.stepUpdateTime},
         case_run_duration = #{param1.caseRunDuration},
         case_total_period = #{param1.caseTotalPeriod}
         where test_case_id = #{param1.testCaseId}

@@ -146,7 +146,7 @@
             update_user_id = #{param2},
             case_run_duration = #{param1.caseRunDuration},
             case_total_period = #{param1.caseTotalPeriod},
-            update_time    = NOW()
+            update_time    = #{param1.stepUpdateTime}
         where test_case_id = #{param1.testCaseId}
           and test_cycle_id = #{param1.testCycleId}
           and project_id = #{param1.projectId}

@@ -40,7 +40,6 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     private TestCycleTcDao testCycleTcDao;
 
-    private long totalPeriod = 0;
     @Resource
     JwtUserServiceImpl jwtUserService;
 
@@ -144,26 +143,22 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) throws ParseException {
         // 获取最新的时间信息
         ExecuteTestCaseDto latestExe = testCycleTcDao.getLatest(testCaseRunDto);
-        long caseRunDuration = calculateCurrentStepRunningTime(latestExe.getCreateTime(), latestExe.getRerunTime(), latestExe.getCaseRunDuration(), latestExe.getCaseTotalPeriod());
-        testCaseRunDto.setCaseRunDuration(caseRunDuration);
-        // 初次执行
-        testCaseRunDto.setCaseTotalPeriod(totalPeriod);
-        if (Objects.isNull(latestExe.getRerunTime())) {
-            testCaseRunDto.setCaseTotalPeriod(Math.addExact(caseRunDuration, latestExe.getCaseTotalPeriod()));
-        }
+        // 当前系统时间
+        Date time = new Date();
+        // 设置 duration
+        testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
+        // 设置 totalPeriod
+        testCaseRunDto.setCaseTotalPeriod(getTotalPeriod(latestExe, time));
+        // 设置更新时间
+        testCaseRunDto.setStepUpdateTime(time);
         // 查询最新一轮的execute记录
         List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
         int runCount = execute.stream().findFirst().isPresent() ? execute.stream().findFirst().get().getRunCount() : 0;
         // 更新 execute 状态
         int upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
         // 更新 testCycleJoinTestCase 表的 状态
-        byte runCode = (byte) testCaseRunDto.getStatusCode();
-        // 数据变更后再查询新的数据进行逻辑处理
-        execute = getExecuteTestCaseList(testCaseRunDto);
-        testCaseRunDto.setStatusCode(calculateStatusCode(runCode, execute));
+        testCaseRunDto.setStatusCode(calculateStatusCode((byte) testCaseRunDto.getStatusCode(), getExecuteTestCaseList(testCaseRunDto)));
 
-        // runCount = 1时不累加
-        testCaseRunDto.setCaseTotalPeriod(latestExe.getRunCount() > 1 ? Math.addExact(testCaseRunDto.getCaseTotalPeriod(), latestExe.getCaseTotalPeriod()) : testCaseRunDto.getCaseTotalPeriod());
         int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
         if (upExecute > 0 && upJoinRunStatus > 0) {
             return new Resp.Builder<String>().ok();
@@ -232,31 +227,21 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     /**
      * 计算当前步骤运行时间
-     *
-     * @param createTime     createTime 创建时间
-     * @param rerunTime      rerunTime 再次执行时间
-     * @param duration       duration
-     * @return long
      * @author Johnson
+     *
+     * @param latestExe latestExe
+     * @param time 当前时间
+     * @return long
      */
-    private long calculateCurrentStepRunningTime(Date createTime, Date rerunTime, long duration, long totalPeriod) throws ParseException {
+    private long getDuration(ExecuteTestCaseDto latestExe, Date time) throws ParseException {
         long differenceInMillis = 0;
-        Date date1 = new Date();
         // 如果再次执行时间不为空，则开始时间为再次执行时间
-        Date startTime = createTime;
-        if (Objects.nonNull(rerunTime)) {
-            startTime = rerunTime;
-            differenceInMillis += duration;
-            //todo 此处将会做改动哦！！！
-            long weekends = filterWeekends(startTime, date1);
-            this.totalPeriod = Math.addExact(weekends, totalPeriod);
-        }
-        long date2 = simpleDateFormat.parse(simpleDateFormat.format(startTime)).getTime();
+        Date startTime = Objects.nonNull(latestExe.getRerunTime()) ? latestExe.getRerunTime() : latestExe.getCreateTime();
 
         // 计算时间差
-        differenceInMillis += Math.subtractExact(date1.getTime(), date2);
+        differenceInMillis += Math.subtractExact(time.getTime(), simpleDateFormat.parse(simpleDateFormat.format(startTime)).getTime());
 
-        return differenceInMillis < 0 ? 0 : differenceInMillis;
+        return Objects.nonNull(latestExe.getRerunTime()) ? Math.addExact(differenceInMillis, latestExe.getCaseRunDuration()) : differenceInMillis;
     }
 
     /**
@@ -331,8 +316,8 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
      * @param caseTotalPeriod caseTotalPeriod 上次执行所用的 total
      * @param naturalTime naturalTime 自然时间
      */
-    private int calculateTotalPeriod(int upMinusRerunTime, int caseTotalPeriod, int naturalTime) {
-        int[] numbers = {upMinusRerunTime, caseTotalPeriod, naturalTime};
+    private long calculateTotalPeriod(long upMinusRerunTime, long caseTotalPeriod, long naturalTime) {
+        long[] numbers = {upMinusRerunTime, caseTotalPeriod, naturalTime};
         return Arrays.stream(numbers).sum();
     }
 
@@ -374,5 +359,29 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         }
         // 默认为
         return deductingWeekendMillisecond;
+    }
+
+    /**
+     * 获取当前用例的总完成时间
+     * @author Johnson
+     *
+     * @param latestExe latestExe
+     * @param newStepUpdateTime newStepUpdateTime
+     * @return long
+     */
+    private long getTotalPeriod(ExecuteTestCaseDto latestExe, Date newStepUpdateTime) {
+        long totalPeriod;
+        if (Objects.nonNull(latestExe.getRerunTime())) {
+            // 获取自然时间
+            long naturalTime = calculateNaturalTime(newStepUpdateTime, latestExe.getStepUpdateTime());
+            // 计算时间差
+            long upMinusRerunTime = Math.subtractExact(newStepUpdateTime.getTime(), latestExe.getRerunTime().getTime());
+            // 计算caseTotalPeriod
+            totalPeriod = calculateTotalPeriod(upMinusRerunTime, latestExe.getCaseTotalPeriod(), naturalTime);
+        } else {
+            totalPeriod = latestExe.getCaseRunDuration();
+        }
+
+        return latestExe.getRunCount() > 1 ? Math.addExact(totalPeriod, latestExe.getCaseTotalPeriod()) : totalPeriod;
     }
 }
