@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -18,7 +20,9 @@ import java.util.Date;
 @Data
 @Component
 @TableName(value ="test_cases_execution")
-public class TestCasesExecution {
+public class TestCasesExecution implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -2641443521395154160L;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = " GMT+8")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date rerunTime;
