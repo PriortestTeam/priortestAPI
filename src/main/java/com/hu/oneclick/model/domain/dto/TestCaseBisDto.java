@@ -4,17 +4,18 @@ package com.hu.oneclick.model.domain.dto;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.math.BigInteger;
 import java.util.Date;
 
 @Data
-@Component
 public class TestCaseBisDto {
-    @Resource
-    com.hu.oneclick.model.domain.dto.testCaseDataRunDto testCaseRun;
+
+    TestCaseDataRunDto testCaseRun;
+
+    TestCaseDataCaseDto testCase;
 
     public void setTestCaseRun(int run, int status, Date updateTime, BigInteger createUserId,BigInteger updateUserId,BigInteger caseRunDuration,BigInteger caseTotalPeriod) {
+        testCaseRun = new TestCaseDataRunDto();
         testCaseRun.setRunCount(run);
         testCaseRun.setRunStatus(status);
         testCaseRun.setUpdateTime(updateTime);
@@ -24,10 +25,8 @@ public class TestCaseBisDto {
         testCaseRun.setCaseTotalPeriod(caseTotalPeriod);
     }
 
-    @Resource
-    com.hu.oneclick.model.domain.dto.testCaseDataCaseDto testCase;
-
     public void setTestCase(Long id, Long projectId, String title, String priority, String feature, String description, Date executeTime, String browser, String platform, String version, String caseCategory, String testType, String testCondition, String env, String externalLinkId, Integer lastRunStatus, String module, String testDevice, String testData, String testMethod, String testStatus, String reportTo, String testcaseExpand, String remarks) {
+        testCase = new TestCaseDataCaseDto();
         testCase.setId(id);
         testCase.setProjectId(projectId);
         testCase.setTitle(title);
