@@ -176,10 +176,10 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         if (StringUtils.isEmpty(projectId)) {
             throw new BaseException(StrUtil.format("请选择一个项目"));
         }
-        //修改视图名称要进行验证
-        if (view.getTitle() != null) {
-            Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
-        }
+//        //修改视图名称要进行验证
+//        if (view.getTitle() != null) {
+//            Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
+//        }
         view.setFilter(view.getFilterByManual(view.getOneFilters()));
         baseMapper.updateById(view);
         return view;
