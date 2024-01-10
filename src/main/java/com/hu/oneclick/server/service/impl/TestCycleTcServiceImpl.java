@@ -362,7 +362,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         if (Objects.nonNull(latestExe.getRerunTime())) {
             // 获取自然时间
             long naturalTime = calculateNaturalTime(newStepUpdateTime, latestExe.getStepUpdateTime());
-            System.out.println("自然时间:--->>>>>-----(系统当前时间)" + newStepUpdateTime.getTime() + "-(pre_stepUpdateTime)）" + latestExe.getStepUpdateTime().getTime() + "=" + naturalTime);
+            System.out.println("自然时间:--->>>>>-----(系统当前时间)" + "日期：(" + newStepUpdateTime + ")" + +newStepUpdateTime.getTime() + "-(pre_stepUpdateTime)）" + "日期：(" + latestExe.getStepUpdateTime() + ")" + latestExe.getStepUpdateTime().getTime() + "=" + naturalTime);
             // 计算时间差
             long upMinusRerunTime = Math.subtractExact(newStepUpdateTime.getTime(), latestExe.getRerunTime().getTime());
             // 计算caseTotalPeriod
