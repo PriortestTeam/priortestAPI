@@ -309,19 +309,6 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     }
 
     /**
-     * 计算 caseTotalPeriod
-     * @author Johnson
-     *
-     * @param upMinusRerunTime  step_update time (新）- rerunTime
-     * @param caseTotalPeriod caseTotalPeriod 上次执行所用的 total
-     * @param naturalTime naturalTime 自然时间
-     */
-    private long calculateTotalPeriod(long upMinusRerunTime, long caseTotalPeriod, long naturalTime) {
-        long[] numbers = {upMinusRerunTime, caseTotalPeriod, naturalTime};
-        return Arrays.stream(numbers).sum();
-    }
-
-    /**
      * 获取自然时间
      * @author Johnson
      *
@@ -378,7 +365,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             // 计算时间差
             long upMinusRerunTime = Math.subtractExact(newStepUpdateTime.getTime(), latestExe.getRerunTime().getTime());
             // 计算caseTotalPeriod
-            totalPeriod = calculateTotalPeriod(upMinusRerunTime, latestExe.getCaseTotalPeriod(), naturalTime);
+            totalPeriod = Math.addExact(upMinusRerunTime, naturalTime);
         }
 
         return latestExe.getRunCount() > 1 ? Math.addExact(totalPeriod, latestExe.getCaseTotalPeriod()) : totalPeriod;
