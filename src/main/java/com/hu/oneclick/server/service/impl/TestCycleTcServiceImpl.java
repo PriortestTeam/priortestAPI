@@ -148,7 +148,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         // 设置 duration
         testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
         // 设置 totalPeriod
-        testCaseRunDto.setCaseTotalPeriod(getTotalPeriod(latestExe, time));
+        testCaseRunDto.setCaseTotalPeriod(getTotalPeriod(latestExe, time, testCaseRunDto.getCaseRunDuration()));
         // 设置更新时间
         testCaseRunDto.setStepUpdateTime(time);
         // 查询最新一轮的execute记录
@@ -367,10 +367,11 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
      *
      * @param latestExe latestExe
      * @param newStepUpdateTime newStepUpdateTime
+     * @param duration duration
      * @return long
      */
-    private long getTotalPeriod(ExecuteTestCaseDto latestExe, Date newStepUpdateTime) {
-        long totalPeriod;
+    private long getTotalPeriod(ExecuteTestCaseDto latestExe, Date newStepUpdateTime, long duration) {
+        long totalPeriod = duration;
         if (Objects.nonNull(latestExe.getRerunTime())) {
             // 获取自然时间
             long naturalTime = calculateNaturalTime(newStepUpdateTime, latestExe.getStepUpdateTime());
@@ -378,8 +379,6 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             long upMinusRerunTime = Math.subtractExact(newStepUpdateTime.getTime(), latestExe.getRerunTime().getTime());
             // 计算caseTotalPeriod
             totalPeriod = calculateTotalPeriod(upMinusRerunTime, latestExe.getCaseTotalPeriod(), naturalTime);
-        } else {
-            totalPeriod = latestExe.getCaseRunDuration();
         }
 
         return latestExe.getRunCount() > 1 ? Math.addExact(totalPeriod, latestExe.getCaseTotalPeriod()) : totalPeriod;
