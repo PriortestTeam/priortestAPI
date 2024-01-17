@@ -33,4 +33,6 @@ public class TestCycleJoinTestCase extends AssignBaseEntity implements Serializa
     private Integer executeStatus;
 
     private JSONObject testCaseContent;
+
+    private long caseTotalPeriod;
 }

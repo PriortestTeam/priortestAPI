@@ -143,12 +143,20 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) throws ParseException {
         // 获取最新的时间信息
         ExecuteTestCaseDto latestExe = testCycleTcDao.getLatest(testCaseRunDto);
+        // 获取最大的 stepUpdateTime
+        if (Objects.nonNull(testCaseRunDto.getTestCaseStepId())) {
+            testCaseRunDto.setTestCaseStepId(null);
+            Date stepUpdateTime = testCycleTcDao.getLatest(testCaseRunDto).getStepUpdateTime();
+            latestExe.setStepUpdateTime(stepUpdateTime);
+        }
         // 当前系统时间
         Date time = new Date();
         // 设置 duration
         testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
+        // 获取 total、joinTotal
+        long[] total = getTotalPeriod(latestExe, time, testCaseRunDto.getCaseRunDuration());
         // 设置 totalPeriod
-        testCaseRunDto.setCaseTotalPeriod(getTotalPeriod(latestExe, time, testCaseRunDto.getCaseRunDuration()));
+        testCaseRunDto.setCaseTotalPeriod(total[0]);
         // 设置更新时间
         testCaseRunDto.setStepUpdateTime(time);
         // 查询最新一轮的execute记录
@@ -158,7 +166,11 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         int upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
         // 更新 testCycleJoinTestCase 表的 状态
         testCaseRunDto.setStatusCode(calculateStatusCode((byte) testCaseRunDto.getStatusCode(), getExecuteTestCaseList(testCaseRunDto)));
-
+        if (latestExe.getRunCount() > 0) {
+            // 获取 testCycleJoinTestCase 中的 totalPeriod
+            TestCycleJoinTestCase cycleJoinTestCaseByCaseId = testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(testCaseRunDto.getTestCaseId(), Long.valueOf(testCaseRunDto.getProjectId()), testCaseRunDto.getTestCycleId());
+            testCaseRunDto.setCaseTotalPeriod(total[1] + cycleJoinTestCaseByCaseId.getCaseTotalPeriod());
+        }
         int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
         if (upExecute > 0 && upJoinRunStatus > 0) {
             return new Resp.Builder<String>().ok();
@@ -357,19 +369,21 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
      * @param duration duration
      * @return long
      */
-    private long getTotalPeriod(ExecuteTestCaseDto latestExe, Date newStepUpdateTime, long duration) {
+    private long[] getTotalPeriod(ExecuteTestCaseDto latestExe, Date newStepUpdateTime, long duration) {
         long totalPeriod = duration;
+        long joinTotalPeriod = 0;
         if (Objects.nonNull(latestExe.getRerunTime())) {
             // 获取自然时间
             long naturalTime = calculateNaturalTime(newStepUpdateTime, latestExe.getStepUpdateTime());
             System.out.println("⭐⭐️️⭐️ 自然时间:--->>>>>-----(系统当前时间)日期：(" + newStepUpdateTime + ")" + newStepUpdateTime.getTime() + " − (pre_stepUpdateTime)）日期：(" + latestExe.getStepUpdateTime() + ")" + latestExe.getStepUpdateTime().getTime() + " = "  + naturalTime);
             // 计算caseTotalPeriod
             totalPeriod += naturalTime;
+            joinTotalPeriod = totalPeriod;
             System.out.println("⭐⭐️️⭐️ total:--->>>>>-----(当前duration)" + duration + " + 自然时间：" + naturalTime + " = " + totalPeriod);
         }
         if (latestExe.getRunCount() > 1) {
-             totalPeriod += latestExe.getCaseTotalPeriod();
+            totalPeriod += latestExe.getCaseTotalPeriod();
         }
-        return totalPeriod;
+        return new long[]{totalPeriod, joinTotalPeriod};
     }
 }
