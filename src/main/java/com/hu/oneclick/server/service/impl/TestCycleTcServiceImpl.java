@@ -367,7 +367,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             totalPeriod += naturalTime;
             System.out.println("⭐⭐️️⭐️ total:--->>>>>-----(当前duration)" + duration + " + 自然时间：" + naturalTime + " = " + totalPeriod);
         }
-        if (latestExe.getRunCount() > 1 || !Objects.equals(latestExe.getCaseTotalPeriod(), 0)) {
+        if (latestExe.getRunCount() > 1) {
              totalPeriod += latestExe.getCaseTotalPeriod();
         }
         return totalPeriod;
