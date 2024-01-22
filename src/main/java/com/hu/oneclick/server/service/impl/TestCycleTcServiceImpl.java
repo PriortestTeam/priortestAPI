@@ -23,12 +23,7 @@ import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.hu.oneclick.common.util.PageUtil.startPage;
 
@@ -38,10 +33,25 @@ import static com.hu.oneclick.common.util.PageUtil.startPage;
 @Service
 public class TestCycleTcServiceImpl implements TestCycleTcService {
 
-    private TestCycleTcDao testCycleTcDao;
-
     @Resource
     JwtUserServiceImpl jwtUserService;
+    @Resource
+    ExecuteTestCaseDto executeTestCaseDto;
+    @Resource
+    TestCaseStepDao testCaseStepDao;
+    @Resource
+    TestCaseStep testCaseStep;
+    @Resource
+    TestCycleJoinTestCase testCycleJoinTestCase;
+    @Resource
+    TestCasesExecution testCasesExecution;
+    @Resource
+    ExecuteTestCaseRunDto executeTestCaseRunDto;
+    @Resource
+    TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
+    @Resource
+    SimpleDateFormat simpleDateFormat;
+    private TestCycleTcDao testCycleTcDao;
 
     @Autowired
     public void setTestCycleTcDao(TestCycleTcDao testCycleTcDao) {
@@ -59,17 +69,6 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         }
         return new Resp.Builder<String>().fail();
     }
-
-    @Resource
-    ExecuteTestCaseDto executeTestCaseDto;
-    @Resource
-    TestCaseStepDao testCaseStepDao;
-    @Resource
-    TestCaseStep testCaseStep;
-    @Resource
-    TestCycleJoinTestCase testCycleJoinTestCase;
-    @Resource
-    TestCasesExecution testCasesExecution;
 
     @Override
     public Resp<PageInfo<Object>> runExecuteTestCase(ExecuteTestCaseRunDto executeTestCaseRunDto) {
@@ -133,49 +132,203 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         return new Resp.Builder<PageInfo<Object>>().setData(PageInfo.of(retList)).ok();
     }
 
-    @Resource
-    ExecuteTestCaseRunDto executeTestCaseRunDto;
-
-    @Resource
-    TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
-
     @Override
     public Resp<String> runTestCase(TestCaseRunDto testCaseRunDto) throws ParseException {
-        // 获取最新的时间信息
+        // 获取 - rerunTime 从表 test_execution
+        // rerunTime != null , 表时当前操作是再执行
+        // 用在方法 ： setCaseRunDuration(),setCaseTotalPeriod()
         ExecuteTestCaseDto latestExe = testCycleTcDao.getLatest(testCaseRunDto);
+
+        // 获取当前运行run count：
+        List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
+        int runCount = execute.stream().findFirst().isPresent() ? execute.stream().findFirst().get().getRunCount() : 0;
+        System.out.println("max runCount " + runCount);
+
+        boolean isBatchRun = testCaseRunDto.getTestCaseStepId() == null; // true: batchRun
+        boolean isReRun = latestExe.getRerunTime() != null;  // true: reRun
+
+        int upExecute = 0;
+        int upJoinRunStatus = 0;
         // 获取最大的 stepUpdateTime
-        if (Objects.nonNull(testCaseRunDto.getTestCaseStepId())) {
+        // 假如 rerunTime!=null, 获取 上一轮执行中多个步骤中最后一次执行的步骤的 update_time
+        if (isReRun) {
+            if (isBatchRun) {
+                System.out.println("当前运行为 再执行 且为 批量运行");
+                Date stepUpdateTime = testCycleTcDao.getLatest(testCaseRunDto).getStepUpdateTime();
+                latestExe.setStepUpdateTime(stepUpdateTime);
+
+                Date time = new Date();
+                System.out.println("--------:"+ getDuration(latestExe, time));
+                testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
+                long total = getTotalPeriod(latestExe, time, testCaseRunDto.getCaseRunDuration());
+                // 设置 case_total_period - 计算 test_execution 表
+                testCaseRunDto.setCaseTotalPeriod(total);
+                testCaseRunDto.setStepUpdateTime(time);
+
+                // 更新 test_execution 状态 ,  run_status，update_user_id， case_run_duration，case_total_period, step_update
+                upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
+                System.out.println(" test_execution 表 更新 " + runCount);
+
+                // 计算，更新 本次运行状态 属性 - 为 testCycleJoinTestCase 表的 run_status
+                testCaseRunDto.setStatusCode(calculateStatusCode((byte) testCaseRunDto.getStatusCode(), getExecuteTestCaseList(testCaseRunDto)));
+
+                TestCycleJoinTestCase cycleJoinTestCaseByCaseId = testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(testCaseRunDto.getTestCaseId(), Long.valueOf(testCaseRunDto.getProjectId()), testCaseRunDto.getTestCycleId());
+                testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseTotalPeriod() + cycleJoinTestCaseByCaseId.getCaseTotalPeriod());
+
+                // 更新 test_cycle_join_test_case 表
+            } else {
+                System.out.println("当前运行为 再执行 且为 步骤运行");
+
+                Date stepUpdateTime = testCycleTcDao.getLatest(testCaseRunDto).getStepUpdateTime();
+                latestExe.setStepUpdateTime(stepUpdateTime);
+
+                Date time = new Date();
+                testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
+                long total = getTotalPeriodNoneBatch(latestExe, time, testCaseRunDto.getCaseRunDuration());
+                // 设置 case_total_period - 计算 test_execution 表
+                testCaseRunDto.setCaseTotalPeriod(total);
+                testCaseRunDto.setStepUpdateTime(time);
+
+                // 更新 test_execution 状态 ,  run_status，update_user_id， case_run_duration，case_total_period, step_update
+                upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
+                System.out.println(" test_execution 表 更新 " + runCount);
+
+                // 计算，更新 本次运行状态 属性 - 为 testCycleJoinTestCase 表的 run_status
+                testCaseRunDto.setStatusCode(calculateStatusCode((byte) testCaseRunDto.getStatusCode(), getExecuteTestCaseList(testCaseRunDto)));
+
+                TestCycleJoinTestCase cycleJoinTestCaseByCaseId = testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(testCaseRunDto.getTestCaseId(), Long.valueOf(testCaseRunDto.getProjectId()), testCaseRunDto.getTestCycleId());
+                testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseTotalPeriod() + cycleJoinTestCaseByCaseId.getCaseTotalPeriod());
+
+                // 更新 test_cycle_join_test_case 表
+            }
+            upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
+
+        } else {
+            System.out.println("当前运行为新执行：");
+
+            if (runCount == 1) {
+                System.out.println("当前运行为第一次运行");
+                // 当前服务器当前时间 - 为了更新 运行step_update_time
+                Date time = new Date();
+                // 计算，设置 case_duration
+                testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
+                testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseRunDuration());
+                testCaseRunDto.setStepUpdateTime(time);
+
+                // 更新 test_execution 状态 ,  run_status，update_user_id， case_run_duration，case_total_period, step_update
+                upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
+                System.out.println(" test_execution 表 更新 " + runCount);
+
+                // 计算，更新 本次运行状态 属性 - 为 testCycleJoinTestCase 表的 run_status
+                testCaseRunDto.setStatusCode(calculateStatusCode((byte) testCaseRunDto.getStatusCode(), getExecuteTestCaseList(testCaseRunDto)));
+                // 更新 test_cycle_join_test_case 表
+                upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
+
+            } else {
+                System.out.println("当前运行 不属于 新执行 中的第一次， 当前运行 runCount ：" + runCount);
+                if (isBatchRun) {
+                    System.out.println("当前运行 不属于 新执行 中的第一次， 当前运行 runCount ：" + runCount + "且是批量运行");
+                    // 当前服务器当前时间 - 为了更新 运行step_update_time
+                    Date time = new Date();
+                    // 计算，设置 case_duration
+                    testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
+                    testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseRunDuration());
+                    testCaseRunDto.setStepUpdateTime(time);
+
+                    // 更新 test_execution 状态 ,  run_status，update_user_id， case_run_duration，case_total_period, step_update
+                    upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
+                    System.out.println(" test_execution 表 更新 " + runCount);
+
+                    // 计算，更新 本次运行状态 属性 - 为 testCycleJoinTestCase 表的 run_status
+                    testCaseRunDto.setStatusCode(calculateStatusCode((byte) testCaseRunDto.getStatusCode(), getExecuteTestCaseList(testCaseRunDto)));
+
+                    TestCycleJoinTestCase cycleJoinTestCaseByCaseId = testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(testCaseRunDto.getTestCaseId(), Long.valueOf(testCaseRunDto.getProjectId()), testCaseRunDto.getTestCycleId());
+                    testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseTotalPeriod() + cycleJoinTestCaseByCaseId.getCaseTotalPeriod());
+
+                    // 更新 test_cycle_join_test_case 表
+                    upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
+                } else {
+                    System.out.println("当前运行 不属于 新执行 中的第一次， 当前运行 runCount ：" + runCount + "不是是批量运行");
+                    // 当前服务器当前时间 - 为了更新 运行step_update_time
+                    Date time = new Date();
+                    // 计算，设置 case_duration
+                    testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
+                    testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseRunDuration());
+                    testCaseRunDto.setStepUpdateTime(time);
+
+                    // 更新 test_execution 状态 ,  run_status，update_user_id， case_run_duration，case_total_period, step_update
+                    upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
+                    System.out.println(" test_execution 表 更新 " + runCount);
+
+                    // 计算，更新 本次运行状态 属性 - 为 testCycleJoinTestCase 表的 run_status
+                    testCaseRunDto.setStatusCode(calculateStatusCode((byte) testCaseRunDto.getStatusCode(), getExecuteTestCaseList(testCaseRunDto)));
+
+                    TestCycleJoinTestCase cycleJoinTestCaseByCaseId = testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(testCaseRunDto.getTestCaseId(), Long.valueOf(testCaseRunDto.getProjectId()), testCaseRunDto.getTestCycleId());
+                    testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseTotalPeriod() + cycleJoinTestCaseByCaseId.getCaseTotalPeriod() - cycleJoinTestCaseByCaseId.getCaseRunDuration());
+
+                    // 更新 test_cycle_join_test_case 表
+                    upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
+                }
+            }
+
+
+        }
+
+       /* if (Objects.nonNull(testCaseRunDto.getTestCaseStepId())) {
             testCaseRunDto.setTestCaseStepId(null);
             Date stepUpdateTime = testCycleTcDao.getLatest(testCaseRunDto).getStepUpdateTime();
             latestExe.setStepUpdateTime(stepUpdateTime);
         }
-        // 当前系统时间
-        Date time = new Date();
-        // 设置 duration
-        testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
-        // 获取 total、joinTotal
-        long[] total = getTotalPeriod(latestExe, time, testCaseRunDto.getCaseRunDuration());
-        // 设置 totalPeriod
-        testCaseRunDto.setCaseTotalPeriod(total[0]);
-        // 设置更新时间
+
+        // 获取 计算 case_total_period， joinTotal
+        // 新执行： test_execution 表：  case_total_period == case_duration
+        long total = 0;
+        if (latestExe.getRerunTime() ==null){
+            System.out.println("当前运行为 新执行：");
+            testCaseRunDto.setCaseTotalPeriod( testCaseRunDto.getCaseRunDuration());
+        }
+        // 再执行： test_execution 表： 计算 本次运行时长 + 自然时长
+        else{
+            System.out.println("当前运行为 再执行：");
+             total = getTotalPeriod(latestExe, time, testCaseRunDto.getCaseRunDuration());
+            // 设置 case_total_period - 计算 test_execution 表
+            testCaseRunDto.setCaseTotalPeriod(total);
+        }
+
+        // 设置更新时间 -step_update
         testCaseRunDto.setStepUpdateTime(time);
-        // 查询最新一轮的execute记录
+        System.out.println("setup update time：" +time);
+
+        // 查询最新一轮的execute记录 (以 max runCount为准 )- test_execution
         List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
         int runCount = execute.stream().findFirst().isPresent() ? execute.stream().findFirst().get().getRunCount() : 0;
-        // 更新 execute 状态
-        int upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
-        // 更新 testCycleJoinTestCase 表的 状态
+        System.out.println("max runCount " + runCount);
+
+
+
+        // 以下代码与 testcase_join_test cycle 更新有关
+        // 计算，更新 本次运行状态 属性 - 为 testCycleJoinTestCase 表的 run_status
         testCaseRunDto.setStatusCode(calculateStatusCode((byte) testCaseRunDto.getStatusCode(), getExecuteTestCaseList(testCaseRunDto)));
-        if (latestExe.getRunCount() > 0) {
-            // 获取 testCycleJoinTestCase 中的 totalPeriod
-            TestCycleJoinTestCase cycleJoinTestCaseByCaseId = testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(testCaseRunDto.getTestCaseId(), Long.valueOf(testCaseRunDto.getProjectId()), testCaseRunDto.getTestCycleId());
-            testCaseRunDto.setCaseTotalPeriod(total[1] + cycleJoinTestCaseByCaseId.getCaseTotalPeriod());
+
+        // 获取当前运行用例 在表里的 case_total_period
+        // 如果当前  getRunCount > 1, case_total_period 累加
+        // 如果 当前  getRunCount == 1, cycleJoinTestCaseByCaseId.getCaseTotalPeriod()==0
+        TestCycleJoinTestCase cycleJoinTestCaseByCaseId = testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(testCaseRunDto.getTestCaseId(), Long.valueOf(testCaseRunDto.getProjectId()), testCaseRunDto.getTestCycleId());
+        if (latestExe.getRunCount() > 1 ) {
+            testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseTotalPeriod() + cycleJoinTestCaseByCaseId.getCaseTotalPeriod());
+            System.out.println(" testCycleJoinTestCase totalPeriod " + testCaseRunDto.getCaseTotalPeriod() + "    " +cycleJoinTestCaseByCaseId.getCaseTotalPeriod());
         }
-        int upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
+        if (latestExe.getRunCount()==1 && cycleJoinTestCaseByCaseId.getCaseTotalPeriod()==0){
+            testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseTotalPeriod() + cycleJoinTestCaseByCaseId.getCaseTotalPeriod());
+            System.out.println(" testCycleJoinTestCase totalPeriod " + testCaseRunDto.getCaseTotalPeriod() + "    " +cycleJoinTestCaseByCaseId.getCaseTotalPeriod());
+        }
+        // 更新 testCycleJoinTestCase  表的 run_status，update_user_id， case_run_duration，case_total_period
+       */
         if (upExecute > 0 && upJoinRunStatus > 0) {
             return new Resp.Builder<String>().ok();
         }
         return new Resp.Builder<String>().fail();
+
     }
 
     private List<ExecuteTestCaseDto> getExecuteTestCaseList(TestCaseRunDto testCaseRunDto) {
@@ -229,9 +382,6 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         return runCode;
     }
 
-    @Resource
-    SimpleDateFormat simpleDateFormat;
-
     @Bean
     public SimpleDateFormat simpleDateFormat() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -239,11 +389,11 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     /**
      * 计算当前步骤运行时间
-     * @author Johnson
      *
      * @param latestExe latestExe
-     * @param time 当前时间
+     * @param time      当前时间
      * @return long
+     * @author Johnson
      */
     private long getDuration(ExecuteTestCaseDto latestExe, Date time) throws ParseException {
         long differenceInMillis = 0;
@@ -253,16 +403,17 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         // 计算时间差
         differenceInMillis += Math.subtractExact(time.getTime(), simpleDateFormat.parse(simpleDateFormat.format(startTime)).getTime());
 
+        System.out.println("计算 本次运行 或本步骤运行时长： " + "stepUpdate - rerunTime / startTime " + time.getTime() + " -" + startTime + " = " + differenceInMillis);
         return Objects.nonNull(latestExe.getRerunTime()) ? Math.addExact(differenceInMillis, latestExe.getCaseRunDuration()) : differenceInMillis;
     }
 
     /**
      * 获取时间段内 所有日期
-     * @author Johnson
      *
      * @param startDate startDate
-     * @param endDate endDate
+     * @param endDate   endDate
      * @return java.util.List<java.util.Date>
+     * @author Johnson
      */
     private List<Date> getDatesBetween(Date startDate, Date endDate) {
         List<Date> dates = new ArrayList<>();
@@ -278,10 +429,10 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     /**
      * 计算给定日期的周末天数
-     * @author Johnson
      *
      * @param dates dates
      * @return int
+     * @author Johnson
      */
     private int countWeekends(List<Date> dates) {
         int count = 0;
@@ -298,11 +449,11 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     /**
      * 扣除周末后的剩余毫秒数
-     * @author Johnson
      *
      * @param startDate startDate
-     * @param endDate endDate
+     * @param endDate   endDate
      * @return long
+     * @author Johnson
      */
     private long filterWeekends(Date startDate, Date endDate) {
         // 该时间段的总毫秒数
@@ -322,11 +473,11 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     /**
      * 获取自然时间
-     * @author Johnson
      *
      * @param newStepUpdateTime newStepUpdateTime 当前时间
      * @param preStepUpdateTime preStepUpdateTime 上次执行时间
      * @return long
+     * @author Johnson
      */
     private long calculateNaturalTime(Date newStepUpdateTime, Date preStepUpdateTime) {
         // 扣除周末后的毫秒数
@@ -362,28 +513,43 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     /**
      * 获取当前用例的总完成时间
-     * @author Johnson
      *
-     * @param latestExe latestExe
+     * @param latestExe         latestExe
      * @param newStepUpdateTime newStepUpdateTime
-     * @param duration duration
+     * @param duration          duration
      * @return long
+     * @author Johnson
      */
-    private long[] getTotalPeriod(ExecuteTestCaseDto latestExe, Date newStepUpdateTime, long duration) {
+    private long getTotalPeriodNoneBatch(ExecuteTestCaseDto latestExe, Date newStepUpdateTime, long duration) {
         long totalPeriod = duration;
-        long joinTotalPeriod = 0;
+
         if (Objects.nonNull(latestExe.getRerunTime())) {
             // 获取自然时间
             long naturalTime = calculateNaturalTime(newStepUpdateTime, latestExe.getStepUpdateTime());
-            System.out.println("⭐⭐️️⭐️ 自然时间:--->>>>>-----(系统当前时间)日期：(" + newStepUpdateTime + ")" + newStepUpdateTime.getTime() + " − (pre_stepUpdateTime)）日期：(" + latestExe.getStepUpdateTime() + ")" + latestExe.getStepUpdateTime().getTime() + " = "  + naturalTime);
+            System.out.println("⭐⭐️️⭐️ 自然时间:--->>>>>-----(系统当前时间)日期：(" + newStepUpdateTime + ")" + newStepUpdateTime.getTime() + " − (pre_stepUpdateTime)）日期：(" + latestExe.getStepUpdateTime() + ")" + latestExe.getStepUpdateTime().getTime() + " = " + naturalTime);
             // 计算caseTotalPeriod
             totalPeriod += naturalTime;
-            joinTotalPeriod = totalPeriod;
             System.out.println("⭐⭐️️⭐️ total:--->>>>>-----(当前duration)" + duration + " + 自然时间：" + naturalTime + " = " + totalPeriod);
         }
         if (latestExe.getRunCount() > 1) {
             totalPeriod += latestExe.getCaseTotalPeriod();
         }
-        return new long[]{totalPeriod, joinTotalPeriod};
+        return totalPeriod;
     }
+
+    private long getTotalPeriod(ExecuteTestCaseDto latestExe, Date newStepUpdateTime, long duration) {
+        long totalPeriod = duration;
+        System.out.println("⭐⭐️️⭐️ total:--->>>>>-----(当前duration)" + duration);
+
+        if (Objects.nonNull(latestExe.getRerunTime())) {
+            // 获取自然时间
+            long naturalTime = calculateNaturalTime(newStepUpdateTime, latestExe.getStepUpdateTime());
+            System.out.println("⭐⭐️️⭐️ 自然时间:--->>>>>-----(系统当前时间)日期：(" + newStepUpdateTime + ")" + newStepUpdateTime.getTime() + " − (pre_stepUpdateTime)）日期：(" + latestExe.getStepUpdateTime() + ")" + latestExe.getStepUpdateTime().getTime() + " = " + naturalTime);
+            // totalPeriod > 为了更新test_execution
+            totalPeriod += naturalTime;
+            System.out.println("⭐⭐️️⭐️ total:--->>>>>-----(当前duration)" + duration + " + 自然时间：" + naturalTime + " = " + totalPeriod);
+        }
+        return totalPeriod;
+    }
+
 }
