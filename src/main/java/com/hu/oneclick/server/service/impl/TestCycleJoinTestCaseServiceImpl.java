@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -8,6 +9,8 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
+import com.hu.oneclick.dao.TestCycleTcDao;
+import com.hu.oneclick.model.domain.TestCasesExecution;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
@@ -54,11 +57,17 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
         return this.list(queryWrapper);
     }
 
+    @Resource
+    TestCycleTcDao testCycleTcDao;
     @Override
     public void deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
+        ArrayList<Long> testCasesIds = new ArrayList<>();
         for (Long testCaseId : dto.getTestCaseIds()) {
             this.testCycleJoinTestCaseDao.deleteByParam(dto.getProjectId(), dto.getTestCycleId(), testCaseId);
+            testCasesIds.add(testCaseId);
         }
+
+        testCycleTcDao.delete(new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId, testCasesIds).eq(TestCasesExecution::getTestCycleId, dto.getTestCycleId()).eq(TestCasesExecution::getProjectId, dto.getProjectId()));
     }
 
     @Override
