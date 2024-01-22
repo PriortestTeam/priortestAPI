@@ -115,6 +115,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             testCycleJoinTestCase.setProjectId(Long.valueOf(executeTestCaseRunDto.getProjectId()));
             testCycleJoinTestCase.setRunCount(currentCount);
             testCycleJoinTestCase.setRunStatus((int) StatusCode.NO_RUN.getValue());
+            testCycleJoinTestCase.setCaseRunDuration(0);
             testCycleJoinTestCaseDao.updateTestCycleJoinTestCase(testCycleJoinTestCase);
         } else {
             // 为false 则查询要执行的指定用例
