@@ -86,7 +86,7 @@
             <if test="runCount != null and runCount != ''">
                 run_count = #{runCount},
             </if>
-            <if test="caseRunDuration != null and caseRunDuration != ''">
+            <if test="caseRunDuration != null and caseRunDuration != '' or caseRunDuration == 0">
                 case_run_duration = #{caseRunDuration},
             </if>
             <if test="runStatus != null and runStatus != ''">
