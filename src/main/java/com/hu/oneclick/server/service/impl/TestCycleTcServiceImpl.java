@@ -159,7 +159,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                 latestExe.setStepUpdateTime(stepUpdateTime);
 
                 Date time = new Date();
-                System.out.println("--------:"+ getDuration(latestExe, time));
+                System.out.println("--------:" + getDuration(latestExe, time));
                 testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
                 long total = getTotalPeriod(latestExe, time, testCaseRunDto.getCaseRunDuration());
                 // 设置 case_total_period - 计算 test_execution 表
@@ -551,6 +551,56 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             System.out.println("⭐⭐️️⭐️ total:--->>>>>-----(当前duration)" + duration + " + 自然时间：" + naturalTime + " = " + totalPeriod);
         }
         return totalPeriod;
+    }
+
+    /**
+     * 再次批量执行时的duration
+     * @author Johnson
+     *
+     * @param latestExe latestExe
+     * @param time time
+     * @return long
+     */
+    private long testCaseDuration(ExecuteTestCaseDto latestExe, Date time) throws ParseException {
+        long differenceInMillis;
+        // 获取时间差
+        differenceInMillis = testCaseNetDuration(latestExe, time);
+        // 加上上次运行时长
+        differenceInMillis += latestExe.getCaseRunDuration();
+        System.out.println("计算 本次运行 或本步骤运行时长： " + "stepUpdate - rerunTime + pre_duration " + time.getTime() + " -" + latestExe.getRerunTime() + " + " + latestExe.getCaseRunDuration() + " = " + differenceInMillis);
+        return differenceInMillis;
+    }
+
+    /**
+     * 再次批量执行时的total
+     * @author Johnson
+     *
+     * @param latestExe latestExe
+     * @param time time
+     * @return long
+     */
+    private long testCaseTotal(ExecuteTestCaseDto latestExe, Date time) throws ParseException {
+        long differenceInMillis;
+        // 获取时间差
+        differenceInMillis = testCaseNetDuration(latestExe, time);
+        // 获取自然时间
+        long naturalTime = calculateNaturalTime(time, latestExe.getStepUpdateTime());
+        // 加上自然时间
+        differenceInMillis += naturalTime;
+        System.out.println("计算 本次运行total 或本步骤运行时长： " + "stepUpdate - rerunTime + 自然时间 " + time.getTime() + " -" + latestExe.getRerunTime() + " + " + naturalTime + " = " + differenceInMillis);
+        return differenceInMillis;
+    }
+
+    /**
+     * 再次执行时的时间差
+     * @author Johnson
+     *
+     * @param latestExe latestExe
+     * @param time time
+     * @return long
+     */
+    private long testCaseNetDuration(ExecuteTestCaseDto latestExe, Date time) throws ParseException {
+        return Math.subtractExact(time.getTime(), simpleDateFormat.parse(simpleDateFormat.format(latestExe.getRerunTime())).getTime());
     }
 
 }
