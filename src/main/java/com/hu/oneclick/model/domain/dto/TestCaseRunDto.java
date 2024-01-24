@@ -23,4 +23,5 @@ public class TestCaseRunDto {
     private Long caseRunDuration;
     private Long caseTotalPeriod;
     private Date stepUpdateTime;
+    private int runFlag;
 }

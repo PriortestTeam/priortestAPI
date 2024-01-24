@@ -124,7 +124,14 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                 retList.add(executeTestCaseDto);
             }
             testCasesExecution.setRerunTime(new Date());
-            LambdaUpdateWrapper<TestCasesExecution> wrapper = new LambdaUpdateWrapper<TestCasesExecution>().eq(TestCasesExecution::getTestCaseId, executeTestCaseRunDto.getTestCaseId()).eq(TestCasesExecution::getTestCycleId, executeTestCaseRunDto.getTestCycleId()).eq(TestCasesExecution::getProjectId, executeTestCaseRunDto.getProjectId()).eq(TestCasesExecution::getRunCount, currentCount).set(TestCasesExecution::getRerunTime, testCasesExecution.getRerunTime());
+            testCasesExecution.setRunFlag(0);
+            LambdaUpdateWrapper<TestCasesExecution> wrapper = new LambdaUpdateWrapper<TestCasesExecution>()
+                    .eq(TestCasesExecution::getTestCaseId, executeTestCaseRunDto.getTestCaseId())
+                    .eq(TestCasesExecution::getTestCycleId, executeTestCaseRunDto.getTestCycleId())
+                    .eq(TestCasesExecution::getProjectId, executeTestCaseRunDto.getProjectId())
+                    .eq(TestCasesExecution::getRunCount, currentCount)
+                    .set(TestCasesExecution::getRerunTime, testCasesExecution.getRerunTime())
+                    .set(TestCasesExecution::getRunFlag, testCasesExecution.getRunFlag());
             //执行更新
             testCycleTcDao.update(null, wrapper);
         }
@@ -150,8 +157,8 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
 
 
-        int upExecute = 0;
-        int upJoinRunStatus = 0;
+        int upExecute;
+        int upJoinRunStatus;
         // 获取最大的 stepUpdateTime
         // 假如 rerunTime!=null, 获取 上一轮执行中多个步骤中最后一次执行的步骤的 update_time
         if (isReRun) {
@@ -180,9 +187,16 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
             } else {
                 System.out.println("当前运行为 再执行 且为 步骤运行");
-                boolean isRunFlag=  true ;// true: 需要获取latestTotal 从test_execution 表, false : 不需要获取
-
-                Date latestStepUpdateTime = testCycleTcDao.getLatest(testCaseRunDto).getStepUpdateTime();
+                // 获取第一次在执行记录
+                testCaseRunDto.setRunFlag(1);
+                int flag = testCycleTcDao.getIsFlag(testCaseRunDto, runCount);
+                long testCaseStepId = testCaseRunDto.getTestCaseStepId();
+                // 设置 test_case_step_id 属性为空，保证查询出最新的一次更新时间
+                testCaseRunDto.setTestCaseStepId(null);
+                // Date latestStepUpdateTime = testCycleTcDao.getLatest(testCaseRunDto).getStepUpdateTime();
+                ExecuteTestCaseDto latest = testCycleTcDao.getLatest(testCaseRunDto);
+                // 设置 test_case_step_id 属性为原有值，保证后续查询不受影响
+                testCaseRunDto.setTestCaseStepId(testCaseStepId);
                 // latestExe.setLatestStepUpdateTime(latestStepUpdateTime);
                 // latestExe.setLatestCaseTotalPeriod()
 
@@ -194,7 +208,8 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                 testCaseRunDto.setStepUpdateTime(time);
 
                 // 更新 test_execution 状态 ,  run_status，update_user_id， case_run_duration，case_total_period, step_update
-                // runFlag:
+                // 再次设置runFlag属性确保只在第一步时更新为 1
+                testCaseRunDto.setRunFlag(Objects.equals(flag, 1) ? 0 : 1);
                 upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
                 System.out.println(" test_execution 表 更新 " + runCount);
 
@@ -203,7 +218,8 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                 TestCycleJoinTestCase cycleJoinTestCaseByCaseId = testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(testCaseRunDto.getTestCaseId(), Long.valueOf(testCaseRunDto.getProjectId()), testCaseRunDto.getTestCycleId());
 
                 // getLatestCaseTotalPeriod
-               // testCaseRunDto.setCaseTotalPeriod(cycleJoinTestCaseByCaseId.getCaseTotalPeriod() + getTestCycleJoinTestCaseTotalReRun(latestExe,time) - getLatestCaseTotalPeriod );
+                long getLatestCaseTotalPeriod = Objects.equals(flag, 1) ? latest.getCaseTotalPeriod() : 0;
+                testCaseRunDto.setCaseTotalPeriod(Math.addExact(cycleJoinTestCaseByCaseId.getCaseTotalPeriod(), Math.subtractExact(getTestCycleJoinTestCaseTotalReRun(latestExe, time, latest.getStepUpdateTime()), getLatestCaseTotalPeriod)));
                 // 更新 test_cycle_join_test_case 表
                 upJoinRunStatus = testCycleJoinTestCaseDao.updateRunStatus(testCaseRunDto, jwtUserService.getUserLoginInfo().getSysUser().getId());
             }
@@ -596,24 +612,22 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         return differenceInMillis;
     }
 
-    /*
-    private  long  getTestCycleJoinTestCaseTotalReRun(ExecuteTestCaseDto latestExe, Date time){
-        // latestExe.getLatestStepUpdateTime()
-        long naturalTime = calculateNaturalTime(time, latestExe.getLatestStepUpdateTime());
-        long differenceInMillis = 0;
+
+    private long getTestCycleJoinTestCaseTotalReRun(ExecuteTestCaseDto latestExe, Date time, Date latestStepUpdateTime) {
+        long naturalTime = calculateNaturalTime(time, latestStepUpdateTime);
+        long differenceInMillis;
 
         try {
             differenceInMillis = testCaseNetDuration(latestExe, time);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        return  naturalTime + differenceInMillis;
-
-    }*/
+        return naturalTime + differenceInMillis;
+    }
     private long getTestCycleJoinTestCaseTotal(ExecuteTestCaseDto latestExe, Date time){
         long naturalTime = calculateNaturalTime(time, latestExe.getStepUpdateTime());
 
-        long differenceInMillis = 0;
+        long differenceInMillis;
         try {
             differenceInMillis = testCaseNetDuration(latestExe, time);
         } catch (ParseException e) {

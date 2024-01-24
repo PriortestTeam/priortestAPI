@@ -58,7 +58,8 @@
         actual_result = #{param1.actualResult},
         step_update_time = #{param1.stepUpdateTime},
         case_run_duration = #{param1.caseRunDuration},
-        case_total_period = #{param1.caseTotalPeriod}
+        case_total_period = #{param1.caseTotalPeriod},
+        run_flag = #{param1.runFlag}
         where test_case_id = #{param1.testCaseId}
         and test_cycle_id = #{param1.testCycleId}
         and project_id = #{param1.projectId}
@@ -84,5 +85,14 @@
         and test_cycle_id = #{testCycleId}
         and project_id = #{projectId})
         order by step_update_time desc limit 1;
+    </select>
+    <select id="getIsFlag" resultType="java.lang.Integer">
+        select EXISTS (select *
+                       from test_cases_execution
+                       where test_case_id = #{param1.testCaseId}
+                         and test_cycle_id = #{param1.testCycleId}
+                         and project_id = #{param1.projectId}
+                         and run_flag = #{param1.runFlag}
+                         and run_count = #{param2});
     </select>
 </mapper>

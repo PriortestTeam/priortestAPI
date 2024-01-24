@@ -17,4 +17,6 @@ public interface TestCycleTcDao extends BaseMapper<TestCasesExecution> {
     int upExecuteStatusCode(TestCaseRunDto testCaseRunDto, int runCount, @Param("testCaseStepId") Long testCaseStepId);
 
     ExecuteTestCaseDto getLatest(TestCaseRunDto testCaseRunDto);
+
+    int getIsFlag(TestCaseRunDto testCaseRunDto, int runCount);
 }
