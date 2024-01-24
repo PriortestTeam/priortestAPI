@@ -125,13 +125,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
             }
             testCasesExecution.setRerunTime(new Date());
             testCasesExecution.setRunFlag(0);
-            LambdaUpdateWrapper<TestCasesExecution> wrapper = new LambdaUpdateWrapper<TestCasesExecution>()
-                    .eq(TestCasesExecution::getTestCaseId, executeTestCaseRunDto.getTestCaseId())
-                    .eq(TestCasesExecution::getTestCycleId, executeTestCaseRunDto.getTestCycleId())
-                    .eq(TestCasesExecution::getProjectId, executeTestCaseRunDto.getProjectId())
-                    .eq(TestCasesExecution::getRunCount, currentCount)
-                    .set(TestCasesExecution::getRerunTime, testCasesExecution.getRerunTime())
-                    .set(TestCasesExecution::getRunFlag, testCasesExecution.getRunFlag());
+            LambdaUpdateWrapper<TestCasesExecution> wrapper = new LambdaUpdateWrapper<TestCasesExecution>().eq(TestCasesExecution::getTestCaseId, executeTestCaseRunDto.getTestCaseId()).eq(TestCasesExecution::getTestCycleId, executeTestCaseRunDto.getTestCycleId()).eq(TestCasesExecution::getProjectId, executeTestCaseRunDto.getProjectId()).eq(TestCasesExecution::getRunCount, currentCount).set(TestCasesExecution::getRerunTime, testCasesExecution.getRerunTime()).set(TestCasesExecution::getRunFlag, testCasesExecution.getRunFlag());
             //执行更新
             testCycleTcDao.update(null, wrapper);
         }
