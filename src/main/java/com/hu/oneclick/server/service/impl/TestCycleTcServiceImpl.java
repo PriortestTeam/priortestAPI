@@ -248,7 +248,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                 // 计算，设置 case_duration
                 testCaseRunDto.setCaseRunDuration(getDuration(latestExe, currentTime));
                 testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseRunDuration());
-                testCaseRunDto.setStepUpdateTime(time);
+                testCaseRunDto.setStepUpdateTime(currentTime);
 
                 // 更新 test_execution 状态 ,  run_status，update_user_id， case_run_duration，case_total_period, step_update
                 upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
@@ -263,12 +263,11 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                 System.out.println("当前运行 不属于 新执行 中的第一次， 当前运行 runCount ：" + runCount);
                 if (isBatchRun) {
                     System.out.println("当前运行 不属于 新执行 中的第一次， 当前运行 runCount ：" + runCount + "且是批量运行");
-                    // 当前服务器当前时间 - 为了更新 运行step_update_time
-                    Date time = new Date();
+
                     // 计算，设置 case_duration
-                    testCaseRunDto.setCaseRunDuration(getDuration(latestExe, time));
+                    testCaseRunDto.setCaseRunDuration(getDuration(latestExe, currentTime));
                     testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseRunDuration());
-                    testCaseRunDto.setStepUpdateTime(time);
+                    testCaseRunDto.setStepUpdateTime(currentTime);
 
                     // 更新 test_execution 状态 ,  run_status，update_user_id， case_run_duration，case_total_period, step_update
                     upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
@@ -288,7 +287,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
                     // 计算，设置 case_duration
                     testCaseRunDto.setCaseRunDuration(getDuration(latestExe, currentTime));
                     testCaseRunDto.setCaseTotalPeriod(testCaseRunDto.getCaseRunDuration());
-                    testCaseRunDto.setStepUpdateTime(time);
+                    testCaseRunDto.setStepUpdateTime(currentTime);
 
                     // 更新 test_execution 状态 ,  run_status，update_user_id， case_run_duration，case_total_period, step_update
                     upExecute = testCycleTcDao.upExecuteStatusCode(testCaseRunDto, runCount, testCaseRunDto.getTestCaseStepId());
