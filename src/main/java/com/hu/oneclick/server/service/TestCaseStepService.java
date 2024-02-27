@@ -1,25 +1,23 @@
 package com.hu.oneclick.server.service;
 
-import com.hu.oneclick.model.base.Resp;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.model.domain.TestCaseStep;
+import com.hu.oneclick.model.domain.dto.TestCaseStepSaveDto;
+import com.hu.oneclick.model.domain.param.TestCaseStepParam;
 
 import java.util.List;
 
 /**
  * @author qingyang
  */
-public interface TestCaseStepService {
+public interface TestCaseStepService extends IService<TestCaseStep> {
 
+    List<TestCaseStep> list(TestCaseStepParam param);
 
-    Resp<TestCaseStep> queryById(String id,String testCaseId);
+    void save(TestCaseStepSaveDto dto);
 
-    Resp<List<TestCaseStep>> queryList(TestCaseStep testCaseStep);
+    void update(TestCaseStepSaveDto dto);
 
-    Resp<String> insert(TestCaseStep testCaseStep);
-
-    Resp<String> update(TestCaseStep testCaseStep);
-
-    Resp<String> delete(String id);
-
+    TestCaseStep info(Long id);
 
 }

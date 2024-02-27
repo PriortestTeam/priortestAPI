@@ -1,10 +1,10 @@
 package com.hu.oneclick.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.Sprint;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import org.apache.ibatis.annotations.Param;
-import tk.mybatis.mapper.common.BaseMapper;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface SprintDao extends BaseMapper<Sprint> {
 
     Sprint queryById(@Param("id") String id,@Param("masterId")String masterId);
 
-    int update(Sprint sprint);
+    int updateByPrimaryKeySelective(Sprint sprint);
 
     List<LeftJoinDto> queryTitles(@Param("projectId") String projectId, @Param("title") String title, @Param("masterId") String masterId);
 

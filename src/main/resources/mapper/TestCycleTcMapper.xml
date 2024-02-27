@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.TestCycleTcDao">
+    <insert id="addTestCaseExecution" parameterType="com.hu.oneclick.dao.TestCycleTcDao">
+        insert into test_cases_execution
+        (create_user_id,
+         test_cycle_id,
+         test_case_id,
+         status_code,
+         test_step,
+         expected_result,
+         actual_result,
+         test_data,
+         remarks,
+         test_step_id,
+         teststep_condition,
+         teststep_expand,
+         project_id,
+         create_time,
+         run_count,
+         test_case_step_id)
+        values (#{param1},
+                #{param2.testCycleId},
+                #{param2.testCaseId},
+                #{param2.statusCode},
+                #{param2.testStep},
+                #{param2.expectedResult},
+                #{param2.actualResult},
+                #{param2.testData},
+                #{param2.remarks},
+                #{param2.testStepId},
+                #{param2.teststepCondition},
+                #{param2.teststepExpand},
+                #{param2.projectId},
+                Now(),
+                #{param2.runCount},
+                #{param2.testCaseStepId});
+    </insert>
+
+    <select id="queryList" resultType="com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto">
+        select *
+        from test_cases_execution
+        where test_case_id = #{testCaseId}
+          and test_cycle_id = #{testCycleId}
+          and project_id = #{projectId}
+          and run_count = (
+                select MAX(run_count)
+                from test_cases_execution
+                where test_case_id = #{testCaseId}
+                and test_cycle_id = #{testCycleId}
+                and project_id = #{projectId}
+            );
+    </select>
+
+    <update id="upExecuteStatusCode">
+        update test_cases_execution
+        set status_code = #{param1.statusCode},
+        actual_result = #{param1.actualResult},
+        step_update_time = #{param1.stepUpdateTime},
+        case_run_duration = #{param1.caseRunDuration},
+        case_total_period = #{param1.caseTotalPeriod},
+        run_flag = #{param1.runFlag}
+        where test_case_id = #{param1.testCaseId}
+        and test_cycle_id = #{param1.testCycleId}
+        and project_id = #{param1.projectId}
+        and run_count = #{param2}
+        <if test="testCaseStepId != null and testCaseStepId != ''">
+            and test_case_step_id = #{param1.testCaseStepId}
+        </if>
+    </update>
+
+    <select id="getLatest" resultType="com.hu.oneclick.model.domain.dto.ExecuteTestCaseDto">
+        select create_time, step_update_time, rerun_time, case_run_duration, case_total_period,
+        run_count,test_case_id,project_id,test_cycle_id
+        from test_cases_execution
+        where test_case_id = #{testCaseId}
+        and test_cycle_id = #{testCycleId}
+        and project_id = #{projectId}
+        <if test="testCaseStepId != null and testCaseStepId != ''">
+            and test_case_step_id = #{testCaseStepId}
+        </if>
+        and run_count = (select MAX(run_count)
+        from test_cases_execution
+        where test_case_id = #{testCaseId}
+        and test_cycle_id = #{testCycleId}
+        and project_id = #{projectId})
+        order by step_update_time desc limit 1;
+    </select>
+    <select id="getIsFlag" resultType="java.lang.Integer">
+        select EXISTS (select *
+                       from test_cases_execution
+                       where test_case_id = #{param1.testCaseId}
+                         and test_cycle_id = #{param1.testCycleId}
+                         and project_id = #{param1.projectId}
+                         and run_flag = #{param1.runFlag}
+                         and run_count = #{param2});
+    </select>
+</mapper>

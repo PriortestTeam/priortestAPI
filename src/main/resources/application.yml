@@ -1,6 +1,29 @@
 spring:
   profiles:
     active: @profileActive@
+  quartz:
+    #相关属性配置
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: clusteredScheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRTZ_
+            isClustered: false
+            clusterCheckinInterval: 10000
+            useProperties: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+    #数据库方式
+    job-store-type: jdbc
+
 #  devtools:
 #    restart:
 #      enabled: false
@@ -9,3 +32,24 @@ server:
   port: 8082
   servlet:
     context-path: /api
+
+# MyBatis-plus
+mybatis-plus:
+  # 搜索指定包别名
+  typeAliasesPackage: com.hu.oneclick.**.domain
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  global-config:
+    db-config:
+      # 只更新属性值不为空的字段
+      update-strategy: not_null
+
+# Jenkins 配置
+jenkins:
+  url: http://43.139.159.146:8080
+  username: jenkins
+  password: jenkins
+
+logging:
+  level:
+    cn.zhxu.bs: DEBUG

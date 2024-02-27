@@ -63,7 +63,7 @@
     </sql>
 
 
-    <update id="update" parameterType="com.hu.oneclick.model.domain.CustomFields">
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.CustomFields">
         UPDATE custom_fields
         <set>
             <if test="null != customFieldId and '' != customFieldId">custom_field_id = #{customFieldId},</if>
@@ -151,6 +151,18 @@
 
     </select>
 
+    <select id="getAllCustomListByScopeId" resultMap="CustomFileldLinkVoResultMap">
+        SELECT
+        <include refid="Custom_Column_List"/>
+        FROM
+        custom_fileld_link cfl
+        LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        <where>
+            cf.type="sField" AND cfl.scope_id = #{scopeId}
+            ORDER BY sort DESC
+        </where>
+    </select>
+
     <select id="getFieldTypeByProjectId" resultType="java.lang.String" parameterType="java.lang.Long">
         SELECT DISTINCT cf.field_type
         FROM custom_fileld_link cfl
@@ -182,9 +194,29 @@
         <where>
            (project_id = #{customFieldDto.projectId} or type ='sField')
             AND field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
-            AND (JSON_TYPE(possible_value->'$.order_1') != 'NULL' OR JSON_TYPE(possible_value->'$.others') != 'NULL')
+            <!--AND (JSON_TYPE(possible_value->'$.order_1') != 'NULL' OR JSON_TYPE(possible_value->'$.others') != 'NULL') -->
             order by create_time
         </where>
 
+    </select>
+
+    <update id="updateValueDropDownBox">
+        update custom_fields set possible_value = #{customFieldsDto.possibleValue},
+        update_time = #{customFieldsDto.updateTime}, modify_user = #{customFieldsDto.modifyUserId}
+        where custom_field_id = #{customFieldsDto.customFieldId}
+    </update>
+
+    <select id="getByCustomFieldId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM custom_fields
+        where custom_field_id = #{customFieldId}
+    </select>
+
+    <select id="getPossBile" resultType="com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto">
+        select possible_value
+        from custom_fields
+        where type = "sField"
+          and field_name_en = #{fieldName}
     </select>
 </mapper>

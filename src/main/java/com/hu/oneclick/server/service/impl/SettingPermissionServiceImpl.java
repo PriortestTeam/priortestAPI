@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -88,33 +87,33 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
 
         //设置权限
         //获取权限
-        List<SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
+//        List<SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
         //没有选中的跳过
-        if(project.getOperationAuthIds() != null){
-            //选中的权限id
-            List<String> selects =  Arrays.asList(project.getOperationAuthIds().split(","));
-            sysOperationAuthority.forEach(j -> {
-                //遍历父级
-                selects.forEach(k -> {
-                    if (j.getId().equals(k)){
-                        j.setIsSelect("1");
-                    }
-                });
-
-                //遍历子级
-                List<SysOperationAuthority> childList = j.getChildList();
-                if (childList != null){
-                    childList.forEach(s ->{
-                        selects.forEach(k -> {
-                            if (s.getId().equals(k)){
-                                s.setIsSelect("1");
-                            }
-                        });
-                    });
-                }
-            });
-        }
-        project.setSysOperationAuthorities(sysOperationAuthority);
+//        if(project.getOperationAuthIds() != null){
+//            //选中的权限id
+//            List<String> selects =  Arrays.asList(project.getOperationAuthIds().split(","));
+//            sysOperationAuthority.forEach(j -> {
+//                //遍历父级
+//                selects.forEach(k -> {
+//                    if (j.getId().equals(k)){
+//                        j.setIsSelect("1");
+//                    }
+//                });
+//
+//                //遍历子级
+//                List<SysOperationAuthority> childList = j.getChildList();
+//                if (childList != null){
+//                    childList.forEach(s ->{
+//                        selects.forEach(k -> {
+//                            if (s.getId().equals(k)){
+//                                s.setIsSelect("1");
+//                            }
+//                        });
+//                    });
+//                }
+//            });
+//        }
+//        project.setSysOperationAuthorities(sysOperationAuthority);
 
         SubUserPermissionDto subUserPermissionDto = new SubUserPermissionDto();
         subUserPermissionDto.setSubUserDto(subUserDto);

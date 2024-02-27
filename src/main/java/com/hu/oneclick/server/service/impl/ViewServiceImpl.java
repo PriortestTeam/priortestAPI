@@ -1,13 +1,17 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
@@ -20,14 +24,7 @@ import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
-import com.hu.oneclick.server.service.CustomFieldDataService;
-import com.hu.oneclick.server.service.FeatureService;
-import com.hu.oneclick.server.service.IssueService;
-import com.hu.oneclick.server.service.ProjectService;
-import com.hu.oneclick.server.service.SysCustomFieldService;
-import com.hu.oneclick.server.service.TestCaseService;
-import com.hu.oneclick.server.service.TestCycleService;
-import com.hu.oneclick.server.service.ViewService;
+import com.hu.oneclick.server.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -37,61 +34,42 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.annotation.Resource;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * @author qingyang
  */
 @Service
-public class ViewServiceImpl implements ViewService {
+public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewService {
 
     private final static Logger logger = LoggerFactory.getLogger(ViewServiceImpl.class);
 
-    private final ViewDao viewDao;
-
-    private final JwtUserServiceImpl jwtUserService;
-
-    private final SysPermissionService sysPermissionService;
-
-    private final ViewDownChildParamsDao viewDownChildParamsDao;
-
-    private final RedissonClient redissonClient;
-
-    private final SysCustomFieldService sysCustomFieldService;
-
-    private final CustomFieldDataService customFieldDataService;
-
-    private final ProjectService projectService;
-
-    private final FeatureService featureService;
-
-    private final TestCycleService testCycleService;
-
-    private final TestCaseService testCaseService;
-
-    private final IssueService issueService;
-
-    public ViewServiceImpl(ViewDao v, JwtUserServiceImpl jwtUserService, SysPermissionService sysPermissionService, ViewDownChildParamsDao viewDownChildParamsDao, RedissonClient redissonClient, SysCustomFieldService sysCustomFieldService, CustomFieldDataService customFieldDataService, ProjectService projectService, FeatureService featureService, TestCycleService testCycleService, TestCaseService testCaseService, IssueService issueService) {
-        this.viewDao = v;
-        this.jwtUserService = jwtUserService;
-        this.sysPermissionService = sysPermissionService;
-        this.viewDownChildParamsDao = viewDownChildParamsDao;
-        this.redissonClient = redissonClient;
-        this.sysCustomFieldService = sysCustomFieldService;
-        this.customFieldDataService = customFieldDataService;
-        this.projectService = projectService;
-        this.featureService = featureService;
-        this.testCycleService = testCycleService;
-        this.testCaseService = testCaseService;
-        this.issueService = issueService;
-    }
+    @Resource
+    private ViewDao viewDao;
+    @Resource
+    private JwtUserServiceImpl jwtUserService;
+    @Resource
+    private SysPermissionService sysPermissionService;
+    @Resource
+    private ViewDownChildParamsDao viewDownChildParamsDao;
+    @Resource
+    private RedissonClient redissonClient;
+    @Resource
+    private SysCustomFieldService sysCustomFieldService;
+    @Resource
+    private CustomFieldDataService customFieldDataService;
+    @Resource
+    private ProjectService projectService;
+    @Resource
+    private FeatureService featureService;
+    @Resource
+    private TestCycleService testCycleService;
+    @Resource
+    private TestCaseService testCaseService;
+    @Resource
+    private IssueService issueService;
 
     @Override
     public Resp<View> queryById(String id) {
@@ -101,33 +79,24 @@ public class ViewServiceImpl implements ViewService {
         BeanUtils.copyProperties(queryView, view);
         view.setOneFilters(TwoConstant.convertToList(view.getFilter(), OneFilter.class));
         view.setFilter("");
-        view.setParentTitle(queryParentTitle(view.getParentId()));
+//        view.setParentTitle(queryParentTitle(view.getParentId()));
         return new Resp.Builder<View>().setData(view).ok();
     }
 
     @Override
-    public Resp<List<View>> list(View view) {
-        if (StringUtils.isEmpty(view.getScope())) {
-            return new Resp.Builder<List<View>>().buildResult("scope 不能为空。");
+    public List<View> list(View view) {
+        if (StringUtils.isEmpty(view.getScopeName())) {
+            throw new BaseException(StrUtil.format("范围不能为空。"));
         } else if (StringUtils.isEmpty(view.getProjectId())) {
-            return new Resp.Builder<List<View>>().buildResult("项目ID不能为空。");
+            throw new BaseException(StrUtil.format("项目ID不能为空。"));
         }
-        sysPermissionService.viewPermission(null, convertPermission(view.getScope()));
-        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        view.verifyUserType(sysUser.getManager());
-        view.setUserId(jwtUserService.getMasterId());
-
-        List<View> queryViews = viewDao.queryAll(view);
-
-        //防止mybatis 缓存数据变更
-        List<View> views = coverViews(queryViews);
-
-        views.forEach(e -> {
-            e.setParentTitle(queryParentTitle(e.getParentId()));
-            e.setOneFilters(TwoConstant.convertToList(e.getFilter(), OneFilter.class));
-            e.setFilter("");
-        });
-        return new Resp.Builder<List<View>>().setData(views).total(queryViews).ok();
+        view.setCreateUserId(Long.valueOf(jwtUserService.getMasterId()));
+        List<View> list = viewDao.queryAll(view);
+        for (View v: list) {
+            v.setOneFilters(v.getOneFilters());
+            v.setFilter(null);
+        }
+        return list;
     }
 
     /**
@@ -169,7 +138,7 @@ public class ViewServiceImpl implements ViewService {
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> addView(View view) {
         try {
-            view.verify();
+//            view.verify();
 //            sysPermissionService.viewPermission(OneConstant.PERMISSION.ADD, convertPermission(view.getScope()));
             SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
             String projectId = sysUser.getUserUseOpenProject().getProjectId();
@@ -186,10 +155,11 @@ public class ViewServiceImpl implements ViewService {
                 }
             }
 
-            Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScope()), view.getTitle());
-            view.setUserId(masterId);
+            Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
+//            view.setCreateUserId(masterId);
             view.setProjectId(projectId);
-            view.setOwner(sysUser.getUserName());
+            view.setCreater(sysUser.getUserName());
+            view.setFilter(view.getFilterByManual(view.getOneFilters()));
             return Result.addResult(viewDao.insert(view));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#addView,error []" + e.getMessage());
@@ -200,27 +170,19 @@ public class ViewServiceImpl implements ViewService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> updateView(View view) {
-        try {
-            sysPermissionService.viewPermission(OneConstant.PERMISSION.EDIT, convertPermission(view.getScope()));
-            view.verifyOneFilter();
-            SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-            String projectId = sysUser.getUserUseOpenProject().getProjectId();
-            if (StringUtils.isEmpty(projectId)) {
-                return new Resp.Builder<String>().buildResult("请选择一个项目");
-            }
-            //修改视图名称要进行验证
-            if (view.getTitle() != null) {
-                Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScope()), view.getTitle());
-            }
-
-            view.setModifyUser(sysUser.getUserName());
-            view.setModifyDate(new Date());
-            return Result.updateResult(viewDao.update(view));
-        } catch (BizException e) {
-            logger.error("class: ViewServiceImpl#updateView,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+    public View updateView(View view) {
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
+        if (StringUtils.isEmpty(projectId)) {
+            throw new BaseException(StrUtil.format("请选择一个项目"));
         }
+//        //修改视图名称要进行验证
+//        if (view.getTitle() != null) {
+//            Result.verifyDoesExist(queryByTitle(projectId, view.getTitle(), view.getScopeName()), view.getTitle());
+//        }
+        view.setFilter(view.getFilterByManual(view.getOneFilters()));
+        baseMapper.updateById(view);
+        return view;
     }
 
     @Override
@@ -231,8 +193,8 @@ public class ViewServiceImpl implements ViewService {
             if (view == null) {
                 return Result.deleteResult(0);
             }
-            sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE, convertPermission(view.getScope()));
-            return Result.deleteResult(viewDao.deleteById(jwtUserService.getMasterId(), id));
+            // sysPermissionService.viewPermission(OneConstant.PERMISSION.DELETE, convertPermission(view.getScope()));
+            return Result.deleteResult(viewDao.deleteByPrimaryKey(jwtUserService.getMasterId(), id));
         } catch (BizException e) {
             logger.error("class: ViewServiceImpl#deleteView,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
@@ -261,13 +223,13 @@ public class ViewServiceImpl implements ViewService {
     }
 
     @Override
-    public Resp<List<View>> queryViewParents(String scope, String projectId) {
+    public List<View> queryViewParents(String scope, String projectId) {
         if (StringUtils.isEmpty(scope)) {
-            return new Resp.Builder<List<View>>().buildResult("scope" + SysConstantEnum.PARAM_EMPTY.getValue());
+            throw new BaseException(StrUtil.format("scope{}", SysConstantEnum.PARAM_EMPTY.getValue()));
         }
         String masterId = jwtUserService.getMasterId();
         List<View> result = viewDao.queryViewParents(masterId, scope, projectId);
-        return new Resp.Builder<List<View>>().setData(result).totalSize(result.size()).ok();
+        return result;
     }
 
     /**
@@ -306,7 +268,7 @@ public class ViewServiceImpl implements ViewService {
         //循环找父级
         treeAll.forEach(e -> {
             if (verifyParentId(e.getParentId())) {
-                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
+//                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
                 result.add(e);
             }
         });
@@ -325,7 +287,7 @@ public class ViewServiceImpl implements ViewService {
             //取反
             if (!verifyParentId(e.getParentId())
                     && e.getParentId().equals(id)) {
-                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
+//                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
                 result.add(e);
             }
         });
@@ -365,36 +327,37 @@ public class ViewServiceImpl implements ViewService {
      * 添加视图
      *
      * @param view
+     * @return
      * @Param: [view]
-     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
      * @Date: 2021/11/27
      */
     @Override
-    public Resp<String> addViewRE(View view) {
-        try {
-            SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-            String projectId = sysUser.getUserUseOpenProject().getProjectId();
-            String masterId = jwtUserService.getMasterId();
-            if (StringUtils.isEmpty(projectId)) {
-                return new Resp.Builder<String>().buildResult("请选择一个项目");
-            }
-
-            List<OneFilter> oneFilter = view.getOneFilters();
-            view.setFilter(JSON.toJSONString(oneFilter));
-            view.setUserId(masterId);
-            view.setProjectId(projectId);
-            view.setOwner(sysUser.getUserName());
-            //设置sql
-            String sql = appendSql(oneFilter, view);
-
-            view.setSql(sql);
-            return Result.addResult(viewDao.insert(view));
-        } catch (BizException e) {
-            logger.error("class: ViewServiceImpl#addView,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+    @Transactional(rollbackFor = Exception.class)
+    public View addViewRE(View view) {
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
+        if (StringUtils.isEmpty(projectId)) {
+            throw new BaseException(StrUtil.format("请选择一个项目"));
         }
-
+        view.setProjectId(projectId);
+        // 设置为子视图
+        if (StrUtil.isNotBlank(view.getParentId())) {
+            view.setLevel(1);
+        }
+        view.setFilter(view.getFilterByManual(view.getOneFilters()));
+        baseMapper.insert(view);
+        // 添加子视图
+        if (1 == view.getIsAuto() && view.getLevel() == 0) {
+            // 查询项目范围内的自定义字段
+            // 添加oneFilters集合
+            // 保存子视图
+        }
+        return view;
+        //设置sql
+//            String sql = appendSql(oneFilter, view);
+//
+//            view.setSql(sql);
     }
 
     /**
@@ -411,7 +374,7 @@ public class ViewServiceImpl implements ViewService {
         List<OneFilter> collect = oneFilter.stream().filter(f -> "sys".equals(f.getCustomType())).collect(Collectors.toList());
 
         StringBuilder stringBuilder = new StringBuilder("select * from ");
-        String scope = view.getScope();
+        String scope = view.getScopeName();
         switch (scope) {
             case FieldConstant.PROJECT:
                 stringBuilder.append("project ");
@@ -432,7 +395,7 @@ public class ViewServiceImpl implements ViewService {
 
         }
         stringBuilder.append("where ");
-        stringBuilder.append("user_id = ").append(view.getUserId());
+        stringBuilder.append("user_id = ").append(view.getCreateUserId());
         if (!scope.equals(FieldConstant.PROJECT)) {
             stringBuilder.append(" and ").append("project_id = ").append(view.getProjectId());
         }
@@ -457,7 +420,7 @@ public class ViewServiceImpl implements ViewService {
              *   Include 包含
              *   Exclude 不包含
              */
-            stringBuilder.append(filter.getFieldName());
+            stringBuilder.append(filter.getFieldNameCn());
             switch (condition) {
                 case "Is":
                     stringBuilder.append(" = ");
@@ -533,7 +496,7 @@ public class ViewServiceImpl implements ViewService {
 
 
         String filter = view.getFilter();
-        String scope = view.getScope();
+        String scope = view.getScopeName();
         switch (scope) {
             case FieldConstant.PROJECT:
                 List<Project> projectList = JSONArray.parseArray(this.sql(sql), Project.class);
@@ -548,7 +511,7 @@ public class ViewServiceImpl implements ViewService {
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
@@ -593,7 +556,7 @@ public class ViewServiceImpl implements ViewService {
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.FEATURE, fieldName);
@@ -619,7 +582,7 @@ public class ViewServiceImpl implements ViewService {
                 }
                 for (String featureId : featureIdSet) {
                     if (!features.stream().map(Feature::getId).collect(Collectors.toSet()).contains(featureId)) {
-                        Feature data = featureService.queryById(featureId).getData();
+                        Feature data = featureService.info(Long.valueOf(featureId));
                         features.add(data);
                     }
                 }
@@ -636,7 +599,7 @@ public class ViewServiceImpl implements ViewService {
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
@@ -680,7 +643,7 @@ public class ViewServiceImpl implements ViewService {
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
@@ -706,7 +669,7 @@ public class ViewServiceImpl implements ViewService {
                 }
                 for (String testCaseId : testCaseIds) {
                     if (!testCaseList.stream().map(TestCase::getId).collect(Collectors.toSet()).contains(testCaseId)) {
-                        TestCase data = testCaseService.queryById(testCaseId).getData();
+                        TestCase data = testCaseService.queryById(Convert.toLong(testCaseId)).getData();
                         testCaseList.add(data);
                     }
                 }
@@ -724,7 +687,7 @@ public class ViewServiceImpl implements ViewService {
                     OneFilter oneFilter = oneFilters.get(i);
 
                     String customType = oneFilter.getCustomType();
-                    String fieldName = oneFilter.getFieldName();
+                    String fieldName = oneFilter.getFieldNameCn();
                     if ("user".equals(customType)) {
                         //查询该用户下的该项目数据
                         List<CustomFieldData> customFieldDatas = customFieldDataService.findAllByUserIdAndScope(FieldConstant.PROJECT, fieldName);
@@ -750,8 +713,8 @@ public class ViewServiceImpl implements ViewService {
                 }
                 for (String issueId : issueIdSet) {
                     if (!issueList.stream().map(Issue::getId).collect(Collectors.toSet()).contains(issueId)) {
-                        Issue data = issueService.queryById(issueId).getData();
-                        issueList.add(data);
+//                        Issue data = issueService.queryById(issueId).getData();
+                        issueList.add(new Issue());
                     }
                 }
                 return new Resp.Builder<>().setData(issueList).ok();

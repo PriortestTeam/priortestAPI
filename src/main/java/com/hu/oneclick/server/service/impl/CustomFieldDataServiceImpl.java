@@ -1,27 +1,20 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.CustomFieldDataDao;
 import com.hu.oneclick.dao.SysCustomFieldDao;
 import com.hu.oneclick.dao.SysCustomFieldExpandDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.CustomFieldData;
-import com.hu.oneclick.model.domain.Feature;
-import com.hu.oneclick.model.domain.Issue;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.SysCustomField;
-import com.hu.oneclick.model.domain.SysCustomFieldExpand;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.TestCycle;
+import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.CustomFieldService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,15 +28,15 @@ import java.util.stream.Collectors;
 @Service
 public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
-    @Autowired
+    @Resource
     private CustomFieldDataDao customFieldDataDao;
-    @Autowired
+    @Resource
     private JwtUserServiceImpl jwtUserService;
-    @Autowired
+    @Resource
     private CustomFieldService customFieldService;
-    @Autowired
+    @Resource
     private SysCustomFieldDao sysCustomFieldDao;
-    @Autowired
+    @Resource
     private SysCustomFieldExpandDao sysCustomFieldExpandDao;
 
     /**
@@ -97,10 +90,10 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
             CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
 
-            String projectId = feature.getProjectId();
-            fieldData.setProjectId(projectId);
-            fieldData.setScopeId(feature.getId());
-            fieldData.setScope(FieldConstant.FEATURE);
+            Long projectId = feature.getProjectId();
+            fieldData.setProjectId(String.valueOf(projectId));
+//            fieldData.setScopeId(feature.getId());
+//            fieldData.setScope(FieldConstant.FEATURE);
 
             insertFlag = customFieldDataDao.insert(fieldData);
 
@@ -128,10 +121,10 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
             CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
 
-            String projectId = testCycle.getProjectId();
-            fieldData.setProjectId(projectId);
-            fieldData.setScopeId(testCycle.getId());
-            fieldData.setScope(FieldConstant.TESTCYCLE);
+//            String projectId = testCycle.getProjectId();
+//            fieldData.setProjectId(projectId);
+//            fieldData.setScopeId(testCycle.getId());
+//            fieldData.setScope(FieldConstant.TESTCYCLE);
 
             insertFlag = customFieldDataDao.insert(fieldData);
 
@@ -156,9 +149,9 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
         for (CustomFieldData customFieldData : customFieldDatas) {
             CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
             for (TestCase testCase : testCases) {
-                String projectId = testCase.getProjectId();
-                fieldData.setProjectId(projectId);
-                fieldData.setScopeId(testCase.getId());
+                Long projectId = testCase.getProjectId();
+                fieldData.setProjectId(Convert.toStr(projectId));
+                fieldData.setScopeId(Convert.toStr(testCase.getId()));
                 fieldData.setScope(FieldConstant.TESTCASE);
             }
 
@@ -187,9 +180,9 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
             CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
 
-            String projectId = issue.getProjectId();
-            fieldData.setProjectId(projectId);
-            fieldData.setScopeId(issue.getId());
+//            String projectId = issue.getProjectId();
+//            fieldData.setProjectId(projectId);
+//            fieldData.setScopeId(issue.getId());
             fieldData.setScope(FieldConstant.ISSUE);
 
             insertFlag = customFieldDataDao.insert(fieldData);

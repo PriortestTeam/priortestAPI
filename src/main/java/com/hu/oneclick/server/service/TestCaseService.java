@@ -1,12 +1,11 @@
 package com.hu.oneclick.server.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.dto.ImportTestCaseDto;
-import com.hu.oneclick.model.domain.dto.LeftJoinDto;
-import com.hu.oneclick.model.domain.dto.TestCaseDto;
-import com.hu.oneclick.model.domain.dto.TestCycleDto;
+import com.hu.oneclick.model.domain.dto.*;
+import com.hu.oneclick.model.domain.param.TestCaseParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -14,11 +13,11 @@ import java.util.List;
 /**
  * @author qingyang
  */
-public interface TestCaseService {
+public interface TestCaseService extends IService<TestCase> {
 
     Resp< List<LeftJoinDto>> queryTitles(String projectId, String title);
 
-    Resp<TestCase> queryById(String id);
+    Resp<TestCase> queryById(Long id);
 
     Resp<List<TestCase>> queryList(TestCaseDto testCase);
 
@@ -54,4 +53,18 @@ public interface TestCaseService {
      * @Date: 2021/12/1
      */
     Resp<List<TestCase>> updateAction(List<String> testCaseId, String actionType, String testCycleId);
+
+    List<TestCase> list(TestCaseParam param);
+
+    TestCase save(TestCaseSaveDto dto);
+
+    TestCase update(TestCaseSaveDto dto);
+
+    TestCase info(Long id);
+
+    void clone(List<Long> ids);
+
+    List<TestCase> listExtend(TestCaseParam tmpParam);
+
+    List<TestCaseBisDto> getTestCaseAllByCycleId(Long testCycleId);
 }

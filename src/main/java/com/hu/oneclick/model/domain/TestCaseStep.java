@@ -1,139 +1,80 @@
 package com.hu.oneclick.model.domain;
 
-import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.exception.BizException;
-import com.hu.oneclick.model.base.BaseEntity;
-import com.hu.oneclick.model.base.VerifyParam;
-import org.apache.commons.lang3.StringUtils;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hu.oneclick.model.base.AssignIdEntity;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
- * (TestCaseStep)实体类
+ * 测试用例步骤
  *
- * @author makejava
- * @since 2021-02-07 10:25:52
+ * @author xiaohai
+ * @date 2023/03/06
  */
-public class TestCaseStep extends BaseEntity implements Serializable, VerifyParam {
-    private static final long serialVersionUID = -81638569883101943L;
+@EqualsAndHashCode(callSuper = true)
+@Data
+@ApiModel("测试用例步骤")
+@TableName("test_case_step")
+@Component
+public class TestCaseStep extends AssignIdEntity implements Serializable {
+
+    private static final long serialVersionUID = -2725298116058101604L;
 
     /**
-     * 关联testCase id
+     * 关联testcase id
      */
-    private String testCaseId;
+    @ApiModelProperty("关联testcase id")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private Long testCaseId;
+
     /**
      * 步骤
      */
-    private String step;
-    /**
-     * 测试日期
-     */
-    private Date testDate;
+    @ApiModelProperty("步骤")
+    private String testStep;
+
     /**
      * 预期结果
      */
+    @ApiModelProperty("预期结果")
     private String expectedResult;
-    /**
-     * 0 未执行， 1 执行失败 2 执行 成功
-     */
-    private Integer status;
-
-    private Date createTime;
 
     /**
-     *测试数据
+     * 测试数据
      */
+    @ApiModelProperty("测试数据")
     private String testData;
 
     /**
-     * 实际结果
+     * remarks
      */
-    private String actualResult;
+    @ApiModelProperty("remarks")
+    private String remarks;
 
+    /**
+     * test_step_id
+     */
+    @ApiModelProperty("test_step_id")
+    private Long testStepId;
 
-    @Override
-    public void verify() throws BizException {
-        if(StringUtils.isEmpty(testCaseId)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"测试用例ID" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if(StringUtils.isEmpty(step)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"迭代名称" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }
-    }
+    /**
+     * teststep_expand
+     */
+    @ApiModelProperty("teststep_expand")
+    private String teststepExpand;
 
-    public void queryListVerify() {
+    /**
+     * 执行条件
+     */
+    @ApiModelProperty("执行条件")
+    private String teststepCondition;
 
-        if(StringUtils.isEmpty(testCaseId)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"测试用例ID" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }
-
-        super.setId(null);
-
-    }
-
-
-    public String getTestCaseId() {
-        return testCaseId;
-    }
-
-    public void setTestCaseId(String testCaseId) {
-        this.testCaseId = testCaseId;
-    }
-
-    public String getStep() {
-        return step;
-    }
-
-    public void setStep(String step) {
-        this.step = step;
-    }
-
-    public Date getTestDate() {
-        return testDate;
-    }
-
-    public void setTestDate(Date testDate) {
-        this.testDate = testDate;
-    }
-
-    public String getExpectedResult() {
-        return expectedResult;
-    }
-
-    public void setExpectedResult(String expectedResult) {
-        this.expectedResult = expectedResult;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getTestData() {
-        return testData;
-    }
-
-    public void setTestData(String testData) {
-        this.testData = testData;
-    }
-
-    public String getActualResult() {
-        return actualResult;
-    }
-
-    public void setActualResult(String actualResult) {
-        this.actualResult = actualResult;
-    }
-
+    @ApiModelProperty("status_code")
+    private int statusCode;
 }

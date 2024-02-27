@@ -3,6 +3,7 @@ package com.hu.oneclick.dao;
 import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.domain.Project;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -139,4 +140,15 @@ public interface ProjectDao {
      */
     List<Project> findAllByProject(Project project);
 
+    /**
+     * 查询指定行数据
+     *
+     * @param offset 查询起始位置
+     * @param limit  查询条数
+     * @return 对象列表
+     */
+    @Page
+    List<Project> queryAllByIds(@Param("projectIdList") List<String> projectIdList);
+
+    List<LeftJoinDto> queryTitleByIds(@Param("projectIdList") List<String> projectIdList);
 }

@@ -16,11 +16,7 @@ import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
-import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
-import com.hu.oneclick.model.domain.dto.AuthLoginUser;
-import com.hu.oneclick.model.domain.dto.SubUserDto;
-import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
-import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
+import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SystemConfigService;
@@ -397,7 +393,7 @@ public class UserServiceImpl implements UserService {
                 project.setTitle(userUseOpenProject.getTitle());
                 project.setStatus("开发中");
                 project.setRoomId(sysUser.getRoomId());
-                project.setDelFlag(0);
+//                project.setDelFlag(0);
                 project.setUpdateTime(new Date());
                 project.setReportToName(sysUser.getUserName());
                 projectService.initProject(project, userUseOpenProject);
@@ -548,19 +544,19 @@ public class UserServiceImpl implements UserService {
         String token = RandomUtil.randomString(50);
 
         SysUserToken sysUserToken = new SysUserToken();
-        sysUserToken.setUser_id(userLoginInfo.getSysUser().getId());
+        sysUserToken.setUserId(userLoginInfo.getSysUser().getId());
         String tokenName = sysUserTokenDto.getTokenName();
-        sysUserToken.setToken_name(tokenName);
-        sysUserToken.setToken_value(token);
+        sysUserToken.setTokenName(tokenName);
+        sysUserToken.setTokenValue(token);
         Date expirationTime = sysUserTokenDto.getExpirationTime();
         Date nowDate = new Date();
         long datePoor3 = DateUtil.getDatePoor3(nowDate, expirationTime);
-        sysUserToken.setExpiration_time(expirationTime);
-        sysUserToken.setCreate_time(nowDate);
-        sysUserToken.setIs_del(false);
+        sysUserToken.setExpirationTime(expirationTime);
+        sysUserToken.setCreateTime(nowDate);
+        sysUserToken.setIsDel(false);
         sysUserToken.setStatus(false);
-        sysUserToken.setApi_times(0L);
-        sysUserToken.setCreate_id(userLoginInfo.getSysUser().getId());
+        sysUserToken.setApiTimes(0L);
+        sysUserToken.setCreateId(userLoginInfo.getSysUser().getId());
 
 
         RBucket<Object> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + tokenName);
@@ -647,7 +643,7 @@ public class UserServiceImpl implements UserService {
                 return false;
             }
             for (SysUserToken sysUserToken : sysUserTokens) {
-                if (sysUserToken.getApi_times() > 0) {
+                if (sysUserToken.getApiTimes() > 0) {
                     sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
                 }
             }

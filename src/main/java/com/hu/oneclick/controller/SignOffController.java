@@ -2,14 +2,19 @@ package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.ProjectSignOff;
+import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
+import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.server.service.AttachmentService;
+import com.hu.oneclick.server.service.CustomFieldsService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.ProjectSignOffService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleService;
+import com.hu.oneclick.server.service.UserProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -45,23 +52,27 @@ public class SignOffController {
     private SysCustomFieldService sysCustomFieldService;
     @Autowired
     private ProjectSignOffService signOffService;
+    @Autowired
+    UserProjectService userProjectService;
+    @Autowired
+    CustomFieldsService customFieldsService;
 
 
     @GetMapping("/getProjectEnv")
-    public Resp<SysCustomFieldVo> getProjectEnv() {
-        return sysCustomFieldService.getSysCustomField("test_env");
+    public Resp<List<CustomFieldPossBileDto>> getProjectEnv() {
+        return customFieldsService.getPossBile("env");
     }
 
 
     @GetMapping("/getProjectVersion")
-    public Resp<SysCustomFieldVo> getProjectVersion() {
-        return sysCustomFieldService.getSysCustomField("versions");
+    public Resp<List<CustomFieldPossBileDto>> getProjectVersion()  {
+        return customFieldsService.getPossBile("version");
     }
 
 
     @GetMapping("/getIssue")
-    public Resp<SysCustomFieldVo> getIssue() {
-        return sysCustomFieldService.getSysCustomField("issue_status");
+    public Resp<List<CustomFieldPossBileDto>> getIssue() {
+        return customFieldsService.getPossBile("issueStatus");
     }
 
     @GetMapping("/getTestCycleDetail")
@@ -103,4 +114,10 @@ public class SignOffController {
     }
 
 
+    @GetMapping("getProjectListByUser")
+    @ApiOperation("获取当前用户下title列表")
+    public Resp<List<LeftJoinDto>> getProjectListByUser()
+    {
+        return userProjectService.getUserByProject();
+    }
 }

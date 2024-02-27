@@ -6,40 +6,40 @@
 
     <resultMap type="com.hu.oneclick.model.domain.Project" id="ProjectMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="userId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="reportToName" column="report_to_name" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="reportToName" column="report_to" jdbcType="VARCHAR"/>
+        <result property="status" column="project_status" jdbcType="INTEGER"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="planReleaseDate" column="plan_release_date" jdbcType="TIMESTAMP"/>
         <!--<result property="delFlag" column="del_flag" jdbcType="INTEGER"/> -->
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-        <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
+        <!--        <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>-->
         <result property="roomId" column="room_id" jdbcType="INTEGER"/>
         <result property="testFrame" column="test_frame" jdbcType="VARCHAR"/>
         <result property="projectCategory" column="project_category" jdbcType="VARCHAR"/>
-        <result property="closeDesc" column="close_desc" jdbcType="VARCHAR"/>
+        <!--        <result property="closeDesc" column="close_desc" jdbcType="VARCHAR"/>-->
         <result property="customer" column="customer" jdbcType="VARCHAR"/>
-        <result property="modifyUser" column="modifyUser" jdbcType="INTEGER"/>
+        <result property="modifyUser" column="update_user_id" jdbcType="INTEGER"/>
     </resultMap>
 
     <select id="queryById" resultMap="ProjectMap">
         select id,
-               user_id,
+        create_user_id,
                title,
                room_id,
-               report_to_name,
-               status,
+        report_to,
+        project_status,
                description,
                plan_release_date,
 
                create_time,
                update_time,
-               close_date,
+        <!--close_date,-->
                test_frame,
                project_category,
-               close_desc,
+        <!--close_desc,-->
                project_expand,
                customer
         from project
@@ -49,15 +49,15 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ProjectMap">
         select id,
-               user_id,
+        create_user_id,
                title,
-               report_to_name,
-               status,
+        report_to,
+        project_status,
                description,
                plan_release_date,
                create_time,
                update_time,
-               close_date,
+        <!--close_date,-->
                test_frame,
                project_category,
                customer
@@ -67,23 +67,26 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ProjectMap">
         select
-        id, user_id, title,
-        report_to_name, status,
+        id, create_user_id, title,
+        report_to, project_status,
         description, plan_release_date ,
         create_time,
-        update_time,close_date,test_frame,
-        project_category,customer,close_desc
+        update_time,
+        <!--close_date,-->
+        test_frame,
+        project_category,customer
+        <!--,close_desc-->
         from oneclick.project
         <where>
-            user_id = #{userId}
+            create_user_id = #{userId}
             <if test="title != null and title != ''">
                 and title = #{title}
             </if>
             <if test="reportToName != null and reportToName != ''">
-                and report_to_name = #{reportToName}
+                and report_to = #{reportToName}
             </if>
             <if test="status != null">
-                and status = #{status}
+                and project_status = #{status}
             </if>
             <if test="description != null and description != ''">
                 and description = #{description}
@@ -93,10 +96,10 @@
                 and plan_release_date &lt; #{planReleaseDateEnd}
             </if>
 
-            <if test="closeDateBegin != null and closeDateEnd != ''">
-                and close_date &gt; #{closeDateBegin}
-                and close_date &lt; #{closeDateEnd}
-            </if>
+            <!--            <if test="closeDateBegin != null and closeDateEnd != ''">-->
+            <!--                and close_date &gt; #{closeDateBegin}-->
+            <!--                and close_date &lt; #{closeDateEnd}-->
+            <!--            </if>-->
 
 
             <if test="filter != null and filter != ''">
@@ -109,7 +112,7 @@
     <select id="queryByTitle" resultType="java.lang.Integer">
         select count(1)
         from project
-        where user_id = #{masterId}
+        where create_user_id = #{masterId}
           and title = #{title}
     </select>
     <select id="queryAllProjects" resultMap="ProjectMap">
@@ -125,7 +128,7 @@
                group_concat(s.operation_auth_id) as operation_auth_ids
         from project p
                  left join sys_project_permission s on p.id = s.project_id
-        where p.user_id = #{masterId}
+        where p.create_user_id = #{masterId}
         group by p.id
         order by p.create_time
     </select>
@@ -151,16 +154,16 @@
                 id,
             </if>
             <if test="userId != null and userId != ''">
-                user_id,
+                create_user_id,
             </if>
             <if test="title != null and title != ''">
                 title,
             </if>
             <if test="reportToName != null and reportToName != ''">
-                report_to_name,
+                report_to,
             </if>
             <if test="status != null">
-                status,
+                project_status,
             </if>
             <if test="description != null and description != ''">
                 description,
@@ -228,7 +231,7 @@
                 id = #{id},
             </if>
             <if test="userId != null and userId != ''">
-                user_id = #{userId},
+                create_user_id = #{userId},
             </if>
             <if test="title != null and title != ''">
                 title = #{title},
@@ -237,7 +240,7 @@
                 report_to_name = #{reportToName},
             </if>
             <if test="status != null">
-                status = #{status},
+                project_status = #{status},
             </if>
             <if test="description != null and description != ''">
                 description = #{description},
@@ -245,18 +248,18 @@
             <if test="planReleaseDate != null">
                 plan_release_date = #{planReleaseDate},
             </if>
-            <if test="closeDate != null">
-                close_date = #{closeDate},
-            </if>
+            <!--            <if test="closeDate != null">-->
+            <!--                close_date = #{closeDate},-->
+            <!--            </if>-->
             <if test="testFrame != null and testFrame != ''">
                 test_frame = #{testFrame},
             </if>
             <if test="projectCategory != null and projectCategory != ''">
                 project_category = #{projectCategory},
             </if>
-            <if test="closeDesc != null and closeDesc != ''">
-                close_desc = #{closeDesc},
-            </if>
+            <!--            <if test="closeDesc != null and closeDesc != ''">-->
+            <!--                close_desc = #{closeDesc},-->
+            <!--            </if>-->
             <if test="customer != null and customer != ''">
                 customer = #{customer},
             </if>
@@ -297,7 +300,7 @@
                group_concat(s.operation_auth_id) as operationAuthIds
         from project p
                  left join sys_project_permission s on p.id = s.project_id
-        where p.user_id = #{masterId}
+        where p.create_user_id = #{masterId}
           and p.id = #{projectId}
         group by p.id
         order by p.create_time
@@ -337,16 +340,16 @@
                 id,
             </if>
             <if test="userId != null and userId != ''">
-                user_id,
+                create_user_id,
             </if>
             <if test="title != null and title != ''">
                 title,
             </if>
             <if test="reportToName != null and reportToName != ''">
-                report_to_name,
+                report_to,
             </if>
             <if test="status != null">
-                status,
+                project_status,
             </if>
             <if test="description != null and description != ''">
                 description,
@@ -368,7 +371,7 @@
                 room_id,
             </if>
             <if test="modifyUser != null and modifyUser != ''">
-                user_id,
+                update_user_id,
             </if>
             create_time,
             update_time
@@ -421,25 +424,28 @@
     <!--通过实体作为筛选条件查询-->
     <select id="findAllByProject" resultMap="ProjectMap">
         select
-        id, user_id, title,
-        report_to_name, status,
+        id, create_user_id, title,
+        report_to, project_status,
         description, plan_release_date ,
         create_time,
-        update_time,close_date,test_frame,
-        project_category,customer,close_desc
+        update_time
+        <!--,close_date-->
+        ,test_frame,
+        project_category,customer
+        <!--,close_desc-->
         from oneclick.project
         <where>
             <if test="title != null and title != ''">
                 and title = #{title}
             </if>
             <if test="reportToName != null and reportToName != ''">
-                and report_to_name = #{reportToName}
+                and report_to = #{reportToName}
             </if>
             <if test="testFrame != null and testFrame != ''">
                 and test_frame = #{testFrame}
             </if>
             <if test="status != null">
-                and status = #{status}
+                and project_status = #{status}
             </if>
             <if test="description != null and description != ''">
                 and description = #{description}
@@ -449,12 +455,46 @@
                 and plan_release_date &lt; #{planReleaseDateEnd}
             </if>
 
-            <if test="closeDateBegin != null and closeDateEnd != ''">
-                and close_date &gt; #{closeDateBegin}
-                and close_date &lt; #{closeDateEnd}
-            </if>
+            <!--            <if test="closeDateBegin != null and closeDateEnd != ''">-->
+            <!--                and close_date &gt; #{closeDateBegin}-->
+            <!--                and close_date &lt; #{closeDateEnd}-->
+            <!--            </if>-->
             order by create_time desc
         </where>
     </select>
-
+    <!--查询指定行数据-->
+    <select id="queryAllByIds" resultMap="ProjectMap">
+        select id,
+               create_user_id,
+               room_id,
+               title,
+               plan_release_date,
+               description,
+               create_time,
+               update_time,
+               report_to,
+               test_frame,
+               project_category,
+               customer,
+               project_expand,
+               project_status,
+               update_user_id,
+               remarks
+        from oneclick.project
+        where id in (
+            <foreach collection="projectIdList" item="id" separator=",">
+                #{id}
+            </foreach>
+        )
+        order by id desc
+    </select>
+    <select id="queryTitleByIds" resultType="com.hu.oneclick.model.domain.dto.LeftJoinDto">
+        select id,title from project where id in (
+            <foreach collection="projectIdList" item="id" separator=",">
+                #{id}
+            </foreach>
+        )
+        order by id desc
+    </select>
 </mapper>
+<!--        limit #{offset}, #{limit}-->

@@ -36,10 +36,9 @@
       where sys_user_token.user_id = #{user_id,jdbcType=VARCHAR}
     </select>
     <select id="selectByTokenValue" resultType="com.hu.oneclick.model.domain.SysUserToken" parameterType="java.lang.String"  >
-        select
-        <include refid="Base_Column_List"/>
-        from sys_user_token sys_user_token
-        where sys_user_token.token_value = #{token_value,jdbcType=VARCHAR}
+        select *
+        from sys_user_token
+        where token_value = #{token_value}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete
@@ -50,10 +49,10 @@
             useGeneratedKeys="true">
         insert into sys_user_token (user_id, token_name, token_value,
                                     expiration_time, create_time, is_del,
-                                    `status`, api_times, create_id)
-        values (#{user_id,jdbcType=VARCHAR}, #{token_name,jdbcType=VARCHAR}, #{token_value,jdbcType=VARCHAR},
-                #{expiration_time,jdbcType=TIMESTAMP}, #{create_time,jdbcType=TIMESTAMP}, #{is_del,jdbcType=BOOLEAN},
-                #{status,jdbcType=BOOLEAN}, #{api_times,jdbcType=BIGINT}, #{create_id,jdbcType=VARCHAR})
+                                    status, api_times, create_id)
+        values (#{userId,jdbcType=VARCHAR}, #{tokenName,jdbcType=VARCHAR}, #{tokenValue,jdbcType=VARCHAR},
+                #{expirationTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=BOOLEAN},
+                #{status,jdbcType=BOOLEAN}, #{apiTimes,jdbcType=BIGINT}, #{createId,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
             parameterType="com.hu.oneclick.model.domain.SysUserToken" useGeneratedKeys="true">

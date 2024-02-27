@@ -1,8 +1,7 @@
 package com.hu.oneclick.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.hu.oneclick.model.domain.TestCaseStep;
-import tk.mybatis.mapper.common.BaseMapper;
-
 import java.util.List;
 
 /**
@@ -10,7 +9,7 @@ import java.util.List;
  */
 public interface TestCaseStepDao extends BaseMapper<TestCaseStep> {
 
-    int update(TestCaseStep testCaseStep);
+    int updateByPrimaryKeySelective(TestCaseStep testCaseStep);
 
     List<TestCaseStep> queryList(TestCaseStep testCaseStep);
 }

@@ -1,28 +1,51 @@
 package com.hu.oneclick.server.service;
 
-import com.hu.oneclick.model.base.Resp;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.model.domain.Sprint;
-import com.hu.oneclick.model.domain.dto.LeftJoinDto;
-import com.hu.oneclick.model.domain.dto.SprintDto;
+import com.hu.oneclick.model.domain.dto.SprintSaveDto;
+import com.hu.oneclick.model.domain.param.SprintParam;
 
 import java.util.List;
 
 /**
  * @author qingyang
  */
-public interface SprintService {
-
-    Resp< List<LeftJoinDto>> queryTitles(String projectId, String title);
-
-    Resp<Sprint> queryById(String id);
-
-    Resp<List<Sprint>> queryList(SprintDto sprint);
-
-    Resp<String> insert(Sprint sprint);
-
-    Resp<String> update(Sprint sprint);
-
-    Resp<String> delete(String id);
+public interface SprintService extends IService<Sprint> {
 
 
+    /**
+     * 列表
+     *
+     * @param param
+     * @return
+     */
+    List<Sprint> list(SprintParam param);
+
+    /**
+     * 新增
+     *
+     * @param dto
+     * @return
+     */
+    Sprint add(SprintSaveDto dto);
+
+    /**
+     * 修改
+     *
+     * @param dto
+     * @return
+     */
+    Sprint edit(SprintSaveDto dto);
+
+    Sprint getByIdAndProjectId(Long id, Long projectId);
+
+    /**
+     * 详情
+     *
+     * @param id
+     * @return
+     */
+    Sprint info(Long id);
+
+    void clone(List<Long> ids);
 }

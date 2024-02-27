@@ -5,20 +5,20 @@
     <resultMap type="com.hu.oneclick.model.domain.Issue" id="IssueMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <!--        <result property="userId" column="user_id" jdbcType="INTEGER"/>-->
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="author" column="author" jdbcType="VARCHAR"/>
+        <!--        <result property="author" column="author" jdbcType="VARCHAR"/>-->
         <result property="status" column="status" jdbcType="INTEGER"/>
-        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>
+        <!--        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>-->
         <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
-        <result property="testCase" column="test_case" jdbcType="INTEGER"/>
-        <result property="testCycle" column="test_cycle" jdbcType="INTEGER"/>
-        <result property="feature" column="feature" jdbcType="INTEGER"/>
+        <!--        <result property="testCase" column="test_case" jdbcType="INTEGER"/>-->
+        <!--        <result property="testCycle" column="test_cycle" jdbcType="INTEGER"/>-->
+        <!--        <result property="feature" column="feature" jdbcType="INTEGER"/>-->
         <result property="priority" column="priority" jdbcType="VARCHAR"/>
         <result property="env" column="env" jdbcType="VARCHAR"/>
         <result property="browser" column="browser" jdbcType="VARCHAR"/>
-        <result property="platform" column="platform" jdbcType="VARCHAR"/>
-        <result property="version" column="version" jdbcType="VARCHAR"/>
+        <!--        <result property="platform" column="platform" jdbcType="VARCHAR"/>-->
+        <!--        <result property="version" column="version" jdbcType="VARCHAR"/>-->
         <result property="caseCategory" column="case_category" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
@@ -128,7 +128,7 @@
 
 
     <!--通过主键修改数据-->
-    <update id="update">
+    <update id="updateByPrimaryKeySelective">
         update issue
         <set>
             <if test="title != null and title != ''">

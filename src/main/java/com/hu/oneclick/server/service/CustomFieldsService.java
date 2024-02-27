@@ -1,8 +1,9 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
 import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 
@@ -30,4 +31,10 @@ public interface CustomFieldsService {
     Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto);
 
     Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto);
+
+    Resp<String> updateValueDropDownBox(CustomFieldsDto customFieldsDto);
+
+    List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId);
+
+    Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName);
 }

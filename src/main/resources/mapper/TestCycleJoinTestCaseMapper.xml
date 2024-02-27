@@ -31,6 +31,12 @@
         from test_cycle_join_test_case
         where test_case_id = #{testCaseId}
     </delete>
+    <delete id="deleteByParam">
+        delete
+        from test_cycle_join_test_case
+        where test_case_id = #{testCaseId} and project_id = #{projectId}
+        and test_cycle_id = #{testCycleId}
+    </delete>
     <select id="queryBindCaseList" resultType="com.hu.oneclick.model.domain.TestCase">
         select t.id as id,
                t.title as title,
@@ -80,11 +86,8 @@
             <if test="runCount != null and runCount != ''">
                 run_count = #{runCount},
             </if>
-            <if test="userId != null and userId != ''">
-                user_id = #{userId},
-            </if>
-            <if test="runDuration != null and runDuration != ''">
-                run_duration = #{runDuration},
+            <if test="caseRunDuration != null and caseRunDuration != '' or caseRunDuration == 0">
+                case_run_duration = #{caseRunDuration},
             </if>
             <if test="runStatus != null and runStatus != ''">
                 run_status = #{runStatus},
@@ -96,13 +99,14 @@
         </set>
         where test_cycle_id = #{testCycleId}
         and test_case_id = #{testCaseId}
+        and project_id = #{projectId}
     </update>
 
     <!--通过实体作为筛选条件查询-->
     <select id="queryAllDate" resultMap="TestCycleJoinTestCaseMap">
         select
         test_cycle_id, test_case_id, execute_status,
-        run_duration,run_count,user_id,step_status,run_status,update_time
+        case_run_duration,run_count,user_id,step_status,run_status,update_time
         from oneclick.test_cycle_join_test_case
         <where>
             <if test="testCycleId != null and testCycleId != ''">
@@ -113,5 +117,39 @@
             </if>
         </where>
     </select>
+    <select id="getCaseIdListByCycleId" resultType="java.lang.Long">
+        select test_case_id from test_cycle_join_test_case where test_cycle_id = #{testCycleId}
+    </select>
+    <select id="countByTestCaseIdInt" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+            FROM test_cycle_join_test_case
+        WHERE
+            test_case_id = #{caseId}
+            AND project_id = #{projectId}
+            AND test_cycle_id = #{cycleId}
+    </select>
+    <select id="getCycleJoinTestCaseByCaseId" resultMap="TestCycleJoinTestCaseMap">
+        SELECT *
+            FROM test_cycle_join_test_case
+        WHERE
+            test_case_id = #{caseId}
+            AND project_id = #{projectId}
+            AND test_cycle_id = #{cycleId}
+        ORDER BY
+            id DESC
+        LIMIT 1
+    </select>
+
+    <update id="updateRunStatus">
+        update test_cycle_join_test_case
+        set run_status     = #{param1.statusCode},
+            update_user_id = #{param2},
+            case_run_duration = #{param1.caseRunDuration},
+            case_total_period = #{param1.caseTotalPeriod},
+            update_time    = #{param1.stepUpdateTime}
+        where test_case_id = #{param1.testCaseId}
+          and test_cycle_id = #{param1.testCycleId}
+          and project_id = #{param1.projectId}
+    </update>
     <!-- 新增 WJK END-->
 </mapper>

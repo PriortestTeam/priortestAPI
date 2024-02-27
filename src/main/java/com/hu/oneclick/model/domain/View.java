@@ -1,34 +1,35 @@
 package com.hu.oneclick.model.domain;
 
-import com.alibaba.fastjson.JSONObject;
-import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.exception.BizException;
-import com.hu.oneclick.model.base.BaseEntity;
-import com.hu.oneclick.model.base.VerifyParam;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.hu.oneclick.model.base.AssignBaseEntity;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.annotation.Transient;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
- * 视图表(View)实体类
+ * 视图表实体
  *
- * @author makejava
- * @since 2020-12-31 09:33:51
+ * @author xiaohai
+ * @date 2023/08/20
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class View extends BaseEntity implements VerifyParam, Serializable {
-    private static final long serialVersionUID = -52199543861564334L;
+@ApiModel("视图实体")
+@TableName("view")
+public class View extends AssignBaseEntity implements Serializable {
 
-    /**
-     * 关联用户id （主用户）
-     */
-    private String userId;
+    private static final long serialVersionUID = 2648094842570049550L;
+
     /**
      * 关联项目id
      */
@@ -40,7 +41,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
     /**
      * 使用区域
      */
-    private String scope;
+    private String scopeName;
     /**
      * 公开还是私有,默认 0 公开
      */
@@ -48,7 +49,7 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
     /**
      * 创建人
      */
-    private String owner;
+    private String creater;
     /**
      * {},自定义json 对象
      */
@@ -56,82 +57,42 @@ public class View extends BaseEntity implements VerifyParam, Serializable {
     /**
      * sql
      */
+    @TableField("`sql`")
     private String sql;
 
+    @TableField(exist = false)
     private List<OneFilter> oneFilters;
 
     /**
      * 修改人
      */
-    private String modifyUser;
-    /**
-     * 修改时间
-     */
-    private Date modifyDate;
-
-    private Date createTime;
-
-    private Date updateTime;
+    private String updateUser;
 
     private String parentId;
 
+    private String scopeId;
+
     private Integer level;
 
-    @Transient
-    private String parentTitle;
-
-
-
-    @Override
-    public void verify() throws BizException {
-        if(StringUtils.isEmpty(title)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"视图名称" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if(isPrivate == null){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"请选择公开还是私有," + SysConstantEnum.PARAM_EMPTY.getValue());
-        }
-
-        verifyOneFilter();
-    }
+    @ApiModelProperty(value = "Default:0, 自渲染1")
+    @TableField(exist = false)
+    private Integer isAuto;
 
     /**
-     * 验证OneFilter 参数格式
+     * 手动赋值的意义在于，DB插入的时候需要filter，但是api返回的时候不需要filter
+     * DB插入或更新前在filter的set方法里调用此方法
      */
-    public void verifyOneFilter(){
-        if(StringUtils.isEmpty(scope)) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "作用域" + SysConstantEnum.PARAM_EMPTY.getValue());
+    public String getFilterByManual(List<OneFilter> oneFilters2) {
+        if (CollUtil.isNotEmpty(oneFilters2)) {
+            return JSON.toJSONString(oneFilters2);
         }
-        if (oneFilters == null || oneFilters.size() == 0){
-            return;
-        }
-
-        //验证是否有重复
-        Set<String> isRedundant = new HashSet<>(oneFilters.size());
-        for (OneFilter oneFilter : this.oneFilters) {
-            String fieldName = oneFilter.getFieldName();
-            if (isRedundant.contains(fieldName)){
-                throw new BizException(SysConstantEnum.VIEW_ONN_FILTER_IS_REDUNDANT.getCode(), SysConstantEnum.VIEW_ONN_FILTER_IS_REDUNDANT.getValue());
-            }
-            isRedundant.add(fieldName);
-        }
-
-        //验证参数是否异常
-        this.oneFilters.forEach(OneFilter::verify);
-        //转换对象为字符串方便存入数据库
-        this.filter = JSONObject.toJSONString(this.oneFilters);
+        return filter;
     }
 
-    /**
-     * 验证用户类型并修改是否公开
-     * 默认空，子用户只能查公开
-     * @param type
-     */
-    public void verifyUserType(Integer type){
-        if (type != 0 && type != 1){
-            //子成员只能查看公开的
-            isPrivate = 0;
+    public List<OneFilter> getOneFilters() {
+        if (StrUtil.isNotBlank(filter)) {
+            return JSON.parseArray(filter, OneFilter.class);
         }
+        return oneFilters;
     }
-
-
-
 }

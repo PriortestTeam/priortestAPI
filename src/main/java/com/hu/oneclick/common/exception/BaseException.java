@@ -3,16 +3,18 @@ package com.hu.oneclick.common.exception;
 /**
  * @author qingyang
  */
-public class BaseException extends RuntimeException{
+public class BaseException extends RuntimeException {
     protected String code;
     protected String msg;
+    protected int httpCode;
 
     public BaseException() {
         super();
     }
+
     public BaseException(String message) {
         super(message);
-        this.msg=message;
+        this.msg = message;
     }
 
     public BaseException(String code, String msg) {
@@ -35,5 +37,13 @@ public class BaseException extends RuntimeException{
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public int getHttpCode() {
+        return httpCode;
+    }
+
+    public void setHttpCode(int httpCode) {
+        this.httpCode = httpCode;
     }
 }

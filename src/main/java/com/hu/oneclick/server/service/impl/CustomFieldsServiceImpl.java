@@ -1,7 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
-import cn.hutool.core.util.ObjectUtil;
-import com.github.pagehelper.PageInfo;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Maps;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -11,11 +11,11 @@ import com.hu.oneclick.dao.CustomFieldsDao;
 import com.hu.oneclick.dao.CustomFileldLinkDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.CustomField;
 import com.hu.oneclick.model.domain.CustomFields;
 import com.hu.oneclick.model.domain.CustomFileldLink;
-import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
+import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.vo.ComponentAttributesVo;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
 import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
@@ -30,8 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -107,7 +108,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         BeanUtils.copyProperties(attributes, customField);
 
         customField.setCustomFieldId(SnowFlakeUtil.getFlowIdInstance().nextId());
-        int insertSelective = customFieldsDao.insertSelective(customField);
+        int insertSelective = customFieldsDao.insert(customField);
         if (insertSelective > 0) {
             List<CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
             int insertBatch = customFileldLinkDao.insertBatch(customFileldLinkList);
@@ -123,7 +124,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
         CustomFields customField = new CustomFields();
         customField.setCustomFieldId(customFieldVo.getCustomFieldId());
-        int count = customFieldsDao.selectCount(customField);
+        int count = customFieldsDao.selectCount(new LambdaQueryWrapper<CustomFields>().eq(CustomFields::getCustomFieldId, customFieldVo.getCustomFieldId())).intValue();
         if (count == 0) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "customFieldId不存在！");
         }
@@ -132,12 +133,12 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         customField.setModifyUser(Long.parseLong(jwtUserServiceImpl.getMasterId()));
         CustomFieldVo.Attributes attributes = customFieldVo.getAttributes();
         BeanUtils.copyProperties(attributes, customField);
-        int row = customFieldsDao.update(customField);
+        int row = customFieldsDao.updateByPrimaryKeySelective(customField);
 
         if (row > 0) {
             List<CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
             // 先根据customFieldsId删除数据再新增
-            customFileldLinkDao.delete(new CustomFileldLink(customField.getCustomFieldId()));
+            customFileldLinkDao.delete(new LambdaQueryWrapper<CustomFileldLink>().eq(CustomFileldLink::getCustomFieldId, customField.getCustomFieldId()));
             int insertBatch = customFileldLinkDao.insertBatch(customFileldLinkList);
             row += insertBatch;
         }
@@ -156,6 +157,18 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     public Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
         List<CustomFileldLinkVo> list = customFieldsDao.getAllCustomList(customFieldDto);
         return new Resp.Builder<List<CustomFileldLinkVo>>().setData(list).ok();
+    }
+
+    @Override
+    public List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId) {
+
+        return customFieldsDao.getAllCustomListByScopeId(scopeId);
+    }
+
+    @Override
+    public Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName) {
+        List<CustomFieldPossBileDto> list = customFieldsDao.getPossBile(fieldName);
+        return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(list).ok();
     }
 
     @Override
@@ -180,4 +193,49 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         return customFileldLinkList;
     }
 
+    @Override
+    public Resp<String> updateValueDropDownBox(CustomFieldsDto customFieldsDto) {
+        // 检验参数
+        updateValidParam(customFieldsDto);
+        customFieldsDto.setUpdateTime(new Date());
+        customFieldsDto.setModifyUserId(Long.valueOf(jwtUserServiceImpl.getUserLoginInfo().getSysUser().getId()));
+        int row = customFieldsDao.updateValueDropDownBox(customFieldsDto);
+        return Result.updateResult(row >= 1 ? 1 : 0);
+    }
+
+    private void updateValidParam(CustomFieldsDto customFieldsDto) {
+        String fieldType = customFieldsDto.getFieldType();
+        CustomFields entity = this.customFieldsDao.getByCustomFieldId(customFieldsDto.getCustomFieldId());
+        if (null == entity) {
+            throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "customFieldId不存在");
+        }
+
+        if (!fieldType.equals(entity.getFieldType())) {
+            throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "fieldType与请求修改记录不符合");
+        }
+
+        if (CustomFieldsDto.NOT_PARENT_LIST_ID.contains(fieldType)) {
+            JSONObject jsonObject = JSONObject.parseObject(customFieldsDto.getPossibleValue());
+            Object others = jsonObject.get("others");
+            if (null != others) {
+                Object parentListId = JSONObject.parseObject(JSONObject.toJSONString(others)).get("parentListId");
+                if (null != parentListId) {
+                    throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "parentListId不应该出现");
+                }
+            }
+        }
+
+        if (CustomFieldsDto.NEED_PARENT_LIST_ID.contains(fieldType)) {
+            JSONObject jsonObject = JSONObject.parseObject(customFieldsDto.getPossibleValue());
+            Object others = jsonObject.get("others");
+            if (null == others) {
+                throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "possibleValue格式不对。因为缺少parentListId");
+            } else {
+                Object parentListId = JSONObject.parseObject(JSONObject.toJSONString(others)).get("parentListId");
+                if (null == parentListId) {
+                    throw new BizException(SysConstantEnum.PARAMETER_ABNORMAL.getCode(), "possibleValue格式不对。因为缺少parentListId");
+                }
+            }
+        }
+    }
 }

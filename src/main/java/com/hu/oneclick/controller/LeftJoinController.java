@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("leftJoin")
@@ -37,13 +37,15 @@ public class LeftJoinController {
     @GetMapping("querySprintTitles")
     public Resp<List<LeftJoinDto>> querySprintTitles(@RequestParam String projectId,
                                                      @RequestParam String title){
-        return sprintService.queryTitles(projectId,title);
+//        return sprintService.queryTitles(projectId,title);
+        return null;
     }
 
     @GetMapping("queryFeatureTitles")
     public Resp<List<LeftJoinDto>> queryFeatureTitles(@RequestParam String projectId,
                                                             @RequestParam String title){
-        return featureService.queryTitles(projectId,title);
+//        return featureService.queryTitles(projectId,title);
+        return new Resp.Builder<List<LeftJoinDto>>().setData(Collections.EMPTY_LIST).total(0).ok();
     }
 
     @GetMapping("queryFestCaseTitles")
