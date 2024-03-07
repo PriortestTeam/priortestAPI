@@ -66,8 +66,15 @@ public class UserCaseController extends BaseController {
     @PostMapping(value = "updateUserCase")
     @ApiOperation(value = "修改故事用例")
     public Resp<Boolean> updateUserCase(@RequestBody UserCaseParam reqEntity) {
-        boolean result = this.userCaseService.updateUserCase(reqEntity);
-        return new Resp.Builder<Boolean>().setData(result).ok();
+        UserCaseVo entity = this.userCaseService.getUserCaseInfoById(reqEntity.getId());
+        if(ObjectUtil.isEmpty(entity)){
+            Resp<Boolean> result = new Resp.Builder<Boolean>().setData(false).fail();
+            result.setMsg("无此数据!");
+            return result;
+        }else {
+            boolean result = this.userCaseService.updateUserCase(reqEntity);
+            return new Resp.Builder<Boolean>().setData(result).ok();
+        }
     }
 
     @PostMapping(value = "removeUserCaseById")
