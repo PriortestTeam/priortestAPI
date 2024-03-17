@@ -77,4 +77,8 @@ public interface TestCaseService extends IService<TestCase> {
     TestCase getByIdAndProjectId(Long projectId, Long testCaseId);
 
 
+
+    List<TestCase> testCaseSearch(Long projectId, String title);
+
+    Resp<TestCase> removeAndChild(Long id);
 }

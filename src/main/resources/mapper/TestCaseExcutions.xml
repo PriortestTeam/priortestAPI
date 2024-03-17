@@ -322,4 +322,11 @@
             </if>
         </where>
     </update>
+
+    <delete id="deleteByParam">
+        delete
+        from testCaseId
+        where test_case_id = #{testCaseId} and project_id = #{projectId}
+          and test_cycle_id = #{testCycleId}
+    </delete>
 </mapper>

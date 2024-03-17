@@ -112,17 +112,17 @@ public class TestCaseController extends BaseController {
         return new Resp.Builder<TestCase>().setData(testCase).ok();
     }
 
-    @ApiOperation("删除")
-    @DeleteMapping("/delete/{ids}")
-    public Resp<?> delete(@PathVariable Long[] ids) {
-        try {
-            testCaseService.removeByIds(Arrays.asList(ids));
-        } catch (Exception e) {
-            log.error("删除测试用例失败，原因：" + e.getMessage(), e);
-            return new Resp.Builder<TestCase>().fail();
-        }
-        return new Resp.Builder<TestCase>().ok();
-    }
+//    @ApiOperation("删除")
+//    @DeleteMapping("/delete/{ids}")
+//    public Resp<?> delete(@PathVariable Long[] ids) {
+//        try {
+//            testCaseService.removeByIds(Arrays.asList(ids));
+//        } catch (Exception e) {
+//            log.error("删除测试用例失败，原因：" + e.getMessage(), e);
+//            return new Resp.Builder<TestCase>().fail();
+//        }
+//        return new Resp.Builder<TestCase>().ok();
+//    }
 
     @ApiOperation("克隆")
     @PostMapping("/clone")
@@ -134,6 +134,19 @@ public class TestCaseController extends BaseController {
             log.error("克隆测试用例失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
         }
+    }
+
+    @ApiOperation("测试用例输入框回显")
+    @GetMapping("/testCaseSearch")
+    public  Resp<List<TestCase>> testCaseSearch(@RequestParam  Long projectId, @RequestParam String title) {
+        List<TestCase> testCaseList = testCaseService.testCaseSearch(projectId,title);
+        return new Resp.Builder<List<TestCase>>().setData(testCaseList).ok();
+    }
+
+    @ApiOperation("删除")
+    @DeleteMapping("/delete/{id}")
+    public Resp<?> delete(@PathVariable Long id) {
+       return testCaseService.removeAndChild(id);
     }
 
 }

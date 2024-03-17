@@ -197,4 +197,10 @@ public interface RelationService extends IService<Relation> {
      * @date 2023/06/05
      */
     List<String> getRelationObjectIdListByTargetIdListAndCategory(List<String> targetIdList, String category);
+
+    /**
+     * 清空原关系
+     * @param testCasesIds
+     */
+    void removeBatchByTestCaseIds(List<Long> testCasesIds);
 }

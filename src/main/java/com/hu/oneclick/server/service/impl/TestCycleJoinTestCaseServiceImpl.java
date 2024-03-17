@@ -1,21 +1,27 @@
 package com.hu.oneclick.server.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.model.domain.TestCasesExecution;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
+import com.hu.oneclick.relation.enums.RelationCategoryEnum;
+import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @Author: jhh
@@ -28,6 +34,13 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
 
     @Resource
     private TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
+
+    @Resource
+    private RelationService relationService;
+
+
+
+
 
     @Override
     public Boolean saveInstance(TestCycleJoinTestCaseSaveDto dto) {
@@ -60,13 +73,20 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
     @Resource
     TestCycleTcDao testCycleTcDao;
     @Override
+    @Transactional
     public void deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
-        ArrayList<Long> testCasesIds = new ArrayList<>();
+        List<Long> testCasesIds = new ArrayList<>();
+
         for (Long testCaseId : dto.getTestCaseIds()) {
+            //删除关联的test_cycle_join_test_case表
             this.testCycleJoinTestCaseDao.deleteByParam(dto.getProjectId(), dto.getTestCycleId(), testCaseId);
             testCasesIds.add(testCaseId);
         }
+        testCasesIds = Arrays.asList(dto.getTestCaseIds());
+        //删除关联的relation表
+        this.relationService.removeBatchByTestCaseIds(testCasesIds);
 
+        // 删除test_cases_execution表
         testCycleTcDao.delete(new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId, testCasesIds).eq(TestCasesExecution::getTestCycleId, dto.getTestCycleId()).eq(TestCasesExecution::getProjectId, dto.getProjectId()));
     }
 

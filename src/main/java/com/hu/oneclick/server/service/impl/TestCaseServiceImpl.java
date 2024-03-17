@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.constant.ActionConstant;
 import com.hu.oneclick.common.constant.OneConstant;
@@ -24,6 +25,7 @@ import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.model.domain.param.TestCaseParam;
+import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -76,6 +78,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     private  TestCaseDao testCaseDao;
     @Resource
     private TestCaseStepService testCaseStepService;
+
+    @Resource
+    private RelationService relationService;
 
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -1118,5 +1123,41 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         return baseMapper.getByIdAndProjectId(testCaseId, projectId);
     }
 
+
+    @Override
+    public List<TestCase> testCaseSearch(Long projectId, String title) {
+        List<TestCase> list = this.lambdaQuery()
+                .eq(TestCase::getProjectId, projectId)
+                .like(StrUtil.isNotBlank(title), TestCase::getTitle, title)
+                .select(TestCase::getId,TestCase::getTitle)
+                .list();
+        if (CollUtil.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+        return list;
+    }
+
+    @Override
+    @Transactional
+    public Resp<TestCase> removeAndChild(Long id) {
+        //获取testCase信息
+        TestCase testCase = this.getById(id);
+        List<Long> testCaseIds = new ArrayList<>();
+        testCaseIds.add(id);
+
+        try {
+            // 删除关联表
+            testCycleJoinTestCaseDao.delete(Wrappers.<TestCycleJoinTestCase>lambdaUpdate()
+                    .eq(TestCycleJoinTestCase::getTestCaseId, id)
+                    .eq(TestCycleJoinTestCase::getProjectId, testCase.getProjectId())
+            );
+            relationService.removeBatchByTestCaseIds(testCaseIds);
+            this.removeById(id);
+        } catch (Exception e) {
+            log.error("删除测试用例失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<TestCase>().fail();
+        }
+        return null;
+    }
 
 }

@@ -196,4 +196,11 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
         return this.getRelationListByTargetIdListAndCategory(targetIdList, category).stream()
                 .map(Relation::getObjectId).collect(Collectors.toList());
     }
+
+    @Override
+    public void removeBatchByTestCaseIds(List<Long> testCasesIds) {
+        this.remove(new LambdaQueryWrapper<Relation>()
+                .in(Relation::getObjectId, testCasesIds)
+                .or().in(Relation::getTargetId, testCasesIds));
+    }
 }
