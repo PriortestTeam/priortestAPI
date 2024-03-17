@@ -14,6 +14,8 @@ import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
+import com.hu.oneclick.relation.domain.Relation;
+import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.IssueService;
 import com.hu.oneclick.server.service.RetrieveTestCycleAsTitleService;
 import com.hu.oneclick.server.service.TestCaseService;
@@ -33,6 +35,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/apiAdpater")
 @Slf4j
@@ -48,6 +52,9 @@ public class ApiAdpaderController {
 
     @Resource
     private TestCaseService testCaseService;
+
+    @Resource
+    private RelationService relationService;
 
     @GetMapping("/{projectId}/testCycle/retrieveTestCycleAsTitle/getId")
     public Resp<TestCycleVo> getIdByTitle(@RequestParam String title, @PathVariable Long projectId) {
@@ -127,6 +134,15 @@ public class ApiAdpaderController {
 
         TestCycleJoinTestCase testCycleJoinTestCase = testCycleJoinTestCaseService.getCycleJoinTestCaseByCaseId(testCaseId, projectId, testCycleId);
         return new Resp.Builder<TestCycleJoinTestCase>().setData(testCycleJoinTestCase).ok();
+    }
+
+    @ApiOperation("根据id、categoty查询relation")
+    @GetMapping("/{projectId}/retrieveBugAsperRunCaseId")
+    public Resp<Map> getRelationByCaseIdAndCategory(@PathVariable("projectId") Long projectId,
+                                                                         @RequestParam Long testCaseId){
+
+        Map<String, Object> result = relationService.getRelationListByObjectIdAndTargetIdAndCategory(testCaseId);
+        return new Resp.Builder<Map>().setData(result).ok();
     }
 
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.relation.dao.RelationDao">
+
+<!--    List<Relation> getRelationListByObjectIdAndTargetIdAndCategory(@Param("id") Long testCaseId);-->
+    <select id="getRelationListByObjectIdAndTargetIdAndCategory" resultType="com.hu.oneclick.relation.domain.Relation">
+        select `OBJECT_ID`, `TARGET_ID`
+        from `relation`
+        <where>
+            <if test="id != null">
+                (`OBJECT_ID` = #{id} or `TARGET_ID` = #{id})
+            </if>
+            <if test="categorys != null and categorys.length > 0">
+                and `CATEGORY` in
+                <foreach collection="categorys" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>
