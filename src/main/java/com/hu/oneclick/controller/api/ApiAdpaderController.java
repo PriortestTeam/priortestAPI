@@ -10,11 +10,13 @@ import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Issue;
+import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.server.service.IssueService;
 import com.hu.oneclick.server.service.RetrieveTestCycleAsTitleService;
+import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,9 @@ public class ApiAdpaderController {
     private TestCycleJoinTestCaseService testCycleJoinTestCaseService;
     @Resource
     private RetrieveTestCycleAsTitleService rtcatService;
+
+    @Resource
+    private TestCaseService testCaseService;
 
     @GetMapping("/{projectId}/testCycle/retrieveTestCycleAsTitle/getId")
     public Resp<TestCycleVo> getIdByTitle(@RequestParam String title, @PathVariable Long projectId) {
@@ -104,6 +109,24 @@ public class ApiAdpaderController {
             log.error("修改缺陷失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<Issue>().fail();
         }
+    }
+
+    @ApiOperation("根据CaseId、projectId查找")
+    @GetMapping("/{projectId}/retrieveTestcase")
+    public Resp<TestCase> getByCaseIdAndProjectId(@PathVariable("projectId") Long projectId, @RequestParam Long testCaseId){
+
+        TestCase testCase = testCaseService.getByIdAndProjectId(projectId, testCaseId);
+        return new Resp.Builder<TestCase>().setData(testCase).ok();
+    }
+
+    @ApiOperation("根据CaseId、projectId、cycleId查找")
+    @GetMapping("/{projectId}/retrieveRunCase")
+    public Resp<TestCycleJoinTestCase> getByCaseIdAndProjectIdAndCycleId(@PathVariable("projectId") Long projectId,
+                                                            @RequestParam Long testCaseId,
+                                                            @RequestParam Long testCycleId){
+
+        TestCycleJoinTestCase testCycleJoinTestCase = testCycleJoinTestCaseService.getCycleJoinTestCaseByCaseId(testCaseId, projectId, testCycleId);
+        return new Resp.Builder<TestCycleJoinTestCase>().setData(testCycleJoinTestCase).ok();
     }
 
 }

@@ -1106,4 +1106,17 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         return arrList;
     }
 
+    /**
+     * 根据CaseId、projectId查找
+     *
+     * @param projectId
+     * @param testCaseId
+     * @return
+     */
+    @Override
+    public TestCase getByIdAndProjectId(Long projectId, Long testCaseId) {
+        return baseMapper.getByIdAndProjectId(testCaseId, projectId);
+    }
+
+
 }

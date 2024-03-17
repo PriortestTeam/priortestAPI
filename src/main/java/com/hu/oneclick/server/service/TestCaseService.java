@@ -67,4 +67,14 @@ public interface TestCaseService extends IService<TestCase> {
     List<TestCase> listExtend(TestCaseParam tmpParam);
 
     List<TestCaseBisDto> getTestCaseAllByCycleId(Long testCycleId);
+
+    /**
+     * 根据CaseId、projectId查找
+     * @param projectId
+     * @param testCaseId
+     * @return
+     */
+    TestCase getByIdAndProjectId(Long projectId, Long testCaseId);
+
+
 }
