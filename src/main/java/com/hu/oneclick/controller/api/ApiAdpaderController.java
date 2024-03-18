@@ -13,6 +13,8 @@ import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
+import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
+import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.domain.Relation;
 import com.hu.oneclick.relation.service.RelationService;
@@ -60,11 +62,11 @@ public class ApiAdpaderController {
     public Resp<TestCycleVo> getIdByTitle(@RequestParam String title, @PathVariable Long projectId) {
         if (StringUtil.isEmpty(title)) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "title不能为空",
-                HttpStatus.BAD_REQUEST.value());
+                    HttpStatus.BAD_REQUEST.value());
         }
         if (projectId == null || projectId == 0L) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId不能为空",
-                HttpStatus.BAD_REQUEST.value());
+                    HttpStatus.BAD_REQUEST.value());
         }
         log.info("getIdByTitle ==> title:{}", JSON.toJSONString(title));
         log.info("getIdByTitle ==> projectId:{}", JSON.toJSONString(projectId));
@@ -73,7 +75,7 @@ public class ApiAdpaderController {
 
     @GetMapping("/{projectId}/testRun/retrieveTCInTestCycle/getCaseId")
     public Resp<TestCycleVo> hasCaseId(
-        @PathVariable Long projectId, @RequestParam Long testCaseId, @RequestParam Long testCycleId
+            @PathVariable Long projectId, @RequestParam Long testCaseId, @RequestParam Long testCycleId
     ) {
         if (testCaseId == null || projectId == null || testCycleId == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "caseId projectId cycleId 不能为空",
@@ -120,7 +122,7 @@ public class ApiAdpaderController {
 
     @ApiOperation("根据CaseId、projectId查找")
     @GetMapping("/{projectId}/retrieveTestcase")
-    public Resp<TestCase> getByCaseIdAndProjectId(@PathVariable("projectId") Long projectId, @RequestParam Long testCaseId){
+    public Resp<TestCase> getByCaseIdAndProjectId(@PathVariable("projectId") Long projectId, @RequestParam Long testCaseId) {
 
         TestCase testCase = testCaseService.getByIdAndProjectId(projectId, testCaseId);
         return new Resp.Builder<TestCase>().setData(testCase).ok();
@@ -129,8 +131,8 @@ public class ApiAdpaderController {
     @ApiOperation("根据CaseId、projectId、cycleId查找")
     @GetMapping("/{projectId}/retrieveRunCase")
     public Resp<TestCycleJoinTestCase> getByCaseIdAndProjectIdAndCycleId(@PathVariable("projectId") Long projectId,
-                                                            @RequestParam Long testCaseId,
-                                                            @RequestParam Long testCycleId){
+                                                                         @RequestParam Long testCaseId,
+                                                                         @RequestParam Long testCycleId) {
 
         TestCycleJoinTestCase testCycleJoinTestCase = testCycleJoinTestCaseService.getCycleJoinTestCaseByCaseId(testCaseId, projectId, testCycleId);
         return new Resp.Builder<TestCycleJoinTestCase>().setData(testCycleJoinTestCase).ok();
@@ -139,10 +141,17 @@ public class ApiAdpaderController {
     @ApiOperation("根据id、categoty查询relation")
     @GetMapping("/{projectId}/retrieveBugAsperRunCaseId")
     public Resp<Map> getRelationByCaseIdAndCategory(@PathVariable("projectId") Long projectId,
-                                                                         @RequestParam Long testCaseId){
+                                                    @RequestParam Long testCaseId) {
 
         Map<String, Object> result = relationService.getRelationListByObjectIdAndTargetIdAndCategory(testCaseId);
         return new Resp.Builder<Map>().setData(result).ok();
     }
 
+    @ApiOperation("更改runCaseStatus")
+    @PostMapping("/{projectId}/testCycle/runCaseStatusUpdate")
+    public Resp runCaseStatusUpdate(@PathVariable("projectId") Long projectId,
+                                         @RequestBody TestCycleJoinTestCaseDto testCycleJoinTestCaseDto) {
+
+        return testCycleJoinTestCaseService.runCaseStatusUpdate(projectId, testCycleJoinTestCaseDto);
+    }
 }
