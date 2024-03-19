@@ -3,7 +3,11 @@ package com.hu.oneclick.server.service;
 import java.util.List;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
+import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 
 /**
@@ -32,4 +36,11 @@ public interface TestCycleJoinTestCaseService extends IService<TestCycleJoinTest
     int countCycleIdByCaseId(Long caseId, Long projectId, Long cycleId);
 
     TestCycleJoinTestCase getCycleJoinTestCaseByCaseId(Long caseId, Long projectId, Long cycleId);
+
+    /**
+     * 更改runCaseStatus
+     * @param projectId
+     * @param testCycleJoinTestCaseDto
+     */
+    Resp runCaseStatusUpdate(Long projectId, TestCycleJoinTestCaseDto testCycleJoinTestCaseDto);
 }
