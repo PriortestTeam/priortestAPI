@@ -28,8 +28,8 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
     @Override
     public boolean insertUserCase(UserCaseParam userCaseParam) {
         UserCaseDto entity = BeanUtil.copyProperties(userCaseParam, UserCaseDto.class);
-        if(!JSONUtil.isNull(userCaseParam.getUsecaseExpand())){
-            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand());
+        if (!JSONUtil.isNull(userCaseParam.getCustonFieldDatas())) {
+            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getCustonFieldDatas());
             entity.setUsecaseExpand(jsonStr);
         }
         super.save(entity);
@@ -53,6 +53,9 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
                 .eq(StrUtil.isNotBlank(userCaseParam.getFeatureId()), UserCaseDto::getFeatureId, userCaseParam.getFeatureId());
         List<UserCaseDto> list = this.baseMapper.selectList(queryWrapper);
         List<UserCaseVo> resultList = BeanUtil.copyToList(list, UserCaseVo.class);
+        resultList.forEach(obj -> {
+            obj.setCustonFieldDatas(obj.getUseaseExpand());
+        });
         return resultList;
     }
 

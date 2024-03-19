@@ -38,6 +38,9 @@ public class UserCaseParam implements Serializable {
     private String scenario;
     @ApiModelProperty(value = "故事用例扩展")
     private JSONObject usecaseExpand;
+
+    @ApiModelProperty(value = "用户自定义字段")
+    private JSONObject custonFieldDatas;
     @ApiModelProperty(value = "所属故事ID")
     private String featureId;
 

@@ -11,10 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -77,7 +74,7 @@ public class UserCaseController extends BaseController {
         }
     }
 
-    @PostMapping(value = "removeUserCaseById")
+    @DeleteMapping(value = "removeUserCaseById")
     @ApiOperation(value = "根据ID删除故事用例")
     public Resp<Boolean> removeUserCaseById(@RequestBody String id) {
         boolean result = this.userCaseService.removeUserCaseById(id);

@@ -40,6 +40,10 @@ public class UserCaseVo implements Serializable {
     private String scenario;
     @ApiModelProperty(value = "故事用例扩展")
     private String useaseExpand;
+
+    @ApiModelProperty(value = "自定义字段")
+    private String custonFieldDatas;
+
     @ApiModelProperty(value = "所属故事ID")
     private String featureId;
 
