@@ -124,6 +124,11 @@ public class ApiAdpaderController {
     @GetMapping("/{projectId}/retrieveTestcase")
     public Resp<TestCase> getByCaseIdAndProjectId(@PathVariable("projectId") Long projectId, @RequestParam Long testCaseId) {
 
+        //参数校验
+        if (testCaseId == null || String.valueOf(testCaseId).isBlank()){
+            return new Resp.Builder<TestCase>().buildResult("非法参数");
+        }
+
         TestCase testCase = testCaseService.getByIdAndProjectId(projectId, testCaseId);
         return new Resp.Builder<TestCase>().setData(testCase).ok();
     }
@@ -133,6 +138,10 @@ public class ApiAdpaderController {
     public Resp<TestCycleJoinTestCase> getByCaseIdAndProjectIdAndCycleId(@PathVariable("projectId") Long projectId,
                                                                          @RequestParam Long testCaseId,
                                                                          @RequestParam Long testCycleId) {
+        //参数校验
+        if (testCaseId == null || testCycleId == null || (String.valueOf(testCaseId).isBlank() || String.valueOf(testCycleId).isBlank())){
+            return new Resp.Builder<TestCycleJoinTestCase>().buildResult("非法参数");
+        }
 
         TestCycleJoinTestCase testCycleJoinTestCase = testCycleJoinTestCaseService.getCycleJoinTestCaseByCaseId(testCaseId, projectId, testCycleId);
         return new Resp.Builder<TestCycleJoinTestCase>().setData(testCycleJoinTestCase).ok();
@@ -142,6 +151,11 @@ public class ApiAdpaderController {
     @GetMapping("/{projectId}/retrieveBugAsperRunCaseId")
     public Resp<Map> getRelationByCaseIdAndCategory(@PathVariable("projectId") Long projectId,
                                                     @RequestParam Long testCaseId) {
+
+        //参数校验
+        if (testCaseId == null || String.valueOf(testCaseId).isBlank()){
+            return new Resp.Builder<Map>().buildResult("非法参数");
+        }
 
         Map<String, Object> result = relationService.getRelationListByObjectIdAndTargetIdAndCategory(testCaseId);
         return new Resp.Builder<Map>().setData(result).ok();
