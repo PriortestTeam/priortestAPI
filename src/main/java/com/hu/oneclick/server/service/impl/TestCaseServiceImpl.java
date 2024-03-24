@@ -16,10 +16,7 @@ import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
-import com.hu.oneclick.dao.FeatureDao;
-import com.hu.oneclick.dao.TestCaseDao;
-import com.hu.oneclick.dao.TestCaseStepDao;
-import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
+import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
@@ -78,6 +75,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     private  TestCaseDao testCaseDao;
     @Resource
     private TestCaseStepService testCaseStepService;
+
+    @Resource
+    TestCycleTcDao testCycleTcDao;
 
     @Resource
     private RelationService relationService;
@@ -1139,25 +1139,35 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
     @Override
     @Transactional
-    public Resp<TestCase> removeAndChild(Long id) {
+    public Resp<Map> removeAndChild(Long id) {
         //获取testCase信息
         TestCase testCase = this.getById(id);
         List<Long> testCaseIds = new ArrayList<>();
         testCaseIds.add(id);
-
+        Integer testCycleJoinTestCaseDelNum = 0;
+        Integer testCycleTcDelNum = 0;
+        Integer relationDelNum = 0;
+        Integer testCaseDelNum = 0;
+        Map<String,Integer> res = new HashMap<>();
         try {
             // 删除关联表
-            testCycleJoinTestCaseDao.delete(Wrappers.<TestCycleJoinTestCase>lambdaUpdate()
+            testCycleJoinTestCaseDelNum = testCycleJoinTestCaseDao.delete(Wrappers.<TestCycleJoinTestCase>lambdaUpdate()
                     .eq(TestCycleJoinTestCase::getTestCaseId, id)
                     .eq(TestCycleJoinTestCase::getProjectId, testCase.getProjectId())
             );
-            relationService.removeBatchByTestCaseIds(testCaseIds);
-            this.removeById(id);
+            testCycleTcDelNum = testCycleTcDao.delete(new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId, id).eq(TestCasesExecution::getProjectId, testCase.getProjectId()));
+            relationDelNum = relationService.removeBatchByTestCaseIds(testCaseIds);
+            testCaseDelNum = testCaseDao.deleteById(id);
+
+            res.put("testCase",testCaseDelNum);
+            res.put("testCycleJoinTestCase",testCycleJoinTestCaseDelNum);
+            res.put("testCasesExecution",testCycleTcDelNum);
+            res.put("relation",testCaseDelNum);
         } catch (Exception e) {
             log.error("删除测试用例失败，原因：" + e.getMessage(), e);
-            return new Resp.Builder<TestCase>().fail();
+            return new Resp.Builder<Map>().fail();
         }
-        return null;
+        return new Resp.Builder<Map>().buildResult(SysConstantEnum.SUCCESS.getCode(),SysConstantEnum.SUCCESS.getValue(),res);
     }
 
 }

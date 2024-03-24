@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.relation.domain.Relation;
 import com.hu.oneclick.relation.dao.RelationDao;
 import com.hu.oneclick.relation.service.RelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -14,6 +15,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> implements RelationService {
+
+    @Autowired
+    private RelationDao relationDao;
 
     @Transactional(rollbackFor = Exception.class)
     public void saveRelation(String objectId, String targetId, String category, String extJson, boolean clear) {
@@ -198,8 +202,8 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     }
 
     @Override
-    public void removeBatchByTestCaseIds(List<Long> testCasesIds) {
-        this.remove(new LambdaQueryWrapper<Relation>()
+    public int removeBatchByTestCaseIds(List<Long> testCasesIds) {
+        return relationDao.delete(new LambdaQueryWrapper<Relation>()
                 .in(Relation::getObjectId, testCasesIds)
                 .or().in(Relation::getTargetId, testCasesIds));
     }

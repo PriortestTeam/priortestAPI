@@ -202,5 +202,5 @@ public interface RelationService extends IService<Relation> {
      * 清空原关系
      * @param testCasesIds
      */
-    void removeBatchByTestCaseIds(List<Long> testCasesIds);
+    int removeBatchByTestCaseIds(List<Long> testCasesIds);
 }

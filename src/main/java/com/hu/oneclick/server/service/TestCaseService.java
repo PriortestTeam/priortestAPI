@@ -9,6 +9,7 @@ import com.hu.oneclick.model.domain.param.TestCaseParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -80,5 +81,5 @@ public interface TestCaseService extends IService<TestCase> {
 
     List<TestCase> testCaseSearch(Long projectId, String title);
 
-    Resp<TestCase> removeAndChild(Long id);
+    Resp<Map> removeAndChild(Long id);
 }
