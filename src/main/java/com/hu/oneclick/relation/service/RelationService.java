@@ -205,4 +205,10 @@ public interface RelationService extends IService<Relation> {
      * @return
      */
     Map<String, Object> getRelationListByObjectIdAndTargetIdAndCategory(Long testCaseId);
+
+    /**
+    * 清空原关系
+     * @param testCasesIds
+     */
+    int removeBatchByTestCaseIds(List<Long> testCasesIds);
 }

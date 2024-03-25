@@ -205,6 +205,13 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
                 .map(Relation::getObjectId).collect(Collectors.toList());
     }
 
+    @Override
+    public int removeBatchByTestCaseIds(List<Long> testCasesIds) {
+        return relationDao.delete(new LambdaQueryWrapper<Relation>()
+                .in(Relation::getObjectId, testCasesIds)
+                .or().in(Relation::getTargetId, testCasesIds));
+    }
+
     /**
      * 根据id、categoty查询relation
      *
