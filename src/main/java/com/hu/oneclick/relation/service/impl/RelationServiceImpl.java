@@ -4,18 +4,24 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.relation.domain.Relation;
 import com.hu.oneclick.relation.dao.RelationDao;
+import com.hu.oneclick.relation.enums.RelationCategoryEnum;
 import com.hu.oneclick.relation.service.RelationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+
+import javax.annotation.Resource;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> implements RelationService {
 
+    @Resource
     @Autowired
     private RelationDao relationDao;
 
@@ -206,5 +212,26 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
         return relationDao.delete(new LambdaQueryWrapper<Relation>()
                 .in(Relation::getObjectId, testCasesIds)
                 .or().in(Relation::getTargetId, testCasesIds));
+    }
+
+    /**
+     * 根据id、categoty查询relation
+     *
+     * @param testCaseId
+     * @return
+     */
+    @Override
+    public Map<String, Object> getRelationListByObjectIdAndTargetIdAndCategory(Long testCaseId) {
+
+        String[] categorys
+                = new String[]{RelationCategoryEnum.ISSUE_TEST_CASE.getValue(), RelationCategoryEnum.TEST_CASE_TO_ISSUE.getValue()};
+        List<Relation> relationList = relationDao.getRelationListByObjectIdAndTargetIdAndCategory(testCaseId, categorys);
+        Set<String> issueIds = relationList.stream().flatMap(obj -> Stream.of(obj.getTargetId(), obj.getObjectId()))
+                .collect(Collectors.toSet());
+        issueIds.remove(String.valueOf(testCaseId));
+        Map<String, Object> resultMap = new HashMap<>(2);
+        resultMap.put("testCaseId", testCaseId);
+        resultMap.put("issueId", issueIds);
+        return resultMap;
     }
 }

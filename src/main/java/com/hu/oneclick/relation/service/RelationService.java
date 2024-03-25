@@ -3,6 +3,7 @@ package com.hu.oneclick.relation.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.relation.domain.Relation;
 import java.util.List;
+import java.util.Map;
 
 public interface RelationService extends IService<Relation> {
 
@@ -199,6 +200,14 @@ public interface RelationService extends IService<Relation> {
     List<String> getRelationObjectIdListByTargetIdListAndCategory(List<String> targetIdList, String category);
 
     /**
+     * 根据id、categoty查询relation
+     * @param testCaseId
+     * @return
+     */
+    Map<String, Object> getRelationListByObjectIdAndTargetIdAndCategory(Long testCaseId);
+
+    /**
+    * 清空原关系
      * 清空原关系
      * @param testCasesIds
      */
