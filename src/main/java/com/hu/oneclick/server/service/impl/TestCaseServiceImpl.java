@@ -1162,7 +1162,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
             res.put("testCase",testCaseDelNum);
             res.put("testCycleJoinTestCase",testCycleJoinTestCaseDelNum);
             res.put("testCasesExecution",testCycleTcDelNum);
-            res.put("relation",testCaseDelNum);
+            res.put("relation",relationDelNum);
         } catch (Exception e) {
             log.error("删除测试用例失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<Map>().fail();
