@@ -9,6 +9,7 @@ import com.hu.oneclick.relation.domain.Relation;
 import com.hu.oneclick.relation.dao.RelationDao;
 import com.hu.oneclick.relation.enums.RelationCategoryEnum;
 import com.hu.oneclick.relation.service.RelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.stream.Stream;
 public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> implements RelationService {
 
     @Resource
+    @Autowired
     private RelationDao relationDao;
 
     @Transactional(rollbackFor = Exception.class)

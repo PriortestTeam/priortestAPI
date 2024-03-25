@@ -32,4 +32,5 @@ public class TestCasesExecution extends BaseEntity implements Serializable {
     private Long testCycleId;
     private String projectId;
     private int runFlag;
+//    private String testCaseStepId;
 }

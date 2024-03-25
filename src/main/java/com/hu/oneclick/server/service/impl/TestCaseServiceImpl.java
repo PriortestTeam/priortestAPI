@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.constant.ActionConstant;
 import com.hu.oneclick.common.constant.OneConstant;
@@ -15,15 +16,13 @@ import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
-import com.hu.oneclick.dao.FeatureDao;
-import com.hu.oneclick.dao.TestCaseDao;
-import com.hu.oneclick.dao.TestCaseStepDao;
-import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
+import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.model.domain.param.TestCaseParam;
+import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -76,6 +75,12 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     private  TestCaseDao testCaseDao;
     @Resource
     private TestCaseStepService testCaseStepService;
+
+    @Resource
+    TestCycleTcDao testCycleTcDao;
+
+    @Resource
+    private RelationService relationService;
 
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -1118,5 +1123,51 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         return baseMapper.getByIdAndProjectId(testCaseId, projectId);
     }
 
+
+    @Override
+    public List<TestCase> testCaseSearch(Long projectId, String title) {
+        List<TestCase> list = this.lambdaQuery()
+                .eq(TestCase::getProjectId, projectId)
+                .like(StrUtil.isNotBlank(title), TestCase::getTitle, title)
+                .select(TestCase::getId,TestCase::getTitle)
+                .list();
+        if (CollUtil.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+        return list;
+    }
+
+    @Override
+    @Transactional
+    public Resp<Map> removeAndChild(Long id) {
+        //获取testCase信息
+        TestCase testCase = this.getById(id);
+        List<Long> testCaseIds = new ArrayList<>();
+        testCaseIds.add(id);
+        Integer testCycleJoinTestCaseDelNum = 0;
+        Integer testCycleTcDelNum = 0;
+        Integer relationDelNum = 0;
+        Integer testCaseDelNum = 0;
+        Map<String,Integer> res = new HashMap<>();
+        try {
+            // 删除关联表
+            testCycleJoinTestCaseDelNum = testCycleJoinTestCaseDao.delete(Wrappers.<TestCycleJoinTestCase>lambdaUpdate()
+                    .eq(TestCycleJoinTestCase::getTestCaseId, id)
+                    .eq(TestCycleJoinTestCase::getProjectId, testCase.getProjectId())
+            );
+            testCycleTcDelNum = testCycleTcDao.delete(new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId, id).eq(TestCasesExecution::getProjectId, testCase.getProjectId()));
+            relationDelNum = relationService.removeBatchByTestCaseIds(testCaseIds);
+            testCaseDelNum = testCaseDao.deleteById(id);
+
+            res.put("testCase",testCaseDelNum);
+            res.put("testCycleJoinTestCase",testCycleJoinTestCaseDelNum);
+            res.put("testCasesExecution",testCycleTcDelNum);
+            res.put("relation",relationDelNum);
+        } catch (Exception e) {
+            log.error("删除测试用例失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<Map>().fail();
+        }
+        return new Resp.Builder<Map>().buildResult(SysConstantEnum.SUCCESS.getCode(),SysConstantEnum.SUCCESS.getValue(),res);
+    }
 
 }
