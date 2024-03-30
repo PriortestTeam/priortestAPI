@@ -89,8 +89,8 @@ public class TestCycleJoinTestCaseServiceImpl extends ServiceImpl<TestCycleJoinT
             testCasesIds.add(testCaseId);
         }
         testCasesIds = Arrays.asList(dto.getTestCaseIds());
-        //删除关联的relation表
-        this.relationService.removeBatchByTestCaseIds(testCasesIds);
+//        //删除关联的relation表
+//        this.relationService.removeBatchByTestCaseIds(testCasesIds);
 
         // 删除test_cases_execution表
         testCycleTcDao.delete(new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId, testCasesIds).eq(TestCasesExecution::getTestCycleId, dto.getTestCycleId()).eq(TestCasesExecution::getProjectId, dto.getProjectId()));
