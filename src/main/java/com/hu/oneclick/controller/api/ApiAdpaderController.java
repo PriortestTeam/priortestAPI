@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/apiAdpater")
@@ -111,10 +112,13 @@ public class ApiAdpaderController {
     @PutMapping ("/{projectId}/issue/statusUpdate")
     public Resp<Issue> statusUpdate(@PathVariable Long projectId, @RequestBody @Validated IssueStatusDto issueStatusDto) {
         try {
-            if (null == issueStatusDto.getId()) {
+            if ( issueStatusDto.getId() ==null) {
                 throw new BaseException("id不能为空");
             }
             Issue issue =this.issueService.info(issueStatusDto.getId());
+            if (!Objects.equals(issue.getProjectId(), projectId)){
+                throw new BaseException("项目id与id不匹配");
+            }
             this.issueService.studusedit(issue,issueStatusDto);
             return new Resp.Builder<Issue>().setData(null).ok();
 
