@@ -108,8 +108,8 @@ public class ApiAdpaderController {
     }
 
     @ApiOperation("更新缺陷")
-    @PutMapping ("/{projectId}/issue/statusUpdae")
-    public Resp<Issue> statusUpdae(@PathVariable Long projectId, @RequestBody @Validated IssueStatusDto issueStatusDto) {
+    @PutMapping ("/{projectId}/issue/statusUpdate")
+    public Resp<Issue> statusUpdate(@PathVariable Long projectId, @RequestBody @Validated IssueStatusDto issueStatusDto) {
         try {
             if (null == issueStatusDto.getId()) {
                 throw new BaseException("id不能为空");
