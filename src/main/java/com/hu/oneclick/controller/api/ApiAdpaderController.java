@@ -117,7 +117,8 @@ public class ApiAdpaderController {
             }
             Issue issue =this.issueService.info(issueStatusDto.getId());
             if (!Objects.equals(issue.getProjectId(), projectId)){
-                throw new BaseException("项目id与id不匹配");
+//                throw new BaseException("项目id与id不匹配");
+                return new Resp.Builder<Issue>().buildResult("查无缺陷",404);
             }
             this.issueService.studusedit(issue,issueStatusDto);
             return new Resp.Builder<Issue>().setData(null).ok();
