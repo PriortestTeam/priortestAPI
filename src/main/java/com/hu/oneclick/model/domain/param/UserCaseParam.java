@@ -13,7 +13,7 @@ public class UserCaseParam implements Serializable {
 
 
     @ApiModelProperty(value = "id")
-    private String id;
+    private long id;
 
     @ApiModelProperty(value = "标题")
     private String title;
@@ -42,7 +42,9 @@ public class UserCaseParam implements Serializable {
     @ApiModelProperty(value = "用户自定义字段")
     private JSONObject custonFieldDatas;
     @ApiModelProperty(value = "所属故事ID")
-    private String featureId;
+    private long featureId;
+
+
 
     @ApiModelProperty(value = "备注")
     private String remarks;
