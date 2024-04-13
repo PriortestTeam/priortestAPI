@@ -46,23 +46,23 @@ public class UserCaseController extends BaseController {
         return new Resp.Builder<PageInfo<UserCaseVo>>().setData(PageInfo.of(resultList)).ok();
     }
 
-    @GetMapping (value = "getUserCaseById")
+    @GetMapping (value = "getUseCaseById")
     @ApiOperation(value = "根据ID获取对象")
-    public Resp<UserCaseVo> getUserCaseById(@RequestParam String id) {
+    public Resp<UserCaseVo> getUseCaseById(@RequestParam String id) {
         UserCaseVo resultEntity = this.userCaseService.getUserCaseInfoById(id);
         return new Resp.Builder<UserCaseVo>().setData(resultEntity).ok();
     }
 
-    @PostMapping(value = "createUserCase")
+    @PostMapping(value = "createUseCase")
     @ApiOperation(value = "创建一个故事用例")
-    public Resp<Boolean> createUserCase(@RequestBody UserCaseParam reqEntity) {
+    public Resp<Boolean> createUseCase(@RequestBody UserCaseParam reqEntity) {
         boolean result = this.userCaseService.insertUserCase(reqEntity);
         return new Resp.Builder<Boolean>().setData(result).ok();
     }
 
-    @PostMapping(value = "updateUserCase")
+    @PostMapping(value = "updateUseCase")
     @ApiOperation(value = "修改故事用例")
-    public Resp<Boolean> updateUserCase(@RequestBody UserCaseParam reqEntity) {
+    public Resp<Boolean> updateUseCase(@RequestBody UserCaseParam reqEntity) {
         UserCaseVo entity = this.userCaseService.getUserCaseInfoById(reqEntity.getId());
         if(ObjectUtil.isEmpty(entity)){
             Resp<Boolean> result = new Resp.Builder<Boolean>().setData(false).fail();
@@ -74,9 +74,9 @@ public class UserCaseController extends BaseController {
         }
     }
 
-    @DeleteMapping(value = "removeUserCaseById")
+    @DeleteMapping(value = "removeUseCaseById")
     @ApiOperation(value = "根据ID删除故事用例")
-    public Resp<Boolean> removeUserCaseById(@RequestBody String id) {
+    public Resp<Boolean> removeUseCaseById(@RequestBody String id) {
         boolean result = this.userCaseService.removeUserCaseById(id);
         return new Resp.Builder<Boolean>().setData(result).ok();
     }
