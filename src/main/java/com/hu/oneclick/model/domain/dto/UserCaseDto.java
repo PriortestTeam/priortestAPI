@@ -28,7 +28,7 @@ public class UserCaseDto extends AssignBaseEntity {
      */
     private String scenario;
     private String usecaseExpand;
-    private String featureId;
+    private long featureId;
 
     private String remarks;
 

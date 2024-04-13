@@ -48,7 +48,7 @@ public class UserCaseController extends BaseController {
 
     @GetMapping (value = "getUseCaseById")
     @ApiOperation(value = "根据ID获取对象")
-    public Resp<UserCaseVo> getUseCaseById(@RequestParam String id) {
+    public Resp<UserCaseVo> getUseCaseById(@RequestParam long id) {
         UserCaseVo resultEntity = this.userCaseService.getUserCaseInfoById(id);
         return new Resp.Builder<UserCaseVo>().setData(resultEntity).ok();
     }
@@ -63,7 +63,8 @@ public class UserCaseController extends BaseController {
     @PostMapping(value = "updateUseCase")
     @ApiOperation(value = "修改故事用例")
     public Resp<Boolean> updateUseCase(@RequestBody UserCaseParam reqEntity) {
-        UserCaseVo entity = this.userCaseService.getUserCaseInfoById(reqEntity.getId());
+
+        UserCaseVo entity = this.userCaseService.getUserCaseInfoById(Long.parseLong(reqEntity.getId()));
         if(ObjectUtil.isEmpty(entity)){
             Resp<Boolean> result = new Resp.Builder<Boolean>().setData(false).fail();
             result.setMsg("无此数据!");
@@ -76,7 +77,7 @@ public class UserCaseController extends BaseController {
 
     @DeleteMapping(value = "removeUseCaseById")
     @ApiOperation(value = "根据ID删除故事用例")
-    public Resp<Boolean> removeUseCaseById(@RequestBody String id) {
+    public Resp<Boolean> removeUseCaseById(@RequestBody long id) {
         boolean result = this.userCaseService.removeUserCaseById(id);
         return new Resp.Builder<Boolean>().setData(result).ok();
     }

@@ -16,8 +16,8 @@ public interface UserCaseService {
 
     public List<UserCaseVo> listData(UserCaseParam userCaseParam);
 
-    public UserCaseVo getUserCaseInfoById(String id);
+    public UserCaseVo getUserCaseInfoById(long id);
 
-    public boolean removeUserCaseById(String id);
+    public boolean removeUserCaseById(long id);
 
 }

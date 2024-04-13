@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class UserCaseVo implements Serializable {
 
     @ApiModelProperty(value = "id")
-    private String id;
+    private long id;
 
     @ApiModelProperty(value = "标题")
     private String title;
@@ -45,7 +45,7 @@ public class UserCaseVo implements Serializable {
     private String custonFieldDatas;
 
     @ApiModelProperty(value = "所属故事ID")
-    private String featureId;
+    private long featureId;
 
     @ApiModelProperty(value = "备注")
     private String remarks;
