@@ -13,6 +13,7 @@ import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
+import com.hu.oneclick.model.domain.dto.IssueStatusDto;
 import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
@@ -22,6 +23,7 @@ import com.hu.oneclick.server.service.IssueService;
 import com.hu.oneclick.server.service.RetrieveTestCycleAsTitleService;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
+import com.hu.oneclick.server.service.impl.IssueServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -38,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/apiAdpater")
@@ -101,6 +104,27 @@ public class ApiAdpaderController {
             return new Resp.Builder<Issue>().setData(issue).ok();
         } catch (Exception e) {
             log.error("新增缺陷失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<Issue>().fail();
+        }
+    }
+
+    @ApiOperation("更新缺陷")
+    @PutMapping ("/{projectId}/issue/statusUpdate")
+    public Resp<Issue> statusUpdate(@PathVariable Long projectId, @RequestBody @Validated IssueStatusDto issueStatusDto) {
+        try {
+            if ( issueStatusDto.getId() ==null) {
+                throw new BaseException("id不能为空");
+            }
+            Issue issue =this.issueService.info(issueStatusDto.getId());
+            if (!Objects.equals(issue.getProjectId(), projectId)){
+//                throw new BaseException("项目id与id不匹配");
+                return new Resp.Builder<Issue>().buildResult("查无缺陷",404);
+            }
+            this.issueService.studusedit(issue,issueStatusDto);
+            return new Resp.Builder<Issue>().setData(null).ok();
+
+        }catch (Exception e){
+            log.error("更新缺陷失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<Issue>().fail();
         }
     }

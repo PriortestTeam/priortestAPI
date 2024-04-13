@@ -3,7 +3,10 @@ package com.hu.oneclick.server.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -11,6 +14,7 @@ import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
+import com.hu.oneclick.model.domain.dto.IssueStatusDto;
 import com.hu.oneclick.model.domain.param.IssueParam;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.IssueService;
@@ -97,11 +101,21 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
     @Override
     public Issue info(Long id) {
-        Issue issue = baseMapper.selectById(id);
+        Issue issue = this.baseMapper.selectById(id);
         if (issue == null) {
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
         }
         return issue;
+    }
+
+    @Override
+    public int studusedit(Issue issue,IssueStatusDto issueStatusDto) {
+       issue.setFixVersion(issueStatusDto.getFixVersion());
+       issue.setIssueStatus(issueStatusDto.getIssueStatus());
+       issue.setVerifiedResult(issueStatusDto.getVerifiedResult());
+        System.out.println(issue);
+
+        return baseMapper.updateById(issue);
     }
 
     @Override
