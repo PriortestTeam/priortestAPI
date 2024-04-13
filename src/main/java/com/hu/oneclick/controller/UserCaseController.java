@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -35,12 +36,22 @@ public class UserCaseController extends BaseController {
         return new Resp.Builder<List<UserCaseVo>>().setData(resultList).ok();
     }
 
-    @PostMapping(value = "pageData")
+    @PostMapping(value = "getUseCaseListByFeature")
     @ApiOperation(value = "分页列表")
-    public Resp<PageInfo<UserCaseVo>> pageData(@RequestBody UserCaseParam reqEntity) {
+    public Resp<PageInfo<UserCaseVo>> getUseCaseListByFeature(@RequestBody UserCaseParam reqEntity) {
         if (ObjectUtil.isEmpty(reqEntity)) {
             reqEntity = new UserCaseParam();
         }
+        startPage();
+        List<UserCaseVo> resultList = this.userCaseService.listData(reqEntity);
+        return new Resp.Builder<PageInfo<UserCaseVo>>().setData(PageInfo.of(resultList)).ok();
+    }
+
+    @GetMapping(value = "getUseCaseListByFeature")
+    @ApiOperation(value = "分页列表")
+    public Resp<PageInfo<UserCaseVo>> getUseCaseListByFeature(@RequestParam("featureId") Long featureId) {
+        UserCaseParam reqEntity = new UserCaseParam();
+        reqEntity.setFeatureId(featureId); // Set the featureId in the request entity
         startPage();
         List<UserCaseVo> resultList = this.userCaseService.listData(reqEntity);
         return new Resp.Builder<PageInfo<UserCaseVo>>().setData(PageInfo.of(resultList)).ok();
@@ -63,7 +74,6 @@ public class UserCaseController extends BaseController {
     @PostMapping(value = "updateUseCase")
     @ApiOperation(value = "修改故事用例")
     public Resp<Boolean> updateUseCase(@RequestBody UserCaseParam reqEntity) {
-
         UserCaseVo entity = this.userCaseService.getUserCaseInfoById(Long.parseLong(reqEntity.getId()));
         if(ObjectUtil.isEmpty(entity)){
             Resp<Boolean> result = new Resp.Builder<Boolean>().setData(false).fail();
@@ -75,9 +85,13 @@ public class UserCaseController extends BaseController {
         }
     }
 
-    @DeleteMapping(value = "removeUseCaseById")
+    @DeleteMapping(value = "deleteUseCaseById")
     @ApiOperation(value = "根据ID删除故事用例")
-    public Resp<Boolean> removeUseCaseById(@RequestBody long id) {
+    // Assuming the request body contains a JSON object with the user case ID
+    public Resp<Boolean>  deleteUseCaseById(@RequestBody Map<String, Object> requestBody) {
+        // Extract the ID from the request body
+        long id = Long.parseLong(requestBody.get("id").toString());
+        // Proceed with removing the use case by ID
         boolean result = this.userCaseService.removeUserCaseById(id);
         return new Resp.Builder<Boolean>().setData(result).ok();
     }
