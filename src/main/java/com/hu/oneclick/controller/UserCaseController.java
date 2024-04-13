@@ -46,9 +46,9 @@ public class UserCaseController extends BaseController {
         return new Resp.Builder<PageInfo<UserCaseVo>>().setData(PageInfo.of(resultList)).ok();
     }
 
-    @PostMapping(value = "getUserCaseById")
+    @GetMapping (value = "getUserCaseById")
     @ApiOperation(value = "根据ID获取对象")
-    public Resp<UserCaseVo> getUserCaseById(@RequestBody String id) {
+    public Resp<UserCaseVo> getUserCaseById(@RequestParam String id) {
         UserCaseVo resultEntity = this.userCaseService.getUserCaseInfoById(id);
         return new Resp.Builder<UserCaseVo>().setData(resultEntity).ok();
     }
