@@ -26,12 +26,12 @@ public class UserCaseVo implements Serializable {
      * 级别
      */
     @ApiModelProperty(value = "级别")
-    private Integer level;
+    private String level;
     /**
      * 等级
      */
     @ApiModelProperty(value = "等级")
-    private Integer grade;
+    private String grade;
 
     /**
      * 流程场景、

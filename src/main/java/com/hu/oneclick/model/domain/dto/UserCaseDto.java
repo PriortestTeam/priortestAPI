@@ -17,11 +17,11 @@ public class UserCaseDto extends AssignBaseEntity {
     /**
      * 级别
      */
-    private Integer level;
+    private String level;
     /**
      * 等级
      */
-    private Integer grade;
+    private String grade;
 
     /**
      * 流程场景、

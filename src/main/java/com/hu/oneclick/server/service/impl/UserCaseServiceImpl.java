@@ -48,8 +48,8 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
         LambdaQueryWrapper<UserCaseDto> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.like(StrUtil.isNotBlank(userCaseParam.getTitle()), UserCaseDto::getTitle, userCaseParam.getTitle())
                 .eq(StrUtil.isNotBlank(userCaseParam.getUseCategory()), UserCaseDto::getUseCategory, userCaseParam.getUseCategory())
-                .eq(ObjectUtil.isNotEmpty(userCaseParam.getGrade()), UserCaseDto::getGrade, userCaseParam.getGrade())
-                .eq(ObjectUtil.isNotEmpty(userCaseParam.getLevel()), UserCaseDto::getLevel, userCaseParam.getLevel())
+                .eq(StrUtil.isNotEmpty(userCaseParam.getGrade()), UserCaseDto::getGrade, userCaseParam.getGrade())
+                .eq(StrUtil.isNotEmpty(userCaseParam.getLevel()), UserCaseDto::getLevel, userCaseParam.getLevel())
                 .eq(StrUtil.isNotBlank(userCaseParam.getFeatureId()), UserCaseDto::getFeatureId, userCaseParam.getFeatureId());
         List<UserCaseDto> list = this.baseMapper.selectList(queryWrapper);
         List<UserCaseVo> resultList = BeanUtil.copyToList(list, UserCaseVo.class);
