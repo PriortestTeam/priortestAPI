@@ -11,11 +11,13 @@ import com.hu.oneclick.server.service.FeatureService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -100,6 +102,16 @@ public class FeatureController extends BaseController {
             log.error("克隆故事用例失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
         }
+    }
+
+    @ApiOperation("模糊查询故事标题")
+    @GetMapping("/getFeatureByTitle")
+    public Resp<List<Map<String, String>>> getFeatureByTitle(@RequestParam String title, @RequestParam Long projectId) {
+        List<Map<String, String>> feature = this.featureService.getFeatureByTitle(title, projectId);
+        if (CollectionUtils.isEmpty(feature)) {
+            return new Resp.Builder<List<java.util.Map<String, String>>>().buildResult("查无记录", 404);
+        }
+        return new Resp.Builder<List<java.util.Map<String, String>>>().setData(feature).ok();
     }
 
 }
