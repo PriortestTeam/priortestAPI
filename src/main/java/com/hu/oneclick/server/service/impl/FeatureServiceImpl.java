@@ -23,7 +23,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author qingyang
@@ -115,6 +118,24 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
         }
         // 批量克隆
         this.saveBatch(featureList);
+    }
+
+    @Override
+    public List<Map<String, String>> getFeatureByTitle(String title, Long projectId) {
+        QueryWrapper<Feature> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .like(Feature::getTitle, title)
+                .eq(Feature::getProjectId, projectId);
+        List<Feature> features = baseMapper.selectList(queryWrapper);
+
+        return features.stream()
+                .map(feature -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("id", feature.getId().toString());
+                    map.put("title", feature.getTitle());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 
     //    @Override
