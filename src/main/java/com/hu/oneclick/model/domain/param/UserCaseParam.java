@@ -14,6 +14,7 @@ public class UserCaseParam implements Serializable {
 
 
     @ApiModelProperty(value = "id")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private long id;
 
     @ApiModelProperty(value = "标题")
