@@ -55,7 +55,8 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
         List<UserCaseDto> list = this.baseMapper.selectList(queryWrapper);
         List<UserCaseVo> resultList = BeanUtil.copyToList(list, UserCaseVo.class);
         resultList.forEach(obj -> {
-            obj.setCustonFieldDatas(obj.getUseaseExpand());
+            obj.setCustonFieldDatas(obj.getUsecaseExpand());
+
         });
         return resultList;
     }

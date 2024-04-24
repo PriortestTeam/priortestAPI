@@ -1,6 +1,7 @@
 package com.hu.oneclick.model.domain.param;
 
 import cn.hutool.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -39,12 +40,8 @@ public class UserCaseParam implements Serializable {
     @ApiModelProperty(value = "故事用例扩展")
     private JSONObject usecaseExpand;
 
-    @ApiModelProperty(value = "用户自定义字段")
-    private JSONObject custonFieldDatas;
     @ApiModelProperty(value = "所属故事ID")
     private long featureId;
-
-
 
     @ApiModelProperty(value = "备注")
     private String remarks;
