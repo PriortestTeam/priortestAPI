@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @TableName(value = "use_case")
 public class UserCaseDto extends AssignBaseEntity {
-
+    private static final long serialVersionUID = 43132559253115264L;
     private String title;
 
     private String useCategory;
