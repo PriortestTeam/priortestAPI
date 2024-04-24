@@ -39,10 +39,8 @@ public class UserCaseVo implements Serializable {
     @ApiModelProperty(value = "流程场景")
     private String scenario;
     @ApiModelProperty(value = "故事用例扩展")
-    private String useaseExpand;
+    private String usecaseExpand;
 
-    @ApiModelProperty(value = "自定义字段")
-    private String custonFieldDatas;
 
     @ApiModelProperty(value = "所属故事ID")
     private long featureId;
