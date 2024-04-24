@@ -30,8 +30,8 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
         UserCaseDto entity = BeanUtil.copyProperties(userCaseParam, UserCaseDto.class);
 
         // 保存自定义字段
-        if (!JSONUtil.isNull(userCaseParam.getCustomFieldDatas())) {
-            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getCustomFieldDatas());
+        if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand())) {
+            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand());
             entity.setUsecaseExpand(jsonStr);
         }
         super.save(entity);
@@ -43,8 +43,8 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
         UserCaseDto entity = BeanUtil.copyProperties(userCaseParam, UserCaseDto.class);
 
         // 修改自定义字段
-        if (!JSONUtil.isNull(userCaseParam.getCustomFieldDatas())) {
-            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getCustomFieldDatas());
+        if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand())) {
+            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand());
             entity.setUsecaseExpand(jsonStr);
         }
 
