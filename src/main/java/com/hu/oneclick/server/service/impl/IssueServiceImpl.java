@@ -3,10 +3,7 @@ package com.hu.oneclick.server.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.segments.MergeSegments;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -20,13 +17,13 @@ import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.IssueService;
 import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements IssueService {
@@ -113,7 +110,11 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
        issue.setFixVersion(issueStatusDto.getFixVersion());
        issue.setIssueStatus(issueStatusDto.getIssueStatus());
        issue.setVerifiedResult(issueStatusDto.getVerifiedResult());
-        System.out.println(issue);
+        // 如果 status 是 关闭 时，设置 close_date 时间为此时
+        if ("关闭".equals(issueStatusDto.getIssueStatus())) {
+            issue.setCloseDate(new Date());
+        }
+       System.out.println(issue);
 
         return baseMapper.updateById(issue);
     }
