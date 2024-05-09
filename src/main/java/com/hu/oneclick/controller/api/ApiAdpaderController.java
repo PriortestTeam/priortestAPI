@@ -11,7 +11,6 @@ import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.domain.dto.IssueStatusDto;
-import com.hu.oneclick.model.domain.dto.TestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.service.RelationService;
@@ -202,10 +201,8 @@ public class ApiAdpaderController {
   @GetMapping("/{projectId}/retrieveTestcaseByExteranlId")
   public Resp retrieveTestcaseByExteranlId(
       @PathVariable("projectId") Long projectId,
-      @RequestParam String exteranlId) {
-    final TestCaseDto queryBody = new TestCaseDto();
-    queryBody.setProjectId(projectId);
-    queryBody.setExternalLinkId(exteranlId);
-    return testCaseService.queryList(queryBody);
+      @RequestParam("exteranlId") String exteranlId) {
+    return new Resp.Builder<TestCase>().setData(
+        testCaseService.queryByProjectIdAndExteranlId(projectId, exteranlId)).ok();
   }
 }
