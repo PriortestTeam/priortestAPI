@@ -44,6 +44,7 @@ public enum SysConstantEnum {
     UPDATE_FILE_OUT_COUNT(SysConstantEnum.NUMBER + "023", "上传文件数量过多"),
     VIEW_ONN_FILTER_IS_REDUNDANT(SysConstantEnum.NUMBER + "030","过滤项不可重复。"),
     LINKSTRERROR(SysConstantEnum.NUMBER + "031","链接错误。"),
+    DATA_NOT_FOUND("404", "查无记录"),
 
 
     //成功
