@@ -1247,7 +1247,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     final TestCase testCase = getOne(wrapper);
     if (Objects.isNull(testCase)) {
       throw new BizException(SysConstantEnum.DATA_NOT_FOUND.getCode(),
-          SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.OK.value());
+          SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
     }
     return testCase;
   }
