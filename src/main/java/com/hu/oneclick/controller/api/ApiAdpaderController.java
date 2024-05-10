@@ -175,7 +175,7 @@ public class ApiAdpaderController {
   }
 
   @ApiOperation("根据id、categoty查询relation")
-  @GetMapping("/{projectId}/retrieveBugAsperRunCaseId")
+  @GetMapping("/{projectId}/retrieveIssueAsPerTestCaseId")
   public Resp<Map> getRelationByCaseIdAndCategory(@PathVariable("projectId") Long projectId,
       @RequestParam Long testCaseId) {
 
@@ -198,11 +198,11 @@ public class ApiAdpaderController {
   }
 
   @ApiOperation("通过定义的外部 ID 查询测试用例")
-  @GetMapping("/{projectId}/retrieveTestcaseByExteranlId")
-  public Resp retrieveTestcaseByExteranlId(
+  @GetMapping("/{projectId}/retrieveTestcaseByExternalId")
+  public Resp retrieveTestcaseByExternalId(
       @PathVariable("projectId") Long projectId,
-      @RequestParam("exteranlId") String exteranlId) {
+      @RequestParam("externalId") String externalId) {
     return new Resp.Builder<TestCase>().setData(
-        testCaseService.queryByProjectIdAndExteranlId(projectId, exteranlId)).ok();
+        testCaseService.queryByProjectIdAndExteranlId(projectId, externalId)).ok();
   }
 }
