@@ -104,4 +104,8 @@ public class IssueSaveDto implements Serializable {
     @ApiModelProperty("自定义字段值")
     private JSONObject customFieldDatas;
 
+
+    @ApiModelProperty("运行用例Id")
+    private long runcaseId;
+
 }

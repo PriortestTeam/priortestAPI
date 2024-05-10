@@ -85,4 +85,7 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @ApiModelProperty("测试设备")
     private String testDevice;
 
+    @ApiModelProperty("运行用例Id")
+    private long runcaseId;
+
 }
