@@ -174,7 +174,7 @@ public class ApiAdpaderController {
     return new Resp.Builder<TestCycleJoinTestCase>().setData(testCycleJoinTestCase).ok();
   }
 
-  @ApiOperation("根据id、categoty查询relation")
+  @ApiOperation("根据id,category 查询relation")
   @GetMapping("/{projectId}/retrieveIssueAsPerTestCaseId")
   public Resp<Map> getRelationByCaseIdAndCategory(@PathVariable("projectId") Long projectId,
       @RequestParam Long testCaseId) {
