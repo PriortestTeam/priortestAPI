@@ -12,6 +12,7 @@ import com.hu.oneclick.model.domain.dto.ExecuteTestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCaseBisDto;
 import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
+import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto.FrontSave;
 import com.hu.oneclick.model.domain.dto.TestCycleSaveDto;
 import com.hu.oneclick.model.domain.param.TestCycleParam;
 import com.hu.oneclick.server.service.TestCaseService;
@@ -235,7 +236,8 @@ public class TestCycleController extends BaseController {
 
     @ApiOperation("绑定测试用例到测试周期")
     @PostMapping("/instance/saveInstance")
-    public Resp<?> saveInstance(@RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
+    public Resp<?> saveInstance(
+        @RequestBody @Validated(FrontSave.class) TestCycleJoinTestCaseSaveDto dto) {
         try {
             if (ArrayUtil.isEmpty(dto.getTestCaseIds())) {
                 throw new BaseException("请选择至少一个测试用例进行绑定");
@@ -249,7 +251,8 @@ public class TestCycleController extends BaseController {
 
     @ApiOperation("删除测试周期绑定的测试用例")
     @DeleteMapping("/instance/deleteInstance")
-    public Resp<?> deleteInstance(@RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
+    public Resp<?> deleteInstance(
+        @RequestBody @Validated(FrontSave.class) TestCycleJoinTestCaseSaveDto dto) {
         try {
             if (ArrayUtil.isEmpty(dto.getTestCaseIds())) {
                 throw new BaseException("请选择至少一个测试用例进行删除");
