@@ -12,6 +12,7 @@ import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.domain.dto.IssueStatusDto;
+import com.hu.oneclick.model.domain.dto.TestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto.ApiSave;
@@ -157,6 +158,20 @@ public class ApiAdpaderController {
 
     TestCase testCase = testCaseService.getByIdAndProjectId(projectId, testCaseId);
     return new Resp.Builder<TestCase>().setData(testCase).ok();
+  }
+
+  @ApiOperation("创建测试用例")
+  @PostMapping("/{projectId}/createTestCase")
+  public Resp<Map<String, Object>> createTestCase(@PathVariable("projectId") Long projectId,
+      @RequestBody @Validated TestCaseSaveDto testCaseSaveDto) {
+
+    final TestCase testCase = testCaseService.save(testCaseSaveDto);
+    return new Resp.Builder<Map<String, Object>>().setData(
+        Map.of(
+            "id", testCase.getId(),
+            "externalLinkId", testCase.getExternalLinkId()
+        )
+    ).ok();
   }
 
   @ApiOperation("根据CaseId、projectId、cycleId查找")
