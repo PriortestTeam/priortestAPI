@@ -202,7 +202,7 @@ public class ApiAdpaderController {
 
   @ApiOperation("保存测试用例到测试周期")
   @PostMapping("/{projectId}/testCycle/instance/saveInstance")
-  public Resp runCaseStatusUpdate(@PathVariable("projectId") Long projectId,
+  public Resp testCycleSaveInstance(@PathVariable("projectId") Long projectId,
       @RequestBody @Validated(ApiSave.class) TestCycleJoinTestCaseSaveDto testCycleJoinTestCaseDto) {
     if (ArrayUtil.isEmpty(testCycleJoinTestCaseDto.getTestCaseIds())) {
       throw new BaseException("请选择至少一个测试用例进行绑定");
