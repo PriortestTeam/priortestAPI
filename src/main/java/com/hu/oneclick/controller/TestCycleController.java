@@ -12,6 +12,7 @@ import com.hu.oneclick.model.domain.dto.ExecuteTestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCaseBisDto;
 import com.hu.oneclick.model.domain.dto.TestCaseRunDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
+import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto.FrontSave;
 import com.hu.oneclick.model.domain.dto.TestCycleSaveDto;
 import com.hu.oneclick.model.domain.param.TestCycleParam;
 import com.hu.oneclick.server.service.TestCaseService;
@@ -20,15 +21,21 @@ import com.hu.oneclick.server.service.TestCycleService;
 import com.hu.oneclick.server.service.TestCycleTcService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("testCycle")
@@ -229,7 +236,8 @@ public class TestCycleController extends BaseController {
 
     @ApiOperation("绑定测试用例到测试周期")
     @PostMapping("/instance/saveInstance")
-    public Resp<?> saveInstance(@RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
+    public Resp<?> saveInstance(
+        @RequestBody @Validated(FrontSave.class) TestCycleJoinTestCaseSaveDto dto) {
         try {
             if (ArrayUtil.isEmpty(dto.getTestCaseIds())) {
                 throw new BaseException("请选择至少一个测试用例进行绑定");
@@ -243,7 +251,8 @@ public class TestCycleController extends BaseController {
 
     @ApiOperation("删除测试周期绑定的测试用例")
     @DeleteMapping("/instance/deleteInstance")
-    public Resp<?> deleteInstance(@RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
+    public Resp<?> deleteInstance(
+        @RequestBody @Validated(FrontSave.class) TestCycleJoinTestCaseSaveDto dto) {
         try {
             if (ArrayUtil.isEmpty(dto.getTestCaseIds())) {
                 throw new BaseException("请选择至少一个测试用例进行删除");

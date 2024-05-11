@@ -1,5 +1,6 @@
 package com.hu.oneclick.controller.api;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.util.StringUtil;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -12,6 +13,8 @@ import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.domain.dto.IssueStatusDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
+import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
+import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto.ApiSave;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.IssueService;
@@ -195,6 +198,28 @@ public class ApiAdpaderController {
       @RequestBody TestCycleJoinTestCaseDto testCycleJoinTestCaseDto) {
 
     return testCycleJoinTestCaseService.runCaseStatusUpdate(projectId, testCycleJoinTestCaseDto);
+  }
+
+  @ApiOperation("保存测试用例到测试周期")
+  @PostMapping("/{projectId}/testCycle/instance/saveInstance")
+  public Resp runCaseStatusUpdate(@PathVariable("projectId") Long projectId,
+      @RequestBody @Validated(ApiSave.class) TestCycleJoinTestCaseSaveDto testCycleJoinTestCaseDto) {
+    if (ArrayUtil.isEmpty(testCycleJoinTestCaseDto.getTestCaseIds())) {
+      throw new BaseException("请选择至少一个测试用例进行绑定");
+    }
+
+    testCycleJoinTestCaseDto.setProjectId(projectId);
+    final Boolean result = testCycleJoinTestCaseService.saveInstance(testCycleJoinTestCaseDto);
+    if (result) {
+      return new Resp.Builder<Map<String, Object>>().setData(
+          Map.of(
+              "id", testCycleJoinTestCaseDto.getTestCycleId(),
+              "testCaseId", testCycleJoinTestCaseDto.getTestCaseIds()
+          )
+      ).ok();
+    }
+
+    return new Resp.Builder<Map<String, Long>>().fail();
   }
 
   @ApiOperation("通过定义的外部 ID 查询测试用例")
