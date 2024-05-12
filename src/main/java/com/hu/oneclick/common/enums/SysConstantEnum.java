@@ -64,14 +64,12 @@ public enum SysConstantEnum {
     IMPORT_TESTCASE_ERROR_REQUIRED("REQUIRED","必填项未填写，导入数据必须填写此项"),
     IMPORT_TESTCASE_ERROR_NOFEATURE("NOFEATURE","未找到存在项目中Feature"),
     IMPORT_TESTCASE_ERROR_EXIST_FEATURE_EXTERNALID("EXIST_FEATURE_EXTERNALID","此Feature下已存在ExternaID无法进行新增"),
-    ;
 
-
-
-
-
-
-
+    // 测试周期相关
+    TEST_CYCLE_NOT_EXIST_PROJECT("400", "项目 ID 不存在项目里"),
+    TEST_CASE_PROJECT_ID_NOT_EXIST("400", "项目 ID 不统一"),
+    TEST_CASE_NOT_EXIST("400", "测试用例不存在"),
+    TEST_CASE_ID_NOT_EXIST("400", "测试用例不存在");
 
     private final static String NUMBER = "200";
     private String value;
