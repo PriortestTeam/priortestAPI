@@ -1,7 +1,6 @@
 package com.hu.oneclick.common.security.flutter;
 
 import com.alibaba.fastjson.JSONObject;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.hu.oneclick.common.constant.OneConstant.REDIS_KEY_PREFIX;
@@ -21,6 +20,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -35,11 +35,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author qingyang
@@ -56,6 +53,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private SysUserTokenDao sysUserTokenDao;
     @Autowired
     private RedissonClient redisClient;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
@@ -81,7 +80,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
         SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authorization);
-
         if (!org.springframework.util.StringUtils.isEmpty(sysUserToken)) {
             Date expirationTime = sysUserToken.getExpirationTime();
             if (expirationTime.before(new Date())) {
@@ -152,6 +150,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
         }
+        //权限认证通过后把当前登录人信息放入redis缓存
+        AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(request.getHeader("emailid"));
+        Map<String,Object> map = new HashMap<>();
+        map.put(REDIS_KEY_PREFIX.LOGIN+sysUserToken.getTokenName(),authLoginUser);
+        redisClient.getBuckets().set(map);
         filterChain.doFilter(request, response);
     }
 
