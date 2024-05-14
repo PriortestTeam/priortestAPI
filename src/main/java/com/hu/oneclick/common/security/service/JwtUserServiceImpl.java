@@ -83,7 +83,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
         }
         //将salt放到password字段返回
         RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + name);
-        AuthLoginUser authLoginUser = JSONObject.parseObject(JSONObject.toJSONString(bucket.get()), AuthLoginUser.class);
+        AuthLoginUser authLoginUser = JSONObject.parseObject(bucket.get(), AuthLoginUser.class);
         if (authLoginUser == null) {
             throw new InsufficientAuthenticationException("token invalidation");
         }

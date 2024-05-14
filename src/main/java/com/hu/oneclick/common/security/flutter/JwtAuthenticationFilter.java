@@ -150,11 +150,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
         }
-        //权限认证通过后把当前登录人信息放入redis缓存
-        AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(request.getHeader("emailid"));
-        Map<String,Object> map = new HashMap<>();
-        map.put(REDIS_KEY_PREFIX.LOGIN+sysUserToken.getTokenName(),authLoginUser);
-        redisClient.getBuckets().set(map);
+        if (StringUtils.isNotEmpty(request.getHeader("emailid"))) {
+            //权限认证通过后把当前登录人信息放入redis缓存
+            AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(request.getHeader("emailid"));
+            Map<String,Object> map = new HashMap<>();
+            map.put(REDIS_KEY_PREFIX.LOGIN+sysUserToken.getTokenName(),JSONObject.toJSONString(authLoginUser));
+            redisClient.getBuckets().set(map);
+        }
         filterChain.doFilter(request, response);
     }
 
