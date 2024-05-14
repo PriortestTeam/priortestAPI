@@ -1,9 +1,6 @@
 package com.hu.oneclick.common.security.service;
 
-import cn.hutool.core.util.ObjectUtil;
-
 import com.alibaba.fastjson.JSONObject;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -18,7 +15,6 @@ import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
-import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.security.authentication.InsufficientAuthenticationException;

@@ -194,7 +194,12 @@ public class ApiAdpaderController {
   public Resp runCaseStatusUpdate(@PathVariable("projectId") Long projectId,
       @RequestBody TestCycleJoinTestCaseDto testCycleJoinTestCaseDto) {
 
-    return testCycleJoinTestCaseService.runCaseStatusUpdate(projectId, testCycleJoinTestCaseDto);
+    try {
+      return testCycleJoinTestCaseService.runCaseStatusUpdate(projectId, testCycleJoinTestCaseDto);
+    } catch (Exception e) {
+      log.error("",e);
+      throw new RuntimeException(e);
+    }
   }
 
   @ApiOperation("通过定义的外部 ID 查询测试用例")
