@@ -212,7 +212,12 @@ public class ApiAdpaderController {
   public Resp runCaseStatusUpdate(@PathVariable("projectId") Long projectId,
       @RequestBody TestCycleJoinTestCaseDto testCycleJoinTestCaseDto) {
 
-    return testCycleJoinTestCaseService.runCaseStatusUpdate(projectId, testCycleJoinTestCaseDto);
+    try {
+      return testCycleJoinTestCaseService.runCaseStatusUpdate(projectId, testCycleJoinTestCaseDto);
+    } catch (Exception e) {
+      log.error("",e);
+      throw new RuntimeException(e);
+    }
   }
 
   @ApiOperation("保存测试用例到测试周期")
