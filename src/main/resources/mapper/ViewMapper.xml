@@ -19,15 +19,16 @@
         <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
         <result property="scopeId" column="scope_id" jdbcType="INTEGER"/>
+        <result property="isAuto" column="is_auto" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="base_sql">
-        id, create_user_id, project_id, title, `scope_name`, is_private, creater, filter, `sql`, update_user,create_time, update_time,parent_id,`level`
+        id, create_user_id, project_id, title,is_auto, `scope_name`, is_private, creater, filter, `sql`, update_user,create_time, update_time,parent_id,`level`
     </sql>
     <!--查询单个-->
     <select id="queryById" resultMap="ViewMap">
         select
-          id, create_user_id, project_id, title, scope_name, is_private, creater, filter, update_user, create_time, update_time,parent_id,`level`
+          id, create_user_id, project_id, title,is_auto scope_name, is_private, creater, filter, update_user, create_time, update_time,parent_id,`level`
         from oneclick.view
         where id = #{id} and create_user_id = #{masterId}
     </select>
@@ -43,7 +44,7 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ViewMap">
         select
-          id, create_user_id, project_id, title, scope_name, is_private, creater, filter, update_user, create_time, update_time,parent_id,`level`
+          id, create_user_id, project_id, title, is_auto,scope_name, is_private, creater, filter, update_user, create_time, update_time,parent_id,`level`
         from oneclick.view
         limit #{offset}, #{limit}
     </select>
@@ -51,7 +52,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ViewMap">
         select
-        id, create_user_id, project_id, title, scope_name, is_private, creater,filter ,update_user, create_time,
+        id, create_user_id, project_id, title,is_auto, scope_name, is_private, creater,filter ,update_user, create_time,
         update_time,parent_id,`level`
         from oneclick.view
         <where>
@@ -113,11 +114,13 @@
         <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
         <result property="scopeId" column="scope_id" jdbcType="INTEGER"/>
+        <result property="isAuto" column="is_auto" jdbcType="INTEGER"/>
+
     </resultMap>
 
     <select id="queryViewByScopeAll" resultMap="queryViewByScopeAllMap">
         select
-        id, create_user_id, project_id, title, scope_name, is_private, update_user , create_time,
+        id, create_user_id, project_id, title, is_auto,scope_name, is_private, update_user , create_time,
         update_time,parent_id,`level`
         from oneclick.view
         where
@@ -141,12 +144,13 @@
         <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
         <result property="scopeId" column="scope_id" jdbcType="INTEGER"/>
+        <result property="isAuto" column="is_auto" jdbcType="INTEGER"/>
         <collection property="childViews" ofType="com.hu.oneclick.model.domain.dto.ViewTreeDto" select="queryViewTreeById" column="{viewId=parent_id,masterId=create_user_id}"></collection>
     </resultMap>
 
     <select id="queryViewTreeById" resultMap="queryViewTreeByIdMap">
             select
-            id, create_user_id, project_id, title, scope_name, is_private, owner,filter , create_time,
+            id, create_user_id, project_id, title,is_auto, scope_name, is_private, owner,filter , create_time,
             update_time,parent_id,`level`
             from oneclick.view
             where
