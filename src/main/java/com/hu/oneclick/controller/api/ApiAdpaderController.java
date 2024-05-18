@@ -22,7 +22,6 @@ import com.hu.oneclick.server.service.RetrieveTestCycleAsTitleService;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
 import io.swagger.annotations.ApiOperation;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Resource;
@@ -222,7 +221,7 @@ public class ApiAdpaderController {
 
   @ApiOperation("保存测试用例到测试周期")
   @PostMapping("/{projectId}/testCycle/instance/saveInstance")
-  public Resp<List<Map<String, Long>>> testCycleSaveInstance(@PathVariable("projectId") Long projectId,
+  public Resp<Object> testCycleSaveInstance(@PathVariable("projectId") Long projectId,
       @RequestBody @Validated TestCycleJoinTestCaseSaveDto testCycleJoinTestCaseDto) {
     if (ArrayUtil.isEmpty(testCycleJoinTestCaseDto.getTestCaseIds())) {
       throw new BaseException("请选择至少一个测试用例进行绑定");

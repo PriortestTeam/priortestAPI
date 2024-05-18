@@ -52,6 +52,13 @@ public class TestCycleJoinTestCaseServiceImpl extends
 
   @Override
   public Boolean saveInstance(TestCycleJoinTestCaseSaveDto dto) {
+    final List<Long> ignore = saveDataWithIdReturn(dto);
+    return true;
+  }
+
+  @Override
+  public List<Long> saveDataWithIdReturn(TestCycleJoinTestCaseSaveDto dto) {
+    List<Long> result = new ArrayList<>();
     TestCycleJoinTestCase joinTestCase;
     for (Long testCaseId : dto.getTestCaseIds()) {
       List<TestCycleJoinTestCase> entityList = this.getByProjectIdAndCycleIdAndCaseId(
@@ -66,46 +73,60 @@ public class TestCycleJoinTestCaseServiceImpl extends
       joinTestCase.setTestCycleId(dto.getTestCycleId());
       joinTestCase.setTestCaseId(testCaseId);
       this.testCycleJoinTestCaseDao.insert(joinTestCase);
+      result.add(joinTestCase.getId());
     }
-    return true;
+    return result;
   }
 
   @Override
-  public Resp<List<Map<String, Long>>> strictlySaveInstance(
+  public Resp<Object> strictlySaveInstance(
       final TestCycleJoinTestCaseSaveDto dto) {
     // 验证 testCycleId 必须存在
     final LambdaQueryWrapper<TestCycle> testCycleWrapper = new LambdaQueryWrapper<>();
+    final boolean existProject = testCycleDao.exists(
+        testCycleWrapper.eq(TestCycle::getProjectId, dto.getProjectId()));
+    if (!existProject) {
+      throw new BizException(SysConstantEnum.TEST_CYCLE_NOT_EXIST_PROJECT.getCode(),
+          SysConstantEnum.TEST_CYCLE_NOT_EXIST_PROJECT.getValue(), HttpStatus.BAD_REQUEST.value());
+    }
     final boolean exists = testCycleDao.exists(
         testCycleWrapper
             .eq(TestCycle::getId, dto.getTestCycleId())
             .eq(TestCycle::getProjectId, dto.getProjectId())
     );
     if (!exists) {
-      throw new BizException(SysConstantEnum.TEST_CYCLE_NOT_EXIST_PROJECT.getCode(),
-          SysConstantEnum.TEST_CYCLE_NOT_EXIST_PROJECT.getValue(), HttpStatus.BAD_REQUEST.value());
+      throw new BizException(SysConstantEnum.TEST_CYCLE_NOT_INCLUDE_IN_PROJECT.getCode(),
+          SysConstantEnum.TEST_CYCLE_NOT_INCLUDE_IN_PROJECT.getValue(),
+          HttpStatus.BAD_REQUEST.value());
     }
 
     // 验证 testCaseId 都必须存在
     final LambdaQueryWrapper<TestCase> testCaseWrapper = new LambdaQueryWrapper<>();
-    final List<Long> testCaseIdList = Arrays.asList(dto.getTestCaseIds());
+    final List<Long> testCaseIdList = Arrays.stream(dto.getTestCaseIds())
+        .collect(Collectors.toList());
     final List<TestCase> testCases = testCaseDao.selectList(
         testCaseWrapper
             .eq(TestCase::getProjectId, dto.getProjectId())
             .in(TestCase::getId, testCaseIdList)
     );
     if (CollUtil.isEmpty(testCases)) {
-      throw new BizException(SysConstantEnum.TEST_CASE_ID_NOT_EXIST.getCode(),
-          SysConstantEnum.TEST_CASE_ID_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
+      return new Resp.Builder<>().httpBadRequest().buildResult(
+          SysConstantEnum.TEST_CASE_NOT_EXIST.getCode(),
+          SysConstantEnum.TEST_CASE_NOT_EXIST.getValue(),
+          testCaseIdList
+      );
     }
 
     // 到达这里说明全部存在或者部分存在
     if (testCases.size() == testCaseIdList.size()) {
-      this.saveInstance(dto);
-      return new Resp.Builder<List<Map<String, Long>>>().buildResult(
+      final List<Long> savedIds = saveDataWithIdReturn(dto);
+      List<Map<String, Long>> data = new ArrayList<>();
+      for (int i = 0; i < savedIds.size(); i++) {
+        data.add(Map.of("id", savedIds.get(i), "testCaseId", testCaseIdList.get(i)));
+      }
+      return new Resp.Builder<>().buildResult(
           SysConstantEnum.ADD_SUCCESS.getCode(), SysConstantEnum.ADD_SUCCESS.getValue(),
-          testCaseIdList.stream().map(
-                  testCaseId -> Map.of("id", dto.getTestCycleId(), "testCaseId", testCaseId))
-              .collect(Collectors.toList())
+          data
       );
     }
 
@@ -113,12 +134,10 @@ public class TestCycleJoinTestCaseServiceImpl extends
     final List<Long> existTestCaseIdList = testCases.stream().map(TestCase::getId).collect(
         Collectors.toList());
     testCaseIdList.removeAll(existTestCaseIdList);
-    return new Resp.Builder<List<Map<String, Long>>>().httpBadRequest().buildResult(
+    return new Resp.Builder<>().httpBadRequest().buildResult(
         SysConstantEnum.TEST_CASE_NOT_EXIST.getCode(),
         SysConstantEnum.TEST_CASE_NOT_EXIST.getValue(),
-        testCaseIdList.stream().map(
-                testCaseId -> Map.of("id", dto.getTestCycleId(), "testCaseId", testCaseId))
-            .collect(Collectors.toList())
+        testCaseIdList
     );
   }
 

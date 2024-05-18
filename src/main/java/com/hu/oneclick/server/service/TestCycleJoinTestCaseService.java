@@ -6,7 +6,6 @@ import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: jhh
@@ -22,13 +21,15 @@ public interface TestCycleJoinTestCaseService extends IService<TestCycleJoinTest
      */
     Boolean saveInstance(TestCycleJoinTestCaseSaveDto dto);
 
+    List<Long> saveDataWithIdReturn(TestCycleJoinTestCaseSaveDto dto);
+
     /**
      * 严格的保存测试用例，需要验证测试周期 ID 和测试用例 ID 都存在，如果有不存在就失败
      *
      * @param dto save dto 对象
      * @return 一个 Map，成功则返回一个 key 为 id 的 testCycleId 以及一个 key 为 testCaseId 的 Map 列表
      */
-    Resp<List<Map<String, Long>>> strictlySaveInstance(TestCycleJoinTestCaseSaveDto dto);
+    Resp<Object> strictlySaveInstance(TestCycleJoinTestCaseSaveDto dto);
 
     /**
      * 删除测试周期绑定的测试用例
