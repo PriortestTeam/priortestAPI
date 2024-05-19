@@ -1,9 +1,8 @@
 package com.hu.oneclick.model.domain.dto;
 
-import lombok.Data;
-
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import javax.validation.constraints.NotNull;
+import lombok.Data;
 
 /**
  * @Author: jhh
@@ -12,7 +11,6 @@ import java.io.Serializable;
 @Data
 public class TestCycleJoinTestCaseSaveDto implements Serializable {
 
-
     @NotNull(message = "项目id不能为空")
     private Long projectId;
 
@@ -20,5 +18,4 @@ public class TestCycleJoinTestCaseSaveDto implements Serializable {
     private Long testCycleId;
 
     private Long[] testCaseIds;
-
 }

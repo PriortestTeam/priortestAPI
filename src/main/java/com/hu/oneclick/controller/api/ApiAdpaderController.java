@@ -1,5 +1,6 @@
 package com.hu.oneclick.controller.api;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.util.StringUtil;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -11,7 +12,9 @@ import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.domain.dto.IssueStatusDto;
+import com.hu.oneclick.model.domain.dto.TestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
+import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.IssueService;
@@ -156,6 +159,20 @@ public class ApiAdpaderController {
     return new Resp.Builder<TestCase>().setData(testCase).ok();
   }
 
+  @ApiOperation("创建测试用例")
+  @PostMapping("/{projectId}/createTestCase")
+  public Resp<Map<String, Object>> createTestCase(@PathVariable("projectId") Long projectId,
+      @RequestBody @Validated TestCaseSaveDto testCaseSaveDto) {
+
+    final TestCase testCase = testCaseService.save(testCaseSaveDto);
+    return new Resp.Builder<Map<String, Object>>().setData(
+        Map.of(
+            "id", testCase.getId(),
+            "externalLinkId", testCase.getExternalLinkId()
+        )
+    ).ok();
+  }
+
   @ApiOperation("根据CaseId、projectId、cycleId查找")
   @GetMapping("/{projectId}/retrieveRunCase")
   public Resp<TestCycleJoinTestCase> getByCaseIdAndProjectIdAndCycleId(
@@ -202,9 +219,25 @@ public class ApiAdpaderController {
     }
   }
 
+  @ApiOperation("保存测试用例到测试周期")
+  @PostMapping("/{projectId}/testCycle/instance/saveInstance")
+  public Resp<Object> testCycleSaveInstance(@PathVariable("projectId") Long projectId,
+      @RequestBody @Validated TestCycleJoinTestCaseSaveDto testCycleJoinTestCaseDto) {
+    if (ArrayUtil.isEmpty(testCycleJoinTestCaseDto.getTestCaseIds())) {
+      throw new BaseException("请选择至少一个测试用例进行绑定");
+    }
+
+    if (!Objects.equals(projectId, testCycleJoinTestCaseDto.getProjectId())) {
+      throw new BizException(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode(),
+          SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
+    }
+
+    return testCycleJoinTestCaseService.strictlySaveInstance(testCycleJoinTestCaseDto);
+  }
+
   @ApiOperation("通过定义的外部 ID 查询测试用例")
   @GetMapping("/{projectId}/retrieveTestcaseByExternalId")
-  public Resp retrieveTestcaseByExternalId(
+  public Resp<TestCase> retrieveTestcaseByExternalId(
       @PathVariable("projectId") Long projectId,
       @RequestParam("externalId") String externalId) {
     return new Resp.Builder<TestCase>().setData(
