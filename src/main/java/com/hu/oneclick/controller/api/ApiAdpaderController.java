@@ -254,7 +254,10 @@ public class ApiAdpaderController {
     if(Objects.nonNull(issueStatusVo.getId())){
       return new Resp.Builder<IssueStatusVo>().setData(issueStatusVo).ok();
     }
-      return new Resp.Builder<IssueStatusVo>().buildResult(SysConstantEnum.DATA_NOT_FOUND.getCode(), SysConstantEnum.DATA_NOT_FOUND.getValue());
+    return new Resp.Builder<IssueStatusVo>().buildResult(
+              SysConstantEnum.DATA_NOT_FOUND.getCode(),
+              SysConstantEnum.DATA_NOT_FOUND.getValue(),
+              HttpStatus.NOT_FOUND.value());
   }
 
 }

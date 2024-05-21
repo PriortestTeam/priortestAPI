@@ -48,6 +48,14 @@ public class Resp<T> {
             this.data = data;
             return new Resp<T>(this);
         }
+
+        public Resp<T> buildResult(String code,String msg, int httpCode){
+            this.code = code;
+            this.msg = msg;
+            this.httpCode = httpCode;
+            return new Resp<T>(this);
+        }
+
         public Resp<T> buildResult(String msg,int i){
             this.code = SysConstantEnum.FAILED.getCode();
             this.msg = msg;
