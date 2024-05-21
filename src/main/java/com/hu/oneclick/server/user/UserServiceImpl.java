@@ -611,7 +611,7 @@ public class UserServiceImpl implements UserService {
      * @Date: 2021/11/10
      */
     @Override
-    public Boolean getUserAccountInfo(String emailId) {
+    public Boolean getUserAccountInfo(String emailId, String token) {
         List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(emailId);
         SysUser sysUser;
         if (sysUsers.isEmpty()) {
@@ -638,7 +638,7 @@ public class UserServiceImpl implements UserService {
         } else */
         {
             //主账号
-            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(sysUser.getId());
+            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
             if (sysUserTokens.isEmpty()) {
                 return false;
             }
