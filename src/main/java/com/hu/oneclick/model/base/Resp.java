@@ -74,10 +74,10 @@ public class Resp<T> {
             return new Resp<T>(this);
         }
 
-        public Resp<T> ok(String msg){
+        public Resp<T> ok(String msg, int httpCode){
             this.code= SysConstantEnum.SUCCESS.getCode();
             this.msg= msg;
-            this.httpCode = HttpStatus.OK.value();
+            this.httpCode = httpCode;
             return new Resp<T>(this);
         }
 

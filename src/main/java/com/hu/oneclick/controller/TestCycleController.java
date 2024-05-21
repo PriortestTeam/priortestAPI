@@ -28,6 +28,7 @@ import java.util.Objects;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -165,7 +166,7 @@ public class TestCycleController extends BaseController {
         try {
             TestCycle testCycle = testCycleService.save(dto);
             if(Objects.isNull(testCycle)){
-                new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue());
+                new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue(), HttpStatus.BAD_REQUEST.value());
             }
             return new Resp.Builder<TestCycle>().setData(testCycle).ok();
         } catch (Exception e) {
@@ -180,7 +181,7 @@ public class TestCycleController extends BaseController {
         try {
             TestCycle testCycle = testCycleService.update(dto);
             if(Objects.isNull(testCycle)){
-                new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue());
+                new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue(), HttpStatus.BAD_REQUEST.value());
             }
             return new Resp.Builder<TestCycle>().setData(testCycle).ok();
         } catch (Exception e) {
