@@ -15,6 +15,7 @@ import com.hu.oneclick.model.domain.dto.IssueStatusDto;
 import com.hu.oneclick.model.domain.dto.TestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
+import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.IssueService;
@@ -243,4 +244,14 @@ public class ApiAdpaderController {
     return new Resp.Builder<TestCase>().setData(
         testCaseService.queryByProjectIdAndExteranlId(projectId, externalId)).ok();
   }
+
+  @ApiOperation("获取缺陷的状态,通过缺陷Id")
+  @GetMapping("/{projectId}/retrieveIssueStatusAsPerIssueId")
+  public Resp<IssueStatusVo> retrieveIssueStatusAsPerIssueId(
+          @PathVariable("projectId") Long projectId,
+          @RequestParam("issueId") Long issueId) {
+    return new Resp.Builder<IssueStatusVo>().setData(
+            testCaseService.retrieveIssueStatusAsPerIssueId(projectId, issueId)).ok();
+  }
+
 }

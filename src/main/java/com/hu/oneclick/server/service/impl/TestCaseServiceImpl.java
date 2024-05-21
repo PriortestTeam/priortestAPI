@@ -23,13 +23,7 @@ import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.Feature;
-import com.hu.oneclick.model.domain.SysCustomFieldExpand;
-import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.TestCaseStep;
-import com.hu.oneclick.model.domain.TestCasesExecution;
-import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
-import com.hu.oneclick.model.domain.View;
+import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.ImportTestCaseDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.MailDto;
@@ -39,14 +33,10 @@ import com.hu.oneclick.model.domain.dto.TestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCaseSaveDto;
 import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.model.domain.param.TestCaseParam;
+import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import com.hu.oneclick.relation.service.RelationService;
-import com.hu.oneclick.server.service.CustomFieldsService;
-import com.hu.oneclick.server.service.MailService;
-import com.hu.oneclick.server.service.ModifyRecordsService;
-import com.hu.oneclick.server.service.QueryFilterService;
-import com.hu.oneclick.server.service.SysCustomFieldService;
-import com.hu.oneclick.server.service.TestCaseService;
-import com.hu.oneclick.server.service.TestCaseStepService;
+import com.hu.oneclick.server.service.*;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -116,6 +106,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
   @Resource
   private RelationService relationService;
+
+  @Resource
+  private IssueService issueService;
 
   @Override
   public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -1250,6 +1243,17 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
           SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
     }
     return testCase;
+  }
+
+  @Override
+  public IssueStatusVo retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId) {
+    Issue issue = issueService.retrieveIssueStatusAsPerIssueId(projectId, issueId);
+    IssueStatusVo vo = new IssueStatusVo();
+    if(Objects.nonNull(issue)){
+      vo.setIssueStatus(issue.getIssueStatus());
+      vo.setId(issue.getId());
+    }
+    return vo;
   }
 
 }

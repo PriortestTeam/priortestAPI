@@ -13,6 +13,8 @@ import com.hu.oneclick.model.domain.dto.TestCycleDto;
 import com.hu.oneclick.model.domain.param.TestCaseParam;
 import java.util.List;
 import java.util.Map;
+
+import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -92,4 +94,6 @@ public interface TestCaseService extends IService<TestCase> {
   Resp<Map> removeAndChild(Long id);
 
   TestCase queryByProjectIdAndExteranlId(Long projectId, String exteranlId);
+
+    IssueStatusVo retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId);
 }
