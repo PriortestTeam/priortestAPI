@@ -250,8 +250,11 @@ public class ApiAdpaderController {
   public Resp<IssueStatusVo> retrieveIssueStatusAsPerIssueId(
           @PathVariable("projectId") Long projectId,
           @RequestParam("issueId") Long issueId) {
-    return new Resp.Builder<IssueStatusVo>().setData(
-            testCaseService.retrieveIssueStatusAsPerIssueId(projectId, issueId)).ok();
+    IssueStatusVo issueStatusVo = testCaseService.retrieveIssueStatusAsPerIssueId(projectId, issueId);
+    if(Objects.nonNull(issueStatusVo.getId())){
+      return new Resp.Builder<IssueStatusVo>().setData(issueStatusVo).ok();
+    }
+      return new Resp.Builder<IssueStatusVo>().buildResult(SysConstantEnum.DATA_NOT_FOUND.getCode(), SysConstantEnum.DATA_NOT_FOUND.getValue());
   }
 
 }
