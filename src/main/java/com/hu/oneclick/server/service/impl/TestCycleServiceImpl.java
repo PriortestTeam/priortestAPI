@@ -976,8 +976,8 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
     private List<TestCycle> listByTitle(String title, Long id, Long projectId){
        return  this.lambdaQuery()
                .eq(TestCycle::getTitle, title)
+               .eq(Objects.nonNull(projectId), TestCycle::getProjectId, projectId)
                .ne(Objects.nonNull(id), TestCycle::getId, id)
-               .ne(Objects.nonNull(projectId), TestCycle::getProjectId, projectId)
                .list();
     }
 }

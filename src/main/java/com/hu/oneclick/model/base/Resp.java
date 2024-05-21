@@ -74,8 +74,8 @@ public class Resp<T> {
             return new Resp<T>(this);
         }
 
-        public Resp<T> ok(String msg, int httpCode){
-            this.code= SysConstantEnum.SUCCESS.getCode();
+        public Resp<T> ok(String code, String msg, int httpCode){
+            this.code= code;
             this.msg= msg;
             this.httpCode = httpCode;
             return new Resp<T>(this);
