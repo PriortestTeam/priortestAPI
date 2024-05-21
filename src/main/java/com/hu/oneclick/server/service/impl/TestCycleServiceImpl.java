@@ -916,7 +916,7 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
             testCycle.setTestcycleExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
         }
         if(StringUtils.isNotBlank(testCycle.getTitle())){
-            List<TestCycle> testCycles = listByTitle(testCycle.getTitle());
+            List<TestCycle> testCycles = listByTitle(testCycle.getTitle(),null, null);
             if(Objects.nonNull(testCycles) && !testCycles.isEmpty()){
                 return null;
             }
@@ -937,7 +937,7 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
             testCycle.setTestcycleExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
         }
         if(StringUtils.isNotBlank(testCycle.getTitle())){
-            List<TestCycle> testCycles = listByTitle(testCycle.getTitle());
+            List<TestCycle> testCycles = listByTitle(testCycle.getTitle(), dto.getId(), dto.getProjectId());
             if(Objects.nonNull(testCycles) && !testCycles.isEmpty()){
                 return null;
             }
@@ -973,7 +973,11 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
         this.saveBatch(testCycleList);
     }
 
-    private List<TestCycle> listByTitle(String title){
-       return  this.lambdaQuery().eq(TestCycle::getTitle, title).list();
+    private List<TestCycle> listByTitle(String title, Long id, Long projectId){
+       return  this.lambdaQuery()
+               .eq(TestCycle::getTitle, title)
+               .ne(Objects.nonNull(id), TestCycle::getId, id)
+               .ne(Objects.nonNull(projectId), TestCycle::getProjectId, projectId)
+               .list();
     }
 }
