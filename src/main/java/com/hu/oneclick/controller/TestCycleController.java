@@ -166,7 +166,7 @@ public class TestCycleController extends BaseController {
         try {
             TestCycle testCycle = testCycleService.save(dto);
             if(Objects.isNull(testCycle)){
-                new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue(), HttpStatus.BAD_REQUEST.value());
+                return new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue(), HttpStatus.BAD_REQUEST.value());
             }
             return new Resp.Builder<TestCycle>().setData(testCycle).ok();
         } catch (Exception e) {
@@ -181,7 +181,7 @@ public class TestCycleController extends BaseController {
         try {
             TestCycle testCycle = testCycleService.update(dto);
             if(Objects.isNull(testCycle)){
-                new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue(), HttpStatus.BAD_REQUEST.value());
+                return new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue(), HttpStatus.BAD_REQUEST.value());
             }
             return new Resp.Builder<TestCycle>().setData(testCycle).ok();
         } catch (Exception e) {
