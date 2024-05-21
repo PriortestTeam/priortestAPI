@@ -94,7 +94,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             //第三方调用api
             String emailId = request.getHeader("emailId");
             if (StringUtils.isNotBlank(emailId)) {
-                if (!userService.getUserAccountInfo(emailId)) {
+                if (!userService.getUserAccountInfo(emailId, authorization)) {
                     response.setContentType("application/json;charset=UTF-8");
                     response.getWriter().write(
                         JSONObject.toJSONString(new Resp.Builder<String>().buildResult("权限认证失败")));

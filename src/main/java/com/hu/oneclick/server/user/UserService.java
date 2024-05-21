@@ -126,7 +126,7 @@ public interface UserService {
      * @Author: MaSiyi
      * @Date: 2021/11/10
      */
-    Boolean getUserAccountInfo(String emailId);
+    Boolean getUserAccountInfo(String emailId, String token);
 
     Resp<String> verifyLinkString(String linkStr);
 

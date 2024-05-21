@@ -165,5 +165,10 @@
     <update id="decreaseApiTimes" parameterType="java.lang.Integer">
         UPDATE sys_user_token set api_times=api_times-1 WHERE id = #{id}
     </update>
-
+    <select id="selectByUserIdAndToken" resultType="com.hu.oneclick.model.domain.SysUserToken" parameterType="java.lang.String"  >
+        select
+        <include refid="Base_Column_List"/>
+        from sys_user_token sys_user_token
+        where sys_user_token.user_id = #{id,jdbcType=VARCHAR} and token_value = #{token}
+    </select>
 </mapper>

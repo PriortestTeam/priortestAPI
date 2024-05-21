@@ -24,4 +24,6 @@ public interface SysUserTokenDao {
     void decreaseApiTimes(Integer id);
 
     SysUserToken selectByTokenValue(String tokenVale);
+
+    List<SysUserToken> selectByUserIdAndToken(String id, String token);
 }
