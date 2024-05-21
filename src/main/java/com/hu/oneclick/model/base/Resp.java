@@ -73,6 +73,14 @@ public class Resp<T> {
             this.httpCode = HttpStatus.OK.value();
             return new Resp<T>(this);
         }
+
+        public Resp<T> ok(String msg){
+            this.code= SysConstantEnum.SUCCESS.getCode();
+            this.msg= msg;
+            this.httpCode = HttpStatus.OK.value();
+            return new Resp<T>(this);
+        }
+
         public Resp<T> fail(){
             this.code= SysConstantEnum.FAILED.getCode();
             this.msg= SysConstantEnum.FAILED.getValue();

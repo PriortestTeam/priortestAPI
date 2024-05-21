@@ -2,6 +2,7 @@ package com.hu.oneclick.controller;
 
 import cn.hutool.core.util.ArrayUtil;
 import com.github.pagehelper.PageInfo;
+import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
@@ -23,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,6 +164,9 @@ public class TestCycleController extends BaseController {
     public Resp<?> save(@RequestBody @Validated TestCycleSaveDto dto) {
         try {
             TestCycle testCycle = testCycleService.save(dto);
+            if(Objects.isNull(testCycle)){
+                new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue());
+            }
             return new Resp.Builder<TestCycle>().setData(testCycle).ok();
         } catch (Exception e) {
             log.error("新增测试周期失败，原因：" + e.getMessage(), e);
@@ -174,6 +179,9 @@ public class TestCycleController extends BaseController {
     public Resp<?> update(@RequestBody @Validated TestCycleSaveDto dto) {
         try {
             TestCycle testCycle = testCycleService.update(dto);
+            if(Objects.isNull(testCycle)){
+                new Resp.Builder<TestCycle>().ok(SysConstantEnum.DATE_EXIST_TITLE.getValue());
+            }
             return new Resp.Builder<TestCycle>().setData(testCycle).ok();
         } catch (Exception e) {
             log.error("修改测试周期失败，原因：" + e.getMessage(), e);
