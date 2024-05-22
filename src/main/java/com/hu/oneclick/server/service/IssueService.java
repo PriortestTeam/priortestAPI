@@ -64,4 +64,12 @@ public interface IssueService extends IService<Issue> {
 
 
     void clone(List<Long> ids);
+
+    /**
+     * 获取缺陷实体
+     * @param projectId
+     * @param issueId
+     * @return
+     */
+    Issue retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId);
 }

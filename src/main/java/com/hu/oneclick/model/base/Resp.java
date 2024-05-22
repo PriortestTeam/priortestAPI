@@ -48,6 +48,14 @@ public class Resp<T> {
             this.data = data;
             return new Resp<T>(this);
         }
+
+        public Resp<T> buildResult(String code,String msg, int httpCode){
+            this.code = code;
+            this.msg = msg;
+            this.httpCode = httpCode;
+            return new Resp<T>(this);
+        }
+
         public Resp<T> buildResult(String msg,int i){
             this.code = SysConstantEnum.FAILED.getCode();
             this.msg = msg;
@@ -65,6 +73,14 @@ public class Resp<T> {
             this.httpCode = HttpStatus.OK.value();
             return new Resp<T>(this);
         }
+
+        public Resp<T> ok(String code, String msg, int httpCode){
+            this.code= code;
+            this.msg= msg;
+            this.httpCode = httpCode;
+            return new Resp<T>(this);
+        }
+
         public Resp<T> fail(){
             this.code= SysConstantEnum.FAILED.getCode();
             this.msg= SysConstantEnum.FAILED.getValue();

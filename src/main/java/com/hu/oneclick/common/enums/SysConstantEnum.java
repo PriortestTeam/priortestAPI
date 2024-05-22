@@ -44,7 +44,9 @@ public enum SysConstantEnum {
     UPDATE_FILE_OUT_COUNT(SysConstantEnum.NUMBER + "023", "上传文件数量过多"),
     VIEW_ONN_FILTER_IS_REDUNDANT(SysConstantEnum.NUMBER + "030","过滤项不可重复。"),
     LINKSTRERROR(SysConstantEnum.NUMBER + "031","链接错误。"),
+    DATE_EXIST_TITLE(SysConstantEnum.NUMBER + "032","周期名词已存在"),
     DATA_NOT_FOUND("404", "查无记录"),
+
 
 
     //成功
@@ -69,7 +71,10 @@ public enum SysConstantEnum {
     TEST_CYCLE_NOT_EXIST_PROJECT("400", "项目 ID 不存在项目里"),
     TEST_CYCLE_NOT_INCLUDE_IN_PROJECT("400", "Test Cycle ID 不存在项目中"),
     TEST_CASE_PROJECT_ID_NOT_EXIST("400", "项目 ID 不统一"),
+    TEST_CYCLE_NOT_MATE_PROJECT("400","当前项目ID不匹配"),
     TEST_CASE_NOT_EXIST("400", "测试用例不存在");
+
+
 
     private final static String NUMBER = "200";
     private String value;

@@ -4,15 +4,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.dto.ImportTestCaseDto;
-import com.hu.oneclick.model.domain.dto.LeftJoinDto;
-import com.hu.oneclick.model.domain.dto.TestCaseBisDto;
-import com.hu.oneclick.model.domain.dto.TestCaseDto;
-import com.hu.oneclick.model.domain.dto.TestCaseSaveDto;
-import com.hu.oneclick.model.domain.dto.TestCycleDto;
+import com.hu.oneclick.model.domain.TestCycle;
+import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.model.domain.param.TestCaseParam;
 import java.util.List;
 import java.util.Map;
+
+import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -92,4 +90,8 @@ public interface TestCaseService extends IService<TestCase> {
   Resp<Map> removeAndChild(Long id);
 
   TestCase queryByProjectIdAndExteranlId(Long projectId, String exteranlId);
+
+    IssueStatusVo retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId);
+
+  TestCycle saveTestCycle(Long projectId, TestCycleSaveDto dto);
 }

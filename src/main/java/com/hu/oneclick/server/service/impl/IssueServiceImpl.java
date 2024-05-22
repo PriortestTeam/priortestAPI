@@ -135,4 +135,9 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         // 批量克隆
         this.saveBatch(issueList);
     }
+
+    @Override
+    public Issue retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId) {
+        return this.getByIdAndProjectId(issueId, projectId);
+    }
 }

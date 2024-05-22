@@ -9,12 +9,10 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.TestCase;
+import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
-import com.hu.oneclick.model.domain.dto.IssueSaveDto;
-import com.hu.oneclick.model.domain.dto.IssueStatusDto;
-import com.hu.oneclick.model.domain.dto.TestCaseSaveDto;
-import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
-import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
+import com.hu.oneclick.model.domain.dto.*;
+import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.IssueService;
@@ -26,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -243,4 +242,43 @@ public class ApiAdpaderController {
     return new Resp.Builder<TestCase>().setData(
         testCaseService.queryByProjectIdAndExteranlId(projectId, externalId)).ok();
   }
+
+  @ApiOperation("获取缺陷的状态,通过缺陷Id")
+  @GetMapping("/{projectId}/retrieveIssueStatusAsPerIssueId")
+  public Resp<IssueStatusVo> retrieveIssueStatusAsPerIssueId(
+          @PathVariable("projectId") Long projectId,
+          @RequestParam("issueId") Long issueId) {
+    IssueStatusVo issueStatusVo = testCaseService.retrieveIssueStatusAsPerIssueId(projectId, issueId);
+    if(Objects.nonNull(issueStatusVo.getId())){
+      return new Resp.Builder<IssueStatusVo>().setData(issueStatusVo).ok();
+    }
+    return new Resp.Builder<IssueStatusVo>().buildResult(
+              SysConstantEnum.DATA_NOT_FOUND.getCode(),
+              SysConstantEnum.DATA_NOT_FOUND.getValue(),
+              HttpStatus.NOT_FOUND.value());
+  }
+
+  @ApiOperation("新建测试周期")
+  @PostMapping("/{projectId}/testCycle/saveTestCycle")
+  public Resp<TestCycle> saveTestCycle(@PathVariable("projectId") Long projectId,@RequestBody @Validated TestCycleSaveDto dto) {
+    try {
+        if(!StringUtils.equals(String.valueOf(projectId),String.valueOf(dto.getProjectId()))){
+          return new Resp.Builder<TestCycle>().ok(String.valueOf(SysConstantEnum.TEST_CYCLE_NOT_MATE_PROJECT.getCode()),
+                  SysConstantEnum.TEST_CYCLE_NOT_MATE_PROJECT.getValue(), HttpStatus.BAD_REQUEST.value());
+        }
+      if (Objects.nonNull(projectId)) {
+        TestCycle testCycle = testCaseService.saveTestCycle(projectId, dto);
+        if (Objects.isNull(testCycle)) {
+          return new Resp.Builder<TestCycle>().ok(String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                  SysConstantEnum.DATE_EXIST_TITLE.getValue(), HttpStatus.BAD_REQUEST.value());
+        }
+        return new Resp.Builder<TestCycle>().setData(testCycle).ok();
+      }
+    } catch (Exception e) {
+      log.error("新增测试周期失败，原因：" + e.getMessage(), e);
+      return new Resp.Builder<TestCycle>().fail();
+    }
+    return new Resp.Builder<TestCycle>().fail();
+  }
+
 }

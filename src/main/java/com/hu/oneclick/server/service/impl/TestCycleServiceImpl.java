@@ -3,6 +3,7 @@ package com.hu.oneclick.server.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
@@ -15,6 +16,7 @@ import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.domain.dto.TestCycleSaveDto;
 import com.hu.oneclick.model.domain.param.TestCycleParam;
 import com.hu.oneclick.server.service.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> implements TestCycleService {
@@ -912,6 +915,12 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
         if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
             testCycle.setTestcycleExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
         }
+        if(StringUtils.isNotBlank(testCycle.getTitle())){
+            List<TestCycle> testCycles = listByTitle(testCycle.getTitle(),null, dto.getProjectId());
+            if(Objects.nonNull(testCycles) && !testCycles.isEmpty()){
+                return null;
+            }
+        }
         baseMapper.insert(testCycle);
         return testCycle;
     }
@@ -926,6 +935,12 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
         // 修改自定义字段
         if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
             testCycle.setTestcycleExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+        }
+        if(StringUtils.isNotBlank(testCycle.getTitle())){
+            List<TestCycle> testCycles = listByTitle(testCycle.getTitle(), dto.getId(), dto.getProjectId());
+            if(Objects.nonNull(testCycles) && !testCycles.isEmpty()){
+                return null;
+            }
         }
         baseMapper.updateById(testCycle);
         return testCycle;
@@ -956,5 +971,13 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
         }
         // 批量克隆
         this.saveBatch(testCycleList);
+    }
+
+    private List<TestCycle> listByTitle(String title, Long id, Long projectId){
+       return  this.lambdaQuery()
+               .eq(TestCycle::getTitle, title)
+               .eq(Objects.nonNull(projectId), TestCycle::getProjectId, projectId)
+               .ne(Objects.nonNull(id), TestCycle::getId, id)
+               .list();
     }
 }
