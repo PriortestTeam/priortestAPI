@@ -24,14 +24,7 @@ import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.*;
-import com.hu.oneclick.model.domain.dto.ImportTestCaseDto;
-import com.hu.oneclick.model.domain.dto.LeftJoinDto;
-import com.hu.oneclick.model.domain.dto.MailDto;
-import com.hu.oneclick.model.domain.dto.TestCaseBisDto;
-import com.hu.oneclick.model.domain.dto.TestCaseDataDto;
-import com.hu.oneclick.model.domain.dto.TestCaseDto;
-import com.hu.oneclick.model.domain.dto.TestCaseSaveDto;
-import com.hu.oneclick.model.domain.dto.TestCycleDto;
+import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.model.domain.param.TestCaseParam;
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import com.hu.oneclick.relation.service.RelationService;
@@ -109,6 +102,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
   @Resource
   private IssueService issueService;
+
+  @Resource
+  TestCycleService testCycleService;
 
   @Override
   public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -1254,6 +1250,12 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       vo.setId(issue.getId());
     }
     return vo;
+  }
+
+  @Override
+  public TestCycle saveTestCycle(Long projectId, TestCycleSaveDto dto) {
+    dto.setProjectId(projectId);
+    return testCycleService.save(dto);
   }
 
 }

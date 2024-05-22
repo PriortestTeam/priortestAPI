@@ -9,12 +9,9 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.TestCase;
+import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
-import com.hu.oneclick.model.domain.dto.IssueSaveDto;
-import com.hu.oneclick.model.domain.dto.IssueStatusDto;
-import com.hu.oneclick.model.domain.dto.TestCaseSaveDto;
-import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
-import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
+import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.service.RelationService;
@@ -258,6 +255,25 @@ public class ApiAdpaderController {
               SysConstantEnum.DATA_NOT_FOUND.getCode(),
               SysConstantEnum.DATA_NOT_FOUND.getValue(),
               HttpStatus.NOT_FOUND.value());
+  }
+
+  @ApiOperation("新建测试周期")
+  @PostMapping("/{projectId}/testCycle/saveTestCycle")
+  public Resp<TestCycle> saveTestCycle(@PathVariable("projectId") Long projectId,@RequestBody @Validated TestCycleSaveDto dto) {
+    try {
+      if (Objects.nonNull(projectId)) {
+        TestCycle testCycle = testCaseService.saveTestCycle(projectId, dto);
+        if (Objects.isNull(testCycle)) {
+          return new Resp.Builder<TestCycle>().ok(String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                  SysConstantEnum.DATE_EXIST_TITLE.getValue(), HttpStatus.BAD_REQUEST.value());
+        }
+        return new Resp.Builder<TestCycle>().setData(testCycle).ok();
+      }
+    } catch (Exception e) {
+      log.error("新增测试周期失败，原因：" + e.getMessage(), e);
+      return new Resp.Builder<TestCycle>().fail();
+    }
+    return new Resp.Builder<TestCycle>().fail();
   }
 
 }
