@@ -916,7 +916,7 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
             testCycle.setTestcycleExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
         }
         if(StringUtils.isNotBlank(testCycle.getTitle())){
-            List<TestCycle> testCycles = listByTitle(testCycle.getTitle(),null, null);
+            List<TestCycle> testCycles = listByTitle(testCycle.getTitle(),null, dto.getProjectId());
             if(Objects.nonNull(testCycles) && !testCycles.isEmpty()){
                 return null;
             }
