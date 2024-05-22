@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -261,6 +262,10 @@ public class ApiAdpaderController {
   @PostMapping("/{projectId}/testCycle/saveTestCycle")
   public Resp<TestCycle> saveTestCycle(@PathVariable("projectId") Long projectId,@RequestBody @Validated TestCycleSaveDto dto) {
     try {
+        if(!StringUtils.equals(String.valueOf(projectId),String.valueOf(dto.getProjectId()))){
+          return new Resp.Builder<TestCycle>().ok(String.valueOf(SysConstantEnum.TEST_CYCLE_NOT_MATE_PROJECT.getCode()),
+                  SysConstantEnum.TEST_CYCLE_NOT_MATE_PROJECT.getValue(), HttpStatus.BAD_REQUEST.value());
+        }
       if (Objects.nonNull(projectId)) {
         TestCycle testCycle = testCaseService.saveTestCycle(projectId, dto);
         if (Objects.isNull(testCycle)) {

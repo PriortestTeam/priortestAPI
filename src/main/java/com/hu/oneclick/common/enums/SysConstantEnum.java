@@ -71,7 +71,10 @@ public enum SysConstantEnum {
     TEST_CYCLE_NOT_EXIST_PROJECT("400", "项目 ID 不存在项目里"),
     TEST_CYCLE_NOT_INCLUDE_IN_PROJECT("400", "Test Cycle ID 不存在项目中"),
     TEST_CASE_PROJECT_ID_NOT_EXIST("400", "项目 ID 不统一"),
+    TEST_CYCLE_NOT_MATE_PROJECT("400","当前项目ID不匹配"),
     TEST_CASE_NOT_EXIST("400", "测试用例不存在");
+
+
 
     private final static String NUMBER = "200";
     private String value;
