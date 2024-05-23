@@ -306,11 +306,10 @@ public class ApiAdpaderController {
       }
 
 
-      List<TestCase> list1 = testCaseService.list(
-              new LambdaQueryWrapper<TestCase>()
-                      .eq(TestCase::getProjectId, dto.getProjectId())
-                      .in(TestCase::getId, dto.getTestCaseIds())
-      );
+      LambdaQueryWrapper<TestCase> in = new LambdaQueryWrapper<TestCase>()
+              .eq(TestCase::getProjectId, dto.getProjectId())
+              .in(TestCase::getId, dto.getTestCaseIds());
+      List<TestCase> list1 = testCaseService.list(in);
       if(Objects.isNull(list1)){
         List<String> collect = list1.stream().map(l -> Convert.toStr(l.getId())).collect(Collectors.toList());
         String collect1 = collect.stream().collect(Collectors.joining(","));
@@ -320,13 +319,10 @@ public class ApiAdpaderController {
 
       if (Objects.nonNull(projectId)) {
         TestCycleJoinTestCaseVo vo =    testCycleJoinTestCaseService.removeTCsFromTestCycle(projectId, dto);
-
-
-
         return new Resp.Builder<TestCycleJoinTestCaseVo>().setData(vo).ok();
       }
     } catch (Exception e) {
-      log.error("新增测试周期失败，原因：" + e.getMessage(), e);
+      log.error("移除多余测试周期用例，原因：" + e.getMessage(), e);
       return new Resp.Builder<TestCycleJoinTestCaseVo>().fail();
     }
     return new Resp.Builder<TestCycleJoinTestCaseVo>().fail();
