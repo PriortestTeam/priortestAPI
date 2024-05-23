@@ -327,9 +327,9 @@ public class ApiAdpaderController {
       }
     } catch (Exception e) {
       log.error("新增测试周期失败，原因：" + e.getMessage(), e);
-      return new Resp.Builder<TestCycle>().fail();
+      return new Resp.Builder<TestCycleJoinTestCaseVo>().fail();
     }
-    return new Resp.Builder<TestCycle>().fail();
+    return new Resp.Builder<TestCycleJoinTestCaseVo>().fail();
   }
 
 
