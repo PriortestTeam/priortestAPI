@@ -258,14 +258,14 @@ public class TestCycleJoinTestCaseServiceImpl extends
       TestCycleJoinTestCaseSaveDto td = new TestCycleJoinTestCaseSaveDto();
       td.setProjectId(dto.getProjectId());
       td.setTestCycleId(dto.getTestCycleId());
-      td.setTestCaseIds( collect.toArray(new Long[collect.size()]));
-      deleteInstance(td);
+      if(!collect.isEmpty()){
+        td.setTestCaseIds( collect.toArray(new Long[collect.size()]));
+        deleteInstance(td);
+      }
       vo.setProjectId(td.getProjectId());
       vo.setTestCycleId(td.getTestCycleId());
       vo.setTestCaseIds(td.getTestCaseIds());
     }
-
-
     return vo;
   }
 

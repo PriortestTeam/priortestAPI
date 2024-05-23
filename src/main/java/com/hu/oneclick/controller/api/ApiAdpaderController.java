@@ -305,7 +305,6 @@ public class ApiAdpaderController {
                 dto.getTestCycleId() + "不存在项目中", HttpStatus.BAD_REQUEST.value());
       }
 
-
       LambdaQueryWrapper<TestCase> in = new LambdaQueryWrapper<TestCase>()
               .eq(TestCase::getProjectId, dto.getProjectId())
               .in(TestCase::getId, dto.getTestCaseIds());
