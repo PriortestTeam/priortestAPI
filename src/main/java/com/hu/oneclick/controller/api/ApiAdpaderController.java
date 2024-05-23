@@ -2,10 +2,12 @@ package com.hu.oneclick.controller.api;
 
 import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.util.StringUtil;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
+import com.hu.oneclick.common.util.Convert;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.TestCase;
@@ -13,15 +15,16 @@ import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
+import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.service.RelationService;
-import com.hu.oneclick.server.service.IssueService;
-import com.hu.oneclick.server.service.RetrieveTestCycleAsTitleService;
-import com.hu.oneclick.server.service.TestCaseService;
-import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
+import com.hu.oneclick.server.service.*;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +53,9 @@ public class ApiAdpaderController {
   private TestCycleJoinTestCaseService testCycleJoinTestCaseService;
   @Resource
   private RetrieveTestCycleAsTitleService rtcatService;
+
+  @Resource
+  private TestCycleService testCycleService;
 
   @Resource
   private TestCaseService testCaseService;
@@ -280,5 +286,52 @@ public class ApiAdpaderController {
     }
     return new Resp.Builder<TestCycle>().fail();
   }
+
+  @ApiOperation("移除多余测试周期用例")
+  @PostMapping("/{projectId}/testCycle/instance/removeTCsFromTestCycle")
+  public Resp<TestCycleJoinTestCaseVo> removeTCsFromTestCycle(@PathVariable("projectId") Long projectId,@RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
+    try {
+      if(!StringUtils.equals(String.valueOf(projectId),String.valueOf(dto.getProjectId()))){
+        return new Resp.Builder<TestCycleJoinTestCaseVo>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
+                SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
+      }
+
+      LambdaQueryWrapper<TestCycle> wapper = new LambdaQueryWrapper<TestCycle>()
+              .eq(TestCycle::getProjectId, dto.getProjectId())
+              .eq(TestCycle::getId, dto.getTestCycleId());
+      List<TestCycle> list = testCycleService.list(wapper);
+      if(Objects.isNull(list) || list.isEmpty()){
+        return new Resp.Builder<TestCycleJoinTestCaseVo>().ok(String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                dto.getTestCycleId() + "不存在项目中", HttpStatus.BAD_REQUEST.value());
+      }
+
+
+      List<TestCase> list1 = testCaseService.list(
+              new LambdaQueryWrapper<TestCase>()
+                      .eq(TestCase::getProjectId, dto.getProjectId())
+                      .in(TestCase::getId, dto.getTestCaseIds())
+      );
+      if(Objects.isNull(list1)){
+        List<String> collect = list1.stream().map(l -> Convert.toStr(l.getId())).collect(Collectors.toList());
+        String collect1 = collect.stream().collect(Collectors.joining(","));
+        return new Resp.Builder<TestCycleJoinTestCaseVo>().ok(String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                collect1 + "不存在项目中 or 测试周期 中", HttpStatus.BAD_REQUEST.value());
+      }
+
+      if (Objects.nonNull(projectId)) {
+        TestCycleJoinTestCaseVo vo =    testCycleJoinTestCaseService.removeTCsFromTestCycle(projectId, dto);
+
+
+
+        return new Resp.Builder<TestCycleJoinTestCaseVo>().setData(vo).ok();
+      }
+    } catch (Exception e) {
+      log.error("新增测试周期失败，原因：" + e.getMessage(), e);
+      return new Resp.Builder<TestCycle>().fail();
+    }
+    return new Resp.Builder<TestCycle>().fail();
+  }
+
+
 
 }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
+import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -94,4 +95,5 @@ public interface TestCaseService extends IService<TestCase> {
     IssueStatusVo retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId);
 
   TestCycle saveTestCycle(Long projectId, TestCycleSaveDto dto);
+
 }
