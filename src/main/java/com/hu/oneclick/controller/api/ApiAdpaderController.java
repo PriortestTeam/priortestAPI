@@ -1,5 +1,6 @@
 package com.hu.oneclick.controller.api;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -21,6 +22,7 @@ import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.*;
 import io.swagger.annotations.ApiOperation;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -328,5 +330,45 @@ public class ApiAdpaderController {
   }
 
 
+
+  @ApiOperation(" 返回缺陷列表,以runcaseId")
+  @PostMapping("/{projectId}/retrieveIssueAsPerRunCaseId")
+  public Resp<List<Issue>> retrieveIssueAsPerRunCaseId(@PathVariable("projectId") Long projectId,@RequestParam Long runCaseId) {
+    try {
+      if(Objects.isNull(runCaseId)){
+        return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
+                "运行用例不可以为空", HttpStatus.BAD_REQUEST.value());
+      }
+
+      List<Issue> issueList = issueService.list(
+              new LambdaQueryWrapper<Issue>()
+                      .eq(Issue::getProjectId, projectId)
+                      .eq(Issue::getRuncaseId, runCaseId)
+      );
+      if(CollectionUtil.isEmpty(issueList)){
+        List<Issue> issueListByRuncaseId = issueService.list(
+                new LambdaQueryWrapper<Issue>()
+                        .eq(Issue::getRuncaseId, runCaseId)
+        );
+        if(CollectionUtil.isNotEmpty(issueList)){
+          return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
+                  "运行用例不存在", HttpStatus.BAD_REQUEST.value());
+        }else{
+          return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
+                  "查无记录", HttpStatus.BAD_REQUEST.value());
+        }
+      }
+
+      List<Issue> collect = issueList.stream().filter(issue -> !"关闭".equals(issue.getIssueStatus())).collect(Collectors.toList());
+      if(CollectionUtil.isEmpty(collect)){
+        return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
+                "查无记录", HttpStatus.BAD_REQUEST.value());
+      }
+      return new Resp.Builder<List<Issue>>().setData(collect).ok();
+    } catch (Exception e) {
+      log.error("返回缺陷列表" + e.getMessage(), e);
+      return new Resp.Builder<List<Issue>>().fail();
+    }
+  }
 
 }
