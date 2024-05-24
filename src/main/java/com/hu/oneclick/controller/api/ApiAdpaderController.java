@@ -3,6 +3,7 @@ package com.hu.oneclick.controller.api;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.util.StringUtil;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -31,6 +32,7 @@ import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
+import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -354,16 +356,29 @@ public class ApiAdpaderController {
           return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
                   "运行用例不存在", HttpStatus.BAD_REQUEST.value());
         }else{
-          return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
-                  "查无记录", HttpStatus.BAD_REQUEST.value());
+          return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode()),
+                  SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
         }
       }
 
       List<Issue> collect = issueList.stream().filter(issue -> !"关闭".equals(issue.getIssueStatus())).collect(Collectors.toList());
+
+
+
       if(CollectionUtil.isEmpty(collect)){
         return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
-                "查无记录", HttpStatus.BAD_REQUEST.value());
+                SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
       }
+      JSONObject jsonObject =new JSONObject();
+      List<Long> idlist = Lists.newArrayList();
+      List<Long> runid = Lists.newArrayList();
+      collect.forEach(c->{
+        idlist.add(c.getId());
+        runid.add(c.getRuncaseId());
+      });
+      jsonObject.put("id", idlist);
+
+      jsonObject.put("RuncaseId", runid);
       return new Resp.Builder<List<Issue>>().setData(collect).ok();
     } catch (Exception e) {
       log.error("返回缺陷列表" + e.getMessage(), e);
