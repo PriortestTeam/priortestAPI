@@ -334,7 +334,7 @@ public class ApiAdpaderController {
 
 
   @ApiOperation(" 返回缺陷列表,以runcaseId")
-  @PostMapping("/{projectId}/retrieveIssueAsPerRunCaseId")
+  @GetMapping("/{projectId}/retrieveIssueAsPerRunCaseId")
   public Resp<JSONObject> retrieveIssueAsPerRunCaseId(@PathVariable("projectId") Long projectId,@RequestParam Long runCaseId) {
     try {
       if(Objects.isNull(runCaseId)){
