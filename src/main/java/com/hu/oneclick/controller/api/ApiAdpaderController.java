@@ -378,7 +378,7 @@ public class ApiAdpaderController {
       });
       jsonObject.put("id", idlist);
 
-      jsonObject.put("RuncaseId", runid);
+      jsonObject.put("runcaseId", runid);
       return new Resp.Builder<JSONObject>().setData(jsonObject).ok();
     } catch (Exception e) {
       log.error("返回缺陷列表" + e.getMessage(), e);
