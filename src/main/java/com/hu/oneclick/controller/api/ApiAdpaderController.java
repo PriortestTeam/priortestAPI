@@ -371,14 +371,13 @@ public class ApiAdpaderController {
       }
       JSONObject jsonObject =new JSONObject();
       List<Long> idlist = Lists.newArrayList();
-      List<Long> runid = Lists.newArrayList();
+//      List<Long> runid = Lists.newArrayList();
       collect.forEach(c->{
         idlist.add(c.getId());
-        runid.add(c.getRuncaseId());
       });
       jsonObject.put("id", idlist);
 
-      jsonObject.put("runcaseId", runid);
+      jsonObject.put("runcaseId", runCaseId);
       return new Resp.Builder<JSONObject>().setData(jsonObject).ok();
     } catch (Exception e) {
       log.error("返回缺陷列表" + e.getMessage(), e);
