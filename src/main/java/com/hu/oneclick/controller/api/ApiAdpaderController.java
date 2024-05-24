@@ -335,10 +335,10 @@ public class ApiAdpaderController {
 
   @ApiOperation(" 返回缺陷列表,以runcaseId")
   @PostMapping("/{projectId}/retrieveIssueAsPerRunCaseId")
-  public Resp<List<Issue>> retrieveIssueAsPerRunCaseId(@PathVariable("projectId") Long projectId,@RequestParam Long runCaseId) {
+  public Resp<JSONObject> retrieveIssueAsPerRunCaseId(@PathVariable("projectId") Long projectId,@RequestParam Long runCaseId) {
     try {
       if(Objects.isNull(runCaseId)){
-        return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
+        return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
                 "运行用例不可以为空", HttpStatus.BAD_REQUEST.value());
       }
 
@@ -353,10 +353,10 @@ public class ApiAdpaderController {
                         .eq(Issue::getRuncaseId, runCaseId)
         );
         if(CollectionUtil.isNotEmpty(issueList)){
-          return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
+          return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
                   "运行用例不存在", HttpStatus.BAD_REQUEST.value());
         }else{
-          return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode()),
+          return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode()),
                   SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
         }
       }
@@ -366,7 +366,7 @@ public class ApiAdpaderController {
 
 
       if(CollectionUtil.isEmpty(collect)){
-        return new Resp.Builder<List<Issue>>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
+        return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
                 SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
       }
       JSONObject jsonObject =new JSONObject();
@@ -379,10 +379,10 @@ public class ApiAdpaderController {
       jsonObject.put("id", idlist);
 
       jsonObject.put("RuncaseId", runid);
-      return new Resp.Builder<List<Issue>>().setData(collect).ok();
+      return new Resp.Builder<JSONObject>().setData(jsonObject).ok();
     } catch (Exception e) {
       log.error("返回缺陷列表" + e.getMessage(), e);
-      return new Resp.Builder<List<Issue>>().fail();
+      return new Resp.Builder<JSONObject>().fail();
     }
   }
 
