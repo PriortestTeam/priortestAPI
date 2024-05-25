@@ -366,7 +366,7 @@ public class ApiAdpaderController {
 
 
       if(CollectionUtil.isEmpty(collect)){
-        return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
+        return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode()),
                 SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
       }
       JSONObject jsonObject =new JSONObject();
