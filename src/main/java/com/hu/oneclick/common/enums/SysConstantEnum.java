@@ -47,9 +47,11 @@ public enum SysConstantEnum {
     DATE_EXIST_TITLE(SysConstantEnum.NUMBER + "032","周期名词已存在"),
     DATA_NOT_FOUND("404", "查无记录"),
 
+    // about user
     USER_EXPIRE_DATE("400", "请采购服务，或请申请再次试用"),
-
-
+    EMAIL_NOT_EXIST("400", "输入邮箱不存在"),
+    NOT_TRIALER_USER("400", "不是试用账号，不可以申请免费试用"),
+    TRIALER_LIMIT("400", "试用已达限，不可以再进行申请试用"),
 
     //成功
     SUCCESS(SysConstantEnum.NUMBER,"调用成功。"),
