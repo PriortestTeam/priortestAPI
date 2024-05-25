@@ -47,6 +47,8 @@ public enum SysConstantEnum {
     DATE_EXIST_TITLE(SysConstantEnum.NUMBER + "032","周期名词已存在"),
     DATA_NOT_FOUND("404", "查无记录"),
 
+    USER_EXPIRE_DATE("400", "请采购服务，或请申请再次试用"),
+
 
 
     //成功
