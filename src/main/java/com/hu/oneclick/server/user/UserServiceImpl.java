@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
                     redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
                     // mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
                     // "&params=" + linkStr);
-                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + email +
+                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
                             "&params=" + linkStr);
 
                     return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
@@ -562,7 +562,7 @@ public class UserServiceImpl implements UserService {
 
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick申请延期", "http://124.71.142.223/#/deferred?email=" + email + "&params=" + linkStr);
+        mailService.sendSimpleMail(email, "OneClick申请延期", "http://43.139.159.146/#/deferred?email=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -570,7 +570,6 @@ public class UserServiceImpl implements UserService {
     public Resp<String> applyForAnExtensionIn(ActivateAccountDto activateAccountDto) {
         return activateAccount(activateAccountDto, OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION);
     }
-
 
     /**
      * 管理员生成token
