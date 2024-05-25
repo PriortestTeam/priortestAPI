@@ -352,12 +352,12 @@ public class ApiAdpaderController {
                 new LambdaQueryWrapper<Issue>()
                         .eq(Issue::getRuncaseId, runCaseId)
         );
-        if(CollectionUtil.isNotEmpty(issueList)){
+        if(CollectionUtil.isNotEmpty(issueListByRuncaseId)){
           return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
-                  "运行用例不存在", HttpStatus.BAD_REQUEST.value());
+                  "测试用例 不存在项目中", HttpStatus.BAD_REQUEST.value());
         }else{
           return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode()),
-                  SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
+                  "运行用例不存在", HttpStatus.NOT_FOUND.value());
         }
       }
 
