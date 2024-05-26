@@ -32,7 +32,7 @@ public class VersionController extends BaseController {
 
     @ApiOperation("修改")
     @PutMapping("releaseModification")
-    public Resp releaseModification(@RequestBody VersionRequestDto releaseModification) {
+    public Resp releaseModification(@Valid @RequestBody VersionRequestDto releaseModification) {
         versionService.releaseModification(releaseModification);
         return new Resp.Builder().ok();
     }
