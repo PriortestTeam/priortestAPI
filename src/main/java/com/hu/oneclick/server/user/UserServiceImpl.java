@@ -204,7 +204,7 @@ public class UserServiceImpl implements UserService {
 
 //                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
 //                        "&params=" + linkStr);
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + email +
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
                         "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
@@ -541,7 +541,7 @@ public class UserServiceImpl implements UserService {
                 SysConstantEnum.NOT_TRIALER_USER.getValue(), HttpStatus.BAD_REQUEST.value());
         }
         final int activeNumber = Objects.nonNull(sysUser.getActivitiNumber()) ? sysUser.getActivitiNumber() : 0;
-        if (activeNumber > 3) {
+        if (activeNumber >= 3) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.TRIALER_LIMIT.getCode(),
                 SysConstantEnum.TRIALER_LIMIT.getValue(), HttpStatus.BAD_REQUEST.value());
         }
