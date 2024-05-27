@@ -13,6 +13,7 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
+import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.dao.MasterIdentifierDao;
 import com.hu.oneclick.dao.RoleFunctionDao;
 import com.hu.oneclick.dao.RoomDao;
@@ -133,8 +134,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> register(SysUser registerUser) {
+    public Resp<String> register(final RegisterBody registerBody) {
         try {
+            final SysUser registerUser = new SysUser();
+            BeanUtils.copyProperties(registerBody, registerUser);
 
             String email = registerUser.getEmail();
             if (StringUtils.isEmpty(email)) {

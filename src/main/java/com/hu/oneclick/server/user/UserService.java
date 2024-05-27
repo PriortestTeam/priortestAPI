@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.user;
 
+import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.SysUser;
 import com.hu.oneclick.model.domain.SysUserToken;
@@ -7,7 +8,6 @@ import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
-
 import java.util.List;
 import java.util.Map;
 
@@ -19,10 +19,10 @@ public interface UserService {
     /**
      * 用户注册
      *
-     * @param registerUser
+     * @param registerBody 注册体
      * @return
      */
-    Resp<String> register(SysUser registerUser);
+    Resp<String> register(RegisterBody registerBody);
 
     /**
      * 修改密码
