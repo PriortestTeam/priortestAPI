@@ -16,6 +16,7 @@ import com.hu.oneclick.model.domain.TestCycle;
 import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
+import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -240,4 +241,34 @@ public class TestCycleJoinTestCaseServiceImpl extends
     }
     return new Resp.Builder<>().ok();
   }
+
+  @Override
+  public TestCycleJoinTestCaseVo removeTCsFromTestCycle(Long projectId, TestCycleJoinTestCaseSaveDto dto) {
+    TestCycleJoinTestCaseVo vo = new TestCycleJoinTestCaseVo();
+    List<TestCycleJoinTestCase> testCycleJoinTestCases = baseMapper.selectList(
+            new LambdaQueryWrapper<TestCycleJoinTestCase>()
+                    .eq(TestCycleJoinTestCase::getProjectId, dto.getProjectId())
+                    .eq(TestCycleJoinTestCase::getTestCycleId, dto.getTestCycleId())
+    );
+    List<Long> collect = testCycleJoinTestCases.stream().map(TestCycleJoinTestCase::getTestCaseId).collect(Collectors.toList());
+    Long[] testCaseIds = dto.getTestCaseIds();
+    List<Long> longs = Arrays.asList(testCaseIds);
+    boolean b = collect.removeAll(longs);
+    if(b){
+      TestCycleJoinTestCaseSaveDto td = new TestCycleJoinTestCaseSaveDto();
+      td.setProjectId(dto.getProjectId());
+      td.setTestCycleId(dto.getTestCycleId());
+      if(!collect.isEmpty()){
+        td.setTestCaseIds( collect.toArray(new Long[collect.size()]));
+        deleteInstance(td);
+      }
+      vo.setProjectId(td.getProjectId());
+      vo.setTestCycleId(td.getTestCycleId());
+      vo.setTestCaseIds(td.getTestCaseIds());
+    }
+    return vo;
+  }
+
+
+
 }
