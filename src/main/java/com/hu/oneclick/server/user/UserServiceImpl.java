@@ -215,7 +215,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> modifyPassword(Map<String, String> args) {
@@ -238,7 +237,6 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -373,16 +371,13 @@ public class UserServiceImpl implements UserService {
         return jwtUserServiceImpl.encryptPassword(password);
     }
 
-
     @Override
     public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
         if (StringUtils.isEmpty(activateAccountDto.getEmail())) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
-
         }
         //检查数据库是否已存在用户
         List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail());
-
         if (sysUsers.isEmpty()) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
         }
@@ -456,17 +451,10 @@ public class UserServiceImpl implements UserService {
         if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
             int activitiNumber = sysUser.getActivitiNumber() == null ? 0 : sysUser.getActivitiNumber();
             if (activitiNumber >= 1 && activitiNumber <= 3) {
-                Date activitiDate = sysUser.getActivitiDate();
-                long beginTime = sysUser.getExpireDate().getTime();
-                long endTime = new Date(System.currentTimeMillis()).getTime();
-                if (beginTime < endTime) {
-                    sysUser.setActivitiDate(activitiDate);
-                    sysUser.setActivitiNumber(activitiNumber + 1);
-                    long time = activitiDate.getTime() + secondTime * 24 * 60 * 60 * 1000;
-                    sysUser.setExpireDate(new Date(time));
-                } else {
-                    throw new BizException(SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getCode(), SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getValue());
-                }
+                final DateTime newExpireDate =
+                    cn.hutool.core.date.DateUtil.offsetDay(sysUser.getExpireDate(), 30);
+                sysUser.setActivitiNumber(activitiNumber + 1);
+                sysUser.setExpireDate(newExpireDate);
             } else {
                 throw new BizException(SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getCode(), SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getValue());
             }
@@ -552,16 +540,11 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_TRIALER_USER.getCode(),
                 SysConstantEnum.NOT_TRIALER_USER.getValue(), HttpStatus.BAD_REQUEST.value());
         }
-        if (3 == sysUser.getActivitiNumber()) {
+        final int activeNumber = Objects.nonNull(sysUser.getActivitiNumber()) ? sysUser.getActivitiNumber() : 0;
+        if (activeNumber > 3) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.TRIALER_LIMIT.getCode(),
                 SysConstantEnum.TRIALER_LIMIT.getValue(), HttpStatus.BAD_REQUEST.value());
         }
-
-        final DateTime newExpireDate =
-            cn.hutool.core.date.DateUtil.offsetDay(sysUser.getExpireDate(), 30);
-        sysUser.setActivitiNumber(sysUser.getActivitiNumber() + 1);
-        sysUser.setExpireDate(newExpireDate);
-        sysUserDao.update(sysUser);
 
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);

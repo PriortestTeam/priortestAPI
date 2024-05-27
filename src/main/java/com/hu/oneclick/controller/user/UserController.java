@@ -108,19 +108,17 @@ public class UserController {
         return userService.applyForAnExtension(email);
     }
 
-    @ApiOperation("返回用户的激活次数")
-    @PostMapping("getUserActivNumber")
-    public Resp<String> getUserActivNumber(@RequestParam String email) {
-        return userService.getUserActivNumber(email);
-    }
-
-
     @ApiOperation("申请延期输入密码")
     @PostMapping("applyForAnExtensionIn")
     public Resp<String> applyForAnExtensionIn(@RequestBody ActivateAccountDto activateAccountDto) {
         return userService.applyForAnExtensionIn(activateAccountDto);
     }
 
+    @ApiOperation("返回用户的激活次数")
+    @PostMapping("getUserActivNumber")
+    public Resp<String> getUserActivNumber(@RequestParam String email) {
+        return userService.getUserActivNumber(email);
+    }
 
     @ApiOperation("管理员生成token")
     @PostMapping("makeToken")
