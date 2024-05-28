@@ -1,15 +1,22 @@
 package com.hu.oneclick.common.config;
 
 import cn.hutool.core.util.StrUtil;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.hu.oneclick.relation.enums.SwaggerDisplayEnum;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
 import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.ModelPropertyBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.Annotations;
@@ -22,10 +29,6 @@ import springfox.documentation.spi.schema.contexts.ModelPropertyContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger.schema.ApiModelProperties;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Configuration //声明该类为配置类
 @EnableSwagger2 //声明启动Swagger2
@@ -71,16 +74,14 @@ public class SwaggerConfig implements ModelPropertyBuilderPlugin {
 //        }
 
         //获取当前字段的类型
-        final Class fieldType = context.getBeanPropertyDefinition().get().getField().getRawType();
-
-        //为枚举字段设置注释
-        descForEnumFields(context, fieldType);
+        final Optional<BeanPropertyDefinition> definition = context.getBeanPropertyDefinition();
+        definition.ifPresent(d -> descForEnumFields(context));
     }
 
     /**
      * 为枚举字段设置注释
      */
-    private void descForEnumFields(ModelPropertyContext context, Class fieldType) {
+    private void descForEnumFields(ModelPropertyContext context) {
         Optional<ApiModelProperty> optional = Optional.empty();
         // 找到 @ApiModelProperty 注解修饰的枚举类
         if (context.getAnnotatedElement().isPresent()) {
@@ -129,7 +130,7 @@ public class SwaggerConfig implements ModelPropertyBuilderPlugin {
         String joinText = " (" + String.join(";", displayValues) + ")";
         try {
             // 拿到字段上原先的描述
-            Field mField = ModelPropertyBuilder.class.getDeclaredField("description");
+            Field mField = context.getSpecificationBuilder().getClass().getDeclaredField("description");
             mField.setAccessible(true);
             // context 中的 builder 对象保存了字段的信息
             joinText = mField.get(context.getSpecificationBuilder()) + joinText;
