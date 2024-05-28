@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
+import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.FeatureJoinSprintDao;
 import com.hu.oneclick.dao.SprintDao;
@@ -114,6 +115,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
             Feature issueClone = new Feature();
             BeanUtil.copyProperties(feature, issueClone);
             issueClone.setId(null);
+            issueClone.setTitle(CloneFormatUtil.getCloneTitle(feature.getTitle()));
             featureList.add(issueClone);
         }
         // 批量克隆

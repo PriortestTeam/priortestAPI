@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.TestCycle;
@@ -967,6 +968,7 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
             TestCycle testCaseClone = new TestCycle();
             BeanUtil.copyProperties(testCycle, testCaseClone);
             testCaseClone.setId(null);
+            testCaseClone.setTitle(CloneFormatUtil.getCloneTitle(testCaseClone.getTitle()));
             testCycleList.add(testCaseClone);
         }
         // 批量克隆
