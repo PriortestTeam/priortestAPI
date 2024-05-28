@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
+import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.model.domain.Issue;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
@@ -130,6 +131,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             Issue issueClone = new Issue();
             BeanUtil.copyProperties(issue, issueClone);
             issueClone.setId(null);
+            issueClone.setTitle(CloneFormatUtil.getCloneTitle(issueClone.getTitle()));
             issueList.add(issueClone);
         }
         // 批量克隆
