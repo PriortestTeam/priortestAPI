@@ -190,7 +190,8 @@
                activiti_number,
                activiti_date,
                expire_date,
-               room_id
+               room_id,
+               user_class
         from oneclick.sys_user
         where email = #{email}
           and del_flag = 0 limit 1

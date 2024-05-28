@@ -2,7 +2,11 @@ package com.hu.oneclick.common.security.handler;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.Resp;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -11,10 +15,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * @author qingyang
@@ -27,7 +27,11 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		String result = "";
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType("application/json;charset=UTF-8");
-		if (exception instanceof BadCredentialsException || exception instanceof InternalAuthenticationServiceException) {
+		if (exception.getCause() instanceof BizException) {
+			final BizException bizException = (BizException) exception.getCause();
+			response.setStatus(bizException.getHttpCode());
+			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(bizException.getCode(), bizException.getMsg()));
+		} else if (exception instanceof BadCredentialsException || exception instanceof InternalAuthenticationServiceException) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.LOGIN_FAILED.getValue()).fail());
 		} else if (exception instanceof InsufficientAuthenticationException
