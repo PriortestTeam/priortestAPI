@@ -102,7 +102,7 @@ public class SignOffController {
     @GetMapping("/getPdf")
     @ApiOperation("返回当前项目下产生的PDF列表")
     public  Resp< List<ProjectSignOff>> getPdf() {
-        return signoffservice.getPdf();
+        return signOffService.getPdf();
     }
 
 
