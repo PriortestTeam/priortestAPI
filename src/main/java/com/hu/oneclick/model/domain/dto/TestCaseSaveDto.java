@@ -131,6 +131,7 @@ public class TestCaseSaveDto implements Serializable {
     /**
      * 模块
      */
+    @NotBlank(message = "模块不能为空")
     @ApiModelProperty("模块")
     private String module;
 
