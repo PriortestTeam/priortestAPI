@@ -155,6 +155,7 @@
     <select id="queryCycleAndTest" resultType="com.hu.oneclick.model.domain.Issue">
         SELECT *
         FROM issue
+        where runcase_id = #{param1}
 
     </select>
     <select id="findAll" resultType="com.hu.oneclick.model.domain.Issue">
