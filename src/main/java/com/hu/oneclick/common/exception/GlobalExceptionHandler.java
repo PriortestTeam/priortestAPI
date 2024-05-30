@@ -58,9 +58,9 @@ public class GlobalExceptionHandler {
         }
         if (!ObjectUtils.isEmpty(allErrors)) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.PARAM_EMPTY.getCode(),
-                allErrors.get(0).getDefaultMessage());
+                allErrors.get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST.value());
         }
-        return new Resp.Builder<String>().httpBadRequest().buildResult(SysConstantEnum.SYS_ERROR.getValue());
+        return new Resp.Builder<String>().httpBadRequest().buildResult(SysConstantEnum.SYS_ERROR.getValue(), HttpStatus.BAD_REQUEST.value());
     }
 
     @ExceptionHandler(Exception.class)
