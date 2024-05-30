@@ -489,9 +489,9 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
     }
 //
     @Override
-    public List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto) {
+    public List<Map<String, Object>> getAllTestCycle(SignOffDto signOffDto) {
 
-        List<Map<String, String>> allTestCycle = testCycleDao.getAllTestCycle(signOffDto.getProjectId(), signOffDto.getVersion(), signOffDto.getEnv(), signOffDto.getTestCycle());
+        List<Map<String, Object>> allTestCycle = testCycleDao.getAllTestCycle(signOffDto.getProjectId(), signOffDto.getVersion(), signOffDto.getEnv(), signOffDto.getTestCycle());
         return allTestCycle;
     }
 //

@@ -333,7 +333,7 @@ public class ProjectServiceImpl implements ProjectService {
             row4.createCell(0).setCellValue("在线报表");
             row4.createCell(1).setCellValue("");
 
-            List<Map<String, String>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
+            List<Map<String, Object>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
             //全部测试用例
             HSSFRow row5 = sheet.createRow(5);
             row5.createCell(0).setCellValue("全部测试用例");
@@ -359,8 +359,8 @@ public class ProjectServiceImpl implements ProjectService {
             sheet.addMergedRegion(region);
             header.put(row8.getRowNum(), true);
 
-            Map<String, List<Map<String, String>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category")));
-            List<Map<String, String>> function = caseCategory.get("功能") == null ? new ArrayList<>() : caseCategory.get("功能");
+            Map<String, List<Map<String, Object>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category").toString()));
+            List<Map<String, Object>> function = caseCategory.get("功能") == null ? new ArrayList<>() : caseCategory.get("功能");
 
             HSSFRow row9 = sheet.createRow(9);
             row9.createCell(0).setCellValue("测试用例");
@@ -387,7 +387,7 @@ public class ProjectServiceImpl implements ProjectService {
             sheet.addMergedRegion(region1);
             header.put(row13.getRowNum(), true);
 
-            List<Map<String, String>> performance = caseCategory.get("性能") == null ? new ArrayList<>() : caseCategory.get("性能");
+            List<Map<String, Object>> performance = caseCategory.get("性能") == null ? new ArrayList<>() : caseCategory.get("性能");
             ;
             HSSFRow row14 = sheet.createRow(14);
             row14.createCell(0).setCellValue("测试用例");
@@ -416,9 +416,9 @@ public class ProjectServiceImpl implements ProjectService {
             header.put(row18.getRowNum(), true);
 
             int rowId = row18.getRowNum() + 1;
-            Map<String, List<Map<String, String>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module")));
+            Map<String, List<Map<String, Object>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module").toString()));
             for (String featureId : feature.keySet()) {
-                List<Map<String, String>> maps = feature.get(featureId);
+                List<Map<String, Object>> maps = feature.get(featureId);
 
                 HSSFRow row19 = sheet.createRow(rowId++);
 
@@ -433,9 +433,9 @@ public class ProjectServiceImpl implements ProjectService {
             header.put(row21.getRowNum(), true);
 
             ArrayList<Issue> issuesList = new ArrayList<>();
-            for (Map<String, String> map : allTestCycle) {
-                String testCaseId = map.get("test_case_id");
-                String testCycleId = map.get("test_cycle_id");
+            for (Map<String, Object> map : allTestCycle) {
+                String testCaseId = map.get("test_case_id").toString();
+                String testCycleId = map.get("test_cycle_id").toString();
                 Issue issue = issueDao.queryCycleAndTest(testCaseId, testCycleId);
                 if (issue != null && issue.getIssueStatus() == "4" && "高".equals(issue.getPriority())) {
                     issuesList.add(issue);
@@ -518,9 +518,9 @@ public class ProjectServiceImpl implements ProjectService {
             sheet.addMergedRegion(region32);
             header.put(row32.getRowNum(), true);
 
-            Map<String, List<Map<String, String>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform")));
+            Map<String, List<Map<String, Object>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform").toString()));
             for (String platForm : platforms.keySet()) {
-                List<Map<String, String>> maps = platforms.get(platForm);
+                List<Map<String, Object>> maps = platforms.get(platForm);
                 HSSFRow row33 = sheet.createRow(rowId++);
                 row33.createCell(0).setCellValue(platForm);
                 row33.createCell(1).setCellValue(maps.size());

@@ -27,8 +27,8 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="IssueMap">
         select
-        id, project_id, user_id, title, author, status, planned_release_date, close_date, test_case, test_cycle,
-        feature, priority, env, browser, platform, version, case_category, create_time, update_time, description
+        id, project_id, user_id, title, status, planned_release_date, close_date,
+        priority, env, browser, platform, version, case_category, create_time, update_time, description
         from oneclick.issue
         <where>
             <if test="id != null">
@@ -43,27 +43,14 @@
             <if test="title != null and title != ''">
                 and title = #{title}
             </if>
-            <if test="author != null and author != ''">
-                and author = #{author}
-            </if>
+
             <if test="status != null">
                 and status = #{status}
-            </if>
-            <if test="plannedReleaseDate != null">
-                and planned_release_date = #{plannedReleaseDate}
             </if>
             <if test="closeDate != null">
                 and close_date = #{closeDate}
             </if>
-            <if test="testCase != null">
-                and test_case = #{testCase}
-            </if>
-            <if test="testCycle != null">
-                and test_cycle = #{testCycle}
-            </if>
-            <if test="feature != null">
-                and feature = #{feature}
-            </if>
+
             <if test="priority != null and priority != ''">
                 and priority = #{priority}
             </if>
@@ -106,13 +93,8 @@
                project_id,
                user_id,
                title,
-               author,
                status,
-               planned_release_date,
                close_date,
-               test_case,
-               test_cycle,
-               feature,
                priority,
                env,
                browser,
@@ -134,27 +116,16 @@
             <if test="title != null and title != ''">
                 title = #{title},
             </if>
-            <if test="author != null and author != ''">
-                author = #{author},
-            </if>
+
             <if test="status != null">
                 status = #{status},
             </if>
-            <if test="plannedReleaseDate != null">
-                planned_release_date = #{plannedReleaseDate},
-            </if>
+
             <if test="closeDate != null">
                 close_date = #{closeDate},
             </if>
-            <if test="testCase != null">
-                test_case = #{testCase},
-            </if>
-            <if test="testCycle != null">
-                test_cycle = #{testCycle},
-            </if>
-            <if test="feature != null">
-                feature = #{feature},
-            </if>
+
+
             <if test="priority != null and priority != ''">
                 priority = #{priority},
             </if>
@@ -184,8 +155,7 @@
     <select id="queryCycleAndTest" resultType="com.hu.oneclick.model.domain.Issue">
         SELECT *
         FROM issue
-        WHERE test_case = #{param1}
-          and test_cycle = #{param2};
+        where runcase_id = #{param1}
 
     </select>
     <select id="findAll" resultType="com.hu.oneclick.model.domain.Issue">

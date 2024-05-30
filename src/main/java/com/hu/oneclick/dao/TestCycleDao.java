@@ -26,7 +26,7 @@ public interface TestCycleDao extends BaseMapper<TestCycle> {
 
     List<Map<String,String>> getTestCycleVersion(String projectId, String env, String version);
 
-    List<Map<String,String>> getAllTestCycle(String projectId, String version, String env, String testCycleVersion);
+    List<Map<String,Object>> getAllTestCycle(String projectId, String version, String env, String testCycleVersion);
 
     List<String> getTestCycleByProjectIdAndEvn(String projectId, String env, String testCycle);
 

@@ -44,7 +44,7 @@ public interface TestCycleService extends IService<TestCycle> {
 //
     Resp<List<Map<String, String>>> getTestCycleVersion(String projectId, String env, String version);
 //
-    List<Map<String, String>> getAllTestCycle(SignOffDto signOffDto);
+    List<Map<String, Object>> getAllTestCycle(SignOffDto signOffDto);
 //
 //    /**
 //     * 添加计划
