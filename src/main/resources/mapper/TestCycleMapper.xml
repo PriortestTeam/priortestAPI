@@ -169,7 +169,7 @@
         SELECT `title`
         FROM test_cycle
         WHERE project_id = #{param1}
-          AND test_env = #{param2}
+          AND env = #{param2}
           and current_release = #{param3}
     </select>
 
