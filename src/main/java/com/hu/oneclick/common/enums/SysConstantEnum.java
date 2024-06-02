@@ -72,7 +72,11 @@ public enum SysConstantEnum {
     TEST_CYCLE_NOT_INCLUDE_IN_PROJECT("400", "Test Cycle ID 不存在项目中"),
     TEST_CASE_PROJECT_ID_NOT_EXIST("400", "项目 ID 不统一"),
     TEST_CYCLE_NOT_MATE_PROJECT("400","当前项目ID不匹配"),
-    TEST_CASE_NOT_EXIST("400", "测试用例不存在");
+    TEST_CASE_NOT_EXIST("400", "测试用例不存在"),
+
+    //version
+    VERSION_NOT_MATCH("400", "修改版本不一致"),
+    VERSION_HAVE_EXSIST("400", "版本已存在");
 
 
 

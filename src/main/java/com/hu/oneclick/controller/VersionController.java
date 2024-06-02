@@ -39,8 +39,8 @@ public class VersionController extends BaseController {
 
     @ApiOperation("查询")
     @GetMapping("getVersion")
-    public Resp<VersionDto> getVersion(@RequestParam Long version) {
-        VersionDto versionDto = versionService.getVersion(version);
+    public Resp<VersionDto> getVersion(@RequestParam Long id) {
+        VersionDto versionDto = versionService.getVersion(id);
         return new Resp.Builder<VersionDto>().setData(versionDto).ok();
     }
 

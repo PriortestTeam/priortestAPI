@@ -22,6 +22,9 @@ public class VersionRequestDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date releaseDate;
 
+    @NotNull(message = "版本不能为空")
+    private String version;
+
     /**
      * 状态
      */

@@ -33,4 +33,6 @@ public class VersionDto implements Serializable {
      * 版本id
      */
     private Long id;
+
+    private String version;
 }

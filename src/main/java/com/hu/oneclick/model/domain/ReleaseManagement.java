@@ -10,8 +10,8 @@ import java.util.Date;
 
 
 @Data
-@TableName("version")
-public class Version extends AssignBaseEntity implements Serializable {
+@TableName("release_management")
+public class ReleaseManagement extends AssignBaseEntity implements Serializable {
 
     /**
      * 项目id
@@ -32,5 +32,7 @@ public class Version extends AssignBaseEntity implements Serializable {
      * 描述
      */
     private String description;
+
+    private String version;
 
 }
