@@ -49,6 +49,10 @@ public class VersionServiceImpl implements VersionService {
     @Override
     public void releaseModification(VersionRequestDto releaseModification) {
 
+        if(releaseModification.getId() == null) {
+            throw new BizException(SysConstantEnum.VERSION_ID_NOT_EXSIST.getCode(),
+                    SysConstantEnum.VERSION_ID_NOT_EXSIST.getValue(), HttpStatus.BAD_REQUEST.value());
+        }
         VersionDto versionDto = getVersion(releaseModification.getId());
         if(versionDto == null
                 || !versionDto.getVersion().equals(releaseModification.getVersion())) {

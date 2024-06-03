@@ -80,6 +80,7 @@ public enum SysConstantEnum {
 
     //version
     VERSION_NOT_MATCH("400", "修改版本不一致"),
+    VERSION_ID_NOT_EXSIST("400", "版本id不能为空"),
     VERSION_HAVE_EXSIST("400", "版本已存在");
 
 
