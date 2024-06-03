@@ -38,5 +38,5 @@ public class VersionRequestDto {
     /**
      * 版本id
      */
-    private Long versionId;
+    private Long id;
 }

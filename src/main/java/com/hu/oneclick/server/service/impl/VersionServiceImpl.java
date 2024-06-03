@@ -31,8 +31,9 @@ public class VersionServiceImpl implements VersionService {
     public void releaseCreation(VersionRequestDto releaseCreationDto) {
 
         LambdaQueryWrapper<ReleaseManagement> queryWrapper = new LambdaQueryWrapper<>();
-        if(StringUtil.isNotEmpty(releaseCreationDto.getVersion())) {
-            queryWrapper.eq(ReleaseManagement::getVersion, releaseCreationDto.getVersion());
+        if(StringUtil.isNotEmpty(releaseCreationDto.getVersion()) && StringUtil.isNotEmpty(releaseCreationDto.getVersion())) {
+            queryWrapper.eq(ReleaseManagement::getVersion, releaseCreationDto.getVersion())
+                    .eq(ReleaseManagement::getProjectId, releaseCreationDto.getProjectId());
         }
         List<ReleaseManagement> list = versionDao.selectList(queryWrapper);
         if(CollectionUtil.isNotEmpty(list)) {
@@ -48,7 +49,7 @@ public class VersionServiceImpl implements VersionService {
     @Override
     public void releaseModification(VersionRequestDto releaseModification) {
 
-        VersionDto versionDto = getVersion(releaseModification.getVersionId());
+        VersionDto versionDto = getVersion(releaseModification.getId());
         if(versionDto == null
                 || !versionDto.getVersion().equals(releaseModification.getVersion())) {
             throw new BizException(SysConstantEnum.VERSION_NOT_MATCH.getCode(),
@@ -57,7 +58,6 @@ public class VersionServiceImpl implements VersionService {
 
         ReleaseManagement db = new ReleaseManagement();
         BeanUtil.copyProperties(releaseModification, db);
-        db.setId(releaseModification.getVersionId());
         versionDao.updateById(db);
 
     }
