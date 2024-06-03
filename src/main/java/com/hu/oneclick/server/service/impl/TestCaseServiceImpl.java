@@ -15,6 +15,7 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.TestCaseDao;
@@ -27,6 +28,7 @@ import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.model.domain.param.TestCaseParam;
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
+import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
 import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.*;
 
@@ -1130,6 +1132,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       TestCase testCaseClone = new TestCase();
       BeanUtil.copyProperties(testCase, testCaseClone);
       testCaseClone.setId(null);
+      testCaseClone.setTitle(CloneFormatUtil.getCloneTitle(testCaseClone.getTitle()));
       testCaseList.add(testCaseClone);
     }
     // 批量克隆
@@ -1257,5 +1260,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     dto.setProjectId(projectId);
     return testCycleService.save(dto);
   }
+
+
 
 }

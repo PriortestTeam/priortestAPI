@@ -2,6 +2,7 @@ package com.hu.oneclick.server.user;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
@@ -12,14 +13,45 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
-import com.hu.oneclick.dao.*;
+import com.hu.oneclick.controller.req.RegisterBody;
+import com.hu.oneclick.dao.MasterIdentifierDao;
+import com.hu.oneclick.dao.RoleFunctionDao;
+import com.hu.oneclick.dao.RoomDao;
+import com.hu.oneclick.dao.SubUserProjectDao;
+import com.hu.oneclick.dao.SysRoleDao;
+import com.hu.oneclick.dao.SysUserBusinessDao;
+import com.hu.oneclick.dao.SysUserDao;
+import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.*;
-import com.hu.oneclick.model.domain.dto.*;
+import com.hu.oneclick.model.domain.MasterIdentifier;
+import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.domain.RoleFunction;
+import com.hu.oneclick.model.domain.Room;
+import com.hu.oneclick.model.domain.SubUserProject;
+import com.hu.oneclick.model.domain.SysRole;
+import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.domain.SysUserBusiness;
+import com.hu.oneclick.model.domain.SysUserOrder;
+import com.hu.oneclick.model.domain.SysUserToken;
+import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
+import com.hu.oneclick.model.domain.dto.AuthLoginUser;
+import com.hu.oneclick.model.domain.dto.SubUserDto;
+import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
+import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SystemConfigService;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -27,17 +59,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author qingyang
@@ -110,8 +134,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Resp<String> register(SysUser registerUser) {
+    public Resp<String> register(final RegisterBody registerBody) {
         try {
+            final SysUser registerUser = new SysUser();
+            BeanUtils.copyProperties(registerBody, registerUser);
 
             String email = registerUser.getEmail();
             if (StringUtils.isEmpty(email)) {
@@ -134,7 +160,7 @@ public class UserServiceImpl implements UserService {
                     redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
                     // mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
                     // "&params=" + linkStr);
-                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + email +
+                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
                             "&params=" + linkStr);
 
                     return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
@@ -178,7 +204,7 @@ public class UserServiceImpl implements UserService {
 
 //                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
 //                        "&params=" + linkStr);
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + email +
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
                         "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
@@ -188,7 +214,6 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -212,7 +237,6 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -347,16 +371,13 @@ public class UserServiceImpl implements UserService {
         return jwtUserServiceImpl.encryptPassword(password);
     }
 
-
     @Override
     public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
         if (StringUtils.isEmpty(activateAccountDto.getEmail())) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
-
         }
         //检查数据库是否已存在用户
         List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail());
-
         if (sysUsers.isEmpty()) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
         }
@@ -430,17 +451,10 @@ public class UserServiceImpl implements UserService {
         if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
             int activitiNumber = sysUser.getActivitiNumber() == null ? 0 : sysUser.getActivitiNumber();
             if (activitiNumber >= 1 && activitiNumber <= 3) {
-                Date activitiDate = sysUser.getActivitiDate();
-                long beginTime = sysUser.getExpireDate().getTime();
-                long endTime = new Date(System.currentTimeMillis()).getTime();
-                if (beginTime < endTime) {
-                    sysUser.setActivitiDate(activitiDate);
-                    sysUser.setActivitiNumber(activitiNumber + 1);
-                    long time = activitiDate.getTime() + secondTime * 24 * 60 * 60 * 1000;
-                    sysUser.setExpireDate(new Date(time));
-                } else {
-                    throw new BizException(SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getCode(), SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getValue());
-                }
+                final DateTime newExpireDate =
+                    cn.hutool.core.date.DateUtil.offsetDay(sysUser.getExpireDate(), 30);
+                sysUser.setActivitiNumber(activitiNumber + 1);
+                sysUser.setExpireDate(newExpireDate);
             } else {
                 throw new BizException(SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getCode(), SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getValue());
             }
@@ -516,9 +530,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> applyForAnExtension(String email) {
+        // 这里需要检测用户一些信息
+        final SysUser sysUser = sysUserDao.queryByEmail(email);
+        if (Objects.isNull(sysUser)) {
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.EMAIL_NOT_EXIST.getCode(),
+                SysConstantEnum.EMAIL_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
+        }
+        if (!"Trialer".equals(sysUser.getUserClass())) {
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_TRIALER_USER.getCode(),
+                SysConstantEnum.NOT_TRIALER_USER.getValue(), HttpStatus.BAD_REQUEST.value());
+        }
+        final int activeNumber = Objects.nonNull(sysUser.getActivitiNumber()) ? sysUser.getActivitiNumber() : 0;
+        if (activeNumber >= 3) {
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.TRIALER_LIMIT.getCode(),
+                SysConstantEnum.TRIALER_LIMIT.getValue(), HttpStatus.BAD_REQUEST.value());
+        }
+
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick申请延期", "http://124.71.142.223/#/deferred?email=" + email + "&params=" + linkStr);
+        mailService.sendSimpleMail(email, "OneClick申请延期", "http://43.139.159.146/#/deferred?email=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -526,7 +556,6 @@ public class UserServiceImpl implements UserService {
     public Resp<String> applyForAnExtensionIn(ActivateAccountDto activateAccountDto) {
         return activateAccount(activateAccountDto, OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION);
     }
-
 
     /**
      * 管理员生成token

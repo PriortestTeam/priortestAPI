@@ -161,15 +161,15 @@
                  JOIN test_cycle_join_test_case cy ON ca.id = cy.test_case_id
                  JOIN test_cycle tc on cy.test_cycle_id = tc.id
         WHERE ca.project_id = #{param1}
-          AND ca.test_version = #{param2}
-          and ca.test_env = #{param3}
+          AND ca.version = #{param2}
+          and ca.env = #{param3}
           and tc.title in (#{param4})
     </select>
     <select id="getTestCycleByProjectIdAndEvn" resultType="java.lang.String">
         SELECT `title`
         FROM test_cycle
         WHERE project_id = #{param1}
-          AND test_env = #{param2}
+          AND env = #{param2}
           and current_release = #{param3}
     </select>
 
