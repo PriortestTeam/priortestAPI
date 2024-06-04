@@ -38,6 +38,5 @@ public class VersionRequestDto {
     /**
      * 版本id
      */
-    @NotNull(message = "修改ID不能为空")
-    private Long id;
+   private Long id;
 }

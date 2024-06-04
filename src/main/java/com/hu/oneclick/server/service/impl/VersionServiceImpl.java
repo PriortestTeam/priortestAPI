@@ -35,8 +35,8 @@ public class VersionServiceImpl implements VersionService {
         }
         List<ReleaseManagement> list = versionDao.selectList(queryWrapper);
         if(CollectionUtil.isNotEmpty(list)) {
-            throw new BizException(SysConstantEnum.VERSION_HAVE_EXSIST.getCode(),
-                    SysConstantEnum.VERSION_HAVE_EXSIST.getValue(), HttpStatus.BAD_REQUEST.value());
+            throw new BizException(SysConstantEnum.VERSION_HAVE_EXIST.getCode(),
+                    SysConstantEnum.VERSION_HAVE_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
         }
 
         ReleaseManagement version = new ReleaseManagement();
@@ -46,19 +46,18 @@ public class VersionServiceImpl implements VersionService {
 
     @Override
     public void releaseModification(VersionRequestDto releaseModification) {
-        /*
+        // Validation on payload with modified record id
         if(releaseModification.getId() == null) {
-            throw new BizException(SysConstantEnum.VERSION_ID_NOT_EXSIST.getCode(),
-                    SysConstantEnum.VERSION_ID_NOT_EXSIST.getValue(), HttpStatus.BAD_REQUEST.value());
+            throw new BizException(SysConstantEnum.RECORD_ID_NOT_EXIST.getCode(),
+                    SysConstantEnum.RECORD_ID_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
         }
-        */
 
+        // get the existing record as per id, version, project id
         VersionDto versionDto = getRecordByIdAndVersion(releaseModification.getId(),releaseModification.getVersion(),releaseModification.getProjectId());
         if(versionDto == null){
             throw new BizException(SysConstantEnum.VERSION_PROJECT_NOT_MATCH.getCode(),
                     SysConstantEnum.VERSION_PROJECT_NOT_MATCH.getValue(), HttpStatus.BAD_REQUEST.value());
         }
-
         /*
         VersionDto versionDto = getVersion(releaseModification.getId());
         if(versionDto == null
