@@ -1,14 +1,12 @@
 package com.hu.oneclick.server.service.impl;
 
-import java.util.HashMap;
-
 import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.dao.TestCycleDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.server.service.RetrieveTestCycleAsTitleService;
 import lombok.NonNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,7 +26,8 @@ public class RetrieveTestCycleAsTitleServiceImpl implements RetrieveTestCycleAsT
         Long id = testCycleDao.getIdByTitle(title, projectId);
         TestCycleVo testCycleVo = new TestCycleVo();
         if (id == null) {
-            return new Resp.Builder<TestCycleVo>().setData(testCycleVo).ok();
+            return new Resp.Builder<TestCycleVo>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode()),
+                    SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
         }
         testCycleVo.setId(String.valueOf(id));
         return new Resp.Builder<TestCycleVo>().setData(testCycleVo).ok();
