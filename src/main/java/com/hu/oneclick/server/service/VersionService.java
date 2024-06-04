@@ -10,6 +10,8 @@ public interface VersionService {
 
     void releaseModification(VersionRequestDto releaseModification);
 
+    VersionDto getRecordByIdAndVersion(Long id, String version, Long projectId);
+
     VersionDto getVersion(Long version);
 
     List<VersionDto> getVersionList(VersionRequestDto releaseModification);

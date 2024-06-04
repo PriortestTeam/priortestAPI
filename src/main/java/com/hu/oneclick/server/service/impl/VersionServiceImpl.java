@@ -2,13 +2,12 @@ package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.util.StringUtil;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.dao.VersionDao;
-import com.hu.oneclick.model.domain.Feature;
 import com.hu.oneclick.model.domain.ReleaseManagement;
 import com.hu.oneclick.model.domain.dto.VersionDto;
 import com.hu.oneclick.model.domain.dto.VersionRequestDto;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -48,23 +46,46 @@ public class VersionServiceImpl implements VersionService {
 
     @Override
     public void releaseModification(VersionRequestDto releaseModification) {
-
+        /*
         if(releaseModification.getId() == null) {
             throw new BizException(SysConstantEnum.VERSION_ID_NOT_EXSIST.getCode(),
                     SysConstantEnum.VERSION_ID_NOT_EXSIST.getValue(), HttpStatus.BAD_REQUEST.value());
         }
+        */
+
+        VersionDto versionDto = getRecordByIdAndVersion(releaseModification.getId(),releaseModification.getVersion(),releaseModification.getProjectId());
+        if(versionDto == null){
+            throw new BizException(SysConstantEnum.VERSION_PROJECT_NOT_MATCH.getCode(),
+                    SysConstantEnum.VERSION_PROJECT_NOT_MATCH.getValue(), HttpStatus.BAD_REQUEST.value());
+        }
+
+        /*
         VersionDto versionDto = getVersion(releaseModification.getId());
         if(versionDto == null
                 || !versionDto.getVersion().equals(releaseModification.getVersion())) {
             throw new BizException(SysConstantEnum.VERSION_NOT_MATCH.getCode(),
                     SysConstantEnum.VERSION_NOT_MATCH.getValue(), HttpStatus.BAD_REQUEST.value());
         }
-
+        */
         ReleaseManagement db = new ReleaseManagement();
         BeanUtil.copyProperties(releaseModification, db);
         versionDao.updateById(db);
 
     }
+
+    @Override
+    public VersionDto getRecordByIdAndVersion(Long id, String version, Long projectId) {
+        QueryWrapper<ReleaseManagement> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", id).eq("version", version).eq("project_id", projectId);
+        ReleaseManagement releaseManagement = versionDao.selectOne(queryWrapper);
+        if (releaseManagement == null) {
+            return null;
+        }
+        VersionDto versionDto = new VersionDto();
+        BeanUtil.copyProperties(releaseManagement, versionDto);
+        return versionDto;
+    }
+
 
     @Override
     public VersionDto getVersion(Long version) {
