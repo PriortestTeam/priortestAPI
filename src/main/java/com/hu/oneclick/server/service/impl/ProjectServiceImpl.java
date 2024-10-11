@@ -8,6 +8,7 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
 import com.hu.oneclick.common.util.DateUtil;
+import com.hu.oneclick.common.util.PDFTableUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
@@ -21,6 +22,12 @@ import com.spire.xls.FileFormat;
 import com.spire.xls.Workbook;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -30,6 +37,7 @@ import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -280,6 +288,190 @@ public class ProjectServiceImpl implements ProjectService {
      */
     @Override
     public Resp<String> generate(SignOffDto signOffDto) {
+        if (StringUtils.isEmpty(signOffDto.getProjectId())) {
+            return new Resp.Builder<String>().setData("请选择一个项目").fail();
+        }
+        String realPath = dirPath;
+        File folder = new File(realPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        // 测试报告
+        String projectId = signOffDto.getProjectId();
+        Project project = this.queryById(projectId).getData();
+        List<Map<String, Object>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
+        int value = allTestCycle.size();
+        long count = allTestCycle.stream().filter(f -> String.valueOf(f.get("execute_status")).equals(String.valueOf(1))).count();
+        float testEx = (float) count / value;
+        long runStatus = allTestCycle.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(1))).count();
+        float testPass = (float) runStatus / count == 0 ? 1 : count;
+
+        String[][] reportTable = new String[][]{
+                {"项目",project.getTitle()},
+                {"测试环境",signOffDto.getEnv()},
+                {"测试版本",signOffDto.getVersion()},
+                {"编译URL",""},
+                {"在线报表",""},
+                {"全部测试用例",String.valueOf(value)},
+                {"测试执行率",String.format("%.1f", (testEx * 100)) + "%"},
+                {"测试通过率",String.format("%.1f", (testPass * 100)) + "%"},
+        };
+
+        //功能测试结果
+        Map<String, List<Map<String, Object>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category").toString()));
+        List<Map<String, Object>> function = caseCategory.get("功能") == null ? new ArrayList<>() : caseCategory.get("功能");
+        long runStatusPass = function.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(1))).count();
+        long runStatusFail = function.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(2))).count();
+
+        String[][] functionalReportTable = new String[][]{
+                {"测试用例",String.valueOf(function.size())},
+                {"没有执行",String.valueOf(function.size() - runStatusPass - runStatusFail)},
+                {"成功",String.valueOf(runStatusPass)},
+                {"失败",String.valueOf(runStatusFail)},
+        };
+
+        //性能测试结果
+        List<Map<String, Object>> performance = caseCategory.get("性能") == null ? new ArrayList<>() : caseCategory.get("性能");
+        long runStatusPassCs = performance.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(1))).count();
+        long runStatusFailCs = performance.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(2))).count();
+
+        String[][] performanceReportTable = new String[][]{
+                {"测试用例",String.valueOf(performance.size())},
+                {"没有执行",String.valueOf(performance.size() - runStatusPassCs - runStatusFailCs)},
+                {"成功",String.valueOf(runStatusPass)},
+                {"失败",String.valueOf(runStatusFailCs)},
+        };
+
+        //测试覆盖
+        Map<String, List<Map<String, Object>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module").toString()));
+        String[][] coverageReportTable = new String[feature.keySet().size()][];
+        int index = 0;
+        for (String featureId : feature.keySet()) {
+            List<Map<String, Object>> maps = feature.get(featureId);
+            coverageReportTable[index] = new String[]{featureId,String.valueOf(maps.size())};
+            index++;
+        }
+
+        //新缺陷
+        ArrayList<Issue> issuesList = new ArrayList<>();
+        for (Map<String, Object> map : allTestCycle) {
+            String testCaseId = map.get("test_case_id").toString();
+            String testCycleId = map.get("test_cycle_id").toString();
+            Issue issue = issueDao.queryCycleAndTest(testCaseId, testCycleId);
+            if (issue != null && issue.getIssueStatus() == "4" && "高".equals(issue.getPriority())) {
+                issuesList.add(issue);
+            }
+        }
+        long urgent = issuesList.stream().filter(f -> "高".equals(f.getPriority())).count();
+        long important = issuesList.stream().filter(f -> "中".equals(f.getPriority())).count();
+        long general = issuesList.stream().filter(f -> "低".equals(f.getPriority())).count();
+
+        String[][] issueRepostTable = new String[][]{
+                {"紧急", String.valueOf(urgent)},
+                {"重要", String.valueOf(important)},
+                {"一般", String.valueOf(general)},
+        };
+
+        //已知缺陷
+        List<Issue> allIssue = issueDao.findAll();
+        allIssue.removeAll(issuesList);
+        long haveUrgent = allIssue.stream().filter(f -> "高".equals(f.getPriority())).count();
+        long haveImportant = allIssue.stream().filter(f -> "中".equals(f.getPriority())).count();
+        long haveGeneral = allIssue.stream().filter(f -> "低".equals(f.getPriority())).count();
+
+        String[][] existedIssueReportTable = new String[][]{
+                {"紧急",String.valueOf(haveUrgent)},
+                {"重要",String.valueOf(haveImportant)},
+                {"一般",String.valueOf(haveGeneral)},
+        };
+
+        //测试周期列表
+        String testCycle = signOffDto.getTestCycle();
+        testCycle = testCycle.substring(testCycle.lastIndexOf("=") + 1);
+        List<String> testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, signOffDto.getEnv(), testCycle);
+        if (testCycleName.isEmpty()) {
+            return new Resp.Builder<String>().buildResult("没有查询到当前发布版本的测试周期");
+        }
+        String[][] testCycleReportTable = new String[testCycleName.size()][];
+        index = 0;
+        for (String testCycleNameOne : testCycleName) {
+            testCycleReportTable[index] = new String[]{testCycleNameOne," "};
+            index++;
+        }
+
+        //测试平台/设备
+        Map<String, List<Map<String, Object>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform").toString()));
+        String[][] platformReportTable = new String[platforms.keySet().size()][];
+        index = 0;
+        for (String platForm : platforms.keySet()) {
+            List<Map<String, Object>> maps = platforms.get(platForm);
+            platformReportTable[index] = new String[]{platForm,String.valueOf(maps.size())};
+        }
+
+        //签发
+        boolean flag = false;
+        long ex = runStatusPass + runStatusFail;
+        int size = function.size();
+        float pass = (float) runStatusPass / size;
+        if (size == ex) {
+            flag = true;
+        } else if (pass >= 0.95) {
+            flag = true;
+        } else if (issuesList.size() < 3) {
+            flag = true;
+        }
+
+        String[][] signOffReportTable = new String[][]{
+                {"签队团队",signOffDto.getFileUrl()},
+                {"状态",flag ? "通过" : "失败"},
+                {"日期",DateUtil.format(new Date())},
+                {"备注",""},
+        };
+
+        try {
+            PDFTableUtil pdfTable = new PDFTableUtil(dirPath);
+            pdfTable.generate(reportTable);
+
+            pdfTable.showText("功能测试结果");
+            pdfTable.generate(functionalReportTable);
+
+            pdfTable.showText("性能测试结果");
+            pdfTable.generate(performanceReportTable);
+
+            pdfTable.showText("测试覆盖");
+            pdfTable.generate(coverageReportTable);
+
+            pdfTable.showText("新缺陷");
+            pdfTable.generate(issueRepostTable);
+
+            pdfTable.showText("已知缺陷");
+            pdfTable.generate(existedIssueReportTable);
+
+            pdfTable.showText("测试周期列表");
+            pdfTable.generate(testCycleReportTable);
+
+            pdfTable.showText("测试平台/设备");
+            pdfTable.generate(platformReportTable);
+
+            pdfTable.showText("签发");
+            pdfTable.generate(signOffReportTable);
+
+            pdfTable.save();
+        } catch (IOException e) {
+            return new Resp.Builder<String>().setData(SysConstantEnum.SYS_ERROR.getValue()).fail();
+        }
+        return new Resp.Builder<String>().ok();
+    }
+
+    /**
+     * 检测生成pdf表
+     *
+     * @param signOffDto
+     * @return
+     */
+    @Override
+    public Resp<String> generate1(SignOffDto signOffDto) {
         try {
             if (StringUtils.isEmpty(signOffDto.getProjectId())) {
                 return new Resp.Builder<String>().setData("请选择一个项目").fail();
@@ -634,7 +826,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         return new Resp.Builder<String>().ok();
     }
-
 
     /**
      * 存储验收记录
