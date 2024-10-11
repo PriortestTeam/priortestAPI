@@ -22,7 +22,7 @@ public class PDFGenerateTest {
         signOffDto.setTestCycle("curentReleaseVersion=1");
         signOffDto.setProjectId("593988941040848898");
         signOffDto.setIssue("修改中,关闭");
-        signOffDto.setFileUrl("C:\\\\Users\\\\ywp\\\\Desktop\\\\image.png");
+        signOffDto.setFileUrl("C:\\Users\\ywp\\Desktop\\d2691895-c6e7-4661-9ea9-082c19f9121e.png");
         signOffDto.setVersion("3.0.0.0");
 
         Resp<String> resp = projectService.generate(signOffDto);
