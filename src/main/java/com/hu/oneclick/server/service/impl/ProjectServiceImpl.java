@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.MessagingException;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -457,8 +458,22 @@ public class ProjectServiceImpl implements ProjectService {
             pdfTable.showText("签发");
             pdfTable.generate(signOffReportTable);
 
-            pdfTable.save();
-        } catch (IOException e) {
+            String uuid = UUID.randomUUID().toString();
+            pdfTable.save(uuid);
+
+            //发送邮件
+            String desFilePathd = realPath + "/" + uuid + ".pdf";
+            AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
+            String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId());
+            String sendName = signOffId + project.getTitle() + signOffDto.getEnv() + signOffDto.getVersion() + ".pdf";
+
+            //存储签收邮件
+            saveSignOff(signOffId, userLoginInfo, signOffDto, project, desFilePathd, sendName);
+
+            mailService.sendAttachmentsMail(userLoginInfo.getUsername(), "OneClick验收结果", "请查收验收结果", desFilePathd, sendName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
             return new Resp.Builder<String>().setData(SysConstantEnum.SYS_ERROR.getValue()).fail();
         }
         return new Resp.Builder<String>().ok();

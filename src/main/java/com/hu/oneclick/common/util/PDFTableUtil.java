@@ -95,8 +95,7 @@ public class PDFTableUtil {
 
     }
 
-    public void save() throws IOException {
-        String uuid = UUID.randomUUID().toString();
+    public void save(String uuid) throws IOException {
         contentStream.close();
         document.save(dirPath + "/"+uuid+".pdf");
 //                document.save(dirPath + "/hello.pdf");
