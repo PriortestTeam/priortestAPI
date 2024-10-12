@@ -29,18 +29,24 @@ public class PDFTableUtil {
     private String dirPath;
 
     public PDFTableUtil(String dirPath) throws Exception {
+        this.dirPath = dirPath;
         document = new PDDocument();
-        InputStream is = ResourceLoader.class.getResourceAsStream("/fonts/simfang.ttf");
-        TTFParser parser = new TTFParser();
-        TrueTypeFont ttf = parser.parseEmbedded(is);
-        font = PDType0Font.load(document,ttf,true);
-
+        // Load the TrueType font from resources
+        try (InputStream is = ResourceLoader.class.getResourceAsStream("/fonts/simfang.ttf")) {
+            if (is == null) {
+                throw new IOException("Font file not found: /fonts/simfang.ttf");
+            }
+            TTFParser parser = new TTFParser();
+            TrueTypeFont ttf = parser.parseEmbedded(is);
+            font = PDType0Font.load(document, ttf, true);
+        } catch (IOException e) {
+            throw new IOException("Error loading font: " + e.getMessage(), e);
+        }
         page = new PDPage(PDRectangle.A4);
         document.addPage(page);
         contentStream = new PDPageContentStream(document, page);
         contentStream.setFont(font, 10);
         pageCount++;
-        this.dirPath = dirPath;
     }
 
     public void generate(String[][] datas) throws IOException {
