@@ -148,7 +148,7 @@
     </update>
 
     <select id="getTestCycleVersion" resultType="java.util.Map" parameterType="java.lang.String">
-        SELECT version, title
+        SELECT version, title,id
         FROM test_cycle
         WHERE project_id = #{projectId}
           AND env = #{env}
