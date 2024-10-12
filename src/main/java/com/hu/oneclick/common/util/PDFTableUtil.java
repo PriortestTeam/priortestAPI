@@ -10,10 +10,9 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.core.io.ResourceLoader;
 
-import java.io.*;
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public class PDFTableUtil {
@@ -31,7 +30,7 @@ public class PDFTableUtil {
 
     public PDFTableUtil(String dirPath) throws Exception {
         document = new PDDocument();
-        InputStream is = getClass().getClassLoader().getResourceAsStream("/fonts/simfang.ttf");
+        InputStream is = ResourceLoader.class.getResourceAsStream("/fonts/simfang.ttf");
         TTFParser parser = new TTFParser();
         TrueTypeFont ttf = parser.parseEmbedded(is);
         font = PDType0Font.load(document,ttf,true);

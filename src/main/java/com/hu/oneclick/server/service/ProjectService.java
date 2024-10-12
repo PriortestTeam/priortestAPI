@@ -34,8 +34,6 @@ public interface ProjectService {
 
     Resp<String> generate(SignOffDto signOffDto);
 
-    Resp<String> generate1(SignOffDto signOffDto);
-
     Resp<String> upload(MultipartFile file);
 
     /** 初始化仓库
