@@ -30,6 +30,7 @@ public class View extends AssignBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2648094842570049550L;
 
+    private Long id;
     /**
      * 关联项目id
      */

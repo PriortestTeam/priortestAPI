@@ -268,7 +268,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         //循环找父级
         treeAll.forEach(e -> {
             if (verifyParentId(e.getParentId())) {
-//                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
+                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
                 result.add(e);
             }
         });
@@ -281,13 +281,13 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
      * @param treeAll,parentId
      * @return
      */
-    private List<ViewTreeDto> childViewTreeRecursion(List<ViewTreeDto> treeAll, String id) {
+    private List<ViewTreeDto> childViewTreeRecursion(List<ViewTreeDto> treeAll, Long id) {
         List<ViewTreeDto> result = new ArrayList<>();
         treeAll.forEach(e -> {
             //取反
             if (!verifyParentId(e.getParentId())
-                    && e.getParentId().equals(id)) {
-//                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
+                    && e.getParentId().equals(""+id)) {
+                e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
                 result.add(e);
             }
         });
