@@ -17,12 +17,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,35 +82,62 @@ public class BeanSearchController {
             return new Resp.Builder<PageInfo<?>>().ok();
         }
 
+        List<List<OneFilter>> lst = new ArrayList<>();
+
         // 查询视图
-        View view = viewService.getById(viewId);
-        // 获取过滤条件
-        List<OneFilter> oneFilters = view.getOneFilters();
-        if (CollUtil.isEmpty(oneFilters)) {
+        View view1 = viewService.getById(viewId);
+
+        this.processAllFilter(view1, lst);
+
+        if (CollUtil.isEmpty(lst)) {
             return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(mapSearcher.searchAll(scopeClass, MapUtils.builder().build()))).ok();
         }
-        // 构建过滤参数参数
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put("P0.projectId", projectId);
-        params.put("P0.projectId-op", "eq");
-        for (int i = 0; i < oneFilters.size(); i++) {
-            params.put(StrUtil.format("A{}.{}", i, oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getSourceVal());
-            params.put(StrUtil.format("A{}.{}-op", i, oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getCondition());
-        }
-        // 参数增加逻辑关系
-        StringBuilder gexpr = new StringBuilder();
-        gexpr.append("P0&(");
-        gexpr.append("A0");
-        for (int i = 1; i < oneFilters.size(); i++) {
-            gexpr.append(oneFilters.get(i).getAndOr().equals("and") ? "&" : "|");
-            gexpr.append(StrUtil.format("A{}", i));
-        }
-        gexpr.append(")");
-        params.put("gexpr", gexpr.toString());
+        Map<String, Object> params = this.processParam(lst, projectId);
 
         List<Map<String, Object>> list = mapSearcher.searchAll(scopeClass, params);
         // 物理分页
         return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(list)).ok();
+    }
+
+    private Map<String, Object> processParam(List<List<OneFilter>> lst, String projectId){
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("P0.projectId", projectId);
+        params.put("P0.projectId-op", "eq");
+
+        // 参数增加逻辑关系
+        StringBuilder gexpr = new StringBuilder();
+        gexpr.append("P0");
+
+        int j =0;
+        for(List<OneFilter> oneFilters : lst){
+            gexpr.append("&(");
+            for (int i = 0; i < oneFilters.size(); i++) {
+                String fieldName = StrUtil.format("A_{}_{}", j, i);
+                params.put(StrUtil.format("{}.{}", fieldName,oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getSourceVal());
+                params.put(StrUtil.format("{}.{}-op",fieldName, oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getCondition());
+                if(i==0){
+                    gexpr.append(fieldName);
+                }else{
+                    gexpr.append(oneFilters.get(i).getAndOr().equals("and") ? "&" : "|");
+                    gexpr.append(fieldName);
+                }
+            }
+            gexpr.append(")");
+            j= j+1;
+        }
+        params.put("gexpr", gexpr.toString());
+
+        return params;
+    }
+    private void processAllFilter(View view, List<List<OneFilter>> lst){
+        if(StringUtils.isNotEmpty(view.getParentId()) && view.getLevel() > 0){
+            View tempView = viewService.getById(view.getParentId());
+            this.processAllFilter(tempView, lst);
+
+            lst.add(view.getOneFilters());
+        }else{
+            lst.add(view.getOneFilters());
+        }
     }
 
 }
