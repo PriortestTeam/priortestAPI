@@ -3,7 +3,7 @@ package com.hu.oneclick.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.hu.oneclick.model.annotation.Page;
-import com.hu.oneclick.model.domain.TestCycle;
+import com.hu.oneclick.model.entity.TestCycle;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import org.apache.ibatis.annotations.Param;
 

@@ -1,7 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.annotation.Page;
-import com.hu.oneclick.model.domain.Attachment;
+import com.hu.oneclick.model.entity.Attachment;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

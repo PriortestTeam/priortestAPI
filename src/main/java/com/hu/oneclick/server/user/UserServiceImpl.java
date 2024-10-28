@@ -24,17 +24,16 @@ import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.MasterIdentifier;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.RoleFunction;
-import com.hu.oneclick.model.domain.Room;
-import com.hu.oneclick.model.domain.SubUserProject;
-import com.hu.oneclick.model.domain.SysRole;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.SysUserBusiness;
-import com.hu.oneclick.model.domain.SysUserOrder;
-import com.hu.oneclick.model.domain.SysUserToken;
-import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.entity.Project;
+import com.hu.oneclick.model.entity.RoleFunction;
+import com.hu.oneclick.model.entity.Room;
+import com.hu.oneclick.model.entity.SubUserProject;
+import com.hu.oneclick.model.entity.SysRole;
+import com.hu.oneclick.model.entity.SysUser;
+import com.hu.oneclick.model.entity.SysUserBusiness;
+import com.hu.oneclick.model.entity.SysUserOrder;
+import com.hu.oneclick.model.entity.SysUserToken;
+import com.hu.oneclick.model.entity.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
@@ -50,7 +49,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -191,14 +189,14 @@ public class UserServiceImpl implements UserService {
             user.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION);
 
             //设置主账号识别号，用于子用户登录
-            MasterIdentifier masterIdentifier = masterIdentifierDao.queryOne();
-            masterIdentifier = Optional.ofNullable(masterIdentifier).orElse(new MasterIdentifier());
-            if (StringUtils.isEmpty(masterIdentifier.getId())) {
-                masterIdentifier.setId(RandomUtil.randomNumbers(8));
-                masterIdentifier.setFlag(0);
-                masterIdentifierDao.insert(masterIdentifier);
-            }
-            if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
+//            MasterIdentifier masterIdentifier = masterIdentifierDao.queryOne();
+//            masterIdentifier = Optional.ofNullable(masterIdentifier).orElse(new MasterIdentifier());
+//            if (StringUtils.isEmpty(masterIdentifier.getId())) {
+//                masterIdentifier.setId(RandomUtil.randomNumbers(8));
+//                masterIdentifier.setFlag(0);
+//                masterIdentifierDao.insert(masterIdentifier);
+//            }&& masterIdentifierDao.update(masterIdentifier.getId()) > 0
+            if (sysUserDao.insert(user) > 0 ) {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
@@ -696,7 +694,7 @@ public class UserServiceImpl implements UserService {
      *
      * @param masterId
      * @Param: [masterId]
-     * @return: java.util.List<com.hu.oneclick.model.domain.SysUser>
+     * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>
      * @Author: MaSiyi
      * @Date: 2021/12/15
      */

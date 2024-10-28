@@ -3,7 +3,7 @@
 <mapper namespace="com.hu.oneclick.dao.SysOperationAuthorityDao">
     <!--开启缓存-->
     <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" />
-    <resultMap type="com.hu.oneclick.model.domain.SysOperationAuthority" id="SysOperationAuthorityMap">
+    <resultMap type="com.hu.oneclick.model.entity.SysOperationAuthority" id="SysOperationAuthorityMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="markName" column="mark_name" jdbcType="VARCHAR"/>
         <result property="markNameDesc" column="mark_name_desc" jdbcType="VARCHAR"/>

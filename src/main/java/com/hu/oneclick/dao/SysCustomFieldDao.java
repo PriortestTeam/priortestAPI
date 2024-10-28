@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.SysCustomField;
+import com.hu.oneclick.model.entity.SysCustomField;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

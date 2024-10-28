@@ -1,33 +1,19 @@
 package com.hu.oneclick.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.ProjectSignOff;
 import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
-import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
-import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
-import com.hu.oneclick.server.service.AttachmentService;
-import com.hu.oneclick.server.service.CustomFieldsService;
-import com.hu.oneclick.server.service.ProjectService;
-import com.hu.oneclick.server.service.ProjectSignOffService;
-import com.hu.oneclick.server.service.SysCustomFieldService;
-import com.hu.oneclick.server.service.TestCaseService;
-import com.hu.oneclick.server.service.TestCycleService;
-import com.hu.oneclick.server.service.UserProjectService;
+import com.hu.oneclick.model.entity.ProjectSignOff;
+import com.hu.oneclick.model.param.SignOffParam;
+import com.hu.oneclick.server.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +25,6 @@ import java.util.Map;
 @RequestMapping("signOff")
 @Api(tags = "验收")
 public class SignOffController {
-
     @Autowired
     private ProjectService projectService;
     @Autowired
@@ -56,7 +41,6 @@ public class SignOffController {
     UserProjectService userProjectService;
     @Autowired
     CustomFieldsService customFieldsService;
-
 
     @GetMapping("/getProjectEnv")
     public Resp<List<CustomFieldPossBileDto>> getProjectEnv() {
@@ -83,8 +67,12 @@ public class SignOffController {
     @PostMapping("/generate")
     @ApiOperation("生成pdf文档")
     public Resp<String> generate(@RequestBody SignOffDto signOffDto) {
+//    public Resp<String> generate(@RequestBody SignOffParam signOffParam) {
+//        return projectService.generate(signOffParam);
         return projectService.generate(signOffDto);
+//        return new Resp<>();
     }
+
 
     @PostMapping("/upload")
     @ApiOperation("文件上传")

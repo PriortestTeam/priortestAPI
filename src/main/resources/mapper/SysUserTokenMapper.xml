@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SysUserTokenDao">
-    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysUserToken">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.SysUserToken">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="user_id" jdbcType="VARCHAR" property="user_id"/>
         <result column="token_name" jdbcType="VARCHAR" property="token_name"/>
@@ -29,13 +29,13 @@
         from sys_user_token sys_user_token
         where sys_user_token.id = #{id,jdbcType=INTEGER}
     </select>
-    <select id="selectByUserId" resultType="com.hu.oneclick.model.domain.SysUserToken"  parameterType="java.lang.String" >
+    <select id="selectByUserId" resultType="com.hu.oneclick.model.entity.SysUserToken" parameterType="java.lang.String" >
       select
       <include refid="Base_Column_List"/>
       from sys_user_token sys_user_token
       where sys_user_token.user_id = #{user_id,jdbcType=VARCHAR}
     </select>
-    <select id="selectByTokenValue" resultType="com.hu.oneclick.model.domain.SysUserToken" parameterType="java.lang.String"  >
+    <select id="selectByTokenValue" resultType="com.hu.oneclick.model.entity.SysUserToken" parameterType="java.lang.String"  >
         select *
         from sys_user_token
         where token_value = #{token_value}
@@ -45,7 +45,7 @@
         from sys_user_token
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserToken"
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.SysUserToken"
             useGeneratedKeys="true">
         insert into sys_user_token (user_id, token_name, token_value,
                                     expiration_time, create_time, is_del,
@@ -55,7 +55,7 @@
                 #{status,jdbcType=BOOLEAN}, #{apiTimes,jdbcType=BIGINT}, #{createId,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
-            parameterType="com.hu.oneclick.model.domain.SysUserToken" useGeneratedKeys="true">
+            parameterType="com.hu.oneclick.model.entity.SysUserToken" useGeneratedKeys="true">
         insert into sys_user_token
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="user_id != null">
@@ -116,7 +116,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysUserToken">
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.SysUserToken">
         update sys_user_token
         <set>
             <if test="user_id != null">
@@ -149,7 +149,7 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysUserToken">
+    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.entity.SysUserToken">
         update sys_user_token
         set user_id         = #{user_id,jdbcType=VARCHAR},
             token_name      = #{token_name,jdbcType=VARCHAR},
@@ -165,7 +165,7 @@
     <update id="decreaseApiTimes" parameterType="java.lang.Integer">
         UPDATE sys_user_token set api_times=api_times-1 WHERE id = #{id}
     </update>
-    <select id="selectByUserIdAndToken" resultType="com.hu.oneclick.model.domain.SysUserToken" parameterType="java.lang.String"  >
+    <select id="selectByUserIdAndToken" resultType="com.hu.oneclick.model.entity.SysUserToken" parameterType="java.lang.String"  >
         select
         <include refid="Base_Column_List"/>
         from sys_user_token sys_user_token

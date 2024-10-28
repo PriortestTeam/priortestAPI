@@ -1,7 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.hu.oneclick.model.domain.View;
+import com.hu.oneclick.model.entity.View;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import org.apache.ibatis.annotations.Param;
 
@@ -98,7 +98,7 @@ public interface ViewDao extends BaseMapper<View> {
      * 通过ID查询单条数据
      *
      * @Param: [id, masterId]
-     * @return: com.hu.oneclick.model.domain.View
+     * @return: com.hu.oneclick.model.entity.View
      * @Author: MaSiyi
      * @Date: 2021/12/22
      */

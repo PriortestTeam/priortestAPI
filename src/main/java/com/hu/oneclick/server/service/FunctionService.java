@@ -1,6 +1,6 @@
 package com.hu.oneclick.server.service;
 
-import com.hu.oneclick.model.domain.SysFunction;
+import com.hu.oneclick.model.entity.SysFunction;
 
 import java.util.List;
 

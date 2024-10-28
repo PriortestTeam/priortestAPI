@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.IssueJoinTestCaseDao">
 
-    <resultMap type="com.hu.oneclick.model.domain.IssueJoinTestCase" id="IssueJoinTestCaseMap">
+    <resultMap type="com.hu.oneclick.model.entity.IssueJoinTestCase" id="IssueJoinTestCaseMap">
         <result property="issueId" column="issue_id" jdbcType="VARCHAR"/>
         <result property="testCaseId" column="test_case_id" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <select id="queryBindCaseList" resultType="com.hu.oneclick.model.domain.Issue">
+    <select id="queryBindCaseList" resultType="com.hu.oneclick.model.entity.Issue">
         select
             t.title as testCaseTitle,
             tc.title as testCycleTitle

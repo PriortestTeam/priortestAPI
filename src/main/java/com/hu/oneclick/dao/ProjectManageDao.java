@@ -1,7 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.hu.oneclick.model.domain.ProjectManage;
+import com.hu.oneclick.model.entity.ProjectManage;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

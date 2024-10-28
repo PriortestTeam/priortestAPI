@@ -1,6 +1,6 @@
 import com.hu.oneclick.OneClickApplication;
 import com.hu.oneclick.dao.SysUserDao;
-import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.entity.SysUser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

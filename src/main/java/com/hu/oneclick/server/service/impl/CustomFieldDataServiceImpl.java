@@ -7,9 +7,9 @@ import com.hu.oneclick.dao.CustomFieldDataDao;
 import com.hu.oneclick.dao.SysCustomFieldDao;
 import com.hu.oneclick.dao.SysCustomFieldExpandDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
+import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.CustomFieldService;
 import org.springframework.stereotype.Service;
@@ -211,7 +211,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      *
      * @param id
      * @Param: [id]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomFieldData>
      * @Author: MaSiyi
      * @Date: 2021/12/28
      */
@@ -225,7 +225,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      *
      * @param id
      * @Param: [id]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomFieldData>
      * @Author: MaSiyi
      * @Date: 2021/12/28
      */
@@ -239,7 +239,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      *
      * @param id
      * @Param: [id]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomFieldData>
      * @Author: MaSiyi
      * @Date: 2021/12/28
      */
@@ -253,7 +253,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      *
      * @param id
      * @Param: [id]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomFieldData>
      * @Author: MaSiyi
      * @Date: 2021/12/28
      */
@@ -266,7 +266,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      * 插入公共值
      *
      * @Param: []
-     * @return: com.hu.oneclick.model.domain.CustomFieldData
+     * @return: com.hu.oneclick.model.entity.CustomFieldData
      * @Author: MaSiyi
      * @Date: 2021/12/27
      */
@@ -344,7 +344,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
      * @param scope
      * @param fieldName
      * @Param: [scope]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomField>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomField>
      * @Author: MaSiyi
      * @Date: 2022/1/4
      */

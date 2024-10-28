@@ -1,20 +1,17 @@
 package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.dao.UserCaseDao;
 import com.hu.oneclick.model.domain.dto.UserCaseDto;
-import com.hu.oneclick.model.domain.param.UserCaseParam;
+import com.hu.oneclick.model.param.UserCaseParam;
 import com.hu.oneclick.model.domain.vo.UserCaseVo;
 import com.hu.oneclick.server.service.UserCaseService;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

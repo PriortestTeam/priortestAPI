@@ -1,8 +1,8 @@
 package com.hu.oneclick.controller.user;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.SysUserOrder;
+import com.hu.oneclick.model.entity.SysUser;
+import com.hu.oneclick.model.entity.SysUserOrder;
 import com.hu.oneclick.server.user.UserOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -1,7 +1,7 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.ModifyRecord;
+import com.hu.oneclick.model.entity.ModifyRecord;
 import com.hu.oneclick.server.service.ModifyRecordsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

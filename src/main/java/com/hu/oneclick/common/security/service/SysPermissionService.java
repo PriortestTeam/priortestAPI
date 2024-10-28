@@ -1,11 +1,9 @@
 package com.hu.oneclick.common.security.service;
 
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
-import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import org.springframework.stereotype.Service;

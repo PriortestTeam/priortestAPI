@@ -1,7 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.SubUserProject;
-import com.hu.oneclick.model.domain.dto.SubUserDto;
+import com.hu.oneclick.model.entity.SubUserProject;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

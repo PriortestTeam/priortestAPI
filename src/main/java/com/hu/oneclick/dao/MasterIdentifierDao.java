@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.MasterIdentifier;
+import com.hu.oneclick.model.entity.MasterIdentifier;
 import org.apache.ibatis.annotations.Param;
 
 

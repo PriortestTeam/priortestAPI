@@ -12,9 +12,9 @@ import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.FeatureJoinSprintDao;
 import com.hu.oneclick.dao.SprintDao;
-import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.model.entity.Feature;
 import com.hu.oneclick.model.domain.dto.FeatureSaveDto;
-import com.hu.oneclick.model.domain.param.FeatureParam;
+import com.hu.oneclick.model.param.FeatureParam;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.FeatureService;
 import com.hu.oneclick.server.service.QueryFilterService;
@@ -151,7 +151,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //     * update feature custom
 //     *
 //     * @Param: [id]
-//     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.Feature>
+//     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.entity.Feature>
 //     * @Author: MaSiyi
 //     * @Date: 2021/12/28
 //     */

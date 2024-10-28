@@ -13,12 +13,12 @@ import com.hu.oneclick.dao.FieldTextDao;
 import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.CustomField;
-import com.hu.oneclick.model.domain.FieldDropDown;
-import com.hu.oneclick.model.domain.FieldRadio;
-import com.hu.oneclick.model.domain.FieldRichText;
-import com.hu.oneclick.model.domain.FieldText;
-import com.hu.oneclick.model.domain.ViewDownChildParams;
+import com.hu.oneclick.model.entity.CustomField;
+import com.hu.oneclick.model.entity.FieldDropDown;
+import com.hu.oneclick.model.entity.FieldRadio;
+import com.hu.oneclick.model.entity.FieldRichText;
+import com.hu.oneclick.model.entity.FieldText;
+import com.hu.oneclick.model.entity.ViewDownChildParams;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.server.service.CustomFieldService;
@@ -395,7 +395,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
      * 添加视图字段集合
      *
      * @Param: [cla]
-     * @return: com.hu.oneclick.model.domain.ViewDownChildParams
+     * @return: com.hu.oneclick.model.entity.ViewDownChildParams
      * @Author: MaSiyi
      * @Date: 2021/11/26
      */

@@ -8,17 +8,17 @@ package com.hu.oneclick.common.enums;
  */
 public enum ScopeEnum {
     // 项目
-    PROJECT("1000001", "project", "Project","com.hu.oneclick.model.domain.Project","projectServiceImpl"),
+    PROJECT("1000001", "project", "Project","com.hu.oneclick.model.entity.Project","projectServiceImpl"),
     // 故事
-    FEATURE("2000001", "feature", "Feature","com.hu.oneclick.model.domain.Feature","featureServiceImpl"),
+    FEATURE("2000001", "feature", "Feature","com.hu.oneclick.model.entity.Feature","featureServiceImpl"),
     // 测试用例
-    TEST_CASE("3000001", "testCase",  "TestCase", "com.hu.oneclick.model.domain.TestCase", "testCaseServiceImpl"),
+    TEST_CASE("3000001", "testCase",  "TestCase", "com.hu.oneclick.model.entity.TestCase", "testCaseServiceImpl"),
     // 测试周期
-    TEST_CYCLE("5000001", "testCycle",  "TestCycle", "com.hu.oneclick.model.domain.TestCycle", "testCycleServiceImpl"),
+    TEST_CYCLE("5000001", "testCycle",  "TestCycle", "com.hu.oneclick.model.entity.TestCycle", "testCycleServiceImpl"),
     // 缺陷
-    ISSUE("7000001", "issue",  "Issue", "com.hu.oneclick.model.domain.Issue", "issueServiceImpl"),
+    ISSUE("7000001", "issue",  "Issue", "com.hu.oneclick.model.entity.Issue", "issueServiceImpl"),
     // 迭代
-    SPRINT("8000001", "sprint",  "Sprint", "com.hu.oneclick.model.domain.Sprint", "sprintServiceImpl"),
+    SPRINT("8000001", "sprint",  "Sprint", "com.hu.oneclick.model.entity.Sprint", "sprintServiceImpl"),
     ;
 
     private String code;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SysUserOrderRecordDao">
-  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysUserOrderRecord">
+  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.SysUserOrderRecord">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="order_id" jdbcType="INTEGER" property="order_id" />
     <result column="original_price" jdbcType="DECIMAL" property="original_price" />
@@ -60,7 +60,7 @@
     delete from sys_user_order_record
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserOrderRecord" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.SysUserOrderRecord" useGeneratedKeys="true">
     insert into sys_user_order_record (order_id, original_price, discount_price,
       `status`, create_time, is_del,
       payment_time, payment_type, service_plan_duration,
@@ -74,7 +74,7 @@
       #{api_call_price,jdbcType=DECIMAL}, #{sub_scription,jdbcType=VARCHAR}, #{discount,jdbcType=DECIMAL},
       #{expenditure,jdbcType=DECIMAL}, #{invoice,jdbcType=BOOLEAN})
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserOrderRecord" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.SysUserOrderRecord" useGeneratedKeys="true">
     insert into sys_user_order_record
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="order_id != null">
@@ -183,7 +183,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysUserOrderRecord">
+  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.SysUserOrderRecord">
     update sys_user_order_record
     <set>
       <if test="order_id != null">
@@ -240,7 +240,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysUserOrderRecord">
+  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.entity.SysUserOrderRecord">
     update sys_user_order_record
     set order_id = #{order_id,jdbcType=INTEGER},
       original_price = #{original_price,jdbcType=DECIMAL},

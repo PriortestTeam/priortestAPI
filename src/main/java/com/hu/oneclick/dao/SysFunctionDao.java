@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.SysFunction;
+import com.hu.oneclick.model.entity.SysFunction;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

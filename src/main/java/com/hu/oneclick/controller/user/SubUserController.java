@@ -1,8 +1,8 @@
 package com.hu.oneclick.controller.user;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.SubUserProject;
+import com.hu.oneclick.model.entity.Project;
+import com.hu.oneclick.model.entity.SubUserProject;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.user.SubUserService;

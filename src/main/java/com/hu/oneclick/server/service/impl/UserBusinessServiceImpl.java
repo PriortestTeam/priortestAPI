@@ -1,8 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.dao.SysUserBusinessDao;
-import com.hu.oneclick.model.domain.SysFunction;
-import com.hu.oneclick.model.domain.SysUserBusiness;
+import com.hu.oneclick.model.entity.SysUserBusiness;
 import com.hu.oneclick.server.service.UserBusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

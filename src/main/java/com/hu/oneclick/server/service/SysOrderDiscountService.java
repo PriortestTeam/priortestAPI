@@ -1,7 +1,7 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.model.domain.dto.SysOrderDiscountDto;
 
 import java.math.BigDecimal;

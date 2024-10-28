@@ -1,17 +1,12 @@
 package com.hu.oneclick.controller.user;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.SysUserOrder;
-import com.hu.oneclick.model.domain.SysUserOrderRecord;
+import com.hu.oneclick.model.entity.SysUserOrderRecord;
 import com.hu.oneclick.server.user.SysUserOrderRecordService;
-import com.hu.oneclick.server.user.UserOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

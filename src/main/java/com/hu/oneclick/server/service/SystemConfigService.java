@@ -1,7 +1,7 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SystemConfig;
+import com.hu.oneclick.model.entity.SystemConfig;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public interface SystemConfigService {
     /** 增
      * @Param: [systemConfig]
-     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.TestCase>
+     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.entity.TestCase>
      * @Author: MaSiyi
      * @Date: 2021/10/11
      */
@@ -69,7 +69,7 @@ public interface SystemConfigService {
 
     /** 查所有ui
      * @Param: []
-     * @return: java.util.List<com.hu.oneclick.model.domain.SystemConfig>
+     * @return: java.util.List<com.hu.oneclick.model.entity.SystemConfig>
      * @Author: MaSiyi
      * @Date: 2021/12/27
      */

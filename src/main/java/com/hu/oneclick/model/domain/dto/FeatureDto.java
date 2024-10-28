@@ -1,7 +1,7 @@
 package com.hu.oneclick.model.domain.dto;
 
 import com.alibaba.fastjson.JSONArray;
-import com.hu.oneclick.model.domain.Feature;
+import com.hu.oneclick.model.entity.Feature;
 import lombok.Data;
 
 /**

@@ -1,9 +1,8 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.Project;
+import com.hu.oneclick.model.entity.Project;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
-import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SysCustomFieldService;
 import com.hu.oneclick.server.service.ViewService;

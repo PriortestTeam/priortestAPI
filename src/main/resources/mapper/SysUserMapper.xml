@@ -5,7 +5,7 @@
     <!--开启缓存-->
     <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
 
-    <resultMap type="com.hu.oneclick.model.domain.SysUser" id="SysUserMap">
+    <resultMap type="com.hu.oneclick.model.entity.SysUser" id="SysUserMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="email" column="email" jdbcType="VARCHAR"/>
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>

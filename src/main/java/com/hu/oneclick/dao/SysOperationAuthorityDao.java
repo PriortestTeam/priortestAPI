@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.SysOperationAuthority;
+import com.hu.oneclick.model.entity.SysOperationAuthority;
 
 import java.util.List;
 /**

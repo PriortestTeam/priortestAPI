@@ -1,13 +1,13 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.CustomFieldData;
-import com.hu.oneclick.model.domain.Feature;
-import com.hu.oneclick.model.domain.Issue;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.SysCustomField;
-import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.TestCycle;
+import com.hu.oneclick.model.entity.CustomFieldData;
+import com.hu.oneclick.model.entity.Feature;
+import com.hu.oneclick.model.entity.Issue;
+import com.hu.oneclick.model.entity.Project;
+import com.hu.oneclick.model.entity.SysCustomField;
+import com.hu.oneclick.model.entity.TestCase;
+import com.hu.oneclick.model.entity.TestCycle;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 
 import java.util.List;
@@ -87,7 +87,7 @@ public interface CustomFieldDataService {
      * 点击故事渲染自定义数据
      *
      * @Param: [id]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomFieldData>
      * @Author: MaSiyi
      * @Date: 2021/12/28
      */
@@ -97,7 +97,7 @@ public interface CustomFieldDataService {
      * 点击测试周期渲染自定义数据
      *
      * @Param: [id]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomFieldData>
      * @Author: MaSiyi
      * @Date: 2021/12/28
      */
@@ -107,7 +107,7 @@ public interface CustomFieldDataService {
      * 点击测试用例渲染自定义数据
      *
      * @Param: [id]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomFieldData>
      * @Author: MaSiyi
      * @Date: 2021/12/28
      */
@@ -117,7 +117,7 @@ public interface CustomFieldDataService {
      * 点击缺陷渲染自定义数据
      *
      * @Param: [id]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomFieldData>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomFieldData>
      * @Author: MaSiyi
      * @Date: 2021/12/28
      */
@@ -145,7 +145,7 @@ public interface CustomFieldDataService {
 
     /** 查询该用户下的该项目数据
      * @Param: [scope]
-     * @return: java.util.List<com.hu.oneclick.model.domain.CustomField>
+     * @return: java.util.List<com.hu.oneclick.model.entity.CustomField>
      * @Author: MaSiyi
      * @Date: 2022/1/4
      */

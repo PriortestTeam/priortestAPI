@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.IssueDao">
 
-    <resultMap type="com.hu.oneclick.model.domain.Issue" id="IssueMap">
+    <resultMap type="com.hu.oneclick.model.entity.Issue" id="IssueMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <!--        <result property="userId" column="user_id" jdbcType="INTEGER"/>-->
@@ -152,13 +152,13 @@
         where id = #{id}
     </update>
 
-    <select id="queryCycleAndTest" resultType="com.hu.oneclick.model.domain.Issue">
+    <select id="queryCycleAndTest" resultType="com.hu.oneclick.model.entity.Issue">
         SELECT *
         FROM issue
         where runcase_id = #{param1}
 
     </select>
-    <select id="findAll" resultType="com.hu.oneclick.model.domain.Issue">
+    <select id="findAll" resultType="com.hu.oneclick.model.entity.Issue">
         select * from issue
     </select>
 

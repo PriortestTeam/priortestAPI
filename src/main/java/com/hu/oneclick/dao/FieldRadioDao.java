@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.FieldRadio;
+import com.hu.oneclick.model.entity.FieldRadio;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

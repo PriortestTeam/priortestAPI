@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.TestCycleScheduleDao">
-  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.TestCycleSchedule">
+  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.TestCycleSchedule">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="schedule_model_id" jdbcType="INTEGER" property="scheduleModelId" />
     <result column="run_time" jdbcType="TIMESTAMP" property="runTime" />
@@ -32,13 +32,13 @@
     delete from test_cycle_schedule
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.TestCycleSchedule" useGeneratedKeys="true">
     insert into test_cycle_schedule (schedule_model_id, `run time`, run_status,
       test_cycle_id)
     values (#{scheduleModelId,jdbcType=INTEGER}, #{runTime,jdbcType=TIMESTAMP}, #{runStatus,jdbcType=VARCHAR},
       #{testCycleId,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.TestCycleSchedule" useGeneratedKeys="true">
     insert into test_cycle_schedule
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="scheduleModelId != null">
@@ -69,7 +69,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule">
+  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.TestCycleSchedule">
     update test_cycle_schedule
     <set>
       <if test="scheduleModelId != null">
@@ -87,7 +87,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.TestCycleSchedule">
+  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.entity.TestCycleSchedule">
     update test_cycle_schedule
     set schedule_model_id = #{scheduleModelId,jdbcType=INTEGER},
       `run time` = #{runTime,jdbcType=TIMESTAMP},

@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.SysCustomFieldExpand;
+import com.hu.oneclick.model.entity.SysCustomFieldExpand;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -84,7 +84,7 @@ public interface SysCustomFieldExpandDao {
 
     /** 获取用户自己添加的自定义系统字段
      * @Param: [userId, projectId]
-     * @return: java.util.List<com.hu.oneclick.model.domain.SysCustomFieldExpand>
+     * @return: java.util.List<com.hu.oneclick.model.entity.SysCustomFieldExpand>
      * @Author: MaSiyi
      * @Date: 2021/12/30
      */

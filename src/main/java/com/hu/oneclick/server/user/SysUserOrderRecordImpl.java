@@ -4,9 +4,9 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.dao.SysUserOrderRecordDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.SysUserOrder;
-import com.hu.oneclick.model.domain.SysUserOrderRecord;
+import com.hu.oneclick.model.entity.SysUser;
+import com.hu.oneclick.model.entity.SysUserOrder;
+import com.hu.oneclick.model.entity.SysUserOrderRecord;
 import com.hu.oneclick.server.service.SysOrderDiscountService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author MaSiyi

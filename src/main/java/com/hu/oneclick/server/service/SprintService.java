@@ -1,9 +1,9 @@
 package com.hu.oneclick.server.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.hu.oneclick.model.domain.Sprint;
+import com.hu.oneclick.model.entity.Sprint;
 import com.hu.oneclick.model.domain.dto.SprintSaveDto;
-import com.hu.oneclick.model.domain.param.SprintParam;
+import com.hu.oneclick.model.param.SprintParam;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package com.hu.oneclick.model.domain.dto;
 
-import com.hu.oneclick.model.domain.TestCase;
+import com.hu.oneclick.model.entity.TestCase;
 
 /**
  * @author qingyang

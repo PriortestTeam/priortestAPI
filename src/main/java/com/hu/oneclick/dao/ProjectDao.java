@@ -1,8 +1,8 @@
 package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.annotation.Page;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.entity.Project;
+import com.hu.oneclick.model.entity.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import org.apache.ibatis.annotations.Param;
@@ -134,7 +134,7 @@ public interface ProjectDao {
 
     /** 查询项目
      * @Param: [project]
-     * @return: java.util.List<com.hu.oneclick.model.domain.Project>
+     * @return: java.util.List<com.hu.oneclick.model.entity.Project>
      * @Author: MaSiyi
      * @Date: 2022/1/3
      */

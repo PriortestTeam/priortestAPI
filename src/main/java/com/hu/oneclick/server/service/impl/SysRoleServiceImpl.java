@@ -4,7 +4,7 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.SysRoleDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysRole;
+import com.hu.oneclick.model.entity.SysRole;
 import com.hu.oneclick.model.domain.dto.SysUserRoleDto;
 import com.hu.oneclick.server.service.SysRoleService;
 import org.springframework.stereotype.Service;
@@ -47,7 +47,7 @@ public class SysRoleServiceImpl implements SysRoleService {
      *
      * @param roleName
      * @Param: [roleName]
-     * @return: com.hu.oneclick.model.base.Resp<java.util.List < com.hu.oneclick.model.domain.SysUser>>
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List < com.hu.oneclick.model.entity.SysUser>>
      * @Author: MaSiyi
      * @Date: 2022/1/3
      */

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SysOrderDiscountDao">
-  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysOrderDiscount">
+  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.SysOrderDiscount">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="sub_scription" jdbcType="VARCHAR" property="subScription" />
     <result column="data_strorage" jdbcType="VARCHAR" property="dataStrorage" />
@@ -35,7 +35,7 @@
     delete from sys_order_discount
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysOrderDiscount" useGeneratedKeys="true">
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.SysOrderDiscount" useGeneratedKeys="true">
     insert into sys_order_discount (sub_scription, data_strorage, api_call, 
       normal_discount, create_time, update_time
       )
@@ -43,7 +43,7 @@
       #{normal_discount,jdbcType=DECIMAL}, #{create_time,jdbcType=TIMESTAMP}, #{update_time,jdbcType=TIMESTAMP}
       )
   </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysOrderDiscount" useGeneratedKeys="true">
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.SysOrderDiscount" useGeneratedKeys="true">
     insert into sys_order_discount
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="sub_scription != null">
@@ -86,7 +86,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysOrderDiscount">
+  <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.SysOrderDiscount">
     update sys_order_discount
     <set>
       <if test="sub_scription != null">
@@ -110,7 +110,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysOrderDiscount">
+  <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.entity.SysOrderDiscount">
     update sys_order_discount
     set sub_scription = #{sub_scription,jdbcType=VARCHAR},
       data_strorage = #{data_strorage,jdbcType=VARCHAR},

@@ -3,7 +3,7 @@
 <mapper namespace="com.hu.oneclick.dao.SysProjectPermissionDao">
     <!--开启缓存-->
     <cache-ref namespace="com.hu.oneclick.dao.ProjectDao"/>
-    <resultMap type="com.hu.oneclick.model.domain.SysProjectPermission" id="SysProjectPermissionMap">
+    <resultMap type="com.hu.oneclick.model.entity.SysProjectPermission" id="SysProjectPermissionMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="subUserId" column="sub_user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>

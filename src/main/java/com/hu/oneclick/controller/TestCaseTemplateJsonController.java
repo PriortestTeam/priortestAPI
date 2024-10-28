@@ -1,7 +1,7 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.TestCaseTemplateJson;
+import com.hu.oneclick.model.entity.TestCaseTemplateJson;
 import com.hu.oneclick.model.domain.dto.ImportTestCaseDto;
 import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCaseTemplateJsonService;

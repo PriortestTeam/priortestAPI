@@ -4,7 +4,7 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.dao.SystemConfigDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SystemConfig;
+import com.hu.oneclick.model.entity.SystemConfig;
 import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
      *
      * @param systemConfig
      * @Param: [systemConfig]
-     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.TestCase>
+     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.entity.TestCase>
      * @Author: MaSiyi
      * @Date: 2021/10/11
      */
@@ -132,7 +132,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
      * 查所有ui
      *
      * @Param: []
-     * @return: java.util.List<com.hu.oneclick.model.domain.SystemConfig>
+     * @return: java.util.List<com.hu.oneclick.model.entity.SystemConfig>
      * @Author: MaSiyi
      * @Date: 2021/12/27
      */
