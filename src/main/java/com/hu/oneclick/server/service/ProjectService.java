@@ -33,7 +33,6 @@ public interface ProjectService {
 
     Resp<String> getCloseProject(String id, String closeDesc);
 
-//    Resp<String> generate(SignOffParam signOffParam);
     Resp<String> generate(SignOffDto signOffDto);
 
     Resp<String> upload(MultipartFile file);

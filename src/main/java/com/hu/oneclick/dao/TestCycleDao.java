@@ -11,7 +11,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface TestCycleDao extends BaseMapper<TestCycle> {
-
+    default TestCycle getByIdAndProjectId(@Param("id") Long id, @Param("projectId") Long projectId) {
+        return new LambdaQueryChainWrapper<>(this)
+            .eq(TestCycle::getId, id)
+            .eq(TestCycle::getProjectId, projectId)
+            .last("LIMIT 1")
+            .one();
+    }
 
     TestCycle queryById(@Param("id") String id,@Param("masterId")  String masterId);
 
@@ -30,12 +36,5 @@ public interface TestCycleDao extends BaseMapper<TestCycle> {
 
     List<String> getTestCycleByProjectIdAndEvn(String projectId, String env, String testCycle);
 
-    default TestCycle getByIdAndProjectId(@Param("id") Long id, @Param("projectId") Long projectId) {
-        return new LambdaQueryChainWrapper<>(this)
-                .eq(TestCycle::getId, id)
-                .eq(TestCycle::getProjectId, projectId)
-                .last("LIMIT 1")
-                .one();
-    }
-
+    List<Map<String,Object>> queryTestCyclesWithCasesByConditions(Map<String,Object> conditions);
 }

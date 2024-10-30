@@ -1,6 +1,5 @@
 package com.hu.oneclick.controller;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
@@ -41,6 +40,8 @@ public class SignOffController {
     UserProjectService userProjectService;
     @Autowired
     CustomFieldsService customFieldsService;
+    @Autowired
+    PdfGenerateService pdfGenerateService;
 
     @GetMapping("/getProjectEnv")
     public Resp<List<CustomFieldPossBileDto>> getProjectEnv() {
@@ -66,11 +67,11 @@ public class SignOffController {
 
     @PostMapping("/generate")
     @ApiOperation("生成pdf文档")
-    public Resp<String> generate(@RequestBody SignOffDto signOffDto) {
-//    public Resp<String> generate(@RequestBody SignOffParam signOffParam) {
-//        return projectService.generate(signOffParam);
-        return projectService.generate(signOffDto);
-//        return new Resp<>();
+//    public Resp<String> generate(@RequestBody SignOffDto signOffDto) {
+    public Resp<String> generate1(@RequestBody SignOffParam signOffParam) {
+//        return projectService.generate(signOffDto);
+        pdfGenerateService.generatePdf(signOffParam);
+        return new Resp.Builder<String>().ok();
     }
 
 
