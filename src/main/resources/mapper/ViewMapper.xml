@@ -131,7 +131,7 @@
 
 
     <resultMap type="com.hu.oneclick.model.domain.dto.ViewTreeDto" id="queryViewTreeByIdMap">
-        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="id" column="id" jdbcType="BIGINT"/>
         <result property="createUserId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
