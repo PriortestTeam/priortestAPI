@@ -357,16 +357,23 @@ public class ApiAdpaderController {
         );
         if(CollectionUtil.isNotEmpty(issueListByRuncaseId)){
           return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode()),
-                  "测试用例 不存在项目中", HttpStatus.BAD_REQUEST.value());
+                  "测试用例不存在项目中", HttpStatus.BAD_REQUEST.value());
         }else{
           return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode()),
-                  "运行用例不存在", HttpStatus.NOT_FOUND.value());
+                  "缺陷不存在", HttpStatus.NOT_FOUND.value());
         }
       }
 
-      List<Issue> collect = issueList.stream().filter(issue -> !"关闭".equals(issue.getIssueStatus())).collect(Collectors.toList());
+     // List<Issue> collect = issueList.stream().filter(issue -> !"关闭".equals(issue.getIssueStatus())).collect(Collectors.toList());
 
-
+        List<Issue> collect = issueList.stream()
+                .filter(issue ->
+                        "新建".equals(issue.getIssueStatus()) ||
+                                "修改中".equals(issue.getIssueStatus()) ||
+                                "已分配".equals(issue.getIssueStatus()) ||
+                                "验证失败".equals(issue.getIssueStatus())
+                )
+                .collect(Collectors.toList());
 
       if(CollectionUtil.isEmpty(collect)){
         return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode()),
@@ -380,12 +387,11 @@ public class ApiAdpaderController {
         IssueVo v = new IssueVo();
         v.setId(c.getId());
         v.setTitle(c.getTitle());
+        v.setIssueStatus(c.getIssueStatus());
         idlist.add(v);
       });
       jsonObject.put("id", idlist);
-
       jsonObject.put("runcaseId", runCaseId);
-
 
       return new Resp.Builder<JSONObject>().setData(jsonObject).ok();
     } catch (Exception e) {
