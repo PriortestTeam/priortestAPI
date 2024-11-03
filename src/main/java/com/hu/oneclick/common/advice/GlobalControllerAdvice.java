@@ -24,12 +24,12 @@ public class GlobalControllerAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter methodParameter, MediaType mediaType,
-        Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest request, ServerHttpResponse response) {
+                                  Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest request, ServerHttpResponse response) {
 
         try {
             int httpStatus = 0;
             if (body instanceof Resp) {
-                Resp<?> resp = (Resp<?>)body;
+                Resp<?> resp = (Resp<?>) body;
                 httpStatus = resp.getHttpCode();
             }
 
