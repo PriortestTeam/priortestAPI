@@ -17,6 +17,7 @@ import com.hu.oneclick.model.entity.TestCycle;
 import com.hu.oneclick.model.entity.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
+import com.hu.oneclick.model.domain.vo.IssueVo;
 import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.service.RelationService;
@@ -43,6 +44,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 @RestController
 @RequestMapping("/apiAdpater")
@@ -346,6 +349,7 @@ public class ApiAdpaderController {
                       .eq(Issue::getProjectId, projectId)
                       .eq(Issue::getRuncaseId, runCaseId)
       );
+
       if(CollectionUtil.isEmpty(issueList)){
         List<Issue> issueListByRuncaseId = issueService.list(
                 new LambdaQueryWrapper<Issue>()
@@ -369,14 +373,20 @@ public class ApiAdpaderController {
                 SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value());
       }
       JSONObject jsonObject =new JSONObject();
-      List<Long> idlist = Lists.newArrayList();
+
+      List<IssueVo> idlist = Lists.newArrayList();
 //      List<Long> runid = Lists.newArrayList();
       collect.forEach(c->{
-        idlist.add(c.getId());
+        IssueVo v = new IssueVo();
+        v.setId(c.getId());
+        v.setTitle(c.getTitle());
+        idlist.add(v);
       });
       jsonObject.put("id", idlist);
 
       jsonObject.put("runcaseId", runCaseId);
+
+
       return new Resp.Builder<JSONObject>().setData(jsonObject).ok();
     } catch (Exception e) {
       log.error("返回缺陷列表" + e.getMessage(), e);
