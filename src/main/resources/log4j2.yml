@@ -9,8 +9,7 @@ Configuration:
             -   name: log.level.console
                 value: info
             -   name: log.path
-                #        value: /logs/oneclick
-                value: ${env:ONECLICK_PATH}
+                value: /logs/oneclick
             -   name: project.name
                 value: oneclick
             -   name: log.pattern

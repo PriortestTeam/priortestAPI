@@ -14,8 +14,7 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
 @SpringBootApplication
 @MapperScan("com.hu.oneclick.**.dao")
 @EnableScheduling
-//@EnableOpenApi
-@EnableWebMvc
+@EnableOpenApi
 @EnableSpringUtil
 public class OneClickApplication {
 
