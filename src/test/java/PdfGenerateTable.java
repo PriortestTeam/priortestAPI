@@ -16,7 +16,7 @@ public class PdfGenerateTable {
         };
 
         try {
-            PDFTableUtil pdfTableUtil = new PDFTableUtil("C:/Users/ywp/Desktop");
+            PDFTableUtil pdfTableUtil = new PDFTableUtil("/Users/air/Desktop");
             pdfTableUtil.generate(reportTable);
             pdfTableUtil.save("hello.pdf");
         } catch (Exception e) {

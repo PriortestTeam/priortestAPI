@@ -18,8 +18,8 @@ import java.util.Set;
 public class PDFTableUtil {
     private float xPos = 50;
     private float yPos = 830;
+    private float yCur = yPos;
     private float xLine = 380;
-    private float yCur = 0;
     private float cellWidth = 190, cellHeight = 20;
     private PDDocument document;
     private PDPage page;
@@ -56,18 +56,16 @@ public class PDFTableUtil {
         while (curRow < datas.length) {
             int endRow = Math.min((curRow + (int) (yPos / cellHeight)), datas.length);
             for (int i = 0; i <= (endRow - curRow); i++) {
-                float rowY;
-                if (i > 0) {
-                    rowY = yPos - ((cellHeight * i));// + (fontSize * 2));
-                    System.out.println("i: " + i + ", rowY: " + rowY);
-                } else {
-                    rowY = yPos - ((cellHeight * i));
-                    System.out.println("i: " + i + ", rowY: " + rowY);
+                if (i != 0) {
+                    if (i == 5 && datas[4][0].equals("在线报表")) {
+                        yCur = yCur - (cellHeight + (fontSize * 2));
+                    } else {
+                        yCur = yCur - cellHeight;
+                    }
                 }
-                contentStream.moveTo(xPos, rowY);
-                contentStream.lineTo(xLine, rowY);
+                contentStream.moveTo(xPos, yCur);
+                contentStream.lineTo(xLine, yCur);
                 contentStream.stroke();
-                yCur = rowY;
             }
             for (int i = 0; i < 3; i++) {
                 float xPoint = i == 0 ? 50 : (cellWidth + (xPos / 2)) * i;
