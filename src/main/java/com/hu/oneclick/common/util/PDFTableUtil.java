@@ -27,6 +27,7 @@ public class PDFTableUtil {
     private PDType0Font font;
     private int pageCount = 0;
     private String dirPath;
+    private int fontSize = 10;
 
     public PDFTableUtil(String dirPath) throws Exception {
         this.dirPath = dirPath;
@@ -45,7 +46,7 @@ public class PDFTableUtil {
         page = new PDPage(PDRectangle.A4);
         document.addPage(page);
         contentStream = new PDPageContentStream(document, page);
-        contentStream.setFont(font, 10);
+        contentStream.setFont(font, fontSize);
         pageCount++;
     }
 
@@ -103,10 +104,9 @@ public class PDFTableUtil {
 
     }
 
-    public void save(String uuid) throws IOException {
+    public void save(String name) throws IOException {
         contentStream.close();
-        document.save(dirPath + "/" + uuid + ".pdf");
-//                document.save(dirPath + "/hello.pdf");
+        document.save(dirPath + "/" + name);
         document.close();
     }
 

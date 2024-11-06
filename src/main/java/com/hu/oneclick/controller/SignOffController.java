@@ -3,7 +3,6 @@ package com.hu.oneclick.controller;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
-import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.entity.ProjectSignOff;
 import com.hu.oneclick.model.param.SignOffParam;
 import com.hu.oneclick.server.service.*;
@@ -21,7 +20,7 @@ import java.util.Map;
  * @date 2021/9/16 - 21:13
  */
 @RestController
-@RequestMapping("signOff")
+@RequestMapping("/signOff")
 @Api(tags = "验收")
 public class SignOffController {
     @Autowired
@@ -50,7 +49,7 @@ public class SignOffController {
 
 
     @GetMapping("/getProjectVersion")
-    public Resp<List<CustomFieldPossBileDto>> getProjectVersion()  {
+    public Resp<List<CustomFieldPossBileDto>> getProjectVersion() {
         return customFieldsService.getPossBile("version");
     }
 
@@ -68,10 +67,9 @@ public class SignOffController {
     @PostMapping("/generate")
     @ApiOperation("生成pdf文档")
 //    public Resp<String> generate(@RequestBody SignOffDto signOffDto) {
-    public Resp<String> generate1(@RequestBody SignOffParam signOffParam) {
+    public Object generate(@RequestBody SignOffParam signOffParam) {
 //        return projectService.generate(signOffDto);
-        pdfGenerateService.generatePdf(signOffParam);
-        return new Resp.Builder<String>().ok();
+        return pdfGenerateService.generatePdf(signOffParam);
     }
 
 
@@ -90,10 +88,9 @@ public class SignOffController {
 
     @GetMapping("/getPdf")
     @ApiOperation("返回当前项目下产生的PDF列表")
-    public  Resp< List<ProjectSignOff>> getPdf() {
+    public Resp<List<ProjectSignOff>> getPdf() {
         return signOffService.getPdf();
     }
-
 
 
     @GetMapping("/getUserAttachmentSign")
@@ -105,8 +102,7 @@ public class SignOffController {
 
     @GetMapping("getProjectListByUser")
     @ApiOperation("获取当前用户下title列表")
-    public Resp<List<LeftJoinDto>> getProjectListByUser()
-    {
+    public Resp<List<LeftJoinDto>> getProjectListByUser() {
         return userProjectService.getUserByProject();
     }
 }
