@@ -9,7 +9,7 @@ Configuration:
             -   name: log.level.console
                 value: info
             -   name: log.path
-                value: /logs/oneclick
+                value: storage
             -   name: project.name
                 value: oneclick
             -   name: log.pattern
