@@ -1,6 +1,4 @@
-import cn.hutool.core.bean.BeanUtil;
 import com.hu.oneclick.OneClickApplication;
-import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.param.SignOffParam;
 import com.hu.oneclick.server.service.PdfGenerateService;
@@ -12,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,10 +28,10 @@ public class PDFGenerateTest {
     public void testGeneratePDF() {
         SignOffParam signOffParam = new SignOffParam();
         signOffParam.setAutoGenerate(false);
-        signOffParam.setEnv("测试环境");
-        signOffParam.setTestCycle(List.of(new HashMap<>(){{
-            put("testCycleId","1845418189232611330");
-            put("testCycleTitle","克隆开发_Windows 11_3.0.0.0");
+        signOffParam.setEnv("测试");
+        signOffParam.setTestCycle(List.of(new HashMap<>() {{
+            put("testCycleId", "1845418189232611330");
+            put("testCycleTitle", "克隆开发_Windows 11_3.0.0.0");
         }}));
         signOffParam.setProjectId("858980122911313920");
         signOffParam.setIssue("修改中,关闭");

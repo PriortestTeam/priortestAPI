@@ -9,7 +9,7 @@ Configuration:
             -   name: log.level.console
                 value: info
             -   name: log.path
-                value: /logs/oneclick
+                value: ${env:ONECLICK_PATH}
             -   name: project.name
                 value: oneclick
             -   name: log.pattern
@@ -48,7 +48,7 @@ Configuration:
 
         Logger:
             -   name: com.hu.oneclick
-                level: trace
+                level: debug
                 additivity: false
                 AppenderRef:
                     -   ref: CONSOLE

@@ -56,7 +56,14 @@ public class PDFTableUtil {
         while (curRow < datas.length) {
             int endRow = Math.min((curRow + (int) (yPos / cellHeight)), datas.length);
             for (int i = 0; i <= (endRow - curRow); i++) {
-                float rowY = yPos - (cellHeight * i);
+                float rowY;
+                if (i > 0) {
+                    rowY = yPos - ((cellHeight * i));// + (fontSize * 2));
+                    System.out.println("i: " + i + ", rowY: " + rowY);
+                } else {
+                    rowY = yPos - ((cellHeight * i));
+                    System.out.println("i: " + i + ", rowY: " + rowY);
+                }
                 contentStream.moveTo(xPos, rowY);
                 contentStream.lineTo(xLine, rowY);
                 contentStream.stroke();
