@@ -14,10 +14,18 @@ public class PdfGenerateTable {
             {"测试执行率", ""},
             {"测试通过率", ""},
         };
+        String[][] reportTable1 = new String[][]{
+            {"项目1", "project.getTitle()"},
+            {"测试环境1", "signOffParam.getEnv()"},
+            {"测试通过率1", ""},
+        };
+
 
         try {
             PDFTableUtil pdfTableUtil = new PDFTableUtil("/Users/air/Desktop");
             pdfTableUtil.generate(reportTable);
+            pdfTableUtil.showText("test1");
+            pdfTableUtil.generate(reportTable1);
             pdfTableUtil.save("hello.pdf");
         } catch (Exception e) {
             e.printStackTrace();

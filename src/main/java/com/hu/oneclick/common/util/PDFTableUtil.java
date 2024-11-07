@@ -76,7 +76,7 @@ public class PDFTableUtil {
             }
             int inc = 0;
             for (int i = curRow; i < endRow; i++) {
-                for (int j = 0; j < datas[i].length; j++) {
+                for (int j = 0; j < 2; j++) {
                     float xText = (cellWidth * (j + 1)) / 2 + 50, yText = yPos - ((cellHeight * (inc + 1)) - 5);
                     xText = j == 0 ? xText - 50 : xText;
                     if (!datas[i][j].isEmpty() && hasEndWith(datas[i][j])) {
