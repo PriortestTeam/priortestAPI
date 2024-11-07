@@ -22,7 +22,7 @@ public class PdfGenerateTable {
 
 
         try {
-            PDFTableUtil pdfTableUtil = new PDFTableUtil("/Users/air/Desktop");
+            PDFTableUtil pdfTableUtil = new PDFTableUtil("C:/Users/ywp/Desktop");
             pdfTableUtil.generate(reportTable);
             pdfTableUtil.showText("test1");
             pdfTableUtil.generate(reportTable1);

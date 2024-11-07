@@ -12,6 +12,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -76,21 +77,26 @@ public class PDFTableUtil {
             }
             int inc = 0;
             for (int i = curRow; i < endRow; i++) {
+                System.out.println(yPos);
+                yPos = yPos - (cellHeight - 10);
+
                 for (int j = 0; j < 2; j++) {
-                    float xText = (cellWidth * (j + 1)) / 2 + 50, yText = yPos - ((cellHeight * (inc + 1)) - 5);
-                    xText = j == 0 ? xText - 50 : xText;
+                    float textX = (cellWidth * (j + 1)) / 2 + 50;//, yText = yPos - ((cellHeight * (inc + 1)) - 5);
+                    textX = j == 0 ? textX - 50 : textX;
                     if (!datas[i][j].isEmpty() && hasEndWith(datas[i][j])) {
                         PDImageXObject image = PDImageXObject.createFromFile(datas[i][j], document);
                         contentStream.drawImage(image, (cellWidth * j) + 50, yPos - (cellHeight * i) - 20, 120, 20);
                     } else {
                         contentStream.beginText();
-                        contentStream.newLineAtOffset(xText, yText);
+//                        contentStream.newLineAtOffset(textX, yText);
+                        contentStream.newLineAtOffset(textX, yPos);
                         contentStream.showText(datas[i][j]);
                         contentStream.endText();
                     }
                 }
                 inc++;
                 curRow++;
+                yPos = yPos - 10;
             }
             yPos = yCur;
             if (curRow < datas.length) {
@@ -116,7 +122,8 @@ public class PDFTableUtil {
     }
 
     private void setYHeight(float height) {
-        if (yPos < 800 || pageCount > 1) {
+//        if (yPos < 800 || pageCount > 1) {
+        if (pageCount == 1) {
             yPos = yCur -= height;
         }
     }
@@ -135,6 +142,10 @@ public class PDFTableUtil {
     }
 
     private boolean hasEndWith(String path) {
+        Path path1 = Path.of(path);
+        if (!path1.isAbsolute()) {
+            return false;
+        }
         Set<String> suffix = new HashSet<>();
         suffix.add(".jpg");
         suffix.add(".png");

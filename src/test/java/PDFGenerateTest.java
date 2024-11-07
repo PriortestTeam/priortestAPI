@@ -30,14 +30,14 @@ public class PDFGenerateTest {
         signOffParam.setAutoGenerate(false);
         signOffParam.setEnv("测试");
         signOffParam.setTestCycle(List.of(new HashMap<>() {{
-            put("testCycleId", "1845418189232611330");
+            put("testCycleId", "1847118594874318850");
             put("testCycleTitle", "克隆开发_Windows 11_3.0.0.0");
         }}));
         signOffParam.setProjectId("858980122911313920");
         signOffParam.setIssue("修改中,关闭");
         signOffParam.setFileUrl("C:\\Users\\ywp\\Desktop\\d2691895-c6e7-4661-9ea9-082c19f9121e.png");
         signOffParam.setVersion("1.0.0.0");
-        signOffParam.setCurrentRelease(1);
+        signOffParam.setCurrentRelease(-1);
 
         pdfGenerateService.generatePdf(signOffParam);
     }
