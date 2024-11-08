@@ -23,23 +23,23 @@
 
     <!--查询单个-->
     <select id="queryById" resultType="com.hu.oneclick.model.entity.TestCycle">
-        select t.id             as id,
-               t.create_user_id as userId,
-               t.project_id     as projectId,
-               t.title          as title,
-               t.status         as status,
-               t.run_status     as runStatus,
-               t.last_run_date  as lastRunDate,
-               t.last_modify    as lastModify,
-               t.test_version   as version,
-               t.create_time    as createTime,
-               t.update_time    as updateTime,
-               t.description    as description,
-               t.assign_to      as assignTo,
-               t.notifiy_list   as notifiyList
+        select t.id as id,
+        t.create_user_id as userId,
+        t.project_id as projectId,
+        t.title as title,
+        t.status as status,
+        t.run_status as runStatus,
+        t.last_run_date as lastRunDate,
+        t.last_modify as lastModify,
+        t.test_version as version,
+        t.create_time as createTime,
+        t.update_time as updateTime,
+        t.description as description,
+        t.assign_to as assignTo,
+        t.notifiy_list as notifiyList
         from test_cycle t
         where t.id = #{id}
-          and t.create_user_id = #{masterId}
+        and t.create_user_id = #{masterId}
     </select>
 
     <select id="queryTitles" resultType="com.hu.oneclick.model.domain.dto.LeftJoinDto">
@@ -152,33 +152,33 @@
         SELECT version, title, id
         FROM test_cycle
         WHERE project_id = #{projectId}
-          AND env = #{env}
-          AND version = #{version}
+        AND env = #{env}
+        AND version = #{version}
     </select>
 
     <select id="getAllTestCycle" resultType="java.util.Map">
         SELECT *
         FROM test_case ca
-                 JOIN test_cycle_join_test_case cy ON ca.id = cy.test_case_id
-                 JOIN test_cycle tc on cy.test_cycle_id = tc.id
+        JOIN test_cycle_join_test_case cy ON ca.id = cy.test_case_id
+        JOIN test_cycle tc on cy.test_cycle_id = tc.id
         WHERE ca.project_id = #{param1}
-          AND ca.version = #{param2}
-          and ca.env = #{param3}
-          and tc.title in (#{param4})
+        AND ca.version = #{param2}
+        and ca.env = #{param3}
+        and tc.title in (#{param4})
     </select>
     <select id="getTestCycleByProjectIdAndEvn" resultType="java.lang.String">
         SELECT `title`
         FROM test_cycle
         WHERE project_id = #{param1}
-          AND env = #{param2}
-          and current_release = #{param3}
+        AND env = #{param2}
+        and current_release = #{param3}
     </select>
 
     <select id="getIdByTitle" resultType="java.lang.Long">
         SELECT id
         FROM test_cycle
         WHERE title = #{title}
-          AND project_id = #{projectId}
+        AND project_id = #{projectId}
     </select>
 
     <select id="queryTestCyclesWithCasesByConditions" parameterType="map" resultType="map">
@@ -187,11 +187,11 @@
         tc.title AS test_cycle_title,
         tc.instance_count as test_cycle_instance,
         tc.allure_report_url,
+        tc.test_platform,
         tca.id AS test_case_id,
         tca.title AS test_case_title,
         tca.run_status,
         tca.module AS test_case_module,
-        tca.platform AS test_case_platform,
         tcjtc.execute_status
         FROM
         test_cycle tc

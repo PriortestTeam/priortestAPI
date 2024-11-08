@@ -128,9 +128,7 @@ public class PDFTableUtil {
     }
 
     private void setYHeight(float height) {
-        if (pageCount == 1) {
-            yPos = yCur -= height;
-        }
+        yPos = yCur -= height;
     }
 
     private void makePage() throws IOException {
@@ -139,8 +137,8 @@ public class PDFTableUtil {
         document.addPage(page);
         contentStream = new PDPageContentStream(document, page);
         contentStream.setFont(font, fontSize);
-        yPos = 800;
-        yCur = 800;
+        yPos = 830;
+        yCur = 830;
         pageCount++;
     }
 

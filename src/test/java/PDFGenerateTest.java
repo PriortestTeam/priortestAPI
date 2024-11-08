@@ -1,3 +1,6 @@
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.hu.oneclick.OneClickApplication;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
 import com.hu.oneclick.model.param.SignOffParam;
@@ -10,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.File;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,25 +30,38 @@ public class PDFGenerateTest {
     TestCycleService testCycleService;
 
     @Test
+    public void testGeneratePDFFromJsonFile() {
+        File file = new File("/Users/air/Desktop/test.json");
+        JSON json = JSONUtil.readJSON(file, Charset.defaultCharset());
+        SignOffParam signOffParam = JSONUtil.toBean((JSONObject) json, SignOffParam.class);
+        signOffParam.setFileUrl("/Users/air/Desktop/signoff.png");
+        pdfGenerateService.generatePdf(signOffParam);
+    }
+
+    @Test
     public void testGeneratePDF() {
         SignOffParam signOffParam = new SignOffParam();
         signOffParam.setAutoGenerate(false);
-        signOffParam.setEnv("测试");
+        signOffParam.setEnv("开发");
         signOffParam.setTestCycle(List.of(
             new HashMap<>() {{
-                put("testCycleId", "1847118594874318850");
-                put("testCycleTitle", "测试文章发布功能");
+                put("testCycleId", "1854844381899558914");
+                put("testCycleTitle", "开发_Windows 11_4.0.0.0");
             }},
             new HashMap<>() {{
-                put("testCycleId", "1849371232017887234");
-                put("testCycleTitle", "测试删除文章测试周期");
+                put("testCycleId", "1854845247826202625");
+                put("testCycleTitle", "开发周期验");
+            }},
+            new HashMap<>() {{
+                put("testCycleId", "1854850132047073282");
+                put("testCycleTitle", "克隆开发周期验");
             }}
         ));
-        signOffParam.setProjectId("858980122911313920");
+        signOffParam.setProjectId("867268378685870080");
         signOffParam.setIssue("修改中,关闭");
-        signOffParam.setFileUrl("C:\\Users\\ywp\\Desktop\\d2691895-c6e7-4661-9ea9-082c19f9121e.png");
-//        signOffParam.setFileUrl("/Users/air/Desktop/signoff.png");
-        signOffParam.setVersion("1.0.0.0");
+//        signOffParam.setFileUrl("C:\\Users\\ywp\\Desktop\\d2691895-c6e7-4661-9ea9-082c19f9121e.png");
+        signOffParam.setFileUrl("/Users/air/Desktop/signoff.png");
+        signOffParam.setVersion("4.0.0.0");
         signOffParam.setCurrentRelease(-1);
 
         pdfGenerateService.generatePdf(signOffParam);

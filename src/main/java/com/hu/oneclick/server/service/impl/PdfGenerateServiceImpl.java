@@ -70,6 +70,9 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
         }
 
         List<Map<String, Object>> cycles = testCycleDao.queryTestCyclesWithCasesByConditions(cond);
+        if (cycles.isEmpty()) {
+            return new Resp.Builder<String>().setData(SysConstantEnum.TEST_CASE_NOT_EXIST.getValue()).fail();
+        }
 
         int cycle_instance = cycles.stream().collect(Collectors.collectingAndThen(
             Collectors.toMap(k -> k.get("test_cycle_id"), v -> v.get("test_cycle_instance"), (oldValue, newValue) -> oldValue),
@@ -142,7 +145,7 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
 
         //测试平台
         idx = 0;
-        Map<String, List<Map<String, Object>>> platforms = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_case_platform").toString()));
+        Map<String, List<Map<String, Object>>> platforms = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_platform").toString()));
         String[][] platformReportTable = new String[platforms.keySet().size()][];
         for (var item : platforms.keySet()) {
             platformReportTable[idx] = new String[]{item, ""};
