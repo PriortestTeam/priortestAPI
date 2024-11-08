@@ -215,7 +215,7 @@
                 </where>
             </when>
             <otherwise>
-                WHERE tc.id IN (#{ids})
+                WHERE tc.id IN (${ids})
             </otherwise>
         </choose>
     </select>

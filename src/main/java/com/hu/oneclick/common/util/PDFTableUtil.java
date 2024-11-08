@@ -75,7 +75,6 @@ public class PDFTableUtil {
                 contentStream.lineTo(xPoint, yCur);
                 contentStream.stroke();
             }
-            int inc = 0;
             for (int i = curRow; i < endRow; i++) {
                 yPos = yPos - (cellHeight - 10);
                 for (int j = 0; j < 2; j++) {
@@ -101,7 +100,6 @@ public class PDFTableUtil {
                         }
                     }
                 }
-                inc++;
                 curRow++;
                 yPos = yPos - 10;
             }
@@ -147,11 +145,11 @@ public class PDFTableUtil {
     }
 
     private boolean hasEndWith(String path) {
-        Path path1 = Path.of(path);
-        if (!path1.isAbsolute()) {
+        if (!path.startsWith("/")) {
             return false;
         }
-        if (!path.startsWith("/")) {
+        Path path1 = Path.of(path);
+        if (!path1.isAbsolute()) {
             return false;
         }
         Set<String> suffix = new HashSet<>();
