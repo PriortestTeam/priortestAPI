@@ -35,7 +35,8 @@ public class PDFGenerateTest {
         }}));
         signOffParam.setProjectId("858980122911313920");
         signOffParam.setIssue("修改中,关闭");
-        signOffParam.setFileUrl("C:\\Users\\ywp\\Desktop\\d2691895-c6e7-4661-9ea9-082c19f9121e.png");
+//        signOffParam.setFileUrl("C:\\Users\\ywp\\Desktop\\d2691895-c6e7-4661-9ea9-082c19f9121e.png");
+        signOffParam.setFileUrl("/Users/air/Desktop/signoff.png");
         signOffParam.setVersion("1.0.0.0");
         signOffParam.setCurrentRelease(-1);
 

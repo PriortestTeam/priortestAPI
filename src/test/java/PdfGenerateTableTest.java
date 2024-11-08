@@ -1,7 +1,7 @@
 import com.hu.oneclick.common.util.PDFTableUtil;
 import org.junit.Test;
 
-public class PdfGenerateTable {
+public class PdfGenerateTableTest {
     @Test
     public void testGenerateTable() {
         String[][] reportTable = new String[][]{
@@ -22,7 +22,8 @@ public class PdfGenerateTable {
 
 
         try {
-            PDFTableUtil pdfTableUtil = new PDFTableUtil("C:/Users/ywp/Desktop");
+            PDFTableUtil pdfTableUtil = new PDFTableUtil("/Users/air/Desktop");
+            pdfTableUtil.showText("generate pdf title");
             pdfTableUtil.generate(reportTable);
             pdfTableUtil.showText("test1");
             pdfTableUtil.generate(reportTable1);

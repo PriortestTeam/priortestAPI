@@ -62,7 +62,6 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
         if (signOffParam.getCurrentRelease() <= 0) {
             String ids = signOffParam.getTestCycle().stream().map(e -> e.get("testCycleId")).collect(Collectors.joining(","));
             cond.put("ids", ids);
-            System.out.println(cond);
         } else {
             cond.put("project_id", signOffParam.getProjectId());
             cond.put("env", signOffParam.getEnv());
@@ -194,23 +193,23 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
             pdfTable.save(saveFile);
 
             //发送邮件
-//            String desFilePathd = dirPath + "/" + saveFile;
-//            AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
-//            String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId());
-//            String sendName = signOffId + project.getTitle() + signOffParam.getEnv() + signOffParam.getVersion() + ".pdf";
-//
-//            //存储签收邮件
-//            ProjectSignOff projectSignOff = new ProjectSignOff();
-//            projectSignOff.setId(signOffId);
-//            projectSignOff.setProjectId(project.getId());
-//            projectSignOff.setUserId(userLoginInfo.getSysUser().getId());
-//            projectSignOff.setCreateTime(new Date());
-//            projectSignOff.setFilePath(desFilePathd);
-//            projectSignOff.setFileName(sendName);
-//            projectSignOff.setCreateUser(userLoginInfo.getSysUser().getId());
-//            projectSignOffDao.insert(projectSignOff);
-//
-//            mailService.sendAttachmentsMail(userLoginInfo.getUsername(), "OneClick验收结果", "请查收验收结果", desFilePathd, sendName);
+            String desFilePathd = dirPath + "/" + saveFile;
+            AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
+            String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId());
+            String sendName = signOffId + project.getTitle() + signOffParam.getEnv() + signOffParam.getVersion() + ".pdf";
+
+            //存储签收邮件
+            ProjectSignOff projectSignOff = new ProjectSignOff();
+            projectSignOff.setId(signOffId);
+            projectSignOff.setProjectId(project.getId());
+            projectSignOff.setUserId(userLoginInfo.getSysUser().getId());
+            projectSignOff.setCreateTime(new Date());
+            projectSignOff.setFilePath(desFilePathd);
+            projectSignOff.setFileName(sendName);
+            projectSignOff.setCreateUser(userLoginInfo.getSysUser().getId());
+            projectSignOffDao.insert(projectSignOff);
+
+            mailService.sendAttachmentsMail(userLoginInfo.getUsername(), "OneClick验收结果", "请查收验收结果", desFilePathd, sendName);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage());
