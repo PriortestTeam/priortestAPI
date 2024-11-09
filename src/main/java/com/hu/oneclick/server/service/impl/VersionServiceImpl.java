@@ -8,7 +8,7 @@ import com.github.pagehelper.util.StringUtil;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.dao.VersionDao;
-import com.hu.oneclick.model.domain.ReleaseManagement;
+import com.hu.oneclick.model.entity.ReleaseManagement;
 import com.hu.oneclick.model.domain.dto.VersionDto;
 import com.hu.oneclick.model.domain.dto.VersionRequestDto;
 import com.hu.oneclick.server.service.VersionService;

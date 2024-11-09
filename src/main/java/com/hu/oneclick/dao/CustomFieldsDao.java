@@ -1,7 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.hu.oneclick.model.domain.CustomFields;
+import com.hu.oneclick.model.entity.CustomFields;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
 import com.hu.oneclick.model.domain.dto.CustomFieldsDto;

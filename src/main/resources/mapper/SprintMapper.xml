@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SprintDao">
 
-    <resultMap type="com.hu.oneclick.model.domain.Sprint" id="SprintMap">
+    <resultMap type="com.hu.oneclick.model.entity.Sprint" id="SprintMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="startDate" column="start_date" jdbcType="TIMESTAMP"/>
@@ -88,7 +88,7 @@
         </where>
 
     </select>
-    <select id="queryTitlesInFeatureId" resultType="com.hu.oneclick.model.domain.Sprint">
+    <select id="queryTitlesInFeatureId" resultType="com.hu.oneclick.model.entity.Sprint">
         select
                 s.id as id,
                s.title as title
@@ -100,7 +100,7 @@
             #{item.id}
         </foreach>
     </select>
-    <select id="querySprintList" resultType="com.hu.oneclick.model.domain.Sprint">
+    <select id="querySprintList" resultType="com.hu.oneclick.model.entity.Sprint">
         select
            id,
           title

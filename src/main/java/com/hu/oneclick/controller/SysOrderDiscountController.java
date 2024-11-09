@@ -1,8 +1,6 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.SysUserOrder;
 import com.hu.oneclick.model.domain.dto.SysOrderDiscountDto;
 import com.hu.oneclick.server.service.SysOrderDiscountService;
 import io.swagger.annotations.Api;

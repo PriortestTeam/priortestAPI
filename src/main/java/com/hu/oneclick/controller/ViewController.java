@@ -4,7 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.View;
+import com.hu.oneclick.model.entity.View;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.server.service.ViewService;

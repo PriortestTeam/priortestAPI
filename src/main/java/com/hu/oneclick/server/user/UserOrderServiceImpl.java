@@ -7,9 +7,9 @@ import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.dao.SysUserOrderDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.SysUserOrder;
-import com.hu.oneclick.model.domain.SysUserOrderRecord;
+import com.hu.oneclick.model.entity.SysUser;
+import com.hu.oneclick.model.entity.SysUserOrder;
+import com.hu.oneclick.model.entity.SysUserOrderRecord;
 import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -147,7 +147,7 @@ public class UserOrderServiceImpl implements UserOrderService {
      * 添加订单记录表
      *
      * @Param: [sysUserOrderRecord, sysUserOrder]
-     * @return: com.hu.oneclick.model.domain.SysUserOrderRecord
+     * @return: com.hu.oneclick.model.entity.SysUserOrderRecord
      * @Author: MaSiyi
      * @Date: 2021/10/20
      */

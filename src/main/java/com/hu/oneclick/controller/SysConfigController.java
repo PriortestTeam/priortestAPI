@@ -1,7 +1,7 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysConfig;
+import com.hu.oneclick.model.entity.SysConfig;
 import com.hu.oneclick.server.service.SysConfigService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

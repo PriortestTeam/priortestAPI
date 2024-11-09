@@ -5,7 +5,7 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.TestCaseTemplateJsonDAO;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.TestCaseTemplateJson;
+import com.hu.oneclick.model.entity.TestCaseTemplateJson;
 import com.hu.oneclick.server.service.TestCaseTemplateJsonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

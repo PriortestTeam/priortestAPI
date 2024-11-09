@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.CustomFieldDataDao">
-    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.CustomFieldData">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.CustomFieldData">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="project_id" jdbcType="BIGINT" property="projectId"/>
@@ -46,7 +46,7 @@
         from custom_field_data
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.CustomFieldData"
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.CustomFieldData"
             useGeneratedKeys="true">
         insert into custom_field_data (user_id, project_id, custom_field_id,
                                        scope_id, `scope`, field_name, value_data,
@@ -57,7 +57,7 @@
                 #{createTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=BOOLEAN}, #{createUserId,jdbcType=BIGINT})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
-            parameterType="com.hu.oneclick.model.domain.CustomFieldData" useGeneratedKeys="true">
+            parameterType="com.hu.oneclick.model.entity.CustomFieldData" useGeneratedKeys="true">
         insert into custom_field_data
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -118,7 +118,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.CustomFieldData">
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.CustomFieldData">
         update custom_field_data
         <set>
             <if test="userId != null">
@@ -149,7 +149,7 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.CustomFieldData">
+    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.entity.CustomFieldData">
         update custom_field_data
         set user_id         = #{userId,jdbcType=BIGINT},
             project_id      = #{projectId,jdbcType=BIGINT},

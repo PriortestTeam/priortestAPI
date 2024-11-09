@@ -1,10 +1,9 @@
 package com.hu.oneclick.model.domain.vo;
 
-import com.hu.oneclick.model.domain.CustomFileldLink;
+import com.hu.oneclick.model.entity.CustomFileldLink;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @ClassName CustomFileldLinkVo.java

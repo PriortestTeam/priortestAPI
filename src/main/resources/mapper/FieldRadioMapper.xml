@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.FieldRadioDao">
 
-    <resultMap type="com.hu.oneclick.model.domain.FieldRadio" id="FieldRadioMap">
+    <resultMap type="com.hu.oneclick.model.entity.FieldRadio" id="FieldRadioMap">
         <result property="customFieldId" column="custom_field_id" jdbcType="INTEGER"/>
         <result property="defaultValue" column="default_value" jdbcType="VARCHAR"/>
     </resultMap>
@@ -39,7 +39,7 @@
             </if>
         </where>
     </select>
-    <select id="queryFieldRadioById" resultType="com.hu.oneclick.model.domain.FieldRadio">
+    <select id="queryFieldRadioById" resultType="com.hu.oneclick.model.entity.FieldRadio">
         select r.custom_field_id as customFieldId,
                cf.type           as type,
                cf.create_time    as createTime,

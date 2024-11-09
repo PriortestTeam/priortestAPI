@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SysFunctionDao">
-    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysFunction">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.SysFunction">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="number" jdbcType="VARCHAR" property="number"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
@@ -27,7 +27,7 @@
         from sys_function
         where id = #{id,jdbcType=BIGINT}
     </select>
-    <select id="getRoleFunction" resultType="com.hu.oneclick.model.domain.SysFunction" parameterType="java.lang.String">
+    <select id="getRoleFunction" resultType="com.hu.oneclick.model.entity.SysFunction" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from sys_function
@@ -54,7 +54,7 @@
         from sys_function
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysFunction"
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.SysFunction"
             useGeneratedKeys="true">
         insert into sys_function (`number`, `name`, parent_number,
                                   url, component, `state`,
@@ -67,7 +67,7 @@
                 #{icon,jdbcType=VARCHAR}, #{deleteFlag,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
-            parameterType="com.hu.oneclick.model.domain.SysFunction" useGeneratedKeys="true">
+            parameterType="com.hu.oneclick.model.entity.SysFunction" useGeneratedKeys="true">
         insert into sys_function
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="number != null">
@@ -146,7 +146,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysFunction">
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.SysFunction">
         update sys_function
         <set>
             <if test="number != null">
@@ -188,7 +188,7 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysFunction">
+    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.entity.SysFunction">
         update sys_function
         set `number`      = #{number,jdbcType=VARCHAR},
             `name`        = #{name,jdbcType=VARCHAR},

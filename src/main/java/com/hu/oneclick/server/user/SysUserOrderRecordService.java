@@ -1,9 +1,8 @@
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUserOrderRecord;
+import com.hu.oneclick.model.entity.SysUserOrderRecord;
 
-import java.util.Date;
 import java.util.List;
 
 /**

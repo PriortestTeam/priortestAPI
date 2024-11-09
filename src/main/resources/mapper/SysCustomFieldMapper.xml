@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SysCustomFieldDao">
 
-    <resultMap type="com.hu.oneclick.model.domain.SysCustomField" id="SysCustomFieldMap">
+    <resultMap type="com.hu.oneclick.model.entity.SysCustomField" id="SysCustomFieldMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="fieldName" column="field_name" jdbcType="VARCHAR"/>
         <result property="fieldNameCn" column="field_name_cn" jdbcType="VARCHAR"/>

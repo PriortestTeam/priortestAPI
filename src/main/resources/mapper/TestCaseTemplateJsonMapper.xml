@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.TestCaseTemplateJsonDAO">
-  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.TestCaseTemplateJson">
+  <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.TestCaseTemplateJson">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="template_name" jdbcType="VARCHAR" property="templateName" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
@@ -10,7 +10,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.hu.oneclick.model.domain.TestCaseTemplateJson">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.hu.oneclick.model.entity.TestCaseTemplateJson">
     <result column="json_content" jdbcType="LONGVARCHAR" property="jsonContent" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -84,7 +84,7 @@
     where id = #{id,jdbcType=INTEGER}
   </delete>-->
 
-  <insert id="insertOne" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCaseTemplateJson" useGeneratedKeys="true">
+  <insert id="insertOne" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.TestCaseTemplateJson" useGeneratedKeys="true">
     insert into test_case_template_json (template_name, user_id, del_flag, 
       if_default, create_time, update_time, 
       json_content)
@@ -92,7 +92,7 @@
       #{ifDefault,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
       #{jsonContent,jdbcType=LONGVARCHAR})
   </insert>
- <!-- <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.TestCaseTemplateJson" useGeneratedKeys="true">
+ <!-- <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.TestCaseTemplateJson" useGeneratedKeys="true">
     insert into test_case_template_json
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="templateName != null">
@@ -201,7 +201,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <!--<update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.TestCaseTemplateJson">
+  <!--<update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.TestCaseTemplateJson">
     update test_case_template_json
     <set>
       <if test="templateName != null">
@@ -228,7 +228,7 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>-->
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hu.oneclick.model.domain.TestCaseTemplateJson">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.hu.oneclick.model.entity.TestCaseTemplateJson">
     update test_case_template_json
     set template_name = #{templateName,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=BIGINT},
@@ -239,7 +239,7 @@
       json_content = #{jsonContent,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <!--<update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.TestCaseTemplateJson">
+  <!--<update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.entity.TestCaseTemplateJson">
     update test_case_template_json
     set template_name = #{templateName,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=BIGINT},

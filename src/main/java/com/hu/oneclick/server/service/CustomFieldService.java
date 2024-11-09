@@ -1,11 +1,11 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.CustomField;
-import com.hu.oneclick.model.domain.FieldDropDown;
-import com.hu.oneclick.model.domain.FieldRadio;
-import com.hu.oneclick.model.domain.FieldRichText;
-import com.hu.oneclick.model.domain.FieldText;
+import com.hu.oneclick.model.entity.CustomField;
+import com.hu.oneclick.model.entity.FieldDropDown;
+import com.hu.oneclick.model.entity.FieldRadio;
+import com.hu.oneclick.model.entity.FieldRichText;
+import com.hu.oneclick.model.entity.FieldText;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface CustomFieldService {
 
     /** 获取用户定义字段
      * @Param: [customField]
-     * @return: com.hu.oneclick.model.base.Resp<java.util.List<com.hu.oneclick.model.domain.CustomField>>
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List<com.hu.oneclick.model.entity.CustomField>>
      * @Author: MaSiyi
      * @Date: 2021/11/18
      */

@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.RoleConstant;
@@ -13,10 +14,11 @@ import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
+import com.hu.oneclick.model.entity.*;
+import com.hu.oneclick.model.param.SignOffParam;
 import com.hu.oneclick.server.service.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -86,7 +88,7 @@ public class ProjectServiceImpl implements ProjectService {
      * update project customdata
      *
      * @Param: [id]
-     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.Project>
+     * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.entity.Project>
      * @Author: MaSiyi
      * @Date: 2021/12/28
      */
@@ -264,9 +266,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     /**
      * 检测生成pdf表
-     *
-     * @param signOffDto
-     * @return
      */
     @Override
     public Resp<String> generate(SignOffDto signOffDto) {
@@ -282,6 +281,7 @@ public class ProjectServiceImpl implements ProjectService {
         // 测试报告
         String projectId = signOffDto.getProjectId();
         Project project = this.queryById(projectId).getData();
+
         List<Map<String, Object>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
         int value = allTestCycle.size();
         long count = allTestCycle.stream().filter(f -> String.valueOf(f.get("execute_status")).equals(String.valueOf(1))).count();
@@ -439,11 +439,15 @@ public class ProjectServiceImpl implements ProjectService {
             pdfTable.showText("签发");
             pdfTable.generate(signOffReportTable);
 
-            String uuid = UUID.randomUUID().toString();
-            pdfTable.save(uuid);
+//            String uuid = UUID.randomUUID().toString();
+            // 20241012103012 - ProjectTitle_ENV_Version_Status_SignOff.pdf
+            var saveFile = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS").concat("-").
+                concat(project.getTitle()).concat("_").concat(signOffDto.getEnv()).concat("_").
+                concat(signOffDto.getVersion()).concat("_").concat(flag ? "通过_SignOff.pdf" : "失败_SignOff.pdf");
+            pdfTable.save(saveFile);
 
             //发送邮件
-            String desFilePathd = realPath + "/" + uuid + ".pdf";
+            String desFilePathd = realPath + "/" + saveFile;//uuid + ".pdf";
             AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
             String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId());
             String sendName = signOffId + project.getTitle() + signOffDto.getEnv() + signOffDto.getVersion() + ".pdf";
@@ -464,7 +468,7 @@ public class ProjectServiceImpl implements ProjectService {
      * 存储验收记录
      *
      * @Param: [signOffId, userLoginInfo, signOffDto, project, desFilePathd, sendName]
-     * @return: com.hu.oneclick.model.domain.ProjectSignOff
+     * @return: com.hu.oneclick.model.entity.ProjectSignOff
      * @Author: MaSiyi
      * @Date: 2022/1/17
      */
@@ -564,7 +568,7 @@ public class ProjectServiceImpl implements ProjectService {
      *
      * @param project
      * @Param: [project]
-     * @return: java.util.List<com.hu.oneclick.model.domain.Project>
+     * @return: java.util.List<com.hu.oneclick.model.entity.Project>
      * @Author: MaSiyi
      * @Date: 2021/12/31
      */

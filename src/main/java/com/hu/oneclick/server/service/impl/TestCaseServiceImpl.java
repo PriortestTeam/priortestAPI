@@ -24,11 +24,10 @@ import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.*;
-import com.hu.oneclick.model.domain.param.TestCaseParam;
+import com.hu.oneclick.model.param.TestCaseParam;
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
-import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
+import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.*;
 
@@ -128,7 +127,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * update testcase custom
    *
    * @Param: [id]
-   * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.domain.TestCase>
+   * @return: com.hu.oneclick.model.base.Resp<com.hu.oneclick.model.entity.TestCase>
    * @Author: MaSiyi
    * @Date: 2021/12/28
    */

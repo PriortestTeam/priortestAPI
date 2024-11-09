@@ -12,14 +12,15 @@ import org.springframework.core.io.ResourceLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
 public class PDFTableUtil {
     private float xPos = 50;
     private float yPos = 830;
+    private float yCur = yPos;
     private float xLine = 380;
-    private float yCur = 0;
     private float cellWidth = 190, cellHeight = 20;
     private PDDocument document;
     private PDPage page;
@@ -27,6 +28,7 @@ public class PDFTableUtil {
     private PDType0Font font;
     private int pageCount = 0;
     private String dirPath;
+    private int fontSize = 10;
 
     public PDFTableUtil(String dirPath) throws Exception {
         this.dirPath = dirPath;
@@ -45,7 +47,7 @@ public class PDFTableUtil {
         page = new PDPage(PDRectangle.A4);
         document.addPage(page);
         contentStream = new PDPageContentStream(document, page);
-        contentStream.setFont(font, 10);
+        contentStream.setFont(font, fontSize);
         pageCount++;
     }
 
@@ -55,11 +57,16 @@ public class PDFTableUtil {
         while (curRow < datas.length) {
             int endRow = Math.min((curRow + (int) (yPos / cellHeight)), datas.length);
             for (int i = 0; i <= (endRow - curRow); i++) {
-                float rowY = yPos - (cellHeight * i);
-                contentStream.moveTo(xPos, rowY);
-                contentStream.lineTo(xLine, rowY);
+                if (i != 0) {
+                    if (i == 5 && datas[4][0].equals("在线报表")) {
+                        yCur = yCur - (cellHeight + (fontSize * (datas[4][1].split(",").length)));
+                    } else {
+                        yCur = yCur - cellHeight;
+                    }
+                }
+                contentStream.moveTo(xPos, yCur);
+                contentStream.lineTo(xLine, yCur);
                 contentStream.stroke();
-                yCur = rowY;
             }
             for (int i = 0; i < 3; i++) {
                 float xPoint = i == 0 ? 50 : (cellWidth + (xPos / 2)) * i;
@@ -68,23 +75,33 @@ public class PDFTableUtil {
                 contentStream.lineTo(xPoint, yCur);
                 contentStream.stroke();
             }
-            int inc = 0;
             for (int i = curRow; i < endRow; i++) {
-                for (int j = 0; j < datas[i].length; j++) {
-                    float xText = (cellWidth * (j + 1)) / 2 + 50, yText = yPos - ((cellHeight * (inc + 1)) - 5);
-                    xText = j == 0 ? xText - 50 : xText;
-                    if (!datas[i][j].isEmpty() && hasEndWith(datas[i][j])) {
+                yPos = yPos - (cellHeight - 10);
+                for (int j = 0; j < 2; j++) {
+                    float textX = (cellWidth * (j + 1)) / 2 + 50;
+                    textX = j == 0 ? textX - 50 : textX;
+                    if (j == 1 && !datas[i][j].isEmpty() && hasEndWith(datas[i][j])) {
                         PDImageXObject image = PDImageXObject.createFromFile(datas[i][j], document);
-                        contentStream.drawImage(image, (cellWidth * j) + 50, yPos - (cellHeight * i) - 20, 120, 20);
+                        contentStream.drawImage(image, (cellWidth * j) + 50, yPos - 10, 120, 20);
                     } else {
-                        contentStream.beginText();
-                        contentStream.newLineAtOffset(xText, yText);
-                        contentStream.showText(datas[i][j]);
-                        contentStream.endText();
+                        if (i == 4 && j == 1 && datas[4][0].equals("在线报表")) {
+                            for (var url : datas[4][1].split(",")) {
+                                contentStream.beginText();
+                                contentStream.newLineAtOffset(textX, yPos);
+                                contentStream.showText(url);
+                                contentStream.endText();
+                                yPos = yPos - fontSize;
+                            }
+                        } else {
+                            contentStream.beginText();
+                            contentStream.newLineAtOffset(textX, yPos);
+                            contentStream.showText(datas[i][j]);
+                            contentStream.endText();
+                        }
                     }
                 }
-                inc++;
                 curRow++;
+                yPos = yPos - 10;
             }
             yPos = yCur;
             if (curRow < datas.length) {
@@ -95,41 +112,44 @@ public class PDFTableUtil {
 
     public void showText(String text) throws IOException {
         setYHeight(20);
-        makePage();
+        if (yCur <= 10) {
+            makePage();
+        }
         contentStream.beginText();
         contentStream.newLineAtOffset(xPos, yPos);
         contentStream.showText(text);
         contentStream.endText();
-
     }
 
-    public void save(String uuid) throws IOException {
+    public void save(String name) throws IOException {
         contentStream.close();
-        document.save(dirPath + "/" + uuid + ".pdf");
-//                document.save(dirPath + "/hello.pdf");
+        document.save(dirPath + "/" + name);
         document.close();
     }
 
     private void setYHeight(float height) {
-        if (yPos < 800 || pageCount > 1) {
-            yPos = yCur -= height;
-        }
+        yPos = yCur -= height;
     }
 
     private void makePage() throws IOException {
-        if (yPos <= 10) {
-            contentStream.close();
-            page = new PDPage(PDRectangle.A4);
-            document.addPage(page);
-            contentStream = new PDPageContentStream(document, page);
-            contentStream.setFont(font, 10);
-            yPos = 800;
-            yCur = 800;
-            pageCount++;
-        }
+        contentStream.close();
+        page = new PDPage(PDRectangle.A4);
+        document.addPage(page);
+        contentStream = new PDPageContentStream(document, page);
+        contentStream.setFont(font, fontSize);
+        yPos = 830;
+        yCur = 830;
+        pageCount++;
     }
 
     private boolean hasEndWith(String path) {
+        if (!path.startsWith("/")) {
+            return false;
+        }
+        Path path1 = Path.of(path);
+        if (!path1.isAbsolute()) {
+            return false;
+        }
         Set<String> suffix = new HashSet<>();
         suffix.add(".jpg");
         suffix.add(".png");

@@ -14,7 +14,6 @@ import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.controller.req.RegisterBody;
-import com.hu.oneclick.dao.MasterIdentifierDao;
 import com.hu.oneclick.dao.RoleFunctionDao;
 import com.hu.oneclick.dao.RoomDao;
 import com.hu.oneclick.dao.SubUserProjectDao;
@@ -24,17 +23,7 @@ import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.MasterIdentifier;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.RoleFunction;
-import com.hu.oneclick.model.domain.Room;
-import com.hu.oneclick.model.domain.SubUserProject;
-import com.hu.oneclick.model.domain.SysRole;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.SysUserBusiness;
-import com.hu.oneclick.model.domain.SysUserOrder;
-import com.hu.oneclick.model.domain.SysUserToken;
-import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
@@ -43,6 +32,7 @@ import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SystemConfigService;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -50,8 +40,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -73,8 +63,6 @@ public class UserServiceImpl implements UserService {
     private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final SysUserDao sysUserDao;
-
-    private final MasterIdentifierDao masterIdentifierDao;
 
     private final JwtUserServiceImpl jwtUserServiceImpl;
 
@@ -109,15 +97,13 @@ public class UserServiceImpl implements UserService {
     @Value("${onclick.time.secondTime}")
     private long secondTime;
 
-
-    public UserServiceImpl(SysUserDao sysUserDao, MasterIdentifierDao masterIdentifierDao,
+    public UserServiceImpl(SysUserDao sysUserDao,
                            RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl,
                            MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService,
                            SubUserProjectDao subUserProjectDao, UserOrderService userOrderService,
                            SystemConfigService systemConfigService, RoomDao roomDao, RoleFunctionDao roleFunctionDao,
                            SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao) {
         this.sysUserDao = sysUserDao;
-        this.masterIdentifierDao = masterIdentifierDao;
         this.redisClient = redisClient;
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.mailService = mailService;
@@ -161,7 +147,7 @@ public class UserServiceImpl implements UserService {
                     // mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
                     // "&params=" + linkStr);
                     mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
-                            "&params=" + linkStr);
+                        "&params=" + linkStr);
 
                     return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
                 }
@@ -190,22 +176,12 @@ public class UserServiceImpl implements UserService {
             user.setSysRoleId(RoleConstant.ADMIN_PLAT);
             user.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION);
 
-            //设置主账号识别号，用于子用户登录
-            MasterIdentifier masterIdentifier = masterIdentifierDao.queryOne();
-            masterIdentifier = Optional.ofNullable(masterIdentifier).orElse(new MasterIdentifier());
-            if (StringUtils.isEmpty(masterIdentifier.getId())) {
-                masterIdentifier.setId(RandomUtil.randomNumbers(8));
-                masterIdentifier.setFlag(0);
-                masterIdentifierDao.insert(masterIdentifier);
-            }
-            if (sysUserDao.insert(user) > 0 && masterIdentifierDao.update(masterIdentifier.getId()) > 0) {
+            if (sysUserDao.insert(user) > 0) {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
-//                mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
-//                        "&params=" + linkStr);
                 mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
-                        "&params=" + linkStr);
+                    "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
@@ -267,7 +243,7 @@ public class UserServiceImpl implements UserService {
         SysUser user = sysUserDao.queryByEmail(email);
         if (user == null) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(),
-                    SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
+                SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
         }
         return new Resp.Builder<String>().ok();
     }
@@ -696,7 +672,7 @@ public class UserServiceImpl implements UserService {
      *
      * @param masterId
      * @Param: [masterId]
-     * @return: java.util.List<com.hu.oneclick.model.domain.SysUser>
+     * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>
      * @Author: MaSiyi
      * @Date: 2021/12/15
      */

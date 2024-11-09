@@ -1,7 +1,7 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SystemConfig;
+import com.hu.oneclick.model.entity.SystemConfig;
 import com.hu.oneclick.server.service.SystemConfigService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

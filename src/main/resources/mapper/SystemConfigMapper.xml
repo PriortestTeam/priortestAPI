@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SystemConfigDao">
-    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SystemConfig">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.SystemConfig">
         <id column="system_config_id" jdbcType="INTEGER" property="id"/>
         <result column="system_config_key" jdbcType="VARCHAR" property="key"/>
         <result column="system_config_value" jdbcType="VARCHAR" property="value"/>
@@ -66,7 +66,7 @@
         from system_config
         where `key` = #{key}
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SystemConfig"
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.SystemConfig"
             useGeneratedKeys="true">
         insert into system_config (`key`, `value`, group,
                                    create_time, update_time)
@@ -74,7 +74,7 @@
                 #{create_time,jdbcType=TIMESTAMP}, #{update_time,jdbcType=TIMESTAMP})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id"
-            parameterType="com.hu.oneclick.model.domain.SystemConfig" useGeneratedKeys="true">
+            parameterType="com.hu.oneclick.model.entity.SystemConfig" useGeneratedKeys="true">
         insert into system_config
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="key != null">
@@ -111,7 +111,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SystemConfig">
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.SystemConfig">
         update system_config
         <set>
             <if test="key != null">
@@ -132,7 +132,7 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SystemConfig">
+    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.entity.SystemConfig">
         update system_config
         set `key`       = #{key,jdbcType=VARCHAR},
             `value`     = #{value,jdbcType=VARCHAR},
@@ -141,7 +141,7 @@
             update_time = #{update_time,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByKey" parameterType="com.hu.oneclick.model.domain.SystemConfig">
+    <update id="updateByKey" parameterType="com.hu.oneclick.model.entity.SystemConfig">
         update system_config
         set `value`     = #{value,jdbcType=VARCHAR},
             update_time =NOW()

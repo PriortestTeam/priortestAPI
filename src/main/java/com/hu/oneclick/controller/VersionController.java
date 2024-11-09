@@ -1,9 +1,7 @@
 package com.hu.oneclick.controller;
 
-import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.TestCase;
 import com.hu.oneclick.model.domain.dto.VersionDto;
 import com.hu.oneclick.model.domain.dto.VersionRequestDto;
 import com.hu.oneclick.server.service.VersionService;

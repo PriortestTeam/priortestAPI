@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.TestCycleJoinTestCaseDao">
-    <resultMap type="com.hu.oneclick.model.domain.TestCycleJoinTestCase" id="TestCycleJoinTestCaseMap">
+    <resultMap type="com.hu.oneclick.model.entity.TestCycleJoinTestCase" id="TestCycleJoinTestCaseMap">
         <result property="testCycleId" column="test_cycle_id" jdbcType="VARCHAR"/>
         <result property="testCaseId" column="test_case_id" jdbcType="VARCHAR"/>
         <result property="executeStatus" column="execute_status" jdbcType="INTEGER"/>
@@ -37,7 +37,7 @@
         where test_case_id = #{testCaseId} and project_id = #{projectId}
         and test_cycle_id = #{testCycleId}
     </delete>
-    <select id="queryBindCaseList" resultType="com.hu.oneclick.model.domain.TestCase">
+    <select id="queryBindCaseList" resultType="com.hu.oneclick.model.entity.TestCase">
         select t.id as id,
                t.title as title,
                t.executed_date as executedDate,

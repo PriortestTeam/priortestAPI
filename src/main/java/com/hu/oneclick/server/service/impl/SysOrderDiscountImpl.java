@@ -5,7 +5,7 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.dao.SysOrderDiscountDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.model.domain.dto.SysOrderDiscountDto;
 import com.hu.oneclick.server.service.SysOrderDiscountService;
 import com.hu.oneclick.server.service.SystemConfigService;

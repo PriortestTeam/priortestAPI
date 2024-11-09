@@ -8,10 +8,9 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.*;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
+import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.server.service.MailService;
-import com.hu.oneclick.server.service.UserBusinessService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -54,7 +53,7 @@ public class SubUserServiceImpl implements SubUserService {
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
-    public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, SubUserProjectDao subUserProjectDao, ProjectDao projectDao, MailService mailService, RedissonClient redisClient,RoleFunctionDao roleFunctionDao,SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao) {
+    public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, SubUserProjectDao subUserProjectDao, ProjectDao projectDao, MailService mailService, RedissonClient redisClient, RoleFunctionDao roleFunctionDao, SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.sysUserDao = sysUserDao;
         this.subUserProjectDao = subUserProjectDao;
@@ -80,7 +79,7 @@ public class SubUserServiceImpl implements SubUserService {
         List<SubUserDto> sysUsers = sysUserDao.querySubUsersByRoomId(sysUser.getRoomId());
         for (SubUserDto user : sysUsers) {
             String[] projectIds = user.getProjectIdStr().split(",");
-            List<String> titles = subUserProjectDao.selectTitlesByUserId(sysUser.getId(),projectIds);
+            List<String> titles = subUserProjectDao.selectTitlesByUserId(sysUser.getId(), projectIds);
             String projectsSts = StringUtils.join(titles, ",");
             user.setProjectsSts(projectsSts);
         }
@@ -165,16 +164,12 @@ public class SubUserServiceImpl implements SubUserService {
             projectDao.insertUseOpenProject(userUseOpenProject);
 
             if (sysUserDao.insert(sysUser) > 0
-                    && subUserProjectDao.insert(subUserProject) > 0) {
+                && subUserProjectDao.insert(subUserProject) > 0) {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
-                // TODO 测试时把地址改成本地了
-//                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + oldEmail +
-//                        "&params=" + linkStr);
-                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://127.0.0.1:9529/#/activate?email=" + oldEmail +
-                        "&params=" + linkStr);
-
+                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + oldEmail +
+                    "&params=" + linkStr);
 
                 //2022/10/31 WangYiCheng 新增用户，根据角色，设置默认权限
                 RoleFunction roleFunction = roleFunctionDao.queryByRoleId(sysUser.getSysRoleId());
@@ -202,19 +197,11 @@ public class SubUserServiceImpl implements SubUserService {
                 }
 
 
-
-
-
-
-
-
-
-
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),
-                        SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue());
+                    SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.CREATE_SUB_USER_FAILED.getCode(),
-                    SysConstantEnum.CREATE_SUB_USER_FAILED.getValue());
+                SysConstantEnum.CREATE_SUB_USER_FAILED.getValue());
         } catch (BizException e) {
             logger.error("class: SubUserServiceImpl#createSubUser,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
@@ -266,7 +253,6 @@ public class SubUserServiceImpl implements SubUserService {
         List<String> projectIdsBefore = Arrays.asList(subUserProjectDao.queryByUserId(subUserDto.getId()).getProjectId().split(","));
 
 
-
         // 设置用户
         SysUser sysUser = new SysUser();
         sysUser.setId(subUserDto.getId());
@@ -290,7 +276,7 @@ public class SubUserServiceImpl implements SubUserService {
         //business相关
         //如果角色变了，则根据userId删除以前所有business数据，然后插入
 
-        if(subUserDto.getSysRoleId() != sysUserBefore.getSysRoleId()){
+        if (subUserDto.getSysRoleId() != sysUserBefore.getSysRoleId()) {
             sysUserBusinessDao.deleteByUserId(subUserDto.getId());
 
             RoleFunction roleFunction = roleFunctionDao.queryByRoleId(subUserDto.getSysRoleId());
@@ -313,22 +299,20 @@ public class SubUserServiceImpl implements SubUserService {
                 sysUserBusiness.setProjectName(project.getTitle());
                 sysUserBusinessDao.insertSelective(sysUserBusiness);
             }
-        }
-
-        else{
+        } else {
             List<String> addProjectIds = new ArrayList<>();
 
             List<String> projectIds = Arrays.asList(subUserDto.getProjectIdStr().split(","));
-            for(int i=0;i<projectIdsBefore.size();i++){
+            for (int i = 0; i < projectIdsBefore.size(); i++) {
                 //原来的不在现在的，则是要删除的
-                if(!projectIds.contains(projectIdsBefore.get(i))){
-                    sysUserBusinessDao.deleteByUserIdAndProjectId(subUserDto.getId(),projectIdsBefore.get(i));
+                if (!projectIds.contains(projectIdsBefore.get(i))) {
+                    sysUserBusinessDao.deleteByUserIdAndProjectId(subUserDto.getId(), projectIdsBefore.get(i));
                 }
             }
 
-            for(int i=0;i<projectIds.size();i++){
+            for (int i = 0; i < projectIds.size(); i++) {
                 //现在的不在原来的，则是要增加的
-                if(!projectIdsBefore.contains(projectIds.get(i))){
+                if (!projectIdsBefore.contains(projectIds.get(i))) {
                     addProjectIds.add(projectIds.get(i));
 
                     RoleFunction roleFunction = roleFunctionDao.queryByRoleId(subUserDto.getSysRoleId());
@@ -353,12 +337,7 @@ public class SubUserServiceImpl implements SubUserService {
             }
 
 
-
-
-
-
         }
-
 
 
         //如果角色没变，根据userId、查询以前所有business的projectIds
@@ -397,7 +376,7 @@ public class SubUserServiceImpl implements SubUserService {
             sysUserBusinessDao.deleteByUserId(id);
             return new Resp.Builder<String>().setData(SysConstantEnum.DELETE_SUCCESS.getValue()).ok();
         }
-        return  new Resp.Builder<String>().buildResult("500", "删除失败");
+        return new Resp.Builder<String>().buildResult("500", "删除失败");
     }
 
     /**

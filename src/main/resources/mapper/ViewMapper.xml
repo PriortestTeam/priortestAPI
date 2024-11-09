@@ -4,7 +4,7 @@
     <!--开启缓存-->
     <cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true" />
 
-    <resultMap type="com.hu.oneclick.model.domain.View" id="ViewMap">
+    <resultMap type="com.hu.oneclick.model.entity.View" id="ViewMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="createUserId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
@@ -79,7 +79,7 @@
             and title = #{title}
             <!-- and is_private = #{isPrivate}-->
     </select>
-    <select id="queryViewParents" resultType="com.hu.oneclick.model.domain.View">
+    <select id="queryViewParents" resultType="com.hu.oneclick.model.entity.View">
         select
         title,
         id
@@ -281,7 +281,7 @@
         delete from oneclick.view where create_user_id = #{masterId} and id = #{id}
     </delete>
 
-    <select id="sql" resultType="com.hu.oneclick.model.domain.Project" parameterType="java.lang.String">
+    <select id="sql" resultType="com.hu.oneclick.model.entity.Project" parameterType="java.lang.String">
         ${sqlen}
     </select>
 </mapper>

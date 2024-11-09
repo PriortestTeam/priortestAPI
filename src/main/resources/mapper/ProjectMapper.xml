@@ -4,7 +4,7 @@
     <!--开启缓存-->
     <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
 
-    <resultMap type="com.hu.oneclick.model.domain.Project" id="ProjectMap">
+    <resultMap type="com.hu.oneclick.model.entity.Project" id="ProjectMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="userId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
@@ -282,7 +282,7 @@
 
     <!--用户操作已打开的项目-->
     <select id="queryUseOpenProject" parameterType="java.lang.String"
-            resultType="com.hu.oneclick.model.domain.UserUseOpenProject">
+            resultType="com.hu.oneclick.model.entity.UserUseOpenProject">
         select uuop.id         as id,
                uuop.user_id    as userId,
                uuop.project_id as projectId,
@@ -294,7 +294,7 @@
     </select>
     <select id="queryProjectAndPermissionByProjectId"
             parameterType="java.lang.String"
-            resultType="com.hu.oneclick.model.domain.Project">
+            resultType="com.hu.oneclick.model.entity.Project">
         select p.id,
                p.title,
                group_concat(s.operation_auth_id) as operationAuthIds

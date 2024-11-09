@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.SysUserReference;
+import com.hu.oneclick.model.entity.SysUserReference;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;

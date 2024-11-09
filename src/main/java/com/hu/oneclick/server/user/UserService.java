@@ -2,8 +2,8 @@ package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUser;
-import com.hu.oneclick.model.domain.SysUserToken;
+import com.hu.oneclick.model.entity.SysUser;
+import com.hu.oneclick.model.entity.SysUserToken;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
@@ -132,7 +132,7 @@ public interface UserService {
 
     /** 查询用户和子用户
      * @Param: [masterId]
-     * @return: java.util.List<com.hu.oneclick.model.domain.SysUser>
+     * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>
      * @Author: MaSiyi
      * @Date: 2021/12/15
      */

@@ -1,7 +1,7 @@
 package com.hu.oneclick.dao;
 
 import com.hu.oneclick.model.annotation.Page;
-import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.model.domain.dto.PlatformUserDto;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SysUserRoleDto;

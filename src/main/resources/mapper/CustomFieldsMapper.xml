@@ -3,7 +3,7 @@
 <mapper namespace="com.hu.oneclick.dao.CustomFieldsDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.CustomFields">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.CustomFields">
         <id column="custom_field_id" property="customFieldId"/>
         <result column="create_user" property="createUser"/>
         <result column="type" property="type"/>
@@ -63,7 +63,7 @@
     </sql>
 
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.CustomFields">
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.CustomFields">
         UPDATE custom_fields
         <set>
             <if test="null != customFieldId and '' != customFieldId">custom_field_id = #{customFieldId},</if>
@@ -92,7 +92,7 @@
     </delete>
 
     <!--通过实体作为筛选条件查询-->
-    <select id="queryCustomList" resultMap="BaseResultMap" parameterType="com.hu.oneclick.model.domain.CustomFields">
+    <select id="queryCustomList" resultMap="BaseResultMap" parameterType="com.hu.oneclick.model.entity.CustomFields">
         select
         <include refid="Base_Column_List"></include>
         from custom_fields

@@ -1,10 +1,8 @@
 package com.hu.oneclick.server.service.impl;
 
-import com.hu.oneclick.dao.CustomFieldsDao;
 import com.hu.oneclick.dao.SysConfigDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.Sprint;
-import com.hu.oneclick.model.domain.SysConfig;
+import com.hu.oneclick.model.entity.SysConfig;
 import com.hu.oneclick.server.service.SysConfigService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

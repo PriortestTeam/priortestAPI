@@ -1,10 +1,11 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.UserUseOpenProject;
+import com.hu.oneclick.model.entity.Project;
+import com.hu.oneclick.model.entity.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.ProjectDto;
 import com.hu.oneclick.model.domain.dto.SignOffDto;
+import com.hu.oneclick.model.param.SignOffParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -54,7 +55,7 @@ public interface ProjectService {
 
     /** 根据条件查询project
      * @Param: [project]
-     * @return: java.util.List<com.hu.oneclick.model.domain.Project>
+     * @return: java.util.List<com.hu.oneclick.model.entity.Project>
      * @Author: MaSiyi
      * @Date: 2021/12/31
      */

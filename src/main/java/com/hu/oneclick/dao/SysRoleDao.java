@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.SysRole;
+import com.hu.oneclick.model.entity.SysRole;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -66,7 +66,7 @@ public interface SysRoleDao {
 
     /** 根据角色名称查角色
      * @Param: [roleName]
-     * @return: com.hu.oneclick.model.domain.SysRole
+     * @return: com.hu.oneclick.model.entity.SysRole
      * @Author: MaSiyi
      * @Date: 2022/1/3
      */

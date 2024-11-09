@@ -1,7 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.dao.SysFunctionDao;
-import com.hu.oneclick.model.domain.SysFunction;
+import com.hu.oneclick.model.entity.SysFunction;
 import com.hu.oneclick.server.service.FunctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

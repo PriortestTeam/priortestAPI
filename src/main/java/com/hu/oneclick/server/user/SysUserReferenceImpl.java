@@ -1,7 +1,7 @@
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.dao.SysUserReferenceDao;
-import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.entity.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.TestCycleScheduleModel;
+import com.hu.oneclick.model.entity.TestCycleScheduleModel;
 
 public interface TestCycleScheduleModelDao {
     int deleteByPrimaryKey(Integer id);

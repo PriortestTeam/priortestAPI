@@ -2,6 +2,8 @@ package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -10,10 +12,10 @@ import com.hu.oneclick.dao.TestCycleDao;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.TestCasesExecution;
-import com.hu.oneclick.model.domain.TestCycle;
-import com.hu.oneclick.model.domain.TestCycleJoinTestCase;
+import com.hu.oneclick.model.entity.TestCase;
+import com.hu.oneclick.model.entity.TestCasesExecution;
+import com.hu.oneclick.model.entity.TestCycle;
+import com.hu.oneclick.model.entity.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
@@ -53,7 +55,14 @@ public class TestCycleJoinTestCaseServiceImpl extends
 
   @Override
   public Boolean saveInstance(TestCycleJoinTestCaseSaveDto dto) {
-    final List<Long> ignore = saveDataWithIdReturn(dto);
+    final List<Long> result = saveDataWithIdReturn(dto);
+    if(!result.isEmpty()){
+        UpdateWrapper<TestCycle> updateWrapper = Wrappers.update();
+        updateWrapper.eq("id",dto.getTestCycleId());
+        var sql = "instance_count=instance_count+" + result.size();
+        updateWrapper.setSql(sql);
+        testCycleDao.update(new TestCycle(),updateWrapper);
+    }
     return true;
   }
 
@@ -142,9 +151,7 @@ public class TestCycleJoinTestCaseServiceImpl extends
     );
   }
 
-  private List<TestCycleJoinTestCase> getByProjectIdAndCycleIdAndCaseId(Long projectId,
-      Long testCycleId,
-      Long testCaseId) {
+  private List<TestCycleJoinTestCase> getByProjectIdAndCycleIdAndCaseId(Long projectId,Long testCycleId,Long testCaseId) {
     LambdaQueryWrapper<TestCycleJoinTestCase> queryWrapper = new LambdaQueryWrapper<>();
     queryWrapper.eq(TestCycleJoinTestCase::getProjectId, projectId)
         .eq(TestCycleJoinTestCase::getTestCycleId, testCycleId)
@@ -172,6 +179,14 @@ public class TestCycleJoinTestCaseServiceImpl extends
         new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId,
                 testCasesIds).eq(TestCasesExecution::getTestCycleId, dto.getTestCycleId())
             .eq(TestCasesExecution::getProjectId, dto.getProjectId()));
+
+    if(!testCasesIds.isEmpty()){
+        UpdateWrapper<TestCycle> updateWrapper = Wrappers.update();
+        updateWrapper.eq("id", dto.getTestCycleId());
+        var sql = "instance_count=instance_count-" + testCasesIds.size();
+        updateWrapper.setSql(sql);
+        testCycleDao.update(new TestCycle(),updateWrapper);
+    }
   }
 
   @Override

@@ -2,16 +2,15 @@ package com.hu.oneclick.server.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.Feature;
-import com.hu.oneclick.model.domain.TestCase;
-import com.hu.oneclick.model.domain.TestCycle;
+import com.hu.oneclick.model.entity.Feature;
+import com.hu.oneclick.model.entity.TestCase;
+import com.hu.oneclick.model.entity.TestCycle;
 import com.hu.oneclick.model.domain.dto.*;
-import com.hu.oneclick.model.domain.param.TestCaseParam;
+import com.hu.oneclick.model.param.TestCaseParam;
 import java.util.List;
 import java.util.Map;
 
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
-import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

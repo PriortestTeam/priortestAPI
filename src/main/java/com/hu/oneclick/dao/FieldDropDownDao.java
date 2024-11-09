@@ -1,7 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.FieldDropDown;
-import com.hu.oneclick.model.domain.FieldText;
+import com.hu.oneclick.model.entity.FieldDropDown;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.hu.oneclick.server.service;
 
-import com.hu.oneclick.model.domain.SysUserBusiness;
+import com.hu.oneclick.model.entity.SysUserBusiness;
 
 import java.util.List;
 

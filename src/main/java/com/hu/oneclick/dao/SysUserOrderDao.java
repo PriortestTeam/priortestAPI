@@ -1,8 +1,7 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.SysUserOrder;
+import com.hu.oneclick.model.entity.SysUserOrder;
 
-import java.util.Date;
 import java.util.List;
 
 

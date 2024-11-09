@@ -3,7 +3,7 @@
 <mapper namespace="com.hu.oneclick.dao.CustomFileldLinkDao">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.CustomFileldLink">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.CustomFileldLink">
         <result column="custom_field_link_id" property="customFieldLinkId"/>
         <result column="custom_field_id" property="customFieldId"/>
         <result column="default_value" property="defaultValue"/>
@@ -20,7 +20,7 @@
     </sql>
 
 
-    <insert id="insertBatch" parameterType="com.hu.oneclick.model.domain.CustomFileldLink">
+    <insert id="insertBatch" parameterType="com.hu.oneclick.model.entity.CustomFileldLink">
         INSERT INTO custom_fileld_link(
         custom_field_link_id,
         custom_field_id,

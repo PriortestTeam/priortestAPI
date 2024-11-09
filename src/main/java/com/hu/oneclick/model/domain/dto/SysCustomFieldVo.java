@@ -3,8 +3,8 @@ package com.hu.oneclick.model.domain.dto;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.VerifyParam;
-import com.hu.oneclick.model.domain.SysCustomField;
-import com.hu.oneclick.model.domain.SysCustomFieldExpand;
+import com.hu.oneclick.model.entity.SysCustomField;
+import com.hu.oneclick.model.entity.SysCustomFieldExpand;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;

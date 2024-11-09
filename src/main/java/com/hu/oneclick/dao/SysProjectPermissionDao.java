@@ -1,6 +1,6 @@
 package com.hu.oneclick.dao;
 
-import com.hu.oneclick.model.domain.SysProjectPermission;
+import com.hu.oneclick.model.entity.SysProjectPermission;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import org.apache.ibatis.annotations.Param;
 

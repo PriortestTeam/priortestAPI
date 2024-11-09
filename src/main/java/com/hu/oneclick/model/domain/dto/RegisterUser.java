@@ -4,7 +4,7 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.model.base.VerifyParam;
-import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.entity.SysUser;
 import org.apache.commons.lang3.StringUtils;
 
 /**

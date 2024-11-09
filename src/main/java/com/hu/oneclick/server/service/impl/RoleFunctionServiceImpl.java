@@ -3,7 +3,7 @@ package com.hu.oneclick.server.service.impl;
 import com.hu.oneclick.dao.RoleFunctionDao;
 import com.hu.oneclick.model.base.Resp;
 
-import com.hu.oneclick.model.domain.*;
+import com.hu.oneclick.model.entity.RoleFunction;
 import com.hu.oneclick.server.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

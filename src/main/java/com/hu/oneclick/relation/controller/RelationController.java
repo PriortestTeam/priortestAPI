@@ -3,7 +3,7 @@ package com.hu.oneclick.relation.controller;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.TestCaseStep;
+import com.hu.oneclick.model.entity.TestCaseStep;
 import com.hu.oneclick.relation.domain.Relation;
 import com.hu.oneclick.relation.domain.param.RelationParam;
 import com.hu.oneclick.relation.service.RelationService;

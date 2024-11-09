@@ -5,7 +5,7 @@ import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.ModifyRecordDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.domain.ModifyRecord;
+import com.hu.oneclick.model.entity.ModifyRecord;
 import com.hu.oneclick.server.service.ModifyRecordsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

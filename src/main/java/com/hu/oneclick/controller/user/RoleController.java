@@ -3,7 +3,7 @@ package com.hu.oneclick.controller.user;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysRole;
+import com.hu.oneclick.model.entity.SysRole;
 import com.hu.oneclick.model.domain.dto.SysUserRoleDto;
 import com.hu.oneclick.server.service.SysRoleService;
 import com.hu.oneclick.server.service.UserBusinessService;

@@ -8,7 +8,7 @@ import com.hu.oneclick.common.security.ApiToken;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysUserToken;
+import com.hu.oneclick.model.entity.SysUserToken;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.server.user.UserService;
 import org.apache.commons.lang3.StringUtils;

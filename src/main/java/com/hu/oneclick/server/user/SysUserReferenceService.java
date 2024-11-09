@@ -1,6 +1,6 @@
 package com.hu.oneclick.server.user;
 
-import com.hu.oneclick.model.domain.SysUser;
+import com.hu.oneclick.model.entity.SysUser;
 
 import java.util.Date;
 

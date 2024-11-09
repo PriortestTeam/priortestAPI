@@ -3,8 +3,8 @@ package com.hu.oneclick.model.domain.dto;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.VerifyParam;
-import com.hu.oneclick.model.domain.Project;
-import com.hu.oneclick.model.domain.SysProjectPermission;
+import com.hu.oneclick.model.entity.Project;
+import com.hu.oneclick.model.entity.SysProjectPermission;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;

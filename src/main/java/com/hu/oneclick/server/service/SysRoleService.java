@@ -1,7 +1,7 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysRole;
+import com.hu.oneclick.model.entity.SysRole;
 import com.hu.oneclick.model.domain.dto.SysUserRoleDto;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public interface SysRoleService {
 
     /** 查询全部角色为该角色的用户
      * @Param: [roleName]
-     * @return: com.hu.oneclick.model.base.Resp<java.util.List<com.hu.oneclick.model.domain.SysUser>>
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List<com.hu.oneclick.model.entity.SysUser>>
      * @Author: MaSiyi
      * @Date: 2022/1/3
      */

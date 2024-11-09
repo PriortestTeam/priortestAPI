@@ -4,13 +4,12 @@ import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.param.UserCaseParam;
+import com.hu.oneclick.model.param.UserCaseParam;
 import com.hu.oneclick.model.domain.vo.UserCaseVo;
 import com.hu.oneclick.server.service.UserCaseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

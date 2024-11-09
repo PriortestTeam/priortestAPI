@@ -1,8 +1,7 @@
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.SysConfig;
-import org.apache.ibatis.annotations.Param;
+import com.hu.oneclick.model.entity.SysConfig;
 
 import java.util.List;
 

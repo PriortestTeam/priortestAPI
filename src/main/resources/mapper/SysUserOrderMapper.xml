@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SysUserOrderDao">
 
-    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.domain.SysUserOrder">
+    <resultMap id="BaseResultMap" type="com.hu.oneclick.model.entity.SysUserOrder">
         <result column="id" jdbcType="INTEGER" property="id"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="order_id" jdbcType="VARCHAR" property="orderId"/>
@@ -37,7 +37,7 @@
         <include refid="Base_Column_List"/>
         from sys_user_order where user_id = #{userId} order by create_time desc limit 1
     </select>
-    <select id="listOrder" resultType="com.hu.oneclick.model.domain.SysUserOrder">
+    <select id="listOrder" resultType="com.hu.oneclick.model.entity.SysUserOrder">
         SELECT
         <include refid="Base_Column_List"/>
         FROM sys_user_order WHERE user_id = #{userId}
@@ -49,7 +49,7 @@
         from sys_user_order
         where id = #{id,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.domain.SysUserOrder"
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.hu.oneclick.model.entity.SysUserOrder"
             useGeneratedKeys="true">
         insert into sys_user_order (user_id, payment_type, pay_card,
                                     pay_name, data_strorage, sub_scription,
@@ -156,7 +156,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.domain.SysUserOrder">
+    <update id="updateByPrimaryKeySelective" parameterType="com.hu.oneclick.model.entity.SysUserOrder">
         update sys_user_order
         <set>
             <if test="user_id != null">
@@ -189,7 +189,7 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.domain.SysUserOrder">
+    <update id="updateByPrimaryKey" parameterType="com.hu.oneclick.model.entity.SysUserOrder">
         update sys_user_order
         set user_id       = #{user_id,jdbcType=BIGINT},
             payment_type  = #{payment_type,jdbcType=INTEGER},
@@ -202,7 +202,7 @@
             `status`      = #{status,jdbcType=BOOLEAN}
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByUuidSelective"  parameterType="com.hu.oneclick.model.domain.SysUserOrder">
+    <update id="updateByUuidSelective"  parameterType="com.hu.oneclick.model.entity.SysUserOrder">
         update sys_user_order
         <set>
             <if test="userId != null">

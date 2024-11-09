@@ -1,6 +1,6 @@
 package com.hu.oneclick.model.domain.dto;
 
-import com.hu.oneclick.model.domain.View;
+import com.hu.oneclick.model.entity.View;
 
 import java.io.Serializable;
 import java.util.List;
