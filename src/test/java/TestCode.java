@@ -1,5 +1,5 @@
-import cn.hutool.Hutool;
 import cn.hutool.json.JSON;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.hu.oneclick.common.util.PDFTableUtil;
@@ -7,9 +7,43 @@ import com.hu.oneclick.model.param.SignOffParam;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class PdfGenerateTableTest {
+public class TestCode {
+    @Test
+    public void test() throws IOException {
+        File file = new File("C:/Users/ywp/Desktop/out-data.json");
+        String s = Files.readString(file.toPath());
+        JSONArray parsedArray = JSONUtil.parseArray(s);
+
+        List<Map> list = JSONUtil.toList(parsedArray, Map.class);
+        System.out.println(list.size());
+
+        List<Map> sfieds = list.stream().filter(map -> new BigInteger(map.get("customFieldLinkId").toString()).compareTo(BigInteger.ZERO) == 0).collect(Collectors.toList());
+        for (var map1 : sfieds) {
+            Map map2 = list.stream().filter(map -> map.get("customFieldLinkId").equals(map1.get("customFieldId")))
+                .findFirst().orElse(null);
+            if (map2 != null) {
+                map1.put("child", new HashMap<>() {{
+                    put("type", map2.get("type").toString());
+                    put("possibleValue", map2.get("possibleValue").toString());
+                    put("projectId", map2.get("projectId").toString());
+                }});
+                System.out.println(map1);
+            }
+        }
+
+    }
+
     @Test
     public void testFromFileJson() {
         File file = new File("/Users/air/Desktop/test.json");

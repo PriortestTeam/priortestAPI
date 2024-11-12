@@ -1,7 +1,11 @@
 package com.hu.oneclick.server.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Maps;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -30,6 +34,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -172,21 +179,28 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     @Override
     public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
         List<CustomFileldLinkVo> dropDownBox = customFieldsDao.getDropDownBox(customFieldDto);
+        String jsonStr = JSONUtil.toJsonStr(dropDownBox);
+        File file = new File("C:/Users/ywp/Desktop/out-data.json");
+        try (FileWriter fw = new FileWriter(file)) {
+            fw.write(jsonStr);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return new Resp.Builder<List<CustomFileldLinkVo>>().setData(dropDownBox).ok();
     }
 
 
     private List<CustomFileldLink> getCustomFileldLinkList(CustomFieldVo customFieldVo, CustomFields customField) {
         List<CustomFileldLink> customFileldLinkList = Optional.ofNullable(customFieldVo.getComponentAttributes())
-                .orElse(Lists.newArrayList()).stream().map(item ->
-                        new CustomFileldLink(SnowFlakeUtil.getFlowIdInstance().nextId(),
-                                customField.getCustomFieldId(),
-                                item.getDefaultValue(),
-                                item.getScope(),
-                                item.getMandatory() ? 1 : 0,
-                                item.getScopeId(),
-                                item.getScopeNameCn()
-                        )).collect(Collectors.toList());
+            .orElse(Lists.newArrayList()).stream().map(item ->
+                new CustomFileldLink(SnowFlakeUtil.getFlowIdInstance().nextId(),
+                    customField.getCustomFieldId(),
+                    item.getDefaultValue(),
+                    item.getScope(),
+                    item.getMandatory() ? 1 : 0,
+                    item.getScopeId(),
+                    item.getScopeNameCn()
+                )).collect(Collectors.toList());
 
         return customFileldLinkList;
     }
@@ -196,8 +210,42 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         // 检验参数
         updateValidParam(customFieldsDto);
         customFieldsDto.setUpdateTime(new Date());
-        customFieldsDto.setModifyUserId(Long.valueOf(jwtUserServiceImpl.getUserLoginInfo().getSysUser().getId()));
-        int row = customFieldsDao.updateValueDropDownBox(customFieldsDto);
+        Long user_id = Long.valueOf(jwtUserServiceImpl.getUserLoginInfo().getSysUser().getId());
+        customFieldsDto.setModifyUserId(user_id);
+        int row;
+        if (customFieldsDto.getType() != null && customFieldsDto.getType().equals("sCustom")) {
+            QueryWrapper<CustomFields> query = Wrappers.query(new CustomFields());
+            query.eq("project_id", customFieldsDto.getProjectId())
+                .eq("linked_custom_field_id", customFieldsDto.getCustomFieldId())
+                .eq("type", customFieldsDto.getType())
+                .eq("field_type", customFieldsDto.getFieldType());
+            Long count = customFieldsDao.selectCount(query);
+
+            if (count == 0) {
+                CustomFields customFields = new CustomFields();
+                customFields.setCreateUser(user_id);
+                customFields.setType(customFieldsDto.getType());
+                customFields.setFieldType(customFieldsDto.getFieldType());
+                customFields.setCreateTime(new Date());
+                customFields.setUpdateTime(new Date());
+                customFields.setLinkedCustomFieldId(customFieldsDto.getCustomFieldId());
+                customFields.setProjectId(Long.valueOf(customFieldsDto.getProjectId()));
+                customFields.setPossibleValue(customFieldsDto.getPossibleValue());
+                row = customFieldsDao.insert(customFields);
+            } else {
+                UpdateWrapper<CustomFields> update = Wrappers.update();
+                update.set("possible_value", customFieldsDto.getPossibleValue())
+                    .set("modify_user", user_id)
+                    .eq("linked_custom_field_id", customFieldsDto.getCustomFieldId())
+                    .eq("type", customFieldsDto.getType())
+                    .eq("field_type", customFieldsDto.getFieldType());
+                row = customFieldsDao.update(new CustomFields(), update);
+            }
+        } else {
+            row = customFieldsDao.updateValueDropDownBox(customFieldsDto);
+        }
+
+
         return Result.updateResult(row >= 1 ? 1 : 0);
     }
 
