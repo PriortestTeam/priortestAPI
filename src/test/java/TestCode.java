@@ -25,18 +25,24 @@ public class TestCode {
         String s = Files.readString(file.toPath());
         JSONArray parsedArray = JSONUtil.parseArray(s);
 
-        List<Map> list = JSONUtil.toList(parsedArray, Map.class);
+//        List<? extends Map<String, Object>> xxxx = JSONUtil.toList(parsedArray, (new HashMap<String, Object>() {
+//        }).getClass());
+
+
+        List<? extends Map<String, Object>> list = JSONUtil.toList(parsedArray, new HashMap<String, Object>() {
+        }.getClass());
         System.out.println(list.size());
 
-        List<Map> sfieds = list.stream().filter(map -> new BigInteger(map.get("customFieldLinkId").toString()).compareTo(BigInteger.ZERO) == 0).collect(Collectors.toList());
-        for (var map1 : sfieds) {
-            Map map2 = list.stream().filter(map -> map.get("customFieldLinkId").equals(map1.get("customFieldId")))
+        List<? extends Map<String, Object>> fields = list.stream().filter(map -> new BigInteger(map.get("customFieldLinkId").toString())
+            .compareTo(BigInteger.ZERO) == 0).collect(Collectors.toList());
+        for (var map1 : fields) {
+            Map<String, Object> existed = list.stream().filter(map -> map.get("customFieldLinkId").equals(map1.get("customFieldId")))
                 .findFirst().orElse(null);
-            if (map2 != null) {
+            if (existed != null) {
                 map1.put("child", new HashMap<>() {{
-                    put("type", map2.get("type").toString());
-                    put("possibleValue", map2.get("possibleValue").toString());
-                    put("projectId", map2.get("projectId").toString());
+                    put("type", existed.get("type").toString());
+                    put("possibleValue", existed.get("possibleValue").toString());
+                    put("projectId", existed.get("projectId").toString());
                 }});
                 System.out.println(map1);
             }
