@@ -57,4 +57,6 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
      */
     private String fieldTypeCn;
 
+    private Object child;
+
 }

@@ -1,18 +1,16 @@
 package com.hu.oneclick.model.domain.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+//@Getter
+//@Setter
+//@AllArgsConstructor
+//@NoArgsConstructor
+@Data
 public class CustomFieldsDto {
 
     /**
@@ -41,4 +39,8 @@ public class CustomFieldsDto {
     private Date updateTime;
 
     private Long modifyUserId;
+
+    private String projectId;
+    
+    private String type;
 }
