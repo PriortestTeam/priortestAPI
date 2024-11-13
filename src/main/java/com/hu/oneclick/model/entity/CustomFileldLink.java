@@ -21,12 +21,12 @@ import java.io.Serializable;
 public class CustomFileldLink implements Serializable {
 
     private static final long serialVersionUID = 870331260917684970L;
+
     /**
      * 主键
      */
     @TableId
     private Long customFieldLinkId;
-
     private Long customFieldId;
 
     /**

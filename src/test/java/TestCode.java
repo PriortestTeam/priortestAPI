@@ -11,10 +11,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,16 +33,18 @@ public class TestCode {
         List<? extends Map<String, Object>> fields = list.stream().filter(map -> new BigInteger(map.get("customFieldLinkId").toString())
             .compareTo(BigInteger.ZERO) == 0).collect(Collectors.toList());
         for (var map1 : fields) {
-            Map<String, Object> existed = list.stream().filter(map -> map.get("customFieldLinkId").equals(map1.get("customFieldId")))
-                .findFirst().orElse(null);
-            if (existed != null) {
-                map1.put("child", new HashMap<>() {{
-                    put("type", existed.get("type").toString());
-                    put("possibleValue", existed.get("possibleValue").toString());
-                    put("projectId", existed.get("projectId").toString());
-                }});
-                System.out.println(map1);
-            }
+            list.stream().filter(map -> Objects.compare(new BigInteger(map.get("customFieldLinkId").toString()), new BigInteger(map1.get("customFieldId").toString()), BigInteger::compareTo) == 0)    //map.get("customFieldLinkId").equals()
+                .findFirst().ifPresent(obj -> {
+                    System.out.println(obj.get("customFieldLinkId"));
+                });
+//            if (existed != null) {
+//                map1.put("child", new HashMap<>() {{
+//                    put("type", existed.get("type").toString());
+//                    put("possibleValue", existed.get("possibleValue").toString());
+//                    put("projectId", existed.get("projectId").toString());
+//                }});
+//                System.out.println(map1);
+//            }
         }
 
     }

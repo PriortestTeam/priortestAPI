@@ -37,6 +37,7 @@ import org.springframework.util.ObjectUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -179,14 +180,21 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     @Override
     public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
         List<CustomFileldLinkVo> dropDownBox = customFieldsDao.getDropDownBox(customFieldDto);
-        String jsonStr = JSONUtil.toJsonStr(dropDownBox);
-        File file = new File("C:/Users/ywp/Desktop/out-data.json");
-        try (FileWriter fw = new FileWriter(file)) {
-            fw.write(jsonStr);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        List<CustomFileldLinkVo> fieldes = dropDownBox.stream().filter(v -> new BigInteger(v.getCustomFieldLinkId().toString())
+            .compareTo(BigInteger.ZERO) == 0).collect(Collectors.toList());
+        for (var vo : fieldes) {
+            dropDownBox.stream().filter(vo1 -> Objects.compare(new BigInteger(vo1.getCustomFieldLinkId().toString()),
+                    new BigInteger(vo.getCustomFieldId().toString()), BigInteger::compareTo) == 0)
+                .findFirst().ifPresent(vo2 -> vo.setChild(new HashMap<>() {{
+                    put("type", vo2.getType());
+                    put("possibleValue", vo2.getPossibleValue());
+                    put("projectId", vo2.getProjectId());
+                }}));
         }
-        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(dropDownBox).ok();
+
+        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(fieldes).ok();
+//        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(dropDownBox).ok();
     }
 
 
