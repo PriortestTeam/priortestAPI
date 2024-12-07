@@ -169,7 +169,16 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             List<CustomFileldLinkVo> vos = field_lnk.stream().filter(obj -> obj.getCustomFieldLinkId().compareTo(field.getCustomFieldLinkId()) == 0)
                 .collect(Collectors.toList());
             if (!vos.isEmpty()) {
-                field.setChild(vos);
+                List<Map<String, String>> child = new ArrayList<>();
+                for (CustomFileldLinkVo vo : vos) {
+                    child.add(new HashMap<>() {{
+                        put("customFieldId", vo.getCustomFieldId().toString());
+                        put("projectId", vo.getProjectId().toString());
+                        put("type", vo.getType());
+                        put("possibleValue", vo.getPossibleValue());
+                    }});
+                }
+                field.setChild(child);
             }
         }
 
