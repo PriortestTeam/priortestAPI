@@ -162,7 +162,28 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     @Override
     public Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
         List<CustomFileldLinkVo> list = customFieldsDao.getAllCustomList(customFieldDto);
-        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(list).ok();
+        List<CustomFileldLinkVo> fields = list.stream().filter(obj -> !obj.getType().equals("sCustom")).collect(Collectors.toList());
+        List<CustomFileldLinkVo> field_lnk = list.stream().filter(obj -> obj.getType().equals("sCustom")).collect(Collectors.toList());
+
+        for (var field : fields) {
+            List<CustomFileldLinkVo> vos = field_lnk.stream().filter(obj -> obj.getCustomFieldLinkId().compareTo(field.getCustomFieldLinkId()) == 0)
+                .collect(Collectors.toList());
+            if (!vos.isEmpty()) {
+                List<Map<String, String>> child = new ArrayList<>();
+                for (CustomFileldLinkVo vo : vos) {
+                    child.add(new HashMap<>() {{
+                        put("customFieldId", vo.getCustomFieldId().toString());
+                        put("projectId", vo.getProjectId().toString());
+                        put("type", vo.getType());
+                        put("possibleValue", vo.getPossibleValue());
+                    }});
+                }
+                field.setChild(child);
+            }
+        }
+
+        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(fields).ok();
+//        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(list).ok();
     }
 
     @Override

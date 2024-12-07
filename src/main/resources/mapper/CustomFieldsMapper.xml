@@ -64,7 +64,6 @@
         cfl.scope_name_cn,
         cfl.default_value,
         cfl.mandatory
-
     </sql>
 
 
@@ -146,10 +145,10 @@
         <include refid="Custom_Column_List"/>
         FROM
         custom_fileld_link cfl
-        LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
+        INNER JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id OR
+        cfl.custom_field_id=cf.linked_custom_field_id
         <where>
-            (cfl.scope_id = #{customFieldDto.scopeId}
-            and cf.project_id = #{customFieldDto.projectId})
+            (cfl.scope_id = #{customFieldDto.scopeId} and cf.project_id = #{customFieldDto.projectId})
             OR (cf.type="sField" AND cfl.scope_id = #{customFieldDto.scopeId})
             ORDER BY sort DESC
         </where>
