@@ -19,22 +19,16 @@
         <result property="operationAuthId" column="operation_auth_id" jdbcType="INTEGER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-        <result property="markName" column="mark_name" jdbcType="VARCHAR"/>
-        <result property="parentId" column="parent_id" jdbcType="VARCHAR"/>
     </resultMap>
     <select id="queryBySubUserId" resultMap="queryBySubUserIdMap">
-        select
-               p.id,
+        select p.id,
                p.sub_user_id,
                p.project_id,
                p.update_time,
                p.create_time,
                p.operation_auth_id,
-               a.mark_name,
-               a.parent_id
         from sys_project_permission p
-        join sys_operation_authority a on p.operation_auth_id = a.id
-        where sub_user_id = #{subUserId}
+        where p.sub_user_id = #{subUserId}
     </select>
 
 
@@ -69,7 +63,7 @@
             NOW()
         </trim>
     </insert>
-    <insert id="batchInsert"  keyProperty="id" useGeneratedKeys="true">
+    <insert id="batchInsert" keyProperty="id" useGeneratedKeys="true">
         insert into oneclick.sys_project_permission
         (id,sub_user_id,project_id,operation_auth_id,create_time,update_time)
         VALUES
@@ -99,7 +93,9 @@
 
     <!--通过主键删除-->
     <delete id="deleteBySubUserId">
-        delete from sys_project_permission where sub_user_id = #{subUserId}
+        delete
+        from sys_project_permission
+        where sub_user_id = #{subUserId}
     </delete>
 
 </mapper>

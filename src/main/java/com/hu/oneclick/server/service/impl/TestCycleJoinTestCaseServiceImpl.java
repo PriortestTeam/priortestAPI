@@ -168,24 +168,25 @@ public class TestCycleJoinTestCaseServiceImpl extends
     @Override
     @Transactional
     public void deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
-        List<Long> testCasesIds = new ArrayList<>();
+//        List<Long> testCasesIds = new ArrayList<>();
+//
+//        for (Long testCaseId : dto.getTestCaseIds()) {
+//            // 删除关联的test_cycle_join_test_case表
+//            this.testCycleJoinTestCaseDao.deleteByParam(dto.getProjectId(), dto.getTestCycleId(),
+//                testCaseId);
+//            testCasesIds.add(testCaseId);
+//        }
+//        testCasesIds = Arrays.asList(dto.getTestCaseIds());
+////        //删除关联的relation表
+////        this.relationService.removeBatchByTestCaseIds(testCasesIds);
+//
+//        // 删除test_cases_execution表
+//        testCycleTcDao.delete(
+//            new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId,
+//                    testCasesIds).eq(TestCasesExecution::getTestCycleId, dto.getTestCycleId())
+//                .eq(TestCasesExecution::getProjectId, dto.getProjectId()));
 
-        for (Long testCaseId : dto.getTestCaseIds()) {
-            // 删除关联的test_cycle_join_test_case表
-            this.testCycleJoinTestCaseDao.deleteByParam(dto.getProjectId(), dto.getTestCycleId(),
-                testCaseId);
-            testCasesIds.add(testCaseId);
-        }
-        testCasesIds = Arrays.asList(dto.getTestCaseIds());
-//        //删除关联的relation表
-//        this.relationService.removeBatchByTestCaseIds(testCasesIds);
-
-        // 删除test_cases_execution表
-        testCycleTcDao.delete(
-            new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId,
-                    testCasesIds).eq(TestCasesExecution::getTestCycleId, dto.getTestCycleId())
-                .eq(TestCasesExecution::getProjectId, dto.getProjectId()));
-
+        List<Long> testCasesIds = testCycleBiz.deleteInstance(dto);
         if (!testCasesIds.isEmpty()) {
             testCycleBiz.decreaseInstanceCount(dto.getTestCycleId(), testCasesIds.size());
         }
@@ -277,7 +278,9 @@ public class TestCycleJoinTestCaseServiceImpl extends
             td.setTestCycleId(dto.getTestCycleId());
             if (!collect.isEmpty()) {
                 td.setTestCaseIds(collect.toArray(new Long[collect.size()]));
-                deleteInstance(td);
+//                deleteInstance(td);
+                testCycleBiz.deleteInstance(td);
+                testCycleBiz.updateInstanceCount(td.getTestCycleId(), dto.getTestCaseIds().length, "refresh");
             }
             vo.setProjectId(td.getProjectId());
             vo.setTestCycleId(td.getTestCycleId());
