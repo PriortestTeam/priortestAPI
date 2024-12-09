@@ -24,8 +24,8 @@ public class VersionController extends BaseController {
     @ApiOperation("增加")
     @PostMapping("releaseCreation")
     public Resp releaseCreation(@Valid @RequestBody VersionRequestDto releaseCreationDto) {
-        versionService.releaseCreation(releaseCreationDto);
-        return new Resp.Builder().ok();
+        var id = versionService.releaseCreation(releaseCreationDto);
+        return new Resp.Builder().setData(id).ok();
     }
 
     @ApiOperation("修改")
