@@ -37,7 +37,7 @@ public class VersionServiceImpl implements VersionService {
         List<ReleaseManagement> list = versionDao.selectList(queryWrapper);
         if (CollectionUtil.isNotEmpty(list)) {
             throw new BizException(SysConstantEnum.VERSION_HAVE_EXIST.getCode(),
-                SysConstantEnum.VERSION_HAVE_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
+                SysConstantEnum.VERSION_HAVE_EXIST.getValue(), HttpStatus.OK.value());
         }
 
         ReleaseManagement version = new ReleaseManagement();
