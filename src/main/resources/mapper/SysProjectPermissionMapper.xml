@@ -26,7 +26,7 @@
                p.project_id,
                p.update_time,
                p.create_time,
-               p.operation_auth_id,
+               p.operation_auth_id
         from sys_project_permission p
         where p.sub_user_id = #{subUserId}
     </select>
