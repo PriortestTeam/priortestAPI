@@ -6,7 +6,7 @@ import com.hu.oneclick.model.domain.dto.VersionRequestDto;
 import java.util.List;
 
 public interface VersionService {
-    void releaseCreation(VersionRequestDto releaseCreationDto);
+    Long releaseCreation(VersionRequestDto releaseCreationDto);
 
     void releaseModification(VersionRequestDto releaseModification);
 

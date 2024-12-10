@@ -25,38 +25,40 @@ public class VersionServiceImpl implements VersionService {
 
     @Autowired
     VersionDao versionDao;
+
     @Override
-    public void releaseCreation(VersionRequestDto releaseCreationDto) {
+    public Long releaseCreation(VersionRequestDto releaseCreationDto) {
 
         LambdaQueryWrapper<ReleaseManagement> queryWrapper = new LambdaQueryWrapper<>();
-        if(StringUtil.isNotEmpty(releaseCreationDto.getVersion()) && StringUtil.isNotEmpty(releaseCreationDto.getVersion())) {
+        if (StringUtil.isNotEmpty(releaseCreationDto.getVersion()) && StringUtil.isNotEmpty(releaseCreationDto.getVersion())) {
             queryWrapper.eq(ReleaseManagement::getVersion, releaseCreationDto.getVersion())
-                    .eq(ReleaseManagement::getProjectId, releaseCreationDto.getProjectId());
+                .eq(ReleaseManagement::getProjectId, releaseCreationDto.getProjectId());
         }
         List<ReleaseManagement> list = versionDao.selectList(queryWrapper);
-        if(CollectionUtil.isNotEmpty(list)) {
+        if (CollectionUtil.isNotEmpty(list)) {
             throw new BizException(SysConstantEnum.VERSION_HAVE_EXIST.getCode(),
-                    SysConstantEnum.VERSION_HAVE_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
+                SysConstantEnum.VERSION_HAVE_EXIST.getValue(), HttpStatus.OK.value());
         }
 
         ReleaseManagement version = new ReleaseManagement();
         BeanUtil.copyProperties(releaseCreationDto, version);
         versionDao.insert(version);
+        return version.getId();
     }
 
     @Override
     public void releaseModification(VersionRequestDto releaseModification) {
         // Validation on payload with modified record id
-        if(releaseModification.getId() == null) {
+        if (releaseModification.getId() == null) {
             throw new BizException(SysConstantEnum.RECORD_ID_NOT_EXIST.getCode(),
-                    SysConstantEnum.RECORD_ID_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
+                SysConstantEnum.RECORD_ID_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
         }
 
         // get the existing record as per id, version, project id
-        VersionDto versionDto = getRecordByIdAndVersion(releaseModification.getId(),releaseModification.getVersion(),releaseModification.getProjectId());
-        if(versionDto == null){
+        VersionDto versionDto = getRecordByIdAndVersion(releaseModification.getId(), releaseModification.getVersion(), releaseModification.getProjectId());
+        if (versionDto == null) {
             throw new BizException(SysConstantEnum.VERSION_PROJECT_NOT_MATCH.getCode(),
-                    SysConstantEnum.VERSION_PROJECT_NOT_MATCH.getValue(), HttpStatus.BAD_REQUEST.value());
+                SysConstantEnum.VERSION_PROJECT_NOT_MATCH.getValue(), HttpStatus.BAD_REQUEST.value());
         }
         /*
         VersionDto versionDto = getVersion(releaseModification.getId());
@@ -97,7 +99,7 @@ public class VersionServiceImpl implements VersionService {
     @Override
     public List<VersionDto> getVersionList(VersionRequestDto versionRequestDto) {
         LambdaQueryWrapper<ReleaseManagement> queryWrapper = new LambdaQueryWrapper<>();
-        if(versionRequestDto.getProjectId() != null) {
+        if (versionRequestDto.getProjectId() != null) {
             queryWrapper.eq(ReleaseManagement::getProjectId, versionRequestDto.getProjectId());
         }
         List<ReleaseManagement> list = versionDao.selectList(queryWrapper);
