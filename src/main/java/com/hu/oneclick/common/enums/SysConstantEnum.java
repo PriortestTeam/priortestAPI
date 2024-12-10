@@ -82,7 +82,7 @@ public enum SysConstantEnum {
     VERSION_PROJECT_NOT_MATCH("400", "没有修改录，请确认修改记录Id、版本与项目Id是否一致"),
     VERSION_ID_NOT_EXIST("400", "版本id不能为空"),
     RECORD_ID_NOT_EXIST("400", "修改id不能为空"),
-    VERSION_HAVE_EXIST("200", "添加版本已存在");
+    VERSION_HAVE_EXIST("400", "添加版本已存在");
 
 
     private final static String NUMBER = "200";
