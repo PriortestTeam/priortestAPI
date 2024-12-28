@@ -1,10 +1,13 @@
 package com.hu.oneclick.model.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
+import java.sql.Date;
 
 @Data
 @TableName("sys_user_project")
@@ -21,6 +24,6 @@ public class SysUserProject {
     @TableField("is_default")
     private Integer isDefault;
 
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
-    private LocalDateTime createdAt;
+    @TableField(value = "created_at")
+    private Date createdAt;
 }
