@@ -79,7 +79,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
+
         SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authorization);
+
         if (!org.springframework.util.StringUtils.isEmpty(sysUserToken)) {
             Date expirationTime = sysUserToken.getExpirationTime();
             if (expirationTime.before(new Date())) {
@@ -128,7 +130,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
                     authResult = this.getAuthenticationManager().authenticate(authToken);
                     // 这里添加读取redis逻辑，如果有这个token，继续往下走，如果没有，则认为失效，或者有其他设备登陆被踢了
-                    String username = ((AuthLoginUser)authResult.getPrincipal()).getUsername();
+                    String username = ((AuthLoginUser) authResult.getPrincipal()).getUsername();
                     RBucket<String> bucket = redisClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + username);
                     String redisToken = bucket.get();
                     if (!StringUtils.equals(redisToken, token)) {
@@ -153,22 +155,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.isNotEmpty(request.getHeader("emailid"))) {
             //权限认证通过后把当前登录人信息放入redis缓存
             AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(request.getHeader("emailid"));
-            Map<String,Object> map = new HashMap<>();
-            map.put(REDIS_KEY_PREFIX.LOGIN+sysUserToken.getTokenName(),JSONObject.toJSONString(authLoginUser));
+            Map<String, Object> map = new HashMap<>();
+            map.put(REDIS_KEY_PREFIX.LOGIN + sysUserToken.getTokenName(), JSONObject.toJSONString(authLoginUser));
             redisClient.getBuckets().set(map);
         }
         filterChain.doFilter(request, response);
     }
 
     protected void unsuccessfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, AuthenticationException failed)
+                                              HttpServletResponse response, AuthenticationException failed)
         throws IOException, ServletException {
         SecurityContextHolder.clearContext();
         failureHandler.onAuthenticationFailure(request, response, failed);
     }
 
     protected void successfulAuthentication(HttpServletRequest request,
-        HttpServletResponse response, FilterChain chain, Authentication authResult)
+                                            HttpServletResponse response, FilterChain chain, Authentication authResult)
         throws IOException, ServletException {
         SecurityContextHolder.getContext().setAuthentication(authResult);
         successHandler.onAuthenticationSuccess(request, response, authResult);
@@ -183,7 +185,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     protected boolean requiresAuthentication(HttpServletRequest request,
-        HttpServletResponse response) {
+                                             HttpServletResponse response) {
         return requiresAuthenticationRequestMatcher.matches(request);
     }
 

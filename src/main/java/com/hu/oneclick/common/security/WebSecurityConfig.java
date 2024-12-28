@@ -47,14 +47,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final TokenClearLogoutHandler tokenClearLogoutHandler;
 
-    public WebSecurityConfig(JwtUserServiceImpl jwtUserService, JsonLoginSuccessHandler jsonLoginSuccessHandler, JwtAuthenticationProvider jwtAuthenticationProvider, JwtRefreshSuccessHandler jwtRefreshSuccessHandler, TokenClearLogoutHandler tokenClearLogoutHandler) {
+    public WebSecurityConfig(JwtUserServiceImpl jwtUserService, JsonLoginSuccessHandler jsonLoginSuccessHandler,
+                             JwtAuthenticationProvider jwtAuthenticationProvider, JwtRefreshSuccessHandler jwtRefreshSuccessHandler,
+                             TokenClearLogoutHandler tokenClearLogoutHandler) {
         this.jwtUserService = jwtUserService;
         this.jsonLoginSuccessHandler = jsonLoginSuccessHandler;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
         this.jwtRefreshSuccessHandler = jwtRefreshSuccessHandler;
         this.tokenClearLogoutHandler = tokenClearLogoutHandler;
     }
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -63,60 +64,59 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             return;
         }
         http.authorizeRequests()
-                .antMatchers("/login").anonymous()
-                .antMatchers("/user/register").anonymous()
-                .antMatchers("/user/sendEmailCode").anonymous()
-                .antMatchers("/user/sendEmailRegisterCode").anonymous()
-                .antMatchers("/user/activateAccount").anonymous()
-                .antMatchers("/user/forgetThePassword").anonymous()
-                .antMatchers("/user/forgetThePasswordIn").anonymous()
-                .antMatchers("/user/applyForAnExtension").anonymous()
-                .antMatchers("/user/applyForAnExtensionIn").anonymous()
-                .antMatchers("/user/verifyLinkString").anonymous()
-                .antMatchers("/swagger-ui.html").anonymous()
-                .antMatchers("/swagger-ui/**").anonymous()
-                .antMatchers("/v2/**").anonymous()
-                .antMatchers("/v3/**").anonymous()
-                .antMatchers("/swagger-resources/**").anonymous()
-                .antMatchers("/doc.html").anonymous()
-                .antMatchers("/webjars/**").anonymous()
-                .antMatchers("/webjars/springfox-swagger-ui").anonymous()
-                .antMatchers("/webjars/springfox-swagger-ui/**").anonymous()
+            .antMatchers("/login").anonymous()
+            .antMatchers("/user/register").anonymous()
+            .antMatchers("/user/sendEmailCode").anonymous()
+            .antMatchers("/user/sendEmailRegisterCode").anonymous()
+            .antMatchers("/user/activateAccount").anonymous()
+            .antMatchers("/user/forgetThePassword").anonymous()
+            .antMatchers("/user/forgetThePasswordIn").anonymous()
+            .antMatchers("/user/applyForAnExtension").anonymous()
+            .antMatchers("/user/applyForAnExtensionIn").anonymous()
+            .antMatchers("/user/verifyLinkString").anonymous()
+            .antMatchers("/swagger-ui.html").anonymous()
+            .antMatchers("/swagger-ui/**").anonymous()
+            .antMatchers("/v2/**").anonymous()
+            .antMatchers("/v3/**").anonymous()
+            .antMatchers("/swagger-resources/**").anonymous()
+            .antMatchers("/doc.html").anonymous()
+            .antMatchers("/webjars/**").anonymous()
+            .antMatchers("/webjars/springfox-swagger-ui").anonymous()
+            .antMatchers("/webjars/springfox-swagger-ui/**").anonymous()
 
-                .anyRequest().authenticated()
-                .and()
-                .csrf().disable()
-                .formLogin().disable()
-                .sessionManagement().disable()
-                .cors()
-                .and()
-                .headers().addHeaderWriter(new StaticHeadersWriter(Arrays.asList(
+            .anyRequest().authenticated()
+            .and()
+            .csrf().disable()
+            .formLogin().disable()
+            .sessionManagement().disable()
+            .cors()
+            .and()
+            .headers().addHeaderWriter(new StaticHeadersWriter(Arrays.asList(
                 new Header("Access-Control-Allow-Origin", "*"),
                 new Header("Access-Control-Expose-Headers", "Authorization"))))
-                .and()
-                .addFilterAfter(new OptionsRequestFilter(), CorsFilter.class)
-                .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler)
-                .and()
-                .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
-                //设置无权限接口
-                .permissiveRequestUrls("/login","/user/register","/user/sendEmailCode",
-                        "/user/sendEmailRegisterCode","/user/activateAccount",
-                        "/user/forgetThePassword","/user/forgetThePasswordIn",
-                        "/user/applyForAnExtension","/user/applyForAnExtensionIn","/user/verifyLinkString",
-                        "/swagger-ui.html","/swagger-resources/**","/swagger-ui/**","/v3/**",
-                        "/doc.html","/webjars/**",
-                        "/v2/**","/webjars/springfox-swagger-ui/**","/webjars/springfox-swagger-ui"
+            .and()
+            .addFilterAfter(new OptionsRequestFilter(), CorsFilter.class)
+            .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler)
+            .and()
+            .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
+            //设置无权限接口
+            .permissiveRequestUrls("/login", "/user/register", "/user/sendEmailCode",
+                "/user/sendEmailRegisterCode", "/user/activateAccount",
+                "/user/forgetThePassword", "/user/forgetThePasswordIn",
+                "/user/applyForAnExtension", "/user/applyForAnExtensionIn", "/user/verifyLinkString",
+                "/swagger-ui.html", "/swagger-resources/**", "/swagger-ui/**", "/v3/**",
+                "/doc.html", "/webjars/**",
+                "/v2/**", "/webjars/springfox-swagger-ui/**", "/webjars/springfox-swagger-ui"
 
 
-
-                )
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .addLogoutHandler(tokenClearLogoutHandler)
-                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
-                .and()
-                .sessionManagement().disable();
+            )
+            .and()
+            .logout()
+            .logoutUrl("/logout")
+            .addLogoutHandler(tokenClearLogoutHandler)
+            .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
+            .and()
+            .sessionManagement().disable();
     }
 
     @Override
@@ -143,7 +143,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Collections.singletonList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "HEAD", "OPTION", "DELETE","PUT"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "HEAD", "OPTION", "DELETE", "PUT"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         configuration.addExposedHeader("Authorization");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

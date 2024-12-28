@@ -5,6 +5,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.RoleConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -14,34 +16,14 @@ import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.controller.req.RegisterBody;
-import com.hu.oneclick.dao.RoleFunctionDao;
-import com.hu.oneclick.dao.RoomDao;
-import com.hu.oneclick.dao.SubUserProjectDao;
-import com.hu.oneclick.dao.SysRoleDao;
-import com.hu.oneclick.dao.SysUserBusinessDao;
-import com.hu.oneclick.dao.SysUserDao;
-import com.hu.oneclick.dao.SysUserTokenDao;
+import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
+import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.model.entity.*;
-import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
-import com.hu.oneclick.model.domain.dto.AuthLoginUser;
-import com.hu.oneclick.model.domain.dto.SubUserDto;
-import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
-import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SystemConfigService;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -53,13 +35,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author qingyang
  */
 @Service
 public class UserServiceImpl implements UserService {
-
-
     private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final SysUserDao sysUserDao;
@@ -88,6 +78,8 @@ public class UserServiceImpl implements UserService {
 
     private final SysRoleDao sysRoleDao;
 
+    private final SysUserProjectDao sysUserProjectDao;
+
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
 
@@ -102,7 +94,7 @@ public class UserServiceImpl implements UserService {
                            MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService,
                            SubUserProjectDao subUserProjectDao, UserOrderService userOrderService,
                            SystemConfigService systemConfigService, RoomDao roomDao, RoleFunctionDao roleFunctionDao,
-                           SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao) {
+                           SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao, SysUserProjectDao sysUserProjectDao) {
         this.sysUserDao = sysUserDao;
         this.redisClient = redisClient;
         this.jwtUserServiceImpl = jwtUserServiceImpl;
@@ -116,6 +108,7 @@ public class UserServiceImpl implements UserService {
         this.roleFunctionDao = roleFunctionDao;
         this.sysUserBusinessDao = sysUserBusinessDao;
         this.sysRoleDao = sysRoleDao;
+        this.sysUserProjectDao = sysUserProjectDao;
     }
 
     @Override
@@ -369,6 +362,7 @@ public class UserServiceImpl implements UserService {
         if (!passwordChecker.check(activateAccountDto.getPassword())) {
             throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
         }
+
         //激活账号
         if (activation.equals(OneConstant.PASSWORD.ACTIVATION)) {
             sysUser.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
@@ -378,30 +372,42 @@ public class UserServiceImpl implements UserService {
             long time = activitiDate.getTime() + firstTime * 24 * 60 * 60 * 1000;
             sysUser.setExpireDate(new Date(time));
             String userId = sysUser.getId();
+
             // TODO 如果OpenProjectByDefaultId为空，代表这个是注册的激活
-            SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
-            if (subUserProject == null || StringUtils.isEmpty(subUserProject.getOpenProjectByDefaultId())) {
+//            SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
+//            if (subUserProject == null || StringUtils.isEmpty(subUserProject.getOpenProjectByDefaultId())) {
+
+            QueryWrapper<SysUserProject> query = Wrappers.query();
+            query.eq("user_id", userId);
+            List<SysUserProject> userProjects = sysUserProjectDao.selectList(query);
+            if (userProjects.isEmpty()) {
+//                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
+//                userUseOpenProject.setProjectId(project.getId());
+//                userUseOpenProject.setUserId(userId);
+//                userUseOpenProject.setTitle("");
+                //设置用户关联的项目
+//                subUserProject = new SubUserProject();
+//                subUserProject.setUserId(sysUser.getId());
+//                subUserProject.setProjectId(project.getId());
+//                subUserProject.setOpenProjectByDefaultId(project.getId());
+//                subUserProjectDao.insert(subUserProject);
+
                 Project project = new Project();
-                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
-                userUseOpenProject.setProjectId(project.getId());
-                userUseOpenProject.setUserId(userId);
-                userUseOpenProject.setTitle("初始化项目");
-                project.setUserId(userUseOpenProject.getUserId());
-                project.setTitle(userUseOpenProject.getTitle());
+                project.setUserId(userId);
+                project.setTitle("初始化项目");
                 project.setStatus("开发中");
                 project.setRoomId(sysUser.getRoomId());
-//                project.setDelFlag(0);
                 project.setUpdateTime(new Date());
                 project.setReportToName(sysUser.getUserName());
-                projectService.initProject(project, userUseOpenProject);
-                //设置用户关联的项目
-                subUserProject = new SubUserProject();
-                subUserProject.setUserId(sysUser.getId());
-                subUserProject.setProjectId(project.getId());
-                subUserProject.setOpenProjectByDefaultId(project.getId());
-                subUserProjectDao.insert(subUserProject);
-                this.initOrder(userId);
+                projectService.initProject(project, null);
 
+                SysUserProject sysUserProject = new SysUserProject();
+                sysUserProject.setUserId(new BigInteger(userId));
+                sysUserProject.setProjectId(new BigInteger(project.getId()));
+                sysUserProject.setIsDefault(1);
+                sysUserProjectDao.insert(sysUserProject);
+
+                this.initOrder(userId);
 
                 // 2022/11/1 WangYiCheng 设置创始人初始项目的默认function
                 RoleFunction roleFunction = roleFunctionDao.queryByRoleId(sysUser.getSysRoleId());
@@ -423,6 +429,7 @@ public class UserServiceImpl implements UserService {
                 sysUserBusinessDao.insertSelective(sysUserBusiness);
             }
         }
+
         //申请延期
         if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
             int activitiNumber = sysUser.getActivitiNumber() == null ? 0 : sysUser.getActivitiNumber();

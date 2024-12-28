@@ -1,4 +1,4 @@
-PDFGenerateTest.java
-PdfGenerateTableTest.java
-TestCode.java
-CustomeFieldsTest.java
+*
+!ModelTest.java
+!ResourceFileTest.java
+!RetrieveTestCycleAsTitletTest.java
