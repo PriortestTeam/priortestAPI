@@ -11,4 +11,12 @@
           and sys_user_project.project_id = project.id
     </select>
 
+    <select id="queryProjectByUserId" parameterType="string" resultType="map">
+        SELECT project.room_id, project.title, sys_user_project.*
+        FROM sys_user_project,
+             project
+        WHERE sys_user_project.user_id = #{userId}
+          AND sys_user_project.project_id = project.id
+    </select>
+
 </mapper>

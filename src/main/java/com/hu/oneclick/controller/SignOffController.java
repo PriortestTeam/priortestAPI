@@ -102,7 +102,9 @@ public class SignOffController {
 
     @GetMapping("getProjectListByUser")
     @ApiOperation("获取当前用户下title列表")
-    public Resp<List<LeftJoinDto>> getProjectListByUser() {
-        return userProjectService.getUserByProject();
+//    public Resp<List<LeftJoinDto>> getProjectListByUser() {
+    public Object getProjectListByUser() {
+//        return userProjectService.getUserByProject();
+        return new Resp.Builder<>().setData(userProjectService.getUserProject()).ok();
     }
 }

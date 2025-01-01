@@ -300,6 +300,21 @@ public class SubUserServiceImpl implements SubUserService {
             sysUserProjectDao.insert(sysUserProject);
         }
 
+        List<String> incomingIds = Arrays.asList(subUserDto.getProjectIdStr().split(","));
+        incomingIds.remove(subUserDto.getOpenProjectByDefaultId());
+
+        List<String> difference = incomingIds.stream().filter(e -> !projectIdsBefore.contains(e)).collect(Collectors.toList());
+        if (!difference.isEmpty()) {
+            SysUserProject sysUserProject;
+            for (String projectId : difference) {
+                sysUserProject = new SysUserProject();
+                sysUserProject.setUserId(new BigInteger(subUserDto.getId()));
+                sysUserProject.setProjectId(new BigInteger(projectId));
+                sysUserProjectDao.insert(sysUserProject);
+            }
+        }
+
+
 //        设置用户关联的项目
 //        SubUserProject subUserProject = new SubUserProject();
 //        subUserProject.setUserId(subUserDto.getId());
