@@ -300,7 +300,7 @@ public class SubUserServiceImpl implements SubUserService {
             sysUserProjectDao.insert(sysUserProject);
         }
 
-        List<String> incomingIds = Arrays.asList(subUserDto.getProjectIdStr().split(","));
+        List<String> incomingIds = new ArrayList<>(List.of(subUserDto.getProjectIdStr().split(",")));
         incomingIds.remove(subUserDto.getOpenProjectByDefaultId());
 
         List<String> difference = incomingIds.stream().filter(e -> !projectIdsBefore.contains(e)).collect(Collectors.toList());
