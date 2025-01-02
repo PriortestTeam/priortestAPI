@@ -270,7 +270,6 @@ public class SubUserServiceImpl implements SubUserService {
     @Override
     public Resp<String> updateSubUser(SubUserDto subUserDto) {
         SysUser sysUserBefore = sysUserDao.queryById(subUserDto.getId());
-//        List<String> projectIdsBefore = Arrays.asList(subUserProjectDao.queryByUserId(subUserDto.getId()).getProjectId().split(","));
 
         // 设置用户
         SysUser sysUser = new SysUser();
@@ -281,36 +280,60 @@ public class SubUserServiceImpl implements SubUserService {
 
         QueryWrapper<SysUserProject> query = Wrappers.query();
         query.eq("user_id", new BigInteger(subUserDto.getId()));
-        List<String> projectIdsBefore = sysUserProjectDao.selectList(query).stream().map(arg -> arg.getProjectId().toString()).collect(Collectors.toList());
+        List<SysUserProject> userProjects = sysUserProjectDao.selectList(query);
 
-        query.notIn("project_id", Arrays.stream(subUserDto.getProjectIdStr().split(",")).map(BigInteger::new).collect(Collectors.toList()));
-        sysUserProjectDao.delete(query);
+        String defaultProject = userProjects.stream().filter(obj -> obj.getIsDefault() == 1).map(obj -> obj.getProjectId().toString())
+            .findFirst().orElse(null);
 
-        if (projectIdsBefore.contains(subUserDto.getOpenProjectByDefaultId())) {
-            UpdateWrapper<SysUserProject> update = Wrappers.update();
-            update.set("is_default", 1);
-            update.eq("user_id", new BigInteger(subUserDto.getId()));
-            update.eq("project_id", new BigInteger(subUserDto.getOpenProjectByDefaultId()));
-            sysUserProjectDao.update(new SysUserProject(), update);
-        } else {
-            SysUserProject sysUserProject = new SysUserProject();
-            sysUserProject.setUserId(new BigInteger(subUserDto.getId()));
-            sysUserProject.setProjectId(new BigInteger(subUserDto.getOpenProjectByDefaultId()));
-            sysUserProject.setIsDefault(1);
-            sysUserProjectDao.insert(sysUserProject);
-        }
+        List<String> projectIdsBefore = userProjects.stream().map(arg -> arg.getProjectId().toString()).collect(Collectors.toList());
 
         List<String> incomingIds = new ArrayList<>(List.of(subUserDto.getProjectIdStr().split(",")));
-        incomingIds.remove(subUserDto.getOpenProjectByDefaultId());
 
-        List<String> difference = incomingIds.stream().filter(e -> !projectIdsBefore.contains(e)).collect(Collectors.toList());
-        if (!difference.isEmpty()) {
-            SysUserProject sysUserProject;
-            for (String projectId : difference) {
-                sysUserProject = new SysUserProject();
+        List<String> deletedIds = new ArrayList<>(projectIdsBefore);
+        deletedIds.removeAll(incomingIds);
+
+        if (!deletedIds.isEmpty()) {
+            QueryWrapper<SysUserProject> query2 = Wrappers.query();
+            query2.eq("user_id", new BigInteger(subUserDto.getId()));
+            query2.in("project_id", deletedIds.stream().map(BigInteger::new).collect(Collectors.toList()));
+            sysUserProjectDao.delete(query2);
+        }
+
+        if (defaultProject == null || !defaultProject.equals(subUserDto.getOpenProjectByDefaultId())) {
+            if (projectIdsBefore.contains(subUserDto.getOpenProjectByDefaultId())) {
+                UpdateWrapper<SysUserProject> update = Wrappers.update();
+                update.set("is_default", 1);
+                update.eq("user_id", new BigInteger(subUserDto.getId()));
+                update.eq("project_id", new BigInteger(subUserDto.getOpenProjectByDefaultId()));
+                sysUserProjectDao.update(new SysUserProject(), update);
+            } else {
+                SysUserProject sysUserProject = new SysUserProject();
                 sysUserProject.setUserId(new BigInteger(subUserDto.getId()));
-                sysUserProject.setProjectId(new BigInteger(projectId));
+                sysUserProject.setProjectId(new BigInteger(subUserDto.getOpenProjectByDefaultId()));
+                sysUserProject.setIsDefault(1);
                 sysUserProjectDao.insert(sysUserProject);
+            }
+
+            if (defaultProject != null && !deletedIds.contains(defaultProject)) {
+                UpdateWrapper<SysUserProject> update = Wrappers.update();
+                update.set("is_default", 0);
+                update.eq("user_id", new BigInteger(subUserDto.getId()));
+                update.eq("project_id", new BigInteger(defaultProject));
+                sysUserProjectDao.update(new SysUserProject(), update);
+            }
+        }
+
+        incomingIds.remove(subUserDto.getOpenProjectByDefaultId());
+        if (!incomingIds.isEmpty()) {
+            incomingIds.removeAll(projectIdsBefore);
+            if (!incomingIds.isEmpty()) {
+                SysUserProject sysUserProject;
+                for (String projectId : incomingIds) {
+                    sysUserProject = new SysUserProject();
+                    sysUserProject.setUserId(new BigInteger(subUserDto.getId()));
+                    sysUserProject.setProjectId(new BigInteger(projectId));
+                    sysUserProjectDao.insert(sysUserProject);
+                }
             }
         }
 
