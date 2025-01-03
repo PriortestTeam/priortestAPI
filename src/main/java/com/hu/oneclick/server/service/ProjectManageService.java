@@ -51,4 +51,6 @@ public interface ProjectManageService extends IService<ProjectManage> {
      * @param ids
      */
     void clone(List<Long> ids);
+
+    void delete(Long[] id);
 }

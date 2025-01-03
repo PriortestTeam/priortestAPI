@@ -83,10 +83,11 @@ public class ProjectManageController extends BaseController {
     @DeleteMapping("/deleteProject/{ids}")
     public Resp<?> deleteProject(@PathVariable Long[] ids) {
         try {
-            this.projectManageService.removeByIds(Arrays.asList(ids));
+            this.projectManageService.delete(ids);
+//            this.projectManageService.removeByIds(Arrays.asList(ids));
         } catch (Exception e) {
             log.error("删除项目失败，原因：" + e.getMessage(), e);
-            return new Resp.Builder<ProjectManage>().fail();
+            return new Resp.Builder<String>().buildResult("-1", e.getMessage(), 403);
         }
         return new Resp.Builder<ProjectManage>().ok();
     }

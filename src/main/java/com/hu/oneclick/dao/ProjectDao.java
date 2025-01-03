@@ -16,7 +16,6 @@ import java.util.List;
  * @since 2020-12-07 20:59:50
  */
 public interface ProjectDao {
-
     /**
      * 通过ID查询单条数据
      *
@@ -33,7 +32,6 @@ public interface ProjectDao {
      * @return 对象列表
      */
     List<Project> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
-
 
     /**
      * 通过实体作为筛选条件查询
@@ -75,64 +73,63 @@ public interface ProjectDao {
 
     /**
      * 通过用户ID删除数据
+     *
      * @param userId
      * @return
      */
     int deleteOpenProjectByUserId(@Param("userId") String userId);
 
-    Integer queryByTitle(@Param("masterId")String masterId,@Param("title") String title);
+    Integer queryByTitle(@Param("masterId") String masterId, @Param("title") String title);
 
     /**
      * 查询所有的项目
+     *
      * @return
      */
-    List<Project> queryAllProjects(@Param("roomId")String roomId);
-
-
+    List<Project> queryAllProjects(@Param("roomId") String roomId);
 
     /**
      * 查询所有的项目 and 权限
+     *
      * @return
      */
-    List<Project> queryAllProjectsAndPermission(@Param("masterId")String masterId);
+    List<Project> queryAllProjectsAndPermission(@Param("masterId") String masterId);
 
     /**
      * id查询项目 and 权限
+     *
      * @return
      */
-    Project queryProjectAndPermissionByProjectId(@Param("masterId")String masterId,
-                                                 @Param("projectId")String projectId);
+    Project queryProjectAndPermissionByProjectId(@Param("masterId") String masterId,
+                                                 @Param("projectId") String projectId);
+
     /**
      * 根据project id 列表 查询 and 权限
+     *
      * @param projectIds
      * @param masterId
      * @return
      */
     List<Project> queryInProjectIdsAndPermission(@Param("projectIds") List<String> projectIds, @Param("masterId") String masterId);
 
-
-
-    //用户操作已打开的项目
-
     /**
      * 查询用户已打开的项目
+     *
      * @param userId
      * @param userId
      * @return
      */
     UserUseOpenProject queryUseOpenProject(@Param("userId") String userId);
 
-
     int insertUseOpenProject(UserUseOpenProject userUseOpenProject);
-
 
     int deleteUseOpenProject(@Param("id") String id);
 
-
     Integer initProject(Project project);
 
-
-    /** 查询项目
+    /**
+     * 查询项目
+     *
      * @Param: [project]
      * @return: java.util.List<com.hu.oneclick.model.entity.Project>
      * @Author: MaSiyi

@@ -110,6 +110,8 @@ public class SysUser extends BaseEntity implements Serializable {
 
     private UserUseOpenProject userUseOpenProject;
 
+    private Object userDefaultProject;
+
     /**
      * VIP,Classic,Trialer 用户身份类型
      */
