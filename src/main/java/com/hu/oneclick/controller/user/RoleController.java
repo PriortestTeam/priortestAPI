@@ -34,11 +34,12 @@ public class RoleController {
 
     /**
      * 角色对应应用显示
+     *
      * @return
      */
     @GetMapping(value = "/findUserRole")
     @ApiOperation(value = "角色对应应用显示")
-    public JSONArray findUserRole(@RequestParam("UBType") String type, @RequestParam("UBKeyId") String keyId){
+    public JSONArray findUserRole(@RequestParam("UBType") String type, @RequestParam("UBKeyId") String keyId) {
         JSONArray arr = new JSONArray();
         try {
             //获取权限信息
@@ -70,8 +71,8 @@ public class RoleController {
 
     @GetMapping(value = "/getAccountRole")
     @ApiOperation(value = "查询全部角色为该角色的用户")
-    public Resp<List<SysUserRoleDto>> getAccountRole(@RequestParam  String roleName) {
-        return sysRoleService.getAccountRole(roleName);
+    public Resp<List<SysUserRoleDto>> getAccountRole(@RequestParam String roleId) {
+        return sysRoleService.getAccountRole(roleId);
     }
 
 

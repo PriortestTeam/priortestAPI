@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SubUserProjectDao">
-
     <resultMap type="com.hu.oneclick.model.entity.SubUserProject" id="SubUserProjectMap">
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="VARCHAR"/>
     </resultMap>
-
 
     <delete id="deleteByUserId">
         delete
@@ -14,12 +12,10 @@
         where user_id = #{userId}
     </delete>
 
-
-
-
-
     <select id="queryByUserId" resultType="com.hu.oneclick.model.entity.SubUserProject">
-        select user_id as userId, project_id as projectId , open_project_by_default_id as openProjectByDefaultId FROM sub_user_project where user_id = #{userId}
+        select user_id as userId, project_id as projectId, open_project_by_default_id as openProjectByDefaultId
+        FROM sub_user_project
+        where user_id = #{userId}
     </select>
 
     <select id="selectTitlesByUserId" resultType="java.lang.String">
@@ -27,7 +23,7 @@
         p.title
         FROM `sys_user` su
         JOIN `sub_user_project` sup ON su.id = sup.user_id
-        JOIN `project` p ON p.room_id = su.room_id  AND p.id IN
+        JOIN `project` p ON p.room_id = su.room_id AND p.id IN
         <foreach collection="projectIds" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
@@ -49,7 +45,6 @@
             #{openProjectByDefaultId}
         </trim>
     </insert>
-
 
     <!--通过主键修改数据-->
     <update id="update">

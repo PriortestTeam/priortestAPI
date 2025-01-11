@@ -19,6 +19,7 @@ import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.model.entity.UserUseOpenProject;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -172,15 +173,9 @@ public class JwtUserServiceImpl implements UserDetailsService {
             user.setEmail(TwoConstant.subUserNameCrop(user.getEmail()));
             authLoginUser.setPermissions(sysProjectPermissionDao.queryBySubUserId(user.getId()));
         }
-        // 查询用户上一次打开的项目
-//        UserUseOpenProject userUseOpenProject = projectDao.queryUseOpenProject(user.getId());
-//        if (userUseOpenProject != null) {
-//            user.setUserUseOpenProject(userUseOpenProject);
-//            user.setIsUseProject(1);
-//        }
-        Map<String, Object> userDefaultProject = sysUserProjectDao.queryUserDefaultProject(user.getId());
+
+        Map<String, Object> userDefaultProject = sysUserProjectDao.queryUserDefaultProject(new BigInteger(user.getId()));
         if (userDefaultProject != null) {
-            //user.setUserDefaultProject(userDefaultProject);
             UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
             userUseOpenProject.setUserId(user.getId());
             userUseOpenProject.setProjectId(userDefaultProject.get("project_id").toString());

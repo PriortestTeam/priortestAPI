@@ -12,8 +12,10 @@ import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -145,9 +147,10 @@ public class UserController {
     public Resp<String> verifyLinkString(@RequestParam String params) {
         return userService.verifyLinkString(params);
     }
+
     @ApiOperation("通过项目Id获取用户列表")
     @GetMapping("/listUserByProjectId/{projectId}")
-    public Resp<List<Map<String ,Object>>> listUserByProjectId(@PathVariable("projectId") Long projectId) {
+    public Resp<List<Map<String, Object>>> listUserByProjectId(@PathVariable("projectId") Long projectId) {
         return userService.listUserByProjectId(projectId);
     }
 

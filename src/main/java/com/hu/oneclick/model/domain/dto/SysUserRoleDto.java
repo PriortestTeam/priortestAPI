@@ -4,7 +4,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-/** SysUserRoleDto
+/**
+ * SysUserRoleDto
+ *
  * @Param:
  * @return:
  * @Author: MaSiyi
@@ -14,7 +16,9 @@ import java.io.Serializable;
 public class SysUserRoleDto implements Serializable {
     private static final long serialVersionUID = -67242842971294342L;
 
-    /** userId
+    /**
+     * userId
+     *
      * @Param:
      * @return:
      * @Author: MaSiyi
@@ -44,4 +48,5 @@ public class SysUserRoleDto implements Serializable {
      * 角色描述
      */
     private String roleDesc;
+    private String roomId;
 }

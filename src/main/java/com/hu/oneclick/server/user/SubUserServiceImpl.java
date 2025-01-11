@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -77,24 +74,33 @@ public class SubUserServiceImpl implements SubUserService {
     }
 
     @Override
-    public Resp<List<SubUserDto>> querySubUsers(SubUserDto dto) {
-        /*sysUser.setParentId(Long.valueOf(jwtUserServiceImpl.getMasterId()));
-        List<SubUserDto> sysUsers = sysUserDao.querySubUsers(sysUser);
-        List<Project> projects = projectDao.queryAllProjects(jwtUserServiceImpl.getMasterId());
-        if (projects != null && projects.size() > 0){
-            sysUsers.forEach(e -> accept(e, projects));
-        }
-        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();*/
+    public Resp<List<Map<String, Object>>> querySubUsers(int pageNum, int pageSize) {
         SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-        List<SubUserDto> sysUsers = sysUserDao.querySubUsersByRoomId(sysUser.getRoomId());
-        for (SubUserDto user : sysUsers) {
-            String[] projectIds = user.getProjectIdStr().split(",");
-            List<String> titles = subUserProjectDao.selectTitlesByUserId(sysUser.getId(), projectIds);
-            String projectsSts = StringUtils.join(titles, ",");
-            user.setProjectsSts(projectsSts);
+        Long roomId = sysUser.getRoomId();
+
+        List<Map<String, Object>> sysUsers = sysUserDao.queryUsersByRoomId(new BigInteger(roomId.toString()), pageNum, pageSize);
+
+        List<BigInteger> ids = sysUsers.stream().map(obj -> new BigInteger(obj.get("id").toString())).collect(Collectors.toList());
+        List<Map<String, Object>> projects = sysUserProjectDao.queryProjectWithUsers(ids);
+
+        for (Map<String, Object> map : sysUsers) {
+            BigInteger userid = new BigInteger(map.get("id").toString());
+
+            Optional<Map<String, Object>> first = projects.stream().filter(m -> new BigInteger(m.get("userId").toString()).equals(userid)
+                && Integer.parseInt(m.get("is_default").toString()) == 1).findFirst();
+            map.put("openProjectByDefaultId", first.map(obj -> obj.get("projectId").toString()).orElse(null));
+            map.put("openProjectByDefaultName", first.map(obj -> obj.get("title").toString()).orElse(null));
+
+            List<Map<String, Object>> linkedProject = projects.stream().filter(m -> new BigInteger(m.get("userId").toString()).equals(userid))
+                .collect(Collectors.toList());
+            linkedProject.forEach(m -> {
+                m.remove("is_default");
+                m.remove("userId");
+            });
+            map.put("projectIdStr", linkedProject);
         }
 
-        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();
+        return new Resp.Builder<List<Map<String, Object>>>().setData(sysUsers).total(sysUsers).ok();
     }
 
     private void accept(SubUserDto subUserDto, List<Project> projects) {
