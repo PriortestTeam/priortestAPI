@@ -1,9 +1,9 @@
 package com.hu.oneclick.controller.user;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.entity.Project;
 import com.hu.oneclick.model.entity.SubUserProject;
-import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.user.SubUserService;
 import io.swagger.annotations.Api;
@@ -11,7 +11,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Map;
 
