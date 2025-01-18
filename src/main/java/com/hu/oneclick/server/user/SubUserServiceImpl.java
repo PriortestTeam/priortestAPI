@@ -92,11 +92,13 @@ public class SubUserServiceImpl implements SubUserService {
             map.put("openProjectByDefaultName", first.map(obj -> obj.get("title").toString()).orElse(null));
 
             List<Map<String, Object>> linkedProject = projects.stream().filter(m -> new BigInteger(m.get("userId").toString()).equals(userid))
-                .collect(Collectors.toList());
-            linkedProject.forEach(m -> {
-                m.remove("is_default");
-                m.remove("userId");
-            });
+                .map(m -> {
+                    Map<String, Object> linkedMap = new HashMap<>();
+                    linkedMap.put("projectId", m.get("projectId").toString());
+                    linkedMap.put("title", m.get("title").toString());
+                    return linkedMap;
+                }).collect(Collectors.toList());
+
             map.put("projectIdStr", linkedProject);
         }
 
