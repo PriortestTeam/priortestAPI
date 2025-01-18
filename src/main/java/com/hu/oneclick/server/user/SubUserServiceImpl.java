@@ -83,8 +83,14 @@ public class SubUserServiceImpl implements SubUserService {
         List<BigInteger> ids = sysUsers.stream().map(obj -> new BigInteger(obj.get("id").toString())).collect(Collectors.toList());
         List<Map<String, Object>> projects = sysUserProjectDao.queryProjectWithUsers(ids);
 
+        List<SysRole> sysRoles = sysRoleDao.queryAll(null);
+
         for (Map<String, Object> map : sysUsers) {
             BigInteger userid = new BigInteger(map.get("id").toString());
+
+            String roleName = sysRoles.stream().filter(obj -> obj.getId().equals(map.get("sysRoleId").toString()))
+                .map(SysRole::getRoleName).findFirst().orElse(null);
+            map.put("sysRoleName", roleName);
 
             Optional<Map<String, Object>> first = projects.stream().filter(m -> new BigInteger(m.get("userId").toString()).equals(userid)
                 && Integer.parseInt(m.get("is_default").toString()) == 1).findFirst();
