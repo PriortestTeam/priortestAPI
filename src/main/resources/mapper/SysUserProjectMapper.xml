@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.SysUserProjectDao">
 
-    <select id="queryUserDefaultProject" parameterType="java.lang.String" resultType="java.util.Map">
+    <select id="queryUserDefaultProject" parameterType="object" resultType="java.util.Map">
         select project.title, sys_user_project.*
         from sys_user_project,
              project
@@ -11,7 +11,7 @@
           and sys_user_project.project_id = project.id
     </select>
 
-    <select id="queryProjectByUserId" parameterType="string" resultType="map">
+    <select id="queryProjectByUserId" parameterType="object" resultType="map">
         SELECT project.room_id, project.title, sys_user_project.*
         FROM sys_user_project,
              project
@@ -19,4 +19,14 @@
           AND sys_user_project.project_id = project.id
     </select>
 
+    <select id="queryProjectWithUsers" parameterType="list" resultType="map">
+        SELECT sup.user_id as userId, sup.is_default, sup.project_id as projectId, p.title
+        FROM sys_user_project as sup,
+        project p
+        WHERE sup.user_id IN
+        <foreach collection="userIds" index="i" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        AND p.id = sup.project_id
+    </select>
 </mapper>

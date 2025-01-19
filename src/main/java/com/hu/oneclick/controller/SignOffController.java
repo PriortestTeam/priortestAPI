@@ -66,9 +66,7 @@ public class SignOffController {
 
     @PostMapping("/generate")
     @ApiOperation("生成pdf文档")
-//    public Resp<String> generate(@RequestBody SignOffDto signOffDto) {
     public Object generate(@RequestBody SignOffParam signOffParam) {
-//        return projectService.generate(signOffDto);
         return pdfGenerateService.generatePdf(signOffParam);
     }
 
@@ -102,9 +100,7 @@ public class SignOffController {
 
     @GetMapping("getProjectListByUser")
     @ApiOperation("获取当前用户下title列表")
-//    public Resp<List<LeftJoinDto>> getProjectListByUser() {
     public Object getProjectListByUser() {
-//        return userProjectService.getUserByProject();
         return new Resp.Builder<>().setData(userProjectService.getUserProject()).ok();
     }
 }

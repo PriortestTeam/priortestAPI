@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -77,24 +74,41 @@ public class SubUserServiceImpl implements SubUserService {
     }
 
     @Override
-    public Resp<List<SubUserDto>> querySubUsers(SubUserDto dto) {
-        /*sysUser.setParentId(Long.valueOf(jwtUserServiceImpl.getMasterId()));
-        List<SubUserDto> sysUsers = sysUserDao.querySubUsers(sysUser);
-        List<Project> projects = projectDao.queryAllProjects(jwtUserServiceImpl.getMasterId());
-        if (projects != null && projects.size() > 0){
-            sysUsers.forEach(e -> accept(e, projects));
-        }
-        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();*/
+    public Resp<List<Map<String, Object>>> querySubUsers(int pageNum, int pageSize) {
         SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-        List<SubUserDto> sysUsers = sysUserDao.querySubUsersByRoomId(sysUser.getRoomId());
-        for (SubUserDto user : sysUsers) {
-            String[] projectIds = user.getProjectIdStr().split(",");
-            List<String> titles = subUserProjectDao.selectTitlesByUserId(sysUser.getId(), projectIds);
-            String projectsSts = StringUtils.join(titles, ",");
-            user.setProjectsSts(projectsSts);
+        Long roomId = sysUser.getRoomId();
+
+        List<Map<String, Object>> sysUsers = sysUserDao.queryUsersByRoomId(new BigInteger(roomId.toString()), pageNum, pageSize);
+
+        List<BigInteger> ids = sysUsers.stream().map(obj -> new BigInteger(obj.get("id").toString())).collect(Collectors.toList());
+        List<Map<String, Object>> projects = sysUserProjectDao.queryProjectWithUsers(ids);
+
+        List<SysRole> sysRoles = sysRoleDao.queryAll(null);
+
+        for (Map<String, Object> map : sysUsers) {
+            BigInteger userid = new BigInteger(map.get("id").toString());
+
+            String roleName = sysRoles.stream().filter(obj -> obj.getId().equals(map.get("sysRoleId").toString()))
+                .map(SysRole::getRoleName).findFirst().orElse(null);
+            map.put("sysRoleName", roleName);
+
+            Optional<Map<String, Object>> first = projects.stream().filter(m -> new BigInteger(m.get("userId").toString()).equals(userid)
+                && Integer.parseInt(m.get("is_default").toString()) == 1).findFirst();
+            map.put("openProjectByDefaultId", first.map(obj -> obj.get("projectId").toString()).orElse(null));
+            map.put("openProjectByDefaultName", first.map(obj -> obj.get("title").toString()).orElse(null));
+
+            List<Map<String, Object>> linkedProject = projects.stream().filter(m -> new BigInteger(m.get("userId").toString()).equals(userid))
+                .map(m -> {
+                    Map<String, Object> linkedMap = new HashMap<>();
+                    linkedMap.put("projectId", m.get("projectId").toString());
+                    linkedMap.put("title", m.get("title").toString());
+                    return linkedMap;
+                }).collect(Collectors.toList());
+
+            map.put("projectIdStr", linkedProject);
         }
 
-        return new Resp.Builder<List<SubUserDto>>().setData(sysUsers).total(sysUsers).ok();
+        return new Resp.Builder<List<Map<String, Object>>>().setData(sysUsers).total(sysUsers).ok();
     }
 
     private void accept(SubUserDto subUserDto, List<Project> projects) {
@@ -145,34 +159,18 @@ public class SubUserServiceImpl implements SubUserService {
             if (!sysUsers.isEmpty()) {
                 throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), "邮箱" + SysConstantEnum.DATE_EXIST.getValue());
             }
-//            String subEmail = OneConstant.COMMON.SUB_USER_SEPARATOR + oldEmail;
 
             //验证用户是否存在
             verifySubEmailExists(oldEmail);
 
             sysUser.setEmail(oldEmail);
-//            sysUser.setPassword(encodePassword(sysUser.getPassword()));
             //设置默认头像
             sysUser.setPhoto(defaultPhoto);
-//            sysUser.setSysRoleId(RoleConstant.ADMIN_PLAT);
             sysUser.setSysRoleId(sysUser.getSysRoleId());
             sysUser.setManager(OneConstant.PLATEFORM_USER_TYPE.SUB_USER);
-//            sysUser.setParentId(Long.valueOf(masterUser.getId()));
             sysUser.setRoomId(masterUser.getRoomId());
 
-            //设置用户关联的项目
-//            SubUserProject subUserProject = new SubUserProject();
-//            subUserProject.setUserId(sysUser.getId());
-//            subUserProject.setProjectId(sysUser.getProjectIdStr());
-//            subUserProject.setOpenProjectByDefaultId(sysUser.getOpenProjectByDefaultId());
-            // 设置用户下次登录默认打开的项目
-//            UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
-//            userUseOpenProject.setProjectId(sysUser.getOpenProjectByDefaultId());
-//            userUseOpenProject.setUserId(sysUser.getId());
-//            projectDao.insertUseOpenProject(userUseOpenProject);
-
-
-            if (sysUserDao.insert(sysUser) > 0) { //&& subUserProjectDao.insert(subUserProject) > 0
+            if (sysUserDao.insert(sysUser) > 0) {
                 String[] ids = sysUser.getProjectIdStr().split(",");
                 SysUserProject sysUserProject;
                 for (String id : ids) {
@@ -228,44 +226,6 @@ public class SubUserServiceImpl implements SubUserService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
-
-//    @Override
-//    @Transactional(rollbackFor = Exception.class)
-//    public Resp<String> updateSubUser(SubUserDto sysUser) {
-        /*try {
-            String masterId = jwtUserServiceImpl.getMasterId();
-            sysUser.setParentId(Long.valueOf(masterId));
-
-            //邮箱不为空代表需要修改
-            if (sysUser.getEmail() != null){
-                SysUser user = sysUserDao.queryById(masterId);
-                if (user != null){
-                    //验证用户是否存在
-                    String email = OneConstant.COMMON.SUB_USER_SEPARATOR + sysUser.getEmail();
-                    sysUser.setEmail(email);
-                    verifySubEmailExists(email);
-                }else {
-                    throw new BizException(SysConstantEnum.MASTER_ACCOUNT_ERROR.getCode(),SysConstantEnum.MASTER_ACCOUNT_ERROR.getValue());
-                }
-            }
-
-            Result.updateResult(sysUserDao.updateSubUser(sysUser));
-
-            //设置用户关联的项目
-            SubUserProject subUserProject = new SubUserProject();
-            subUserProject.setUserId(sysUser.getId());
-            subUserProject.setProjectId(sysUser.getProjectIdStr());
-
-            if (StringUtils.isNotEmpty(subUserProject.getProjectId()) && StringUtils.isNotEmpty(subUserProject.getUserId())){
-                Result.updateResult(subUserProjectDao.update(subUserProject));
-            }
-            return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
-        }catch (BizException e){
-            logger.error("class: SubUserServiceImpl#updateSubUser,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
-        }*/
-//        return  new Resp.Builder<String>().buildResult("500", "接口已删除");
-//    }
 
     @Override
     public Resp<String> updateSubUser(SubUserDto subUserDto) {
@@ -336,20 +296,6 @@ public class SubUserServiceImpl implements SubUserService {
                 }
             }
         }
-
-
-//        设置用户关联的项目
-//        SubUserProject subUserProject = new SubUserProject();
-//        subUserProject.setUserId(subUserDto.getId());
-//        subUserProject.setProjectId(subUserDto.getProjectIdStr());
-//        subUserProject.setOpenProjectByDefaultId(subUserDto.getOpenProjectByDefaultId());
-//        subUserProjectDao.update(subUserProject);
-
-//         设置用户下次登录默认打开的项目
-//        UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
-//        userUseOpenProject.setProjectId(subUserDto.getOpenProjectByDefaultId());
-//        userUseOpenProject.setUserId(subUserDto.getId());
-//        projectDao.updateOpenProject(userUseOpenProject);
 
         //business相关
         //如果角色变了，则根据userId删除以前所有business数据，然后插入
@@ -423,20 +369,9 @@ public class SubUserServiceImpl implements SubUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateSubUserPassword(SubUserDto sysUser) {
-        /*sysUser.verifyPassword();
-        sysUser.setParentId(Long.valueOf(jwtUserServiceImpl.getMasterId()));
-        sysUser.setPassword(encodePassword(sysUser.getPassword()));
-        return Result.updateResult(sysUserDao.updateSubUserPassword(sysUser));*/
         String msg = "接口已删除";
         return new Resp.Builder<String>().buildResult("500", "接口已删除");
     }
-
-//    @Override
-//    @Transactional(rollbackFor = Exception.class)
-//    public Resp<String> deleteSubUser(String id) {
-//        //return Result.deleteResult(sysUserDao.deleteSubUser(id,jwtUserServiceImpl.getMasterId()));
-//        return new Resp.Builder<String>().buildResult("500", "接口已删除");
-//    }
 
     @Override
     public Resp<String> deleteSubUser(String id) {
@@ -501,12 +436,7 @@ public class SubUserServiceImpl implements SubUserService {
         query.eq("user_id", new BigInteger(userId));
         List<String> projectIdList = sysUserProjectDao.selectList(query).stream().map(obj -> obj.getProjectId().toString()).collect(Collectors.toList());
 
-//        SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
-//        String projectIds = subUserProject.getProjectId();
-//        List<String> projectIdList = Arrays.asList(projectIds.split(","));
-
         List<Project> projectList = projectDao.queryAllByIds(projectIdList);
-
 
         return new Resp.Builder<List<Project>>().setData(projectList).total(projectList).ok();
     }

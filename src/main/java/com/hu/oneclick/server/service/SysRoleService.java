@@ -15,11 +15,13 @@ public interface SysRoleService {
 
     List<SysRole> findUserRole();
 
-    /** 查询全部角色为该角色的用户
+    /**
+     * 查询全部角色为该角色的用户
+     *
      * @Param: [roleName]
-     * @return: com.hu.oneclick.model.base.Resp<java.util.List<com.hu.oneclick.model.entity.SysUser>>
+     * @return: com.hu.oneclick.model.base.Resp<java.util.List < com.hu.oneclick.model.entity.SysUser>>
      * @Author: MaSiyi
      * @Date: 2022/1/3
      */
-    Resp<List<SysUserRoleDto>> getAccountRole(String roleName);
+    Resp<List<SysUserRoleDto>> getAccountRole(String roleId);
 }

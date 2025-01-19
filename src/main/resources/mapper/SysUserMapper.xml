@@ -242,19 +242,19 @@
           and u.parent_id = #{masterId}*/
     </select>
     <select id="queryByNameSubUsers" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">
-       <!-- select
-        id as id,
-        user_name as userName
-        from sys_user
-        <where>
-            1 = 1
-            and parent_id = #{masterId}
-            <if test="subUserName != null and subUserName != ''">
-                and user_name like concat('%',#{subUserName},'%')
-            </if>
-            limit 0,10
-        </where>
--->
+        <!-- select
+         id as id,
+         user_name as userName
+         from sys_user
+         <where>
+             1 = 1
+             and parent_id = #{masterId}
+             <if test="subUserName != null and subUserName != ''">
+                 and user_name like concat('%',#{subUserName},'%')
+             </if>
+             limit 0,10
+         </where>
+ -->
     </select>
 
     <!--新增所有列-->
@@ -456,48 +456,48 @@
         where id = #{id}
           and del_flag = 0
     </update>
-<!--    <update id="updateSubUser">-->
-        <!--update oneclick.sys_user
-        <set>
-            <if test="email != null and email != ''">
-                email = #{email},
-            </if>
-            <if test="userName != null and userName != ''">
-                user_name = #{userName},
-            </if>
-            <if test="photo != null and photo != ''">
-                photo = #{photo},
-            </if>
-            <if test="status != null">
-                status = #{status},
-            </if>
-            <if test="contactNo != null and contactNo != ''">
-                contact_no = #{contactNo},
-            </if>
-            <if test="closeDate != null">
-                close_date = #{closeDate},
-            </if>
-            <if test="sysRoleId != null and sysRoleId != ''">
-                sys_role_id = #{sysRoleId},
-            </if>
-            <if test="roomId != null">
-                room_id = #{roomId},
-            </if>
-            update_time = NOW()
-        </set>
-        where
-        id = #{id}
-        and parent_id = #{parentId}
-        and del_flag = 0-->
-<!--    </update>-->
+    <!--    <update id="updateSubUser">-->
+    <!--update oneclick.sys_user
+    <set>
+        <if test="email != null and email != ''">
+            email = #{email},
+        </if>
+        <if test="userName != null and userName != ''">
+            user_name = #{userName},
+        </if>
+        <if test="photo != null and photo != ''">
+            photo = #{photo},
+        </if>
+        <if test="status != null">
+            status = #{status},
+        </if>
+        <if test="contactNo != null and contactNo != ''">
+            contact_no = #{contactNo},
+        </if>
+        <if test="closeDate != null">
+            close_date = #{closeDate},
+        </if>
+        <if test="sysRoleId != null and sysRoleId != ''">
+            sys_role_id = #{sysRoleId},
+        </if>
+        <if test="roomId != null">
+            room_id = #{roomId},
+        </if>
+        update_time = NOW()
+    </set>
+    where
+    id = #{id}
+    and parent_id = #{parentId}
+    and del_flag = 0-->
+    <!--    </update>-->
 
     <update id="updateSubUser">
-         update oneclick.sys_user
-         <set>
+        update oneclick.sys_user
+        <set>
             user_name=#{userName},
             sys_role_id=#{sysRoleId}
-         </set>
-          where id=#{id}
+        </set>
+        where id=#{id}
     </update>
 
     <update id="updateSubUserPassword">
@@ -520,34 +520,34 @@
         where id = #{id}
     </delete>
 
-<!--    <delete id="deleteSubUser">-->
-        <!--delete
+    <!--    <delete id="deleteSubUser">-->
+    <!--delete
+    from sys_user
+    where id = #{id}
+      and manager = 2
+      and parent_id = #{masterId}-->
+    <!--    </delete>-->
+    <delete id="deleteSubUser">
+        delete
         from sys_user
         where id = #{id}
-          and manager = 2
-          and parent_id = #{masterId}-->
-<!--    </delete>-->
-        <delete id="deleteSubUser">
-            delete
-            from sys_user
-            where id = #{id}
-        </delete>
+    </delete>
 
     <select id="queryPlatformUsers" resultType="com.hu.oneclick.model.domain.dto.PlatformUserDto">
-        select u.id as id,
-               u.email as email,
-               u.user_name as userName,
-               u.status as status,
+        select u.id            as id,
+               u.email         as email,
+               u.user_name     as userName,
+               u.status        as status,
                u.register_date as registerDate,
-               u.contact_no as contactNo,
-               u.company as company,
-               u.profession as profession,
-               u.industry as industry,
-               u.close_date as closeDate,
-               u.enable as enable,
-               u.active_state as activeState,
-               u.time_zone as timeZone,
-               u.locale as locale
+               u.contact_no    as contactNo,
+               u.company       as company,
+               u.profession    as profession,
+               u.industry      as industry,
+               u.close_date    as closeDate,
+               u.enable        as enable,
+               u.active_state  as activeState,
+               u.time_zone     as timeZone,
+               u.locale        as locale
         from sys_user u
         where u.manager = 0
     </select>
@@ -596,14 +596,16 @@
     </update>
 
     <delete id="deleteByParentId">
-       /* delete from sys_user where
-             parent_id = #{parentId}*/
+        /* delete from sys_user where
+              parent_id = #{parentId}*/
     </delete>
 
     <select id="getExpireDate" resultType="java.util.Date">
-        select expire_date from sys_user where id = #{userId}
+        select expire_date
+        from sys_user
+        where id = #{userId}
     </select>
-    <select id="queryByLikeEmail"  resultMap="SysUserMap">
+    <select id="queryByLikeEmail" resultMap="SysUserMap">
         select id,
                email,
                user_name,
@@ -631,22 +633,21 @@
                expire_date,
                user_class
         from oneclick.sys_user
-        where email like CONCAT('%',#{email})
+        where email like CONCAT('%', #{email})
           and del_flag = 0
     </select>
     <select id="getAccountRole" resultType="com.hu.oneclick.model.domain.dto.SysUserRoleDto">
-        SELECT
-            u.id as id,
-            u.email as email,
-            u.user_name as userName,
-            r.role_name as roleName,
-            r.role_desc as roleDesc,
-            r.id as roleId
-        FROM
-            sys_user u
-                JOIN sys_role r ON u.sys_role_id = r.id
-                and u.room_id = (select room_id from sys_user where id = #{userId})
-                AND r.id = #{roleId}
+        SELECT u.id        as id,
+               u.email     as email,
+               u.user_name as userName,
+               u.room_id   as roomId,
+               r.role_name as roleName,
+               r.role_desc as roleDesc,
+               r.id        as roleId
+        FROM sys_user u
+                 JOIN sys_role r ON u.sys_role_id = r.id
+            and u.room_id = #{roomId}
+            AND r.id = #{roleId}
     </select>
 
     <resultMap type="com.hu.oneclick.model.domain.dto.SubUserDto" id="SysUserProjectMap">
@@ -683,37 +684,29 @@
         <result property="openProjectByDefaultName" column="open_project_by_default_name" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <select id="querySubUsersByRoomId" resultMap="SysUserProjectMap">
-        select
-        su.*,
-        sup.project_id,
-        sr.role_name,
-        uop.project_id AS open_project_by_default_id,
-        p.title AS open_project_by_default_name
-        from `sys_user` su
-        join `sub_user_project` sup on su.id = sup.user_id
-        join `sys_role` sr on su.sys_role_id = sr.id
-        join `user_use_open_project` uop on uop.user_id = su.id
-        join `project` p on uop.project_id =  p.id
-        and su.room_id = #{roomId}
+    <select id="queryUsersByRoomId" parameterType="object" resultType="map">
+        SELECT id, user_name as userName, email, sys_role_id as sysRoleId, room_id as roomId
+        FROM sys_user
+        WHERE room_id = #{roomId} LIMIT #{pageNum}
+            , #{pageSize}
     </select>
 
     <select id="listUserByProjectId" resultType="java.util.Map" parameterType="java.lang.Long">
         SELECT
-            u.id,
-            u.user_name as userName
+        u.id,
+        u.user_name as userName
         FROM
-            user_use_open_project up
-                LEFT JOIN sys_user u ON up.user_id = u.id
+        sys_user_project sup
+        JOIN sys_user u ON sup.user_id = u.id
         <where>
-            up.project_id = #{projectId}
+            sup.project_id = #{projectId}
         </where>
 
     </select>
 
-<!--  未开启驼峰规则需要使用resultMap标签进行映射  -->
-<!--    <select id="querySubUsersByRoomId1" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">-->
-<!--        select * from sys_user where room_id = #{roomId} and id != #{id}-->
-<!--    </select>-->
+    <!--  未开启驼峰规则需要使用resultMap标签进行映射  -->
+    <!--    <select id="querySubUsersByRoomId1" resultType="com.hu.oneclick.model.domain.dto.SubUserDto">-->
+    <!--        select * from sys_user where room_id = #{roomId} and id != #{id}-->
+    <!--    </select>-->
 
 </mapper>

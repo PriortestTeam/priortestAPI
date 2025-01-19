@@ -1,23 +1,18 @@
 package com.hu.oneclick.controller.user;
 
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.entity.Project;
 import com.hu.oneclick.model.entity.SubUserProject;
-import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.user.SubUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -39,10 +34,12 @@ public class SubUserController {
     }
 
 
-    @PostMapping("querySubUsers")
+    @GetMapping("querySubUsers")
     @ApiOperation("查询子用户")
-    public Resp<List<SubUserDto>> querySubUsers(@RequestBody SubUserDto sysUser) {
-        return subUserService.querySubUsers(sysUser);
+    public Resp<List<Map<String, Object>>> querySubUsers(@RequestParam String pageNum, @RequestParam String pageSize) {
+        int num = Integer.parseInt(pageNum);
+        int size = Integer.parseInt(pageSize);
+        return subUserService.querySubUsers(num, size);
     }
 
     @GetMapping("queryForProjects")

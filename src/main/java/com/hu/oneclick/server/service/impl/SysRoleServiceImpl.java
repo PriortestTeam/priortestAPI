@@ -6,6 +6,7 @@ import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.SysRole;
 import com.hu.oneclick.model.domain.dto.SysUserRoleDto;
+import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.server.service.SysRoleService;
 import org.springframework.stereotype.Service;
 
@@ -45,18 +46,14 @@ public class SysRoleServiceImpl implements SysRoleService {
     /**
      * 查询全部角色为该角色的用户
      *
-     * @param roleName
-     * @Param: [roleName]
-     * @return: com.hu.oneclick.model.base.Resp<java.util.List < com.hu.oneclick.model.entity.SysUser>>
      * @Author: MaSiyi
      * @Date: 2022/1/3
      */
     @Override
-    public Resp<List<SysUserRoleDto>> getAccountRole(String roleName) {
-        SysRole sysRole = sysRoleDao.queryByRoleName(roleName);
-        String userId = jwtUserService.getId();
-        String roleId = sysRole.getId();
-        List<SysUserRoleDto> accountRole = sysUserDao.getAccountRole(userId, roleId);
+    public Resp<List<SysUserRoleDto>> getAccountRole(String roleId) {
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        String roomId = sysUser.getRoomId().toString();
+        List<SysUserRoleDto> accountRole = sysUserDao.getAccountRole(roomId, roleId);
         return new Resp.Builder<List<SysUserRoleDto>>().setData(accountRole).ok();
     }
 }

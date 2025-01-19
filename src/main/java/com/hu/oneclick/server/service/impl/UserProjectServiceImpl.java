@@ -13,6 +13,7 @@ import com.hu.oneclick.server.service.UserProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -46,11 +47,11 @@ public class UserProjectServiceImpl implements UserProjectService {
     public List<Map<String, Object>> getUserProject() {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
 
-        List<Map<String, Object>> maps = sysUserProjectDao.queryProjectByUserId(sysUser.getId());
+        List<Map<String, Object>> maps = sysUserProjectDao.queryProjectByUserId(new BigInteger(sysUser.getId()));
         return maps.stream().map(map -> {
             Map<String, Object> newmap = new HashMap<>();
             newmap.put("title", map.get("title"));
-            newmap.put("project_id", map.get("project_id"));
+            newmap.put("projectId", map.get("project_id"));
             return newmap;
         }).collect(Collectors.toList());
     }

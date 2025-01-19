@@ -6,6 +6,7 @@ import com.hu.oneclick.model.entity.SubUserProject;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -14,13 +15,12 @@ public interface SubUserService {
 
     /**
      * 查询成员列表
-     * @param sysUser
-     * @return
      */
-    Resp<List<SubUserDto>> querySubUsers(SubUserDto sysUser);
+    Resp<List<Map<String, Object>>> querySubUsers(int pageNum, int pageSize);
 
     /**
      * 创建一个成员用户
+     *
      * @param sysUser
      * @return
      */
@@ -28,6 +28,7 @@ public interface SubUserService {
 
     /**
      * 修改成员用户
+     *
      * @param sysUser
      * @return
      */
@@ -35,6 +36,7 @@ public interface SubUserService {
 
     /**
      * 设置子用户密码
+     *
      * @param sysUser
      * @return
      */
@@ -42,13 +44,16 @@ public interface SubUserService {
 
     /**
      * 删除子用户
+     *
      * @param id
      * @return
      */
     Resp<String> deleteSubUser(String id);
 
 
-    /** 返回用户的项目列表
+    /**
+     * 返回用户的项目列表
+     *
      * @Param: [userId]
      * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
      * @Author: MaSiyi
@@ -58,6 +63,7 @@ public interface SubUserService {
 
     /**
      * 返回当前用户的项目列表
+     *
      * @return ...
      */
     Resp<List<Project>> getProjectByUserId();
