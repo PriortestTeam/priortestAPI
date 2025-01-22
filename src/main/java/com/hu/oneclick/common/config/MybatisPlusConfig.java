@@ -7,9 +7,14 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.hu.oneclick.common.security.handler.FillMetaObjectHandler;
+import com.hu.oneclick.config.ListTypeHandler;
+import org.apache.ibatis.type.JdbcType;
+import org.mybatis.spring.boot.autoconfigure.ConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.util.List;
 
 @EnableTransactionManagement(proxyTargetClass = true)
 @Configuration
@@ -61,4 +66,14 @@ public class MybatisPlusConfig {
         return globalConfig;
     }
 
+    /**
+     * 注册自定义类型处理器
+     */
+    @Bean
+    public ConfigurationCustomizer configurationCustomizer() {
+        return configuration -> {
+            // 创建并注册 ListTypeHandler 实例
+            configuration.getTypeHandlerRegistry().register(List.class, JdbcType.VARCHAR, new ListTypeHandler());
+        };
+    }
 }
