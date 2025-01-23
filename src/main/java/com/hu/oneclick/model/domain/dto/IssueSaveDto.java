@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: jhh
@@ -107,5 +108,51 @@ public class IssueSaveDto implements Serializable {
 
     @ApiModelProperty("运行用例Id")
     private long runcaseId;
+
+
+    /**
+     * 修复分类，表示该问题属于哪种类别的修复措施
+     */
+    @ApiModelProperty("修复分类")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private List<String> fixCategory;
+
+    /**
+     * 发生频率，描述问题发生的频率，如每天、每周等
+     */
+    @ApiModelProperty("发生频率")
+    private String frequency;
+
+    /**
+     * 问题来源，例如手动报告或自动检测到的问题
+     */
+    @ApiModelProperty("问题来源")
+    private String issueSource;
+
+    /**
+     * 用户影响程度，评价问题对用户造成的影响，如轻微、重大等
+     */
+    @ApiModelProperty("用户影响程度")
+    private String userImpact;
+
+    /**
+     * 根因分析，记录缺陷发生的原因以及解决方法
+     */
+    @ApiModelProperty("根因分析")
+    private String rootCause;
+
+    /**
+     * 根因分类，进一步细分根因的类型
+     */
+    @ApiModelProperty("根因分类")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private List<String> rootcauseCategory;
+
+    /**
+     * 备注信息，提供任何附加信息或注解
+     */
+    @ApiModelProperty("备注信息")
+    private String duration;
+
 
 }
