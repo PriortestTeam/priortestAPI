@@ -15,6 +15,9 @@ public class UITestSourceCodeAccess {
     @TableId(type = IdType.AUTO)
     private BigInteger id;
 
+    @TableField("room_id")
+    private BigInteger roomId;
+
     @TableField("username")
     private String username;
 
