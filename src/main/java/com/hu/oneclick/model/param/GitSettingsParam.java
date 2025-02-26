@@ -20,11 +20,7 @@ public class GitSettingsParam {
     @ApiModelProperty(value = "Git密码", required = true)
     @NotEmpty(message = "password不能为空")
     private String password;
-
-    @ApiModelProperty(value = "远程URL名称", required = true)
-    @NotEmpty(message = "remoteName不能为空")
-    private String remoteName;
-
+    
     @ApiModelProperty(value = "远程URL", required = true)
     @NotEmpty(message = "remoteUrl不能为空")
     private String remoteUrl;

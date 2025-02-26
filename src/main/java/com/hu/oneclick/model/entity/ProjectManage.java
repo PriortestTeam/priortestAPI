@@ -40,4 +40,6 @@ public class ProjectManage extends AssignBaseEntity implements Serializable {
     private String projectStatus;
 
     private String remarks;
+
+    private String repoName;
 }

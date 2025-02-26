@@ -1,7 +1,9 @@
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.entity.UITestSourceCodeAccess;
+import com.hu.oneclick.model.entity.UITestGitRepo;
+import com.hu.oneclick.model.entity.UITestGitSettings;
+import com.hu.oneclick.model.param.GitRepoInitParam;
 import com.hu.oneclick.model.param.GitSettingsParam;
 import com.hu.oneclick.server.service.GitMangerService;
 import io.swagger.annotations.Api;
@@ -10,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.math.BigInteger;
 import java.util.regex.Pattern;
 
@@ -40,11 +41,10 @@ public class GitManagerController {
     @ApiOperation("设置Git信息")
     @PostMapping("settings")
     public Object settings(@RequestBody @Validated GitSettingsParam settings) {
-        UITestSourceCodeAccess access = new UITestSourceCodeAccess();
+        UITestGitSettings access = new UITestGitSettings();
         access.setRoomId(new BigInteger(settings.getRoomId()));
         access.setUsername(settings.getUsername());
         access.setPasswd(settings.getPassword());
-        access.setRemoteName(settings.getRemoteName());
         access.setRemoteUrl(settings.getRemoteUrl());
 
         this.gitMangerService.create(access);
@@ -60,11 +60,10 @@ public class GitManagerController {
             return new Resp.Builder<>().buildResult("200", "地址参数类型错误", HttpStatus.NOT_ACCEPTABLE.value());
         }
 
-        UITestSourceCodeAccess access = new UITestSourceCodeAccess();
+        UITestGitSettings access = new UITestGitSettings();
         access.setRoomId(new BigInteger(settings.getRoomId()));
         access.setUsername(settings.getUsername());
         access.setPasswd(settings.getPassword());
-        access.setRemoteName(settings.getRemoteName());
         access.setRemoteUrl(settings.getRemoteUrl());
 
         gitMangerService.update(id, access);
@@ -94,6 +93,25 @@ public class GitManagerController {
         }
 
         gitMangerService.removeByRoomId(roomId);
+        return new Resp.Builder<>().ok();
+    }
+
+    @ApiOperation("初始化项目的Git仓库")
+    @PostMapping("project/{room_id}/init")
+    public Object init(@PathVariable("room_id") String roomId, @RequestBody @Validated GitRepoInitParam param) {
+        var regex = "^\\d+";
+        boolean ok = Pattern.matches(regex, roomId);
+        if (!ok) {
+            return new Resp.Builder<String>().buildResult("200", "地址参数类型错误", HttpStatus.NOT_ACCEPTABLE.value());
+        }
+
+        UITestGitRepo gitRepo = new UITestGitRepo();
+        gitRepo.setRepoName(param.getRepoName());
+        gitRepo.setProjectId(param.getProjectId());
+        gitRepo.setProjectName(param.getProjectName());
+
+        gitMangerService.initProjectRepo(roomId, gitRepo);
+
         return new Resp.Builder<>().ok();
     }
 }

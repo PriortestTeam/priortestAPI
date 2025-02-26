@@ -41,6 +41,8 @@ public class ProjectManageSaveDto {
 
     private String remarks;
 
+    private String repoName;
+
     /**
      * 自定义字段值
      */

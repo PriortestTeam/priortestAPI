@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.hu.oneclick.common.exception.BizException;
-import com.hu.oneclick.dao.UITestSourceCodeAccessDao;
-import com.hu.oneclick.model.entity.UITestSourceCodeAccess;
+import com.hu.oneclick.dao.UITestGitRepoDao;
+import com.hu.oneclick.dao.UITestGitSettingsDao;
+import com.hu.oneclick.manager.GitOperation;
+import com.hu.oneclick.model.entity.UITestGitRepo;
+import com.hu.oneclick.model.entity.UITestGitSettings;
 import com.hu.oneclick.server.service.GitMangerService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -16,77 +19,94 @@ import java.util.List;
 
 @Service
 public class GitMangerServiceImpl implements GitMangerService {
-    private final UITestSourceCodeAccessDao uiTestSourceCodeAccessDao;
+    private final UITestGitSettingsDao uiTestGitSettingsDao;
+    private final UITestGitRepoDao uiTestGitRepoDao;
 
-    public GitMangerServiceImpl(UITestSourceCodeAccessDao uiTestSourceCodeAccessDao) {
-        this.uiTestSourceCodeAccessDao = uiTestSourceCodeAccessDao;
+    @Value("${prior-test.git.local-repo}")
+    private String localGitRepo;
+
+    public GitMangerServiceImpl(UITestGitSettingsDao uiTestGitSettingsDao, UITestGitRepoDao uiTestGitRepoDao) {
+        this.uiTestGitSettingsDao = uiTestGitSettingsDao;
+        this.uiTestGitRepoDao = uiTestGitRepoDao;
     }
 
     @Override
-    public List<UITestSourceCodeAccess> getWithRoomId(String roomId) {
-        QueryWrapper<UITestSourceCodeAccess> query = Wrappers.query();
+    public List<UITestGitSettings> getWithRoomId(String roomId) {
+        QueryWrapper<UITestGitSettings> query = Wrappers.query();
         query.eq("room_id", new BigInteger(roomId));
 
-        Long count = uiTestSourceCodeAccessDao.selectCount(query);
+        Long count = uiTestGitSettingsDao.selectCount(query);
         if (count <= 0) {
             throw new BizException("200", "没有记录", HttpStatus.NOT_FOUND.value());
         }
 
-        return uiTestSourceCodeAccessDao.selectList(query);
+        return uiTestGitSettingsDao.selectList(query);
     }
 
     @Override
-    public void create(UITestSourceCodeAccess access) {
-        QueryWrapper<UITestSourceCodeAccess> query = Wrappers.query();
-        query.eq("remote_name", access.getRemoteName());
-
-        Long count = uiTestSourceCodeAccessDao.selectCount(query);
-        if (count > 0) {
-            throw new BizException("200", "Git远程地址命名已存在", HttpStatus.NOT_ACCEPTABLE.value());
-        }
-
-        uiTestSourceCodeAccessDao.insert(access);
+    public void create(UITestGitSettings access) {
+        uiTestGitSettingsDao.insert(access);
     }
 
     @Override
-    public void update(String id, UITestSourceCodeAccess access) {
-        QueryWrapper<UITestSourceCodeAccess> query = Wrappers.query();
+    public void update(String id, UITestGitSettings access) {
+        QueryWrapper<UITestGitSettings> query = Wrappers.query();
         query.eq("id", new BigInteger(id));
 
-        Long count = uiTestSourceCodeAccessDao.selectCount(query);
+        Long count = uiTestGitSettingsDao.selectCount(query);
         if (count <= 0) {
             throw new BizException("200", "找不到更新记录", HttpStatus.NOT_FOUND.value());
         }
 
-        UpdateWrapper<UITestSourceCodeAccess> update = Wrappers.update();
+        UpdateWrapper<UITestGitSettings> update = Wrappers.update();
         update.eq("id", new BigInteger(id));
 
-        uiTestSourceCodeAccessDao.update(access, update);
+        uiTestGitSettingsDao.update(access, update);
     }
 
     @Override
     public void remove(String id) {
-        QueryWrapper<UITestSourceCodeAccess> query = Wrappers.query();
+        QueryWrapper<UITestGitSettings> query = Wrappers.query();
         query.eq("id", new BigInteger(id));
 
-        Long count = uiTestSourceCodeAccessDao.selectCount(query);
+        Long count = uiTestGitSettingsDao.selectCount(query);
         if (count <= 0) {
             throw new BizException("200", "没此记录", HttpStatus.NOT_FOUND.value());
         }
 
-        uiTestSourceCodeAccessDao.deleteById(id);
+        uiTestGitSettingsDao.deleteById(id);
     }
 
     @Override
     public void removeByRoomId(String roomId) {
-        QueryWrapper<UITestSourceCodeAccess> query = Wrappers.query();
+        QueryWrapper<UITestGitSettings> query = Wrappers.query();
         query.eq("room_id", new BigInteger(roomId));
-
-        Long count = uiTestSourceCodeAccessDao.selectCount(query);
+        Long count = uiTestGitSettingsDao.selectCount(query);
         if (count <= 0) {
             throw new BizException("200", "无此记录", HttpStatus.NOT_FOUND.value());
         }
+        uiTestGitSettingsDao.delete(query);
+    }
 
-        uiTestSourceCodeAccessDao.delete(query);
+    @Override
+    public void initProjectRepo(String roomId, UITestGitRepo gitRepo) {
+        QueryWrapper<UITestGitSettings> query = Wrappers.query();
+        query.eq("room_id", new BigInteger(roomId));
+        UITestGitSettings uiTestGitSettings = uiTestGitSettingsDao.selectOne(query);
+
+        if (uiTestGitSettings == null) {
+            throw new BizException("200", "此roomId下没有配置Git", HttpStatus.NOT_FOUND.value());
+        }
+
+        GitOperation gitOperation = new GitOperation(uiTestGitSettings.getUsername(), uiTestGitSettings.getPasswd(),
+            uiTestGitSettings.getRemoteUrl() + "/" + gitRepo.getRepoName(),
+            gitRepo.getRepoName(), localGitRepo);
+        try {
+            gitOperation.push();
+        } catch (Exception e) {
+            throw new BizException("200", e.getMessage(), HttpStatus.FORBIDDEN.value());
+        }
+
+        uiTestGitRepoDao.insert(gitRepo);
     }
 }
