@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -45,6 +47,7 @@ public class GitMangerServiceImpl implements GitMangerService {
 
     @Override
     public void create(UITestGitSettings access) {
+        access.setPasswd(Base64.getEncoder().encodeToString(access.getPasswd().getBytes()));
         uiTestGitSettingsDao.insert(access);
     }
 
@@ -61,6 +64,7 @@ public class GitMangerServiceImpl implements GitMangerService {
         UpdateWrapper<UITestGitSettings> update = Wrappers.update();
         update.eq("id", new BigInteger(id));
 
+        access.setPasswd(Base64.getEncoder().encodeToString(access.getPasswd().getBytes()));
         uiTestGitSettingsDao.update(access, update);
     }
 
@@ -98,7 +102,7 @@ public class GitMangerServiceImpl implements GitMangerService {
             throw new BizException("200", "此roomId下没有配置Git", HttpStatus.NOT_FOUND.value());
         }
 
-        GitOperation gitOperation = new GitOperation(uiTestGitSettings.getUsername(), uiTestGitSettings.getPasswd(),
+        GitOperation gitOperation = new GitOperation(uiTestGitSettings.getUsername(), Arrays.toString(Base64.getDecoder().decode(uiTestGitSettings.getPasswd())),
             uiTestGitSettings.getRemoteUrl() + "/" + gitRepo.getRepoName(),
             gitRepo.getRepoName(), localGitRepo);
         try {
@@ -107,6 +111,12 @@ public class GitMangerServiceImpl implements GitMangerService {
             throw new BizException("200", e.getMessage(), HttpStatus.FORBIDDEN.value());
         }
 
-        uiTestGitRepoDao.insert(gitRepo);
+        QueryWrapper<UITestGitRepo> query1 = Wrappers.query();
+        query1.eq("repo_name", gitRepo.getRepoName());
+        query1.eq("project_id", new BigInteger(gitRepo.getProjectId()));
+        Long count = uiTestGitRepoDao.selectCount(query1);
+        if (count <= 0) {
+            uiTestGitRepoDao.insert(gitRepo);
+        }
     }
 }
