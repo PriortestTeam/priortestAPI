@@ -74,3 +74,7 @@ onclick:
         firstTime: 30
         secondTime: 15
     dirPath: ${ONECLICK_PATH}
+
+prior-test:
+    git:
+        local-repo: ${GIT_REPO_DIR}

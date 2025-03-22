@@ -249,6 +249,13 @@
             <artifactId>pdfbox</artifactId>
             <version>3.0.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>6.6.1.202309021850-r</version>
+        </dependency>
+
     </dependencies>
 
     <build>
