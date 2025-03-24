@@ -102,7 +102,8 @@ public class GitMangerServiceImpl implements GitMangerService {
             throw new BizException("200", "此roomId下没有配置Git", HttpStatus.NOT_FOUND.value());
         }
 
-        GitOperation gitOperation = new GitOperation(uiTestGitSettings.getUsername(), Arrays.toString(Base64.getDecoder().decode(uiTestGitSettings.getPasswd())),
+        String decode_str = new String(Base64.getDecoder().decode(uiTestGitSettings.getPasswd()));
+        GitOperation gitOperation = new GitOperation(uiTestGitSettings.getUsername(), decode_str,
             uiTestGitSettings.getRemoteUrl() + "/" + gitRepo.getRepoName(),
             gitRepo.getRepoName(), localGitRepo);
         try {
