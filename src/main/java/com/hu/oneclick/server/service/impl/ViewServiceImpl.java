@@ -6,6 +6,9 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.constant.OneConstant;
@@ -15,6 +18,7 @@ import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
+import com.hu.oneclick.dao.CustomFieldsDao;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
@@ -70,6 +74,8 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
     private TestCaseService testCaseService;
     @Resource
     private IssueService issueService;
+    @Resource
+    CustomFieldsDao customFieldsDao;
 
     @Override
     public Resp<View> queryById(String id) {
@@ -92,7 +98,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         }
         view.setCreateUserId(Long.valueOf(jwtUserService.getMasterId()));
         List<View> list = viewDao.queryAll(view);
-        for (View v: list) {
+        for (View v : list) {
             v.setOneFilters(v.getOneFilters());
             v.setFilter(null);
         }
@@ -254,6 +260,51 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
 
         //递归
         List<ViewTreeDto> result = viewTreeRecursion(treeAll);
+
+        List<ViewTreeDto> auto_view = result.stream().filter(obj -> obj.getIsAuto() == 1).collect(Collectors.toList());
+        Map<String, Object> cond;
+        List<String> child;
+        for (ViewTreeDto viewTreeDto : auto_view) {
+            cond = new HashMap<>();
+            cond.put("type", viewTreeDto.getOneFilters().get(0).getType());
+            cond.put("fieldNameEn", viewTreeDto.getOneFilters().get(0).getFieldNameEn());
+            cond.put("scopeId", viewTreeDto.getScopeId());
+            cond.put("projectId", viewTreeDto.getProjectId());
+
+            Map sfieldMap = viewDao.queryAutoView(cond);
+            Map sfieldValue = JSON.parseObject(sfieldMap.get("possible_value").toString(), Map.class);
+
+            child = new ArrayList<>();
+            for (Object key : sfieldValue.keySet()) {
+                child.add(sfieldValue.get(key).toString());
+            }
+
+            if (sfieldMap.get("possible_value_child") != null) {
+                Map sfieldChildValue = JSON.parseObject(sfieldMap.get("possible_value_child").toString(), Map.class);
+                for (Object key : sfieldChildValue.keySet()) {
+                    child.add(sfieldChildValue.get(key).toString());
+                }
+            }
+
+
+//            QueryWrapper<CustomFields> query = Wrappers.query();
+//            query.eq("linked_custom_field_id", sfieldMap.get("custom_field_id").toString());
+//            query.eq("project_id", viewTreeDto.getProjectId());
+//            CustomFields customFields = customFieldsDao.selectOne(query);
+//
+//            if (customFields != null) {
+//                Map value2 = JSON.parseObject(customFields.getPossibleValue(), Map.class);
+//
+//                for (Object key : value2.keySet()) {
+//                    child.add(value2.get(key).toString());
+//                }
+//            }
+
+
+            viewTreeDto.setAutoViewChild(child);
+
+        }
+
         return new Resp.Builder<List<ViewTreeDto>>().setData(result).ok();
     }
 
@@ -286,7 +337,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         treeAll.forEach(e -> {
             //取反
             if (!verifyParentId(e.getParentId())
-                    && e.getParentId().equals(""+id)) {
+                && e.getParentId().equals("" + id)) {
                 e.setChildViews(childViewTreeRecursion(treeAll, e.getId()));
                 result.add(e);
             }
@@ -346,13 +397,14 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
             view.setLevel(1);
         }
         view.setFilter(view.getFilterByManual(view.getOneFilters()));
-        baseMapper.insert(view);
         // 添加子视图
         if (1 == view.getIsAuto() && view.getLevel() == 0) {
             // 查询项目范围内的自定义字段
             // 添加oneFilters集合
             // 保存子视图
+            view.setFilter(JSON.toJSONString(view.getAutoFilter()));
         }
+        baseMapper.insert(view);
         return view;
         //设置sql
 //            String sql = appendSql(oneFilter, view);

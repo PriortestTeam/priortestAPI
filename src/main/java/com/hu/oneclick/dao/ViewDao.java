@@ -6,6 +6,7 @@ import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -103,4 +104,6 @@ public interface ViewDao extends BaseMapper<View> {
      * @Date: 2021/12/22
      */
     View queryOnlyById(@Param("id") String id);
+
+    Map queryAutoView(Map<String, Object> conditions);
 }

@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 视图表实体
@@ -65,6 +66,9 @@ public class View extends AssignBaseEntity implements Serializable {
     @TableField(exist = false)
     private List<OneFilter> oneFilters;
 
+    @TableField(exist = false)
+    private List<Map> autoFilter;
+
     /**
      * 修改人
      */
@@ -77,8 +81,11 @@ public class View extends AssignBaseEntity implements Serializable {
     private Integer level;
 
     @ApiModelProperty(value = "Default:0, 自渲染1")
-    @TableField(exist = false)
+//    @TableField(exist = false)
     private Integer isAuto;
+
+    @TableField(exist = false)
+    private List<String> autoViewChild;
 
     /**
      * 手动赋值的意义在于，DB插入的时候需要filter，但是api返回的时候不需要filter
