@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.dao.ViewDao">
     <!--开启缓存-->
-    <cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true" />
+    <cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true"/>
 
     <resultMap type="com.hu.oneclick.model.entity.View" id="ViewMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
@@ -23,14 +23,27 @@
     </resultMap>
 
     <sql id="base_sql">
-        id, create_user_id, project_id, title,is_auto, `scope_name`, is_private, creater, filter, `sql`, update_user,create_time, update_time,parent_id,`level`
+        id
+        , create_user_id, project_id, title,is_auto, `scope_name`, is_private, creater, filter, `sql`, update_user,create_time, update_time,parent_id,`level`
     </sql>
     <!--查询单个-->
     <select id="queryById" resultMap="ViewMap">
-        select
-          id, create_user_id, project_id, title,is_auto scope_name, is_private, creater, filter, update_user, create_time, update_time,parent_id,`level`
+        select id,
+               create_user_id,
+               project_id,
+               title,
+               is_auto scope_name,
+               is_private,
+               creater,
+               filter,
+               update_user,
+               create_time,
+               update_time,
+               parent_id,
+               `level`
         from oneclick.view
-        where id = #{id} and create_user_id = #{masterId}
+        where id = #{id}
+          and create_user_id = #{masterId}
     </select>
 
     <!--查询单个-->
@@ -43,10 +56,21 @@
 
     <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="ViewMap">
-        select
-          id, create_user_id, project_id, title, is_auto,scope_name, is_private, creater, filter, update_user, create_time, update_time,parent_id,`level`
-        from oneclick.view
-        limit #{offset}, #{limit}
+        select id,
+               create_user_id,
+               project_id,
+               title,
+               is_auto,
+               scope_name,
+               is_private,
+               creater,
+               filter,
+               update_user,
+               create_time,
+               update_time,
+               parent_id,
+               `level`
+        from oneclick.view limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
@@ -56,7 +80,8 @@
         update_time,parent_id,`level`
         from oneclick.view
         <where>
-            (create_user_id = #{createUserId} and is_private = 1 and scope_name = #{scopeName} and project_id = #{projectId})
+            (create_user_id = #{createUserId} and is_private = 1 and scope_name = #{scopeName} and project_id =
+            #{projectId})
             or is_private = 0
             and project_id = #{projectId}
             <if test="title != null and title != ''">
@@ -70,14 +95,14 @@
     </select>
     <select id="queryTitleIsExist" resultType="java.lang.Integer">
         select
-            count(1)
+        count(1)
         from oneclick.view
         where
         create_user_id = #{masterId}
-            and project_id = #{projectId}
-            and scope_name = #{scopeName}
-            and title = #{title}
-            <!-- and is_private = #{isPrivate}-->
+        and project_id = #{projectId}
+        and scope_name = #{scopeName}
+        and title = #{title}
+        <!-- and is_private = #{isPrivate}-->
     </select>
     <select id="queryViewParents" resultType="com.hu.oneclick.model.entity.View">
         select
@@ -91,12 +116,10 @@
         </where>
     </select>
     <select id="queryTitleByParentId" resultType="java.lang.String">
-        select
-        title
+        select title
         from oneclick.view
         where id = #{parentId}
     </select>
-
 
 
     <resultMap type="com.hu.oneclick.model.domain.dto.ViewTreeDto" id="queryViewByScopeAllMap">
@@ -119,14 +142,24 @@
     </resultMap>
 
     <select id="queryViewByScopeAll" resultMap="queryViewByScopeAllMap">
-        select
-        id, create_user_id, project_id, title, is_auto,scope_name, is_private, update_user , create_time,
-        update_time,parent_id,`level`
+        select id,
+               create_user_id,
+               project_id,
+               title,
+               is_auto,
+               scope_name,
+               is_private,
+               update_user,
+               create_time,
+               update_time,
+               parent_id,
+               `level`,
+               filter,
+               scope_id
         from oneclick.view
-        where
-        create_user_id = #{masterId}
-        and project_id = #{projectId}
-        and scope_id = #{scopeId}
+        where create_user_id = #{masterId}
+          and project_id = #{projectId}
+          and scope_id = #{scopeId}
     </select>
 
 
@@ -145,143 +178,171 @@
         <result property="level" column="level" jdbcType="VARCHAR"/>
         <result property="scopeId" column="scope_id" jdbcType="INTEGER"/>
         <result property="isAuto" column="is_auto" jdbcType="INTEGER"/>
-        <collection property="childViews" ofType="com.hu.oneclick.model.domain.dto.ViewTreeDto" select="queryViewTreeById" column="{viewId=parent_id,masterId=create_user_id}"></collection>
+        <collection property="childViews" ofType="com.hu.oneclick.model.domain.dto.ViewTreeDto"
+                    select="queryViewTreeById" column="{viewId=parent_id,masterId=create_user_id}"></collection>
     </resultMap>
 
     <select id="queryViewTreeById" resultMap="queryViewTreeByIdMap">
-            select
-            id, create_user_id, project_id, title,is_auto, scope_name, is_private, owner,filter , create_time,
-            update_time,parent_id,`level`
-            from oneclick.view
-            where
-        create_user_id = #{masterId}
-            and
-            id = #{viewId}
+        select id,
+               create_user_id,
+               project_id,
+               title,
+               is_auto,
+               scope_name,
+               is_private,
+               owner,
+               filter,
+               create_time,
+               update_time,
+               parent_id,
+               `level`
+        from oneclick.view
+        where create_user_id = #{masterId}
+          and id = #{viewId}
     </select>
 
     <!--新增所有列-->
-<!--    <insert id="insert" keyProperty="id" useGeneratedKeys="true">-->
-<!--        insert into oneclick.view-->
-<!--        <trim prefix="(" suffix=")" suffixOverrides=",">-->
-<!--            <if test="id != null">-->
-<!--                id,-->
-<!--            </if>-->
-<!--            <if test="createUserId != null">-->
-<!--                create_user_id,-->
-<!--            </if>-->
-<!--            <if test="projectId != null">-->
-<!--                project_id,-->
-<!--            </if>-->
-<!--            <if test="title != null and title != ''">-->
-<!--                title,-->
-<!--            </if>-->
-<!--            <if test="scopeName != null and scopeName != ''">-->
-<!--                scope_name,-->
-<!--            </if>-->
-<!--            <if test="isPrivate != null">-->
-<!--                is_private,-->
-<!--            </if>-->
-<!--            <if test="creater != null and creater != ''">-->
-<!--                creater,-->
-<!--            </if>-->
-<!--            <if test="filter != null and filter != ''">-->
-<!--                filter,-->
-<!--            </if>-->
-<!--            <if test="sql != null and sql != ''">-->
-<!--                `sql`,-->
-<!--            </if>-->
-<!--            <if test="updateUser != null and updateUser != ''">-->
-<!--                update_user,-->
-<!--            </if>-->
+    <!--    <insert id="insert" keyProperty="id" useGeneratedKeys="true">-->
+    <!--        insert into oneclick.view-->
+    <!--        <trim prefix="(" suffix=")" suffixOverrides=",">-->
+    <!--            <if test="id != null">-->
+    <!--                id,-->
+    <!--            </if>-->
+    <!--            <if test="createUserId != null">-->
+    <!--                create_user_id,-->
+    <!--            </if>-->
+    <!--            <if test="projectId != null">-->
+    <!--                project_id,-->
+    <!--            </if>-->
+    <!--            <if test="title != null and title != ''">-->
+    <!--                title,-->
+    <!--            </if>-->
+    <!--            <if test="scopeName != null and scopeName != ''">-->
+    <!--                scope_name,-->
+    <!--            </if>-->
+    <!--            <if test="isPrivate != null">-->
+    <!--                is_private,-->
+    <!--            </if>-->
+    <!--            <if test="creater != null and creater != ''">-->
+    <!--                creater,-->
+    <!--            </if>-->
+    <!--            <if test="filter != null and filter != ''">-->
+    <!--                filter,-->
+    <!--            </if>-->
+    <!--            <if test="sql != null and sql != ''">-->
+    <!--                `sql`,-->
+    <!--            </if>-->
+    <!--            <if test="updateUser != null and updateUser != ''">-->
+    <!--                update_user,-->
+    <!--            </if>-->
 
-<!--            <if test="parentId != null and parentId != ''">-->
-<!--                parent_id,-->
-<!--            </if>-->
-<!--            <if test="level != null">-->
-<!--                `level`,-->
-<!--            </if>-->
-<!--            create_time,-->
-<!--            update_time-->
-<!--        </trim>-->
-<!--        <trim prefix="values (" suffix=")" suffixOverrides=",">-->
-<!--            <if test="id != null">-->
-<!--                #{id},-->
-<!--            </if>-->
-<!--            <if test="createUserId != null">-->
-<!--                #{createUserId},-->
-<!--            </if>-->
-<!--            <if test="projectId != null">-->
-<!--                #{projectId},-->
-<!--            </if>-->
-<!--            <if test="title != null and title != ''">-->
-<!--                #{title},-->
-<!--            </if>-->
-<!--            <if test="scopeName != null and scopeName != ''">-->
-<!--                #{scopeName},-->
-<!--            </if>-->
-<!--            <if test="isPrivate != null">-->
-<!--                #{isPrivate},-->
-<!--            </if>-->
-<!--            <if test="creater != null and creater != ''">-->
-<!--                #{creater},-->
-<!--            </if>-->
-<!--            <if test="filter != null and filter != ''">-->
-<!--                #{filter},-->
-<!--            </if>-->
-<!--            <if test="sql != null and sql != ''">-->
-<!--                #{sql},-->
-<!--            </if>-->
-<!--            <if test="updateUser != null and updateUser != ''">-->
-<!--                #{updateUser},-->
-<!--            </if>-->
-<!--            <if test="updateTime != null">-->
-<!--                #{updateTime},-->
-<!--            </if>-->
-<!--            <if test="parentId != null and parentId != ''">-->
-<!--                #{parentId},-->
-<!--            </if>-->
-<!--            <if test="level != null">-->
-<!--                #{level},-->
-<!--            </if>-->
-<!--            NOW(),-->
-<!--            NOW()-->
-<!--        </trim>-->
-<!--    </insert>-->
+    <!--            <if test="parentId != null and parentId != ''">-->
+    <!--                parent_id,-->
+    <!--            </if>-->
+    <!--            <if test="level != null">-->
+    <!--                `level`,-->
+    <!--            </if>-->
+    <!--            create_time,-->
+    <!--            update_time-->
+    <!--        </trim>-->
+    <!--        <trim prefix="values (" suffix=")" suffixOverrides=",">-->
+    <!--            <if test="id != null">-->
+    <!--                #{id},-->
+    <!--            </if>-->
+    <!--            <if test="createUserId != null">-->
+    <!--                #{createUserId},-->
+    <!--            </if>-->
+    <!--            <if test="projectId != null">-->
+    <!--                #{projectId},-->
+    <!--            </if>-->
+    <!--            <if test="title != null and title != ''">-->
+    <!--                #{title},-->
+    <!--            </if>-->
+    <!--            <if test="scopeName != null and scopeName != ''">-->
+    <!--                #{scopeName},-->
+    <!--            </if>-->
+    <!--            <if test="isPrivate != null">-->
+    <!--                #{isPrivate},-->
+    <!--            </if>-->
+    <!--            <if test="creater != null and creater != ''">-->
+    <!--                #{creater},-->
+    <!--            </if>-->
+    <!--            <if test="filter != null and filter != ''">-->
+    <!--                #{filter},-->
+    <!--            </if>-->
+    <!--            <if test="sql != null and sql != ''">-->
+    <!--                #{sql},-->
+    <!--            </if>-->
+    <!--            <if test="updateUser != null and updateUser != ''">-->
+    <!--                #{updateUser},-->
+    <!--            </if>-->
+    <!--            <if test="updateTime != null">-->
+    <!--                #{updateTime},-->
+    <!--            </if>-->
+    <!--            <if test="parentId != null and parentId != ''">-->
+    <!--                #{parentId},-->
+    <!--            </if>-->
+    <!--            <if test="level != null">-->
+    <!--                #{level},-->
+    <!--            </if>-->
+    <!--            NOW(),-->
+    <!--            NOW()-->
+    <!--        </trim>-->
+    <!--    </insert>-->
 
 
     <!--通过主键修改数据-->
-<!--    <update id="update">-->
-<!--        update oneclick.view-->
-<!--        <set>-->
-<!--            <if test="title != null and title != ''">-->
-<!--                title = #{title},-->
-<!--            </if>-->
-<!--            <if test="isPrivate != null and isPrivate != ''">-->
-<!--                is_private = #{isPrivate},-->
-<!--            </if>-->
-<!--            <if test="filter != null and filter != ''">-->
-<!--                filter = #{filter},-->
-<!--            </if>-->
-<!--            <if test="updateUser != null and updateUser != ''">-->
-<!--                update_user = #{updateUser},-->
-<!--            </if>-->
-<!--            <if test="updateTime != null">-->
-<!--                update_time = #{updateTime},-->
-<!--            </if>-->
-<!--            <if test="parentId != null and parentId != ''">-->
-<!--                parent_id = #{parentId},-->
-<!--            </if>-->
-<!--            update_time = NOW()-->
-<!--        </set>-->
-<!--        where id = #{id}-->
-<!--    </update>-->
+    <!--    <update id="update">-->
+    <!--        update oneclick.view-->
+    <!--        <set>-->
+    <!--            <if test="title != null and title != ''">-->
+    <!--                title = #{title},-->
+    <!--            </if>-->
+    <!--            <if test="isPrivate != null and isPrivate != ''">-->
+    <!--                is_private = #{isPrivate},-->
+    <!--            </if>-->
+    <!--            <if test="filter != null and filter != ''">-->
+    <!--                filter = #{filter},-->
+    <!--            </if>-->
+    <!--            <if test="updateUser != null and updateUser != ''">-->
+    <!--                update_user = #{updateUser},-->
+    <!--            </if>-->
+    <!--            <if test="updateTime != null">-->
+    <!--                update_time = #{updateTime},-->
+    <!--            </if>-->
+    <!--            <if test="parentId != null and parentId != ''">-->
+    <!--                parent_id = #{parentId},-->
+    <!--            </if>-->
+    <!--            update_time = NOW()-->
+    <!--        </set>-->
+    <!--        where id = #{id}-->
+    <!--    </update>-->
 
     <!--通过主键删除-->
     <delete id="deleteByPrimaryKey">
-        delete from oneclick.view where create_user_id = #{masterId} and id = #{id}
+        delete
+        from oneclick.view
+        where create_user_id = #{masterId}
+          and id = #{id}
     </delete>
 
     <select id="sql" resultType="com.hu.oneclick.model.entity.Project" parameterType="java.lang.String">
         ${sqlen}
+    </select>
+
+    <select id="queryAutoView" parameterType="map" resultType="map">
+        select *
+        from (select possible_value as possible_value_child, project_id, linked_custom_field_id
+              from custom_fields
+              WHERE project_id = #{projectId}) as t4
+                 RIGHT JOIN (select t2.custom_field_id, t2.type, t2.possible_value, t2.field_name_en
+                             from custom_fileld_link as t1,
+                                  custom_fields as t2
+                             where t1.scope_id = #{scopeId}
+                               and t1.custom_field_id = t2.custom_field_id
+                               and t2.type = #{type}
+                               and t2.field_name_en = #{fieldNameEn}) as t3
+                            ON t4.linked_custom_field_id = t3.custom_field_id
+
     </select>
 </mapper>
