@@ -286,21 +286,6 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
                 }
             }
 
-
-//            QueryWrapper<CustomFields> query = Wrappers.query();
-//            query.eq("linked_custom_field_id", sfieldMap.get("custom_field_id").toString());
-//            query.eq("project_id", viewTreeDto.getProjectId());
-//            CustomFields customFields = customFieldsDao.selectOne(query);
-//
-//            if (customFields != null) {
-//                Map value2 = JSON.parseObject(customFields.getPossibleValue(), Map.class);
-//
-//                for (Object key : value2.keySet()) {
-//                    child.add(value2.get(key).toString());
-//                }
-//            }
-
-
             viewTreeDto.setAutoViewChild(child);
 
         }
