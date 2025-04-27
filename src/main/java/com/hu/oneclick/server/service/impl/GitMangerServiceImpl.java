@@ -10,6 +10,7 @@ import com.hu.oneclick.manager.GitOperation;
 import com.hu.oneclick.model.entity.UITestGitRepo;
 import com.hu.oneclick.model.entity.UITestGitSettings;
 import com.hu.oneclick.server.service.GitMangerService;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -108,6 +109,8 @@ public class GitMangerServiceImpl implements GitMangerService {
             gitRepo.getRepoName(), localGitRepo);
         try {
             gitOperation.push();
+        } catch (TransportException e) {
+            throw new BizException("401", e.getMessage(), HttpStatus.NOT_FOUND.value());
         } catch (Exception e) {
             throw new BizException("200", e.getMessage(), HttpStatus.FORBIDDEN.value());
         }

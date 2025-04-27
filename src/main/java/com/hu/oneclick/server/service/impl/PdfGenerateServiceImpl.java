@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -71,7 +72,10 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
 
         List<Map<String, Object>> cycles = testCycleDao.queryTestCyclesWithCasesByConditions(cond);
         if (cycles.isEmpty()) {
-            return new Resp.Builder<String>().setData(SysConstantEnum.TEST_CASE_NOT_EXIST.getValue()).fail();
+//            return new Resp.Builder<String>().setData(SysConstantEnum.TEST_CASE_NOT_EXIST.getValue()).fail();
+            var resp = new Resp.Builder<String>().buildResult("404", SysConstantEnum.FAILED.getValue(), HttpStatus.NOT_FOUND.value());
+            resp.setData(SysConstantEnum.TEST_CASE_NOT_EXIST.getValue());
+            return resp;
         }
 
         int cycle_instance = cycles.stream().collect(Collectors.collectingAndThen(
