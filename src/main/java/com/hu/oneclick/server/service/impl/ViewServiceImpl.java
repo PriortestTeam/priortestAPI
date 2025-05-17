@@ -8,8 +8,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
@@ -18,7 +21,9 @@ import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
+import com.hu.oneclick.common.util.PageUtil;
 import com.hu.oneclick.dao.CustomFieldsDao;
+import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.dao.ViewDownChildParamsDao;
 import com.hu.oneclick.model.base.Resp;
@@ -28,6 +33,7 @@ import com.hu.oneclick.model.domain.dto.SysCustomFieldVo;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.model.entity.*;
+import com.hu.oneclick.model.param.ViewGetSubViewRecordParam;
 import com.hu.oneclick.server.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -76,6 +82,8 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
     private IssueService issueService;
     @Resource
     CustomFieldsDao customFieldsDao;
+    @Resource
+    TestCaseDao testCaseDao;
 
     @Override
     public Resp<View> queryById(String id) {
@@ -861,5 +869,17 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         map.put("customField", customField);
 
         return new Resp.Builder<Map<String, Object>>().setData(map).ok();
+    }
+
+    @Override
+    public Object findTestCaseLinkedSubview(int page, int offset, ViewGetSubViewRecordParam param) {
+        String field_name = StrUtil.toUnderlineCase(param.getFieldNameEn());
+
+        IPage<TestCase> ipage = new Page<>(page - 1, offset);
+        QueryWrapper<TestCase> query = Wrappers.query();
+        query.eq(field_name, param.getValue());
+        IPage<TestCase> records = testCaseDao.selectPage(ipage, query);
+
+        return new Resp.Builder<>().setData(PageUtil.manualPaging(records.getRecords())).ok();
     }
 }

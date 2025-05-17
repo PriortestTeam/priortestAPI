@@ -60,7 +60,7 @@ public class View extends AssignBaseEntity implements Serializable {
     /**
      * sql
      */
-    @TableField("`sql`")
+    @TableField(value = "`sql`", exist = false)
     private String sql;
 
     @TableField(exist = false)

@@ -5,6 +5,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.View;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
+import com.hu.oneclick.model.param.ViewGetSubViewRecordParam;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,7 @@ public interface ViewService extends IService<View> {
 
     Resp<View> queryById(String id);
 
-
     List<View> list(View view);
-
 
     Resp<String> queryDoesExistByTitle(String projectId, String title, String scope);
 
@@ -31,7 +30,6 @@ public interface ViewService extends IService<View> {
 
     @Deprecated
     Resp<List<ViewScopeChildParams>> getViewScopeChildParams(String scope);
-
 
     List<View> queryViewParents(String scope, String projectId);
 
@@ -76,4 +74,6 @@ public interface ViewService extends IService<View> {
      * @Date: 2021/12/29
      */
     Resp<Map<String, Object>> getViewScope(String scope);
+
+    Object findTestCaseLinkedSubview(int page, int offset, ViewGetSubViewRecordParam param);
 }
