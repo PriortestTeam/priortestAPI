@@ -546,7 +546,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         View view = viewDao.queryOnlyById(viewId);
         //执行系统字段
 
-       // String sql = view.getSql();
+        // String sql = view.getSql();
 
         String filter = view.getFilter();
         String scope = view.getScopeName();
@@ -667,11 +667,13 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
 
     @Override
     public Object findTestCaseLinkedSubview(int page, int offset, ViewGetSubViewRecordParam param) {
+        String project_id = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
         String field_name = StrUtil.toUnderlineCase(param.getFieldNameEn());
 
         IPage<TestCase> ipage = new Page<>(page - 1, offset);
         QueryWrapper<TestCase> query = Wrappers.query();
         query.eq(field_name, param.getValue());
+        query.eq("project_id", project_id);
         IPage<TestCase> records = testCaseDao.selectPage(ipage, query);
 
         return new Resp.Builder<>().setData(PageUtil.manualPaging(records.getRecords())).ok();
