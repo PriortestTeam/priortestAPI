@@ -37,7 +37,7 @@ public class RelationController extends BaseController {
     @PostMapping("/object/list")
     public Resp<PageInfo<Relation>> objectList(@RequestBody RelationParam param) {
         startPage();
-        List<Relation> list = relationService.getRelationListByObjectIdAndCategory(param.getObjectId(), param.getCategory());
+        List<Relation> list = relationService.getRelationListWithTitleByObjectIdAndCategory(param.getObjectId(), param.getCategory());
         return new Resp.Builder<PageInfo<Relation>>().setData(PageInfo.of(list)).ok();
     }
 

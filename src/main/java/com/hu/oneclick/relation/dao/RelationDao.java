@@ -11,4 +11,6 @@ public interface RelationDao extends BaseMapper<Relation> {
     List<Relation> getRelationListByObjectIdAndTargetIdAndCategory(@Param("id") Long testCaseId,
                                                                    @Param("categorys") String[] categorys);
 
+    List<Relation> getRelationListWithTitleByObjectIdAndCategory(@Param("objectId") String objectId,
+                                                                 @Param("category") String category);
 }

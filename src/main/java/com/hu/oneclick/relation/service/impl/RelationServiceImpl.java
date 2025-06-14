@@ -41,7 +41,7 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveRelationBatch(String objectId, List<String> targetIdList, String category, List<String> extJsonList, boolean clear) {
+    public void saveRelationBatch(String objectId, List<String> targetIdList, String category,List<String> extJsonList, boolean clear) {
         // 是否需要先删除关系
         if(clear) {
             this.remove(new LambdaQueryWrapper<Relation>().eq(Relation::getObjectId, objectId)
@@ -205,6 +205,11 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     public List<String> getRelationObjectIdListByTargetIdListAndCategory(List<String> targetIdList, String category) {
         return this.getRelationListByTargetIdListAndCategory(targetIdList, category).stream()
                 .map(Relation::getObjectId).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Relation> getRelationListWithTitleByObjectIdAndCategory(String objectId, String category) {
+        return relationDao.getRelationListWithTitleByObjectIdAndCategory(objectId, category);
     }
 
     @Override
