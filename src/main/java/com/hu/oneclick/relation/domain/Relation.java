@@ -43,9 +43,9 @@ public class Relation {
     @NotBlank(message = "分类不能为空")
     private String category;
 
-  /*  *//** 扩展信息 *//*
+    //** 扩展信息 *//*
     @ApiModelProperty("扩展信息(JSON)")
-    private String extJson;*/
+    private String extJson;
 
     /**
      * 标题（来自关联表）
