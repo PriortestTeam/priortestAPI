@@ -80,6 +80,14 @@ public interface RelationService extends IService<Relation> {
     List<Relation> getRelationListByObjectId(String objectId);
 
     /**
+     * 根据对象id和分类获取带标题的关系列表
+     *
+     * @author huju
+     * @date 2025/06/14
+     */
+    List<Relation> getRelationListWithTitleByObjectIdAndCategory(String objectId, String category);
+
+    /**
      * 根据对象id集合获取关系列表
      *
      *  @author xiaohai

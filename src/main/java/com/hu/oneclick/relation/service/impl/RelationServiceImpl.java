@@ -208,6 +208,11 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     }
 
     @Override
+    public List<Relation> getRelationListWithTitleByObjectIdAndCategory(String objectId, String category) {
+        return relationDao.getRelationListWithTitleByObjectIdAndCategory(objectId, category);
+    }
+
+    @Override
     public int removeBatchByTestCaseIds(List<Long> testCasesIds) {
         return relationDao.delete(new LambdaQueryWrapper<Relation>()
                 .in(Relation::getObjectId, testCasesIds)

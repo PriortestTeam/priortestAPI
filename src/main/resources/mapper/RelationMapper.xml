@@ -18,4 +18,44 @@
             </if>
         </where>
     </select>
+
+    <!-- 根据对象ID和分类查询关系列表，并根据分类查询对应表的标题 -->
+    <select id="getRelationListWithTitleByObjectIdAndCategory" resultType="com.hu.oneclick.relation.domain.Relation">
+        SELECT
+        r.id,
+        r.object_id AS objectId,
+        r.target_id AS targetId,
+        r.category,
+        r.ext_json AS extJson,
+        <choose>
+            <when test="category == 'ISSUE_TEST_CASE' or category == 'FEATURE_TEST_CASE'">
+                tc.title AS title
+            </when>
+            <when test="category == 'TEST_CASE_ISSUE'">
+                i.title AS title
+            </when>
+            <when test="category == 'TEST_CASE_FEATURE'">
+                f.title AS title
+            </when>
+            <otherwise>
+                '' AS title
+            </otherwise>
+        </choose>
+        FROM relation r
+        <choose>
+            <when test="category == 'ISSUE_TEST_CASE' or category == 'FEATURE_TEST_CASE'">
+                LEFT JOIN test_case tc ON r.target_id = tc.id
+            </when>
+            <when test="category == 'TEST_CASE_ISSUE'">
+                LEFT JOIN issue i ON r.target_id = i.id
+            </when>
+            <when test="category == 'TEST_CASE_FEATURE'">
+                LEFT JOIN feature f ON r.target_id = f.id
+            </when>
+        </choose>
+        WHERE r.object_id = #{objectId}
+        <if test="category != null and category != ''">
+            AND r.category = #{category}
+        </if>
+    </select>
 </mapper>
