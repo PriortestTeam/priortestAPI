@@ -36,12 +36,12 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
         Relation.setObjectId(objectId);
         Relation.setTargetId(targetId);
         Relation.setCategory(category);
-        Relation.setExtJson(extJson);
+
         this.save(Relation);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void saveRelationBatch(String objectId, List<String> targetIdList, String category, List<String> extJsonList, boolean clear) {
+    public void saveRelationBatch(String objectId, List<String> targetIdList, String category, boolean clear) {
         // 是否需要先删除关系
         if(clear) {
             this.remove(new LambdaQueryWrapper<Relation>().eq(Relation::getObjectId, objectId)
@@ -53,9 +53,7 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
             Relation.setObjectId(objectId);
             Relation.setTargetId(targetIdList.get(i));
             Relation.setCategory(category);
-            if(ObjectUtil.isNotEmpty(extJsonList)) {
-                Relation.setExtJson(extJsonList.get(i));
-            }
+
             RelationList.add(Relation);
         }
         if(ObjectUtil.isNotEmpty(RelationList)) {
