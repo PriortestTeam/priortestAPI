@@ -173,22 +173,11 @@
         LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
         <where>
             WHERE cf.project_id = #{projectId}
-            AND cf.field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+            AND cf.field_type IN ('dropDown', 'multiList', 'userList', 'numberList', 'linkedDropDown')
         </where>
     </select>
 
-    <!--    <select id="getDropDownBox" resultMap="CustomFileldLinkVoResultMap" parameterType="com.hu.oneclick.model.domain.dto.CustomFieldDto">
-            SELECT
-            <include refid="Custom_Column_List"/>
-            FROM custom_fileld_link cfl
-            LEFT JOIN custom_fields cf ON cf.custom_field_id = cfl.custom_field_id
-            <where>
-                 cf.project_id = #{customFieldDto.projectId}
-                AND cf.field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
-            </where>
 
-        </select>
-        -->
 
     <select id="getDropDownBox" resultMap="CustomFileldLinkVoResultMap"
             parameterType="com.hu.oneclick.model.domain.dto.CustomFieldDto">
@@ -197,7 +186,7 @@
         FROM custom_fields
         <where>
             (project_id = #{customFieldDto.projectId} or type ='sField')
-            AND field_type IN ('dropDown', 'multiList', 'userList', 'number', 'linkedDropDown')
+            AND field_type IN ('dropDown', 'multiList', 'userList', 'numberList', 'linkedDropDown')
             <!--AND (JSON_TYPE(possible_value->'$.order_1') != 'NULL' OR JSON_TYPE(possible_value->'$.others') != 'NULL') -->
             order by create_time
         </where>

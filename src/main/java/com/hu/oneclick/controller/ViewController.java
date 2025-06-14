@@ -1,12 +1,14 @@
 package com.hu.oneclick.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.View;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
 import com.hu.oneclick.model.domain.dto.ViewTreeDto;
+import com.hu.oneclick.model.param.ViewGetSubViewRecordParam;
 import com.hu.oneclick.server.service.ViewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +92,10 @@ public class ViewController extends BaseController {
         try {
             view = viewService.addViewRE(view);
             return new Resp.Builder<>().ok();
-        } catch (Exception e) {
+        } catch (BizException e) {
+            log.error("新增失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<>().buildResult(e.getCode(), e.getMessage(), 400);
+    } catch (Exception e) {
             log.error("新增失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
         }
@@ -100,6 +107,9 @@ public class ViewController extends BaseController {
         try {
             view = viewService.updateView(view);
             return new Resp.Builder<>().ok();
+        } catch (BizException e) {
+            log.error("修改失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<>().buildResult(e.getCode(), e.getMessage(), 400);
         } catch (Exception e) {
             log.error("修改失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
@@ -141,12 +151,19 @@ public class ViewController extends BaseController {
         return null;
     }
 
-
     @PostMapping("getViewFilter")
     @ApiOperation("获取filter字段")
     public Resp<Object> getViewFilter() {
         return viewService.getViewFilter();
     }
 
+    @GetMapping("getSubViewRecord")
+    public Object getSubViewRecord(
+        @RequestParam(name = "pageNum", defaultValue = "1") @Min(1) int page,
+        @RequestParam(name = "pageSize", defaultValue = "20") @Min(20) @Max(20) int offset,
+        @RequestBody ViewGetSubViewRecordParam param
+    ) {
 
+        return viewService.findTestCaseLinkedSubview(page, offset, param);
+    }
 }
