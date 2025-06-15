@@ -43,11 +43,6 @@ public class ViewController extends BaseController {
         return viewService.queryDoesExistByTitle(projectId, title, scope);
     }
 
-    @GetMapping("queryById/{id}")
-    public Resp<View> queryById(@PathVariable String id) {
-        return viewService.queryById(id);
-    }
-
     @GetMapping("getViewScopeChildParams")
     @ApiOperation("根据范围搜索所有字段(弃用)请使用getViewScope")
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope) {
@@ -121,6 +116,17 @@ public class ViewController extends BaseController {
         return viewService.deleteView(viewId);
     }
 
+
+    @GetMapping("queryById/{viewId}")
+    @ApiOperation("根据ID查询视图详细信息")
+    private Resp<View> queryById(@PathVariable String viewId) {
+        try {
+            return viewService.queryById(viewId);
+        } catch (Exception e) {
+            log.error("查询视图详细信息失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<View>().fail();
+        }
+    }
 
     @GetMapping("queryViewParents")
     @ApiOperation("查询父视图")

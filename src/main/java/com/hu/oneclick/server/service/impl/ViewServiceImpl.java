@@ -398,12 +398,13 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
             view.setLevel(1);
         }
         view.setFilter(view.getFilterByManual(view.getOneFilters()));
-        // 添加子视图
+
+        // 自动子视图
         if (1 == view.getIsAuto() && view.getLevel() == 0) {
             // 查询项目范围内的自定义字段
             // 添加oneFilters集合
             // 保存子视图
-            view.setFilter(JSON.toJSONString(view.getAutoFilter()));
+            view.setFilter(JSON.toJSONString(view.getOneFilters()));
         }
         baseMapper.insert(view);
         return view;
