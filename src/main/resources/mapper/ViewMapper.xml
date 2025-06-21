@@ -116,9 +116,8 @@
         is_private
         from oneclick.view
         <where>
-            (create_user_id = #{masterId} and is_private = 1 and project_id=#{projectId} and scope_name = #{scopeName}
-            and level=0)
-            or (is_private = 0 and project_id = #{projectId} and scope_name = #{scopeName} and level =0)
+            create_user_id = #{masterId}  and project_id=#{projectId} and scope_name = #{scopeName}
+            and level=0 and is_auto!=1
         </where>
     </select>
     <select id="queryTitleByParentId" resultType="java.lang.String">
