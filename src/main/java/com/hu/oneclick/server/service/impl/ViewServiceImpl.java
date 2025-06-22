@@ -398,12 +398,13 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
             view.setLevel(1);
         }
         view.setFilter(view.getFilterByManual(view.getOneFilters()));
-        // 添加子视图
+
+        // 自动子视图
         if (1 == view.getIsAuto() && view.getLevel() == 0) {
             // 查询项目范围内的自定义字段
             // 添加oneFilters集合
             // 保存子视图
-            view.setFilter(JSON.toJSONString(view.getAutoFilter()));
+            view.setFilter(JSON.toJSONString(view.getOneFilters()));
         }
         baseMapper.insert(view);
         return view;
@@ -678,4 +679,60 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
 
         return new Resp.Builder<>().setData(PageUtil.manualPaging(records.getRecords())).ok();
     }
+    @Override
+    public Object findSubViewRecordByScopeName(int page, int pageSize, ViewGetSubViewRecordParam param) {
+        if (param == null || StringUtils.isEmpty(param.getScopeName())) {
+            return new Resp.Builder<Object>().buildResult("scopeName 参数不能为空");
+        }
+
+        String masterId = jwtUserService.getMasterId();
+        SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
+        String projectId = sysUser.getUserUseOpenProject().getProjectId();
+
+        // 根据 scopeName 确定要查询的表名
+        String tableName = getTableNameByScopeName(param.getScopeName());
+        if (StringUtils.isEmpty(tableName)) {
+            return new Resp.Builder<Object>().buildResult("不支持的 scopeName: " + param.getScopeName());
+        }
+
+        try {
+            // 计算偏移量
+            int offset = (page - 1) * pageSize;
+            // 使用 DAO 方法查询
+            List<Map<String, Object>> result = viewDao.queryRecordsByScope(
+                tableName,
+                param.getFieldNameEn(),
+                param.getValue(),
+                projectId,
+               null, // 不排除任何用户创建的记录
+                offset,
+                pageSize
+            );
+
+            return new Resp.Builder<Object>().setData(PageUtil.manualPaging(result)).ok();
+        } catch (Exception e) {
+            logger.error("查询子视图记录失败: " + e.getMessage(), e);
+            return new Resp.Builder<Object>().buildResult("查询失败: " + e.getMessage());
+        }
+    }
+
+    /**Add commentMore actions
+     * 根据 scopeName 返回对应的表名
+     */
+    private String getTableNameByScopeName(String scopeName) {
+        switch (scopeName) {
+            case "故事":
+                return "feature";
+            case "测试用例":
+                return "test_case";
+            case "缺陷":
+                return "issue";
+            case "测试周期":
+                return "test_cycle";
+            default:
+                return null;
+        }
+    }
+
+
 }

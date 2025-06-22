@@ -201,77 +201,12 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * @param testCase
    */
   private void modifyRecord(TestCase testCase) {
-    // try {
-    //    TestCase query = baseMapper.queryById(testCase.getId(), testCase.getUserId());
-    //    if (query == null) {
-    //        throw new RuntimeException();
-    //    }
-    //
-    //    Field[] fields = testCase.getClass().getDeclaredFields();
-    //
-    //    Field[] fields2 = query.getClass().getDeclaredFields();
-    //    List<ModifyRecord> modifyRecords = new ArrayList<>();
-    //    for (int i = 0, len = fields.length; i < len; i++) {
-    //        String field = fields[i].getName(); //获取字段名
-    //
-    //        fields[i].setAccessible(true);
-    //        fields2[i].setAccessible(true);
-    //
-    //        if (field.equals("id")
-    //                || field.equals("projectId")
-    //                || field.equals("userId")
-    //                || field.equals("updateTime")
-    //                || field.equals("createTime")
-    //                || field.equals("scope")
-    //                || field.equals("serialVersionUID")
-    //                || field.equals("description")
-    //                || fields[i].get(testCase) == null
-    //                || fields[i].get(testCase) == "") {
-    //            continue;
-    //        }
-    //
-    //        String after = fields[i].get(testCase).toString(); //获取用户需要修改的字段
-    //        String before = fields2[i].get(query) == null || fields2[i].get(query) == ""
-    //                ? "" : fields2[i].get(query).toString();//获取数据库的原有的字段
-    //
-    //        //值不相同
-    //        if (!before.equals(after)) {
-    //
-    //            ModifyRecord mr = new ModifyRecord();
-    //            mr.setProjectId(query.getProjectId());
-    //            mr.setUserId(query.getUserId());
-    //            mr.setScope(OneConstant.SCOPE.ONE_TEST_CASE);
-    //            mr.setModifyDate(new Date());
-    //            mr.setModifyUser(jwtUserService.getUserLoginInfo().getSysUser().getUserName());
-    //            mr.setBeforeVal(before);
-    //            mr.setAfterVal(after);
-    //            mr.setLinkId(query.getId());
-    //            mr.setModifyField(getCnField(field));
-    //            modifyRecords.add(mr);
-    //        }
-    //    }
-    //    if (modifyRecords.size() <= 0) {
-    //        return;
-    //    }
-    //    modifyRecordsService.insert(modifyRecords);
-    //} catch (IllegalAccessException e) {
-    //    throw new BizException(SysConstantEnum.ADD_FAILED.getCode(), "修改字段新增失败！");
-    //}
+
   }
-
-
   @Override
   @Transactional(rollbackFor = Exception.class)
   public Resp<String> delete(String id) {
-    // try {
-    //    TestCase testCase = new TestCase();
-    //    testCase.setId(id);
-    //    return Result.deleteResult(baseMapper.delete(testCase));
-    //} catch (BizException e) {
-    //    log.error("class: TestCaseServiceImpl#delete,error []" + e.getMessage());
-    //    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-    //    return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
-    //}
+
     return null;
   }
 
@@ -927,11 +862,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     testCase.setId(null);
     // TestCase testCaseOne = baseMapper.selectOne(testCase);
     ////如果testCaseId不为空则判断查询出ID是否与传入ID一致说明不重复
-    // if (testCaseId != null && testCaseOne != null && !testCaseOne.getId().equals(testCaseId)) {
-    //    throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), "externaID:" + externaID + SysConstantEnum.DATE_EXIST.getValue());
-    //} else if (testCaseId == null && testCaseOne != null) {
-    //    throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), "externaID:" + externaID + SysConstantEnum.DATE_EXIST.getValue());
-    //}
+
   }
 
   /**
@@ -999,29 +930,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    */
   @Override
   public Resp<String> addTestCase(TestCycleDto testCycleDto) {
-//        String testCycleId = testCycleDto.getId();
-
-    // 查询testcycle是否存在
-    // Resp<TestCycle> testCycleResp = testCycleService.queryById(testCycleId);
-    // TestCycle data = testCycleResp.getData();
-    ////如果为空，则说明先选择的testcase一起添加
-    // if (ObjectUtils.isEmpty(data)) {
-    //    data = new TestCycle();
-    //    data.setTitle("新建测试周期" + DateUtil.getCurrDate());
-    //    testCycleService.insert(data);
-    //}
-    ////已存在的testCycle添加testcase
-    // List<TestCase> testCases = testCycleDto.getTestCases();
-    // for (TestCase aCase : testCases) {
-    //    TestCycleJoinTestCase tc = new TestCycleJoinTestCase();
-    //    tc.setTestCycleId(testCycleId);
-    //    tc.setTestCaseId(aCase.getId());
-    //    testCycleJoinbaseMapper.insert(tc);
-    //}
-
-    // 插入自定义字段值
-//        List<CustomFieldData> customFieldDatas = testCycleDto.getCustomFieldDatas();
-    // customFieldDataService.insertTestCaseCustomData(customFieldDatas, testCases);
     return new Resp.Builder<String>().ok();
   }
 

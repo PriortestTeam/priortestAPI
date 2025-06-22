@@ -43,11 +43,6 @@ public class ViewController extends BaseController {
         return viewService.queryDoesExistByTitle(projectId, title, scope);
     }
 
-    @GetMapping("queryById/{id}")
-    public Resp<View> queryById(@PathVariable String id) {
-        return viewService.queryById(id);
-    }
-
     @GetMapping("getViewScopeChildParams")
     @ApiOperation("根据范围搜索所有字段(弃用)请使用getViewScope")
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope) {
@@ -122,6 +117,17 @@ public class ViewController extends BaseController {
     }
 
 
+    @GetMapping("queryById/{viewId}")
+    @ApiOperation("根据ID查询视图详细信息")
+    private Resp<View> queryById(@PathVariable String viewId) {
+        try {
+            return viewService.queryById(viewId);
+        } catch (Exception e) {
+            log.error("查询视图详细信息失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<View>().fail();
+        }
+    }
+
     @GetMapping("queryViewParents")
     @ApiOperation("查询父视图")
     private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String projectId) {
@@ -157,13 +163,12 @@ public class ViewController extends BaseController {
         return viewService.getViewFilter();
     }
 
-    @GetMapping("getSubViewRecord")
+    @PostMapping("getSubViewRecord")
     public Object getSubViewRecord(
         @RequestParam(name = "pageNum", defaultValue = "1") @Min(1) int page,
         @RequestParam(name = "pageSize", defaultValue = "20") @Min(20) @Max(20) int offset,
-        @RequestBody ViewGetSubViewRecordParam param
-    ) {
-
-        return viewService.findTestCaseLinkedSubview(page, offset, param);
+        @RequestBody ViewGetSubViewRecordParam param)
+    {
+        return viewService.findSubViewRecordByScopeName(page, offset, param);
     }
 }
