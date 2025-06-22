@@ -163,7 +163,7 @@ public class ViewController extends BaseController {
         return viewService.getViewFilter();
     }
 
-    @GetMapping("getSubViewRecord")
+    @PostMapping("getSubViewRecord")
     public Object getSubViewRecord(
         @RequestParam(name = "pageNum", defaultValue = "1") @Min(1) int page,
         @RequestParam(name = "pageSize", defaultValue = "20") @Min(20) @Max(20) int offset,
