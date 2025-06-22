@@ -24,16 +24,18 @@
     </resultMap>
 
     <sql id="base_sql">
-        id
-        , create_user_id, project_id, title,is_auto, `scope_name`, is_private, creater, filter, `view_type`, update_user,create_time, update_time,parent_id,`level`
+        id, create_user_id, update_user_id,project_id, title,is_auto, `scope_name`,scope_id, is_private, creater, filter, `view_type`, update_user,create_time, update_time,parent_id,`level`
     </sql>
     <!--查询单个-->
     <select id="queryById" resultMap="ViewMap">
         select id,
                create_user_id,
+               update_user_id,
                project_id,
                title,
-               is_auto scope_name,
+               is_auto,
+               scope_name,
+               scope_id,
                is_private,
                creater,
                filter,
@@ -79,7 +81,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ViewMap">
         select
-        id, create_user_id, project_id, title,is_auto, scope_name, is_private, creater,filter,view_type,update_user, create_time,
+        id, create_user_id, project_id, title,is_auto, scope_name, scope_id,is_private, creater,filter,view_type,update_user, create_time,
         update_time,parent_id,`level`
         from oneclick.view
         <where>
@@ -114,9 +116,8 @@
         is_private
         from oneclick.view
         <where>
-            (create_user_id = #{masterId} and is_private = 1 and project_id=#{projectId} and scope_name = #{scopeName}
-            and level=0)
-            or (is_private = 0 and project_id = #{projectId} and scope_name = #{scopeName} and level =0)
+            create_user_id = #{masterId}  and project_id=#{projectId} and scope_name = #{scopeName}
+            and level=0 and is_auto!=1
         </where>
     </select>
     <select id="queryTitleByParentId" resultType="java.lang.String">
@@ -162,9 +163,11 @@
                view_type,
                scope_id
         from oneclick.view
-        where create_user_id = #{masterId}
-          and project_id = #{projectId}
-          and scope_id = #{scopeId}
+        where ((create_user_id = #{masterId}
+        and project_id = #{projectId}
+        and scope_id = #{scopeId})
+        or (view_type = 1 and scope_id = #{scopeId})
+        or (create_user_id != #{masterId} and scope_id = #{scopeId} and project_id = #{projectId} and is_private = 0))
     </select>
 
 
@@ -183,6 +186,7 @@
         <result property="level" column="level" jdbcType="VARCHAR"/>
         <result property="scopeId" column="scope_id" jdbcType="INTEGER"/>
         <result property="isAuto" column="is_auto" jdbcType="INTEGER"/>
+        <result property="viewType" column="view_type" jdbcType="INTEGER"/>
         <collection property="childViews" ofType="com.hu.oneclick.model.domain.dto.ViewTreeDto"
                     select="queryViewTreeById" column="{viewId=parent_id,masterId=create_user_id}"/>
     </resultMap>
@@ -194,13 +198,15 @@
                title,
                is_auto,
                scope_name,
+               scope_id,
                is_private,
                owner,
                filter,
                create_time,
                update_time,
                parent_id,
-               `level`
+               `level`,
+                view_type
         from oneclick.view
         where create_user_id = #{masterId}
           and id = #{viewId}
@@ -232,5 +238,15 @@
                                and t2.field_name_en = #{fieldNameEn}) as t3
                             ON t4.linked_custom_field_id = t3.custom_field_id
 
+    </select>
+
+    <select id="queryRecordsByScope" parameterType="map" resultType="map">
+        SELECT * FROM ${tableName}
+        WHERE ${fieldNameEn} = #{value}
+        AND project_id = #{projectId}
+        <if test="createUserId != null">
+            AND create_user_id != #{createUserId}
+        </if>
+        LIMIT #{offset}, #{limit}
     </select>
 </mapper>
