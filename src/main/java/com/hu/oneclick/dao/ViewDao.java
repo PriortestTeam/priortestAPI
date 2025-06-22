@@ -95,6 +95,17 @@ public interface ViewDao extends BaseMapper<View> {
 
     List<Object> sql(@Param("sqlen") String sqlen);
 
+    /**Add commentMore actions
+     * 根据 scope 动态查询记录
+     */
+    List<Map<String, Object>> queryRecordsByScope(@Param("tableName") String tableName,
+                                                  @Param("fieldNameEn") String fieldNameEn,
+                                                  @Param("value") String value,
+                                                  @Param("projectId") String projectId,
+                                                  @Param("createUserId") String createUserId,
+                                                  @Param("offset") int offset,
+                                                  @Param("limit") int limit);
+
     /**
      * 通过ID查询单条数据
      *

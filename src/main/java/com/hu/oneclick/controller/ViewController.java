@@ -167,9 +167,8 @@ public class ViewController extends BaseController {
     public Object getSubViewRecord(
         @RequestParam(name = "pageNum", defaultValue = "1") @Min(1) int page,
         @RequestParam(name = "pageSize", defaultValue = "20") @Min(20) @Max(20) int offset,
-        @RequestBody ViewGetSubViewRecordParam param
-    ) {
-
-        return viewService.findTestCaseLinkedSubview(page, offset, param);
+        @RequestBody ViewGetSubViewRecordParam param)
+    {
+        return viewService.findSubViewRecordByScopeName(page, offset, param);
     }
 }

@@ -75,5 +75,15 @@ public interface ViewService extends IService<View> {
      */
     Resp<Map<String, Object>> getViewScope(String scope);
 
-    Object findTestCaseLinkedSubview(int page, int offset, ViewGetSubViewRecordParam param);
+    Object findTestCaseLinkedSubview(int page, int pageSize, ViewGetSubViewRecordParam param);
+
+    /**
+     * 根据 scopeName 动态查询对应表的记录
+     *
+     * @param page 页码
+     * @param pageSize 每页大小
+     * @param param 查询参数
+     * @return 查询结果
+     */
+    Object findSubViewRecordByScopeName(int page, int pageSize, ViewGetSubViewRecordParam param);
 }

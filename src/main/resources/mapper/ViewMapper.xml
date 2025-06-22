@@ -239,4 +239,14 @@
                             ON t4.linked_custom_field_id = t3.custom_field_id
 
     </select>
+
+    <select id="queryRecordsByScope" parameterType="map" resultType="map">
+        SELECT * FROM ${tableName}
+        WHERE ${fieldNameEn} = #{value}
+        AND project_id = #{projectId}
+        <if test="createUserId != null">
+            AND create_user_id != #{createUserId}
+        </if>
+        LIMIT #{offset}, #{limit}
+    </select>
 </mapper>
