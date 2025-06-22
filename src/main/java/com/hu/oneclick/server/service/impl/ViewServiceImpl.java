@@ -709,10 +709,9 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
                 pageSize
             );
 
-            return new Resp.Builder<Object>().setData(result).totalSize(result.size()).ok();
-
+            return new Resp.Builder<Object>().setData(PageUtil.manualPaging(result)).ok();
         } catch (Exception e) {
-            logger.error("查询失败: " + e.getMessage(), e);
+            logger.error("查询子视图记录失败: " + e.getMessage(), e);
             return new Resp.Builder<Object>().buildResult("查询失败: " + e.getMessage());
         }
     }
