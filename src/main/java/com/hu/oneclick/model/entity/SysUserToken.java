@@ -11,7 +11,7 @@ import java.util.Date;
  * sys_user_token
  * @author 
  */
-@Schemavalue="com.hu.oneclick.model.entity.SysUserToken"
+@Schema(description = "用户Token实体")
 @Data
 public class SysUserToken implements Serializable {
     private Integer id;
@@ -19,49 +19,49 @@ public class SysUserToken implements Serializable {
     /**
      * 用户id
      */
-    @Schemavalue="用户id"
+    @Schema(description = "用户id")
     private String userId;
 
     /**
      * token名称
      */
-    @Schemavalue="token名称"
+    @Schema(description = "token名称")
     private String tokenName;
 
     /**
      * token值
      */
-    @Schemavalue="token值"
+    @Schema(description = "token值")
     private String tokenValue;
 
     /**
      * 过期时间
      */
-    @Schemavalue="过期时间"
+    @Schema(description = "过期时间")
     private Date expirationTime;
 
     /**
      * 创建时间
      */
-    @Schemavalue="创建时间"
+    @Schema(description = "创建时间")
     private Date createTime;
 
     /**
      * 是否删除
      */
-    @Schemavalue="是否删除"
+    @Schema(description = "是否删除")
     private Boolean isDel;
 
     /**
      * 状态
      */
-    @Schemavalue="状态"
+    @Schema(description = "状态")
     private Boolean status;
 
     /**
      * 剩余调用api次数
      */
-    @Schemavalue="剩余调用api次数"
+    @Schema(description = "剩余调用api次数")
     private Long apiTimes;
 
     /**

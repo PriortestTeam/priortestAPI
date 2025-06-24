@@ -25,7 +25,7 @@ public class GitManagerController {
         this.gitMangerService = gitMangerService;
     }
 
-    @Operation"获取room_id下的Git信息"
+    @Operation(summary = "获取room_id下的Git信息")
     @GetMapping("retrive/{room_id}")
     public Object retrive(@PathVariable("room_id") String roomId) {
         String pattern = "^\\d+";
@@ -38,7 +38,7 @@ public class GitManagerController {
         return new Resp.Builder<>().setData(rst).ok();
     }
 
-    @Operation"设置Git信息"
+    @Operation(summary = "设置Git信息")
     @PostMapping("settings")
     public Object settings(@RequestBody @Validated GitSettingsParam settings) {
         UITestGitSettings access = new UITestGitSettings();
@@ -51,7 +51,7 @@ public class GitManagerController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation"更新Git信息"
+    @Operation(summary = "更新Git信息")
     @PostMapping("change/{id}")
     public Object change(@PathVariable String id, @RequestBody @Validated GitSettingsParam settings) {
         var pattern = "^\\d+";
@@ -70,7 +70,7 @@ public class GitManagerController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation"删除Git信息"
+    @Operation(summary = "删除Git信息")
     @DeleteMapping("delete/{id}")
     public Object delete(@PathVariable String id) {
         String regex = "^\\d+";
@@ -83,7 +83,7 @@ public class GitManagerController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation"删除room_id下的Git信息"
+    @Operation(summary = "删除room_id下的Git信息")
     @DeleteMapping("destroy/{room_id}")
     public Object destroy(@PathVariable("room_id") String roomId) {
         String regex = "^\\d+";
@@ -96,7 +96,7 @@ public class GitManagerController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation"初始化项目的Git仓库"
+    @Operation(summary = "初始化项目的Git仓库")
     @PostMapping("project/{room_id}/init")
     public Object init(@PathVariable("room_id") String roomId, @RequestBody @Validated GitRepoInitParam param) {
         var regex = "^\\d+";

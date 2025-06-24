@@ -2,10 +2,10 @@ package com.hu.oneclick.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import javax.validation.constraints.NotNull;
-import java.math.BigInteger;
+
 import java.util.List;
+import java.math.BigInteger;
 import java.util.Map;
 
 @Data
