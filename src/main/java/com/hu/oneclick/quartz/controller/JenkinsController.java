@@ -26,7 +26,7 @@ public class JenkinsController {
     private JenkinsManager jenkinsManager;
 
 
-    @Operation"添加Job"
+    @Operation(summary = "添加Job")
     @PostMapping(value = "/addJob")
     public Resp<?> addJob(@RequestBody @Validated JenkinsSaveDto dto) {
         try {
@@ -38,7 +38,7 @@ public class JenkinsController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation"更新Job"
+    @Operation(summary = "更新Job")
     @PutMapping(value = "/updateJob")
     public Resp<?> updateJob(@RequestBody @Validated JenkinsSaveDto dto) {
         try {
@@ -50,7 +50,7 @@ public class JenkinsController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation"Job详情"
+    @Operation(summary = "Job详情")
     @GetMapping(value = "/jobInfo")
     public Resp<?> jobInfo(@RequestParam(value = "jobName") String jobName) {
         try {
@@ -62,7 +62,7 @@ public class JenkinsController {
         }
     }
 
-    @Operation"获取Job列表"
+    @Operation(summary = "获取Job列表")
     @GetMapping(value = "/jobList")
     public Resp<?> jobList() {
         try {
@@ -74,7 +74,7 @@ public class JenkinsController {
         }
     }
 
-    @Operation"构建Job"
+    @Operation(summary = "构建Job")
     @PutMapping("/buildJob")
     public Resp<?> buildJob(@RequestBody @Validated JenkinsBuildDto dto) {
         try {
@@ -90,7 +90,7 @@ public class JenkinsController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation"停止Job"
+    @Operation(summary = "停止Job")
     @PutMapping("/stopJob")
     public Resp<?> stopJob(@RequestBody @Validated JenkinsOperateDto dto) {
         try {
@@ -102,7 +102,7 @@ public class JenkinsController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation"删除任务"
+    @Operation(summary = "删除任务")
     @DeleteMapping("/deleteJob")
     public Resp<?> deleteJob(@RequestBody @Validated JenkinsOperateDto dto) {
         try {
