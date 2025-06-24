@@ -16,10 +16,10 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FunctionModelDTO  implements Serializable {
 
-    @Schemaname= "funId", value = "模块id"
+    @Schema(description = "模块id")
     private Integer funId;
 
-    @Schemaname= "btnStr", value = "功能字符串{'funId':40,'btnStr':'1,2,7'}）"
+    @Schema(description = "功能字符串{'funId':40,'btnStr':'1,2,7'}）")
     private String btnStr;
 
 
