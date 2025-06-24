@@ -16,7 +16,7 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@Schema"Jenkins变更DTO"
+@Schema(description = "Jenkins变更DTO")
 public class JenkinsSaveDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;
@@ -26,7 +26,7 @@ public class JenkinsSaveDto implements Serializable {
     private String jobName;
 
     @Schema(description = "xml")
-    @NotBlank(message = "xml不能为空")
+    @NotBlank(message = "xml不能为空")不能为空")
     private String xml;
 
 }
