@@ -3,8 +3,8 @@ package com.hu.oneclick.model.domain.dto;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.VerifyParam;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,39 +14,39 @@ import java.io.Serializable;
  * sys_order_discount
  * @author masiyi
  */
-@ApiModel(value="折扣表")
+@Schemavalue="折扣表"
 @Data
 public class SysOrderDiscountDto implements Serializable, VerifyParam {
 
     /**
      * 订阅时长
      */
-    @ApiModelProperty(value="订阅时长")
+    @Schemavalue="订阅时长"
     private String subScription;
 
     /**
      * 容量大小
      */
-    @ApiModelProperty(value="容量大小")
+    @Schemavalue="容量大小"
     private String dataStrorage;
 
     /**
      * apiCall
      */
-    @ApiModelProperty(value="apiCall")
+    @Schemavalue="apiCall"
     private String apiCall;
 
     /**
      * 用户类型
      */
-    @ApiModelProperty(value="用户类型")
+    @Schemavalue="用户类型"
     private String userClass;
 
 
     /**
      * 服务周期
      */
-    @ApiModelProperty(value="服务周期")
+    @Schemavalue="服务周期"
     private String serviceDuration;
 
     @Override

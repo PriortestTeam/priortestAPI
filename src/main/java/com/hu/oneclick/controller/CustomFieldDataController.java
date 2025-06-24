@@ -4,8 +4,8 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.SysCustomField;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.server.service.CustomFieldDataService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +22,7 @@ import java.util.List;
  * @since JDK 1.8.0
  */
 @RestController
-@Api(tags = "用户自定义字段存储值")
+@Tag(name = "用户自定义字段存储值", description = "用户自定义字段存储值相关接口")
 @RequestMapping("CustomFieldData")
 public class CustomFieldDataController {
 
@@ -36,7 +36,7 @@ public class CustomFieldDataController {
      * @Date: 2021/12/29
      */
     @PostMapping("getAllCustomField")
-    @ApiOperation("新建时获取所有用户字段")
+    @Operation"新建时获取所有用户字段"
     public Resp<List<Object>> getAllCustomField(@RequestBody CustomFieldDto customFieldDto) {
         return customFieldDataService.getAllCustomField(customFieldDto);
     }
@@ -51,7 +51,7 @@ public class CustomFieldDataController {
      * @Date: 2021/11/17
      */
     @GetMapping("getAllSysCustomField")
-    @ApiOperation("新建时获取所有系统字段")
+    @Operation"新建时获取所有系统字段"
     public Resp<List<SysCustomField>> getAllSysCustomField(@RequestParam String scope) {
         return customFieldDataService.getAllSysCustomField(scope);
     }

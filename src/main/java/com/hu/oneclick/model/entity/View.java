@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hu.oneclick.model.base.AssignBaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -26,7 +26,7 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @EqualsAndHashCode(callSuper = true)
 @Data
-@ApiModel("视图实体")
+@Schema"视图实体"
 @TableName("view")
 public class View extends AssignBaseEntity implements Serializable {
 
@@ -82,7 +82,7 @@ public class View extends AssignBaseEntity implements Serializable {
 
     private Integer level;
 
-    @ApiModelProperty(value = "Default:0, 自渲染1")
+    @Schema(description = "Default:0, 自渲染1")
 //    @TableField(exist = false)
     private Integer isAuto;
 

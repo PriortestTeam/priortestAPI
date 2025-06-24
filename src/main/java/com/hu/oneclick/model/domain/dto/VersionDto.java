@@ -1,12 +1,12 @@
 package com.hu.oneclick.model.domain.dto;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@ApiModel("版本Dto")
+@Schema"版本Dto"
 @Data
 public class VersionDto implements Serializable {
     /**

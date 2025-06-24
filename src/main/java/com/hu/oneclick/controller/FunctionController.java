@@ -11,8 +11,8 @@ import com.hu.oneclick.model.entity.SysUserBusiness;
 import com.hu.oneclick.model.domain.dto.RoleProjectFunctionDTO;
 import com.hu.oneclick.server.service.FunctionService;
 import com.hu.oneclick.server.service.UserBusinessService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +34,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping(value = "/function")
-@Api(tags = "功能管理")
+@Tag(name = "功能管理", description = "功能管理相关接口")
 @Slf4j
 public class FunctionController {
 
@@ -57,7 +57,7 @@ public class FunctionController {
      * @throws Exception
      */
     @PostMapping(value = "/findMenuByPNumber")
-    @ApiOperation(value = "根据父编号查询菜单")
+    @Operation(summary = "根据父编号查询菜单")
     public Resp<JSONArray> findMenuByPNumber(@RequestBody JSONObject jsonObject,
                                              HttpServletRequest request) throws Exception {
         String pNumber = jsonObject.getString("pNumber");
@@ -131,7 +131,7 @@ public class FunctionController {
      * @return
      */
     @GetMapping(value = "/findRoleFunction")
-    @ApiOperation(value = "角色对应功能显示")
+    @Operation(summary = "角色对应功能显示")
     public Resp<JSONArray> findRoleFunction(@RequestParam("roleId") Long roleId,
                                             @RequestParam("projectId") Long projectId,
                                             @RequestParam("userId") Long userId,
@@ -223,7 +223,7 @@ public class FunctionController {
      * @return
      */
     @GetMapping(value = "/findRoleFunctionsById")
-    @ApiOperation(value = "根据id列表查找功能信息")
+    @Operation(summary = "根据id列表查找功能信息")
     public Resp<JSONObject> findByIds(@RequestParam("roleId") Long roleId) {
         try {
             List<SysUserBusiness> list = userBusinessService.getBasicData(roleId.toString(), "RoleFunctions");
@@ -277,7 +277,7 @@ public class FunctionController {
      * @return
      */
     @PostMapping(value = "/saveRoleFunction")
-    @ApiOperation(value = "保存用户角色功能")
+    @Operation(summary = "保存用户角色功能")
     public Resp<Object> saveRoleFunction(@RequestBody @Valid RoleProjectFunctionDTO dto) {
 
         SysUserBusiness sysUserBusiness = userBusinessService.getRoleProjectFunction(dto.getRoleId(), dto.getProjectId(), dto.getUserId());

@@ -7,8 +7,8 @@ import com.hu.oneclick.model.entity.TestCaseStep;
 import com.hu.oneclick.relation.domain.Relation;
 import com.hu.oneclick.relation.domain.param.RelationParam;
 import com.hu.oneclick.relation.service.RelationService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +26,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/relation")
 @Slf4j
-@Api(tags = "通用关系关联")
+@Tag(name = "通用关系关联", description = "通用关系关联相关接口")
 public class RelationController extends BaseController {
 
     @Resource
     private RelationService relationService;
 
 
-    @ApiOperation("查询(根据对象)")
+    @Operation"查询(根据对象")
     @PostMapping("/object/list")
     public Resp<PageInfo<Relation>> objectList(@RequestBody RelationParam param) {
         startPage();
@@ -41,7 +41,7 @@ public class RelationController extends BaseController {
         return new Resp.Builder<PageInfo<Relation>>().setData(PageInfo.of(list)).ok();
     }
 
-    @ApiOperation("查询(根据目标)")
+    @Operation"查询(根据目标")
     @PostMapping("/target/list")
     public Resp<PageInfo<Relation>> targetList(@RequestBody RelationParam param) {
         startPage();
@@ -49,7 +49,7 @@ public class RelationController extends BaseController {
         return new Resp.Builder<PageInfo<Relation>>().setData(PageInfo.of(list)).ok();
     }
 
-    @ApiOperation("追加关系")
+    @Operation"追加关系"
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated Relation dto) {
         try {
@@ -61,7 +61,7 @@ public class RelationController extends BaseController {
         }
     }
 
-    @ApiOperation("删除")
+    @Operation"删除"
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {

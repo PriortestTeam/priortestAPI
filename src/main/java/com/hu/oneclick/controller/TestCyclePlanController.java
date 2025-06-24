@@ -16,9 +16,9 @@ import com.hu.oneclick.quartz.QuartzManager;
 import com.hu.oneclick.quartz.domain.JobDetails;
 import com.hu.oneclick.server.service.TestCyclePlanService;
 import com.hu.oneclick.server.service.TestCycleService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/testCycle/plan")
-@Api(tags = "测试周期 - 运行计划")
+@Tag(name = "测试周期 - 运行计划", description = "测试周期 - 运行计划相关接口")
 @Slf4j
 public class TestCyclePlanController extends BaseController {
 
@@ -59,9 +59,9 @@ public class TestCyclePlanController extends BaseController {
     private QuartzManager qtzManager;
 
 
-    @ApiOperation("列表")
+    @Operation"列表"
     @PostMapping("/list/{testCycleId}")
-    public Resp<PageInfo<JobDetails>> list(@ApiParam("测试周期ID") @PathVariable Long testCycleId) {
+    public Resp<PageInfo<JobDetails>> list(@Parameter"测试周期ID" @PathVariable Long testCycleId) {
         try {
             List<JobDetails> jobDetails = qtzManager.queryAllJobBeanByGroup(StrUtil.format("{}_{}", GROUP_PREFIX, testCycleId));
             return new Resp.Builder<PageInfo<JobDetails>>().setData(PageUtil.manualPaging(jobDetails)).ok();
@@ -71,7 +71,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @ApiOperation("新增")
+    @Operation"新增"
     @PostMapping("/save")
     public Resp<TestCyclePlan> save(@RequestBody @Validated TestCyclePlanSaveDto dto) {
         try {
@@ -101,7 +101,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @ApiOperation("详情")
+    @Operation"详情"
     @GetMapping("/info/{id}")
     public Resp<TestCyclePlan> info(@PathVariable Long id) {
         try {
@@ -121,7 +121,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @ApiOperation("删除")
+    @Operation"删除"
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {

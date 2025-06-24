@@ -2,7 +2,7 @@ package com.hu.oneclick.model.domain.dto;
 
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -17,7 +17,7 @@ import java.util.Date;
 public class ProjectManageSaveDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @ApiModelProperty(value = "主键id")
+    @Schema(description = "主键id")
     private Long id;
 
     @NotBlank(message = "标题不能为空")
@@ -46,6 +46,6 @@ public class ProjectManageSaveDto {
     /**
      * 自定义字段值
      */
-    @ApiModelProperty("自定义字段值")
+    @Schema(description = "自定义字段值")
     private JSONObject customFieldDatas;
 }

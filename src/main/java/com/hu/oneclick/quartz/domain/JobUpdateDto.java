@@ -32,7 +32,7 @@ public class JobUpdateDto implements Serializable {
     @NotBlank(message = "cron表达式不能为空")
     private String cronExpression;
 
-    @ApiModelProperty(value = "参数")
+    @Schema(description = "参数")
     private Map<String, Object> jobDataMap;
 
 }

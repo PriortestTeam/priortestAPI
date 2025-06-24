@@ -6,8 +6,8 @@ import com.hu.oneclick.model.domain.dto.LeftJoinDto;
 import com.hu.oneclick.model.entity.ProjectSignOff;
 import com.hu.oneclick.model.param.SignOffParam;
 import com.hu.oneclick.server.service.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/signOff")
-@Api(tags = "验收")
+@Tag(name = "验收", description = "验收相关接口")
 public class SignOffController {
     @Autowired
     private ProjectService projectService;
@@ -65,41 +65,41 @@ public class SignOffController {
     }
 
     @PostMapping("/generate")
-    @ApiOperation("生成pdf文档")
+    @Operation"生成pdf文档"
     public Object generate(@RequestBody SignOffParam signOffParam) {
         return pdfGenerateService.generatePdf(signOffParam);
     }
 
 
     @PostMapping("/upload")
-    @ApiOperation("文件上传")
+    @Operation"文件上传"
     public Resp<String> upload(@RequestBody MultipartFile file) {
         return projectService.upload(file);
     }
 
     @GetMapping("/delete")
-    @ApiOperation("文件删除")
+    @Operation"文件删除"
     public Resp<String> delete(@RequestParam String fileId) {
         return attachmentService.deleteAttachmentById(fileId);
     }
 
 
     @GetMapping("/getPdf")
-    @ApiOperation("返回当前项目下产生的PDF列表")
+    @Operation"返回当前项目下产生的PDF列表"
     public Resp<List<ProjectSignOff>> getPdf() {
         return signOffService.getPdf();
     }
 
 
     @GetMapping("/getUserAttachmentSign")
-    @ApiOperation("访问用户签名文件路径")
+    @Operation"访问用户签名文件路径"
     public Resp<List<Map<String, Object>>> getUserAttachmentSign() {
         return attachmentService.getUserAttachment();
     }
 
 
     @GetMapping("getProjectListByUser")
-    @ApiOperation("获取当前用户下title列表")
+    @Operation"获取当前用户下title列表"
     public Object getProjectListByUser() {
         return new Resp.Builder<>().setData(userProjectService.getUserProject()).ok();
     }

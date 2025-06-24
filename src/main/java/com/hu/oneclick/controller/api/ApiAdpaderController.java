@@ -22,7 +22,7 @@ import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
 import com.hu.oneclick.model.domain.vo.TestCycleVo;
 import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.*;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 import java.util.Map;
@@ -106,7 +106,7 @@ public class ApiAdpaderController {
     return new Resp.Builder<TestCycleVo>().setData(cycleVo).ok();
   }
 
-  @ApiOperation("新增")
+  @Operation"新增"
   @PostMapping("/{projectId}/Issue/createIssue")
   public Resp<?> save(@PathVariable Long projectId, @RequestBody @Validated IssueSaveDto dto) {
     try {
@@ -118,7 +118,7 @@ public class ApiAdpaderController {
     }
   }
 
-  @ApiOperation("更新缺陷")
+  @Operation"更新缺陷"
   @PutMapping("/{projectId}/issue/statusUpdate")
   public Resp<Issue> statusUpdate(@PathVariable Long projectId,
       @RequestBody @Validated IssueStatusDto issueStatusDto) {
@@ -140,7 +140,7 @@ public class ApiAdpaderController {
     }
   }
 
-  @ApiOperation("修改")
+  @Operation"修改"
   @PutMapping("/{projectId}/Issue/udpateIssue")
   public Resp<Issue> update(@PathVariable Long projectId,
       @RequestBody @Validated IssueSaveDto dto) {
@@ -156,7 +156,7 @@ public class ApiAdpaderController {
     }
   }
 
-  @ApiOperation("根据CaseId、projectId查找")
+  @Operation"根据CaseId、projectId查找"
   @GetMapping("/{projectId}/retrieveTestcase")
   public Resp<TestCase> getByCaseIdAndProjectId(@PathVariable("projectId") Long projectId,
       @RequestParam Long testCaseId) {
@@ -170,7 +170,7 @@ public class ApiAdpaderController {
     return new Resp.Builder<TestCase>().setData(testCase).ok();
   }
 
-  @ApiOperation("创建测试用例")
+  @Operation"创建测试用例"
   @PostMapping("/{projectId}/createTestCase")
   public Resp<Map<String, Object>> createTestCase(@PathVariable("projectId") Long projectId,
       @RequestBody @Validated TestCaseSaveDto testCaseSaveDto) {
@@ -184,7 +184,7 @@ public class ApiAdpaderController {
     ).ok();
   }
 
-  @ApiOperation("根据CaseId、projectId、cycleId查找")
+  @Operation"根据CaseId、projectId、cycleId查找"
   @GetMapping("/{projectId}/retrieveRunCase")
   public Resp<TestCycleJoinTestCase> getByCaseIdAndProjectIdAndCycleId(
       @PathVariable("projectId") Long projectId,
@@ -202,7 +202,7 @@ public class ApiAdpaderController {
     return new Resp.Builder<TestCycleJoinTestCase>().setData(testCycleJoinTestCase).ok();
   }
 
-  @ApiOperation("根据id,category 查询relation")
+  @Operation"根据id,category 查询relation"
   @GetMapping("/{projectId}/retrieveIssueAsPerTestCaseId")
   public Resp<Map> getRelationByCaseIdAndCategory(@PathVariable("projectId") Long projectId,
       @RequestParam Long testCaseId) {
@@ -217,7 +217,7 @@ public class ApiAdpaderController {
     return new Resp.Builder<Map>().setData(result).ok();
   }
 
-  @ApiOperation("更改runCaseStatus")
+  @Operation"更改runCaseStatus"
   @PostMapping("/{projectId}/testCycle/runCaseStatusUpdate")
   public Resp runCaseStatusUpdate(@PathVariable("projectId") Long projectId,
       @RequestBody TestCycleJoinTestCaseDto testCycleJoinTestCaseDto) {
@@ -230,7 +230,7 @@ public class ApiAdpaderController {
     }
   }
 
-  @ApiOperation("保存测试用例到测试周期")
+  @Operation"保存测试用例到测试周期"
   @PostMapping("/{projectId}/testCycle/instance/saveInstance")
   public Resp<Object> testCycleSaveInstance(@PathVariable("projectId") Long projectId,
       @RequestBody @Validated TestCycleJoinTestCaseSaveDto testCycleJoinTestCaseDto) {
@@ -246,7 +246,7 @@ public class ApiAdpaderController {
     return testCycleJoinTestCaseService.strictlySaveInstance(testCycleJoinTestCaseDto);
   }
 
-  @ApiOperation("通过定义的外部 ID 查询测试用例")
+  @Operation"通过定义的外部 ID 查询测试用例"
   @GetMapping("/{projectId}/retrieveTestcaseByExternalId")
   public Resp<TestCase> retrieveTestcaseByExternalId(
       @PathVariable("projectId") Long projectId,
@@ -255,7 +255,7 @@ public class ApiAdpaderController {
         testCaseService.queryByProjectIdAndExteranlId(projectId, externalId)).ok();
   }
 
-  @ApiOperation("获取缺陷的状态,通过缺陷Id")
+  @Operation"获取缺陷的状态,通过缺陷Id"
   @GetMapping("/{projectId}/retrieveIssueStatusAsPerIssueId")
   public Resp<IssueStatusVo> retrieveIssueStatusAsPerIssueId(
           @PathVariable("projectId") Long projectId,
@@ -270,7 +270,7 @@ public class ApiAdpaderController {
               HttpStatus.NOT_FOUND.value());
   }
 
-  @ApiOperation("新建测试周期")
+  @Operation"新建测试周期"
   @PostMapping("/{projectId}/testCycle/saveTestCycle")
   public Resp<TestCycle> saveTestCycle(@PathVariable("projectId") Long projectId,@RequestBody @Validated TestCycleSaveDto dto) {
     try {
@@ -293,7 +293,7 @@ public class ApiAdpaderController {
     return new Resp.Builder<TestCycle>().fail();
   }
 
-  @ApiOperation("移除多余测试周期用例")
+  @Operation"移除多余测试周期用例"
   @PostMapping("/{projectId}/testCycle/instance/removeTCsFromTestCycle")
   public Resp<TestCycleJoinTestCaseVo> removeTCsFromTestCycle(@PathVariable("projectId") Long projectId,@RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
     try {
@@ -335,7 +335,7 @@ public class ApiAdpaderController {
 
 
 
-  @ApiOperation(" 返回缺陷列表,以runcaseId")
+  @Operation" 返回缺陷列表,以runcaseId"
   @GetMapping("/{projectId}/retrieveIssueAsPerRunCaseId")
   public Resp<JSONObject> retrieveIssueAsPerRunCaseId(@PathVariable("projectId") Long projectId,@RequestParam Long runCaseId) {
     try {

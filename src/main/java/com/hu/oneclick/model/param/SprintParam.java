@@ -3,8 +3,8 @@ package com.hu.oneclick.model.param;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hu.oneclick.model.entity.Sprint;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,12 +17,12 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-@ApiModel("迭代Param")
+@Schema"迭代Param"
 public class SprintParam implements Serializable {
-    @ApiModelProperty("名称")
+    @Schema(description = "名称")
     private String title;
 
-    @ApiModelProperty("项目ID")
+    @Schema(description = "项目ID")
     @NotNull(message = "项目ID不能为空")
     private Long projectId;
 

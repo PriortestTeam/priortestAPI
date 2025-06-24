@@ -1,7 +1,7 @@
 package com.hu.oneclick.model.param;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,19 +16,19 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@ApiModel("测试周期Param")
+@Schema"测试周期Param"
 public class TestCycleParam implements Serializable {
 
     private static final long serialVersionUID = 5856652375484820133L;
 
-    @ApiModelProperty("名称")
+    @Schema(description = "名称")
     private String title;
 
-    @ApiModelProperty("项目ID")
+    @Schema(description = "项目ID")
     @NotNull(message = "项目ID不能为空")
     private Long projectId;
 
-    @ApiModelProperty("项目周期ID")
+    @Schema(description = "项目周期ID")
     private Long testCycleId;
 
 }

@@ -8,8 +8,8 @@ import com.hu.oneclick.model.entity.Feature;
 import com.hu.oneclick.model.domain.dto.FeatureSaveDto;
 import com.hu.oneclick.model.param.FeatureParam;
 import com.hu.oneclick.server.service.FeatureService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +25,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("feature")
-@Api(tags = "故事")
+@Tag(name = "故事", description = "故事相关接口")
 public class FeatureController extends BaseController {
 
     private final FeatureService featureService;
@@ -34,7 +34,7 @@ public class FeatureController extends BaseController {
         this.featureService = featureService;
     }
 
-    @ApiOperation("列表")
+    @Operation"列表"
     @PostMapping("/list")
     public Resp<PageInfo<Feature>> list(@RequestBody FeatureParam param) {
         if (null == param) {
@@ -45,7 +45,7 @@ public class FeatureController extends BaseController {
         return new Resp.Builder<PageInfo<Feature>>().setData(PageInfo.of(dataList)).ok();
     }
 
-    @ApiOperation("新增")
+    @Operation"新增"
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated FeatureSaveDto dto) {
         try {
@@ -57,7 +57,7 @@ public class FeatureController extends BaseController {
         }
     }
 
-    @ApiOperation("修改")
+    @Operation"修改"
     @PutMapping("/update")
     public Resp<Feature> update(@RequestBody @Validated FeatureSaveDto dto) {
         try {
@@ -72,14 +72,14 @@ public class FeatureController extends BaseController {
         }
     }
 
-    @ApiOperation("详情")
+    @Operation"详情"
     @GetMapping("/info/{id}")
     public Resp<Feature> info(@PathVariable Long id) {
         Feature feature = this.featureService.info(id);
         return new Resp.Builder<Feature>().setData(feature).ok();
     }
 
-    @ApiOperation("删除")
+    @Operation"删除"
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
@@ -92,7 +92,7 @@ public class FeatureController extends BaseController {
     }
 
 
-    @ApiOperation("克隆")
+    @Operation"克隆"
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {
@@ -104,7 +104,7 @@ public class FeatureController extends BaseController {
         }
     }
 
-    @ApiOperation("模糊查询故事标题")
+    @Operation"模糊查询故事标题"
     @GetMapping("/getFeatureByTitle")
     public Resp<List<Map<String, String>>> getFeatureByTitle(@RequestParam String title, @RequestParam Long projectId) {
         List<Map<String, String>> feature = this.featureService.getFeatureByTitle(title, projectId);

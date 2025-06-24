@@ -2,7 +2,7 @@ package com.hu.oneclick.model.domain.dto;
 
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -71,6 +71,6 @@ public class SprintSaveDto {
     /**
      * 自定义字段值
      */
-    @ApiModelProperty("自定义字段值")
+    @Schema(description = "自定义字段值")
     private JSONObject customFieldDatas;
 }

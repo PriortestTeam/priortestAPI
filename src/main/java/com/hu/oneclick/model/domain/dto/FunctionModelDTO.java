@@ -1,8 +1,8 @@
 package com.hu.oneclick.model.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,10 +16,10 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FunctionModelDTO  implements Serializable {
 
-    @ApiModelProperty(name= "funId", value = "模块id")
+    @Schemaname= "funId", value = "模块id"
     private Integer funId;
 
-    @ApiModelProperty(name= "btnStr", value = "功能字符串{'funId':40,'btnStr':'1,2,7'}）")
+    @Schemaname= "btnStr", value = "功能字符串{'funId':40,'btnStr':'1,2,7'}）"
     private String btnStr;
 
 
