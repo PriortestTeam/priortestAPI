@@ -1,32 +1,20 @@
 package com.hu.oneclick.quartz.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import java.io.Serializable;
 
-/**
- * Jenkins变更DTO
- *
- * @author xiaohai
- * @date 2023/07/11
- */
-@Setter
-@Getter
-@Schema(description = "Jenkins变更DTO")
-public class JenkinsSaveDto implements Serializable {
+@Data
+@Schema(description = "Jenkins保存DTO")
+public class JenkinsSaveDto {
 
-    private static final long serialVersionUID = 3308577719580670615L;
-
-    @Schema(description = "任务名称")
-    @NotBlank(message = "任务名称不能为空")
+    @NotBlank(message = "Job名称不能为空")
+    @Schema(description = "Job名称", required = true)
     private String jobName;
 
-    @Schema(description = "xml")
-    @NotBlank(message = "xml不能为空")不能为空")
+    @NotBlank(message = "XML配置不能为空")
+    @Schema(description = "Job的XML配置", required = true)
     private String xml;
 
 }

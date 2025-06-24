@@ -73,7 +73,7 @@ public class TestCaseController extends BaseController {
     //    return testCaseService.updateAction(testCaseId, actionType, testCycleId);
     //}
 
-    @Operation"列表"
+    @Operation("列表")
     @PostMapping("/list")
     public Resp<PageInfo<TestCase>> list(@RequestBody @Validated TestCaseParam param) {
         startPage();
@@ -81,7 +81,7 @@ public class TestCaseController extends BaseController {
         return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
     }
 
-    @Operation"新增"
+    @Operation("新增")
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated TestCaseSaveDto dto) {
         try {
@@ -93,7 +93,7 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation"修改"
+    @Operation("修改")
     @PutMapping("/update")
     public Resp<?> update(@RequestBody @Validated TestCaseSaveDto dto) {
         try {
@@ -105,7 +105,7 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation"详情"
+    @Operation("详情")
     @GetMapping("/info/{id}")
     public Resp<TestCase> info(@PathVariable Long id) {
         TestCase testCase = testCaseService.info(id);
@@ -124,7 +124,7 @@ public class TestCaseController extends BaseController {
 //        return new Resp.Builder<TestCase>().ok();
 //    }
 
-    @Operation"克隆"
+    @Operation("克隆")
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {
@@ -136,14 +136,14 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation"测试用例输入框回显"
+    @Operation("测试用例输入框回显")
     @GetMapping("/testCaseSearch")
     public  Resp<List<TestCase>> testCaseSearch(@RequestParam  Long projectId, @RequestParam String title) {
         List<TestCase> testCaseList = testCaseService.testCaseSearch(projectId,title);
         return new Resp.Builder<List<TestCase>>().setData(testCaseList).ok();
     }
 
-    @Operation"删除"
+    @Operation("删除")
     @DeleteMapping("/delete/{id}")
     public Resp<?> delete(@PathVariable Long id) {
        return testCaseService.removeAndChild(id);

@@ -59,9 +59,9 @@ public class TestCyclePlanController extends BaseController {
     private QuartzManager qtzManager;
 
 
-    @Operation"列表"
+    @Operation(summary = "列表")
     @PostMapping("/list/{testCycleId}")
-    public Resp<PageInfo<JobDetails>> list(@Parameter"测试周期ID" @PathVariable Long testCycleId) {
+    public Resp<PageInfo<JobDetails>> list(@Parameter(description = "测试周期ID") @PathVariable Long testCycleId) {
         try {
             List<JobDetails> jobDetails = qtzManager.queryAllJobBeanByGroup(StrUtil.format("{}_{}", GROUP_PREFIX, testCycleId));
             return new Resp.Builder<PageInfo<JobDetails>>().setData(PageUtil.manualPaging(jobDetails)).ok();
@@ -71,7 +71,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @Operation"新增"
+    @Operation(summary = "新增")
     @PostMapping("/save")
     public Resp<TestCyclePlan> save(@RequestBody @Validated TestCyclePlanSaveDto dto) {
         try {
@@ -101,7 +101,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @Operation"详情"
+    @Operation(summary = "详情")
     @GetMapping("/info/{id}")
     public Resp<TestCyclePlan> info(@PathVariable Long id) {
         try {
@@ -121,7 +121,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @Operation"删除"
+    @Operation(summary = "删除")
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
@@ -135,6 +135,105 @@ public class TestCyclePlanController extends BaseController {
             }
             // 删除计划记录
             testCyclePlanService.removeBatchByIds(Arrays.asList(ids));
+        } catch (Exception e) {
+            log.error("删除失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<>().fail();
+        }
+        return new Resp.Builder<>().ok();
+    }
+
+    @Operation(summary = "根据计划ID查询测试周期计划")
+    @GetMapping("/{planId}")
+    public Resp<TestCyclePlanSaveDto> getTestCyclePlan(@PathVariable("planId") Long planId) {
+        try {
+            TestCyclePlan testCyclePlan = testCyclePlanService.getById(planId);
+            if (testCyclePlan == null) {
+                return new Resp.Builder<TestCyclePlanSaveDto>().fail("未找到对应的测试周期计划");
+            }
+            TestCyclePlanSaveDto dto = new TestCyclePlanSaveDto();
+            // convert TestCyclePlan to TestCyclePlanSaveDto
+            dto.setTestCycleId(testCyclePlan.getTestCycleId());
+            dto.setJenkinsJobName(testCyclePlan.getJobName());
+            JobDetails jobDetails = qtzManager.jobInfo(testCyclePlan.getJobName(), testCyclePlan.getJobGroup());
+            if (jobDetails != null) {
+                dto.setCronExpression(jobDetails.getCronExpression());
+            }
+            return new Resp.Builder<TestCyclePlanSaveDto>().setData(dto).ok();
+        } catch (Exception e) {
+            log.error("查询失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<TestCyclePlanSaveDto>().fail();
+        }
+    }
+
+    @Operation(summary = "创建测试周期计划")
+    @PostMapping
+    public Resp<TestCyclePlan> createTestCyclePlan(@RequestBody @Validated TestCyclePlanSaveDto dto) {
+        try {
+            // 添加执行任务
+            String jobName = StrUtil.format("{}_{}", JOB_PREFIX, IdUtil.getSnowflakeNextIdStr());
+            String jobGroupName = StrUtil.format("{}_{}", GROUP_PREFIX, dto.getTestCycleId());
+            // 任务参数
+            Map<String, Object> jobDataMap = new HashMap<>();
+            jobDataMap.put("jenkinsJobName", dto.getJenkinsJobName());
+            qtzManager.addJob(getClass("com.hu.oneclick.quartz.task.BuildJobTask"),
+                    jobName,
+                    jobGroupName,
+                    dto.getCronExpression(),
+                    jobDataMap);
+            // 保存任务记录
+            TestCycle testCycle = testCycleService.getById(dto.getTestCycleId());
+            TestCyclePlan testCyclePlan = new TestCyclePlan();
+            testCyclePlan.setTestCycleId(testCycle.getId());
+            testCyclePlan.setTestCycleTitle(testCycle.getTitle());
+            testCyclePlan.setJobName(jobName);
+            testCyclePlan.setJobGroup(jobGroupName);
+            testCyclePlanService.save(testCyclePlan);
+            return new Resp.Builder<TestCyclePlan>().setData(testCyclePlan).ok();
+        } catch (Exception e) {
+            log.error("新增失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<TestCyclePlan>().fail();
+        }
+    }
+
+    @Operation(summary = "更新测试周期计划")
+    @PutMapping("/{planId}")
+    public Resp<TestCyclePlan> updateTestCyclePlan(@PathVariable("planId") Long planId, @RequestBody @Validated TestCyclePlanSaveDto dto) {
+        try {
+            TestCyclePlan testCyclePlan = testCyclePlanService.getById(planId);
+            if (testCyclePlan == null) {
+                return new Resp.Builder<TestCyclePlan>().fail("未找到对应的测试周期计划");
+            }
+            // 更新计划任务
+            JobDetails jobDetails = qtzManager.jobInfo(testCyclePlan.getJobName(), testCyclePlan.getJobGroup());
+            if (jobDetails == null) {
+                return new Resp.Builder<TestCyclePlan>().fail("未找到对应的计划任务");
+            }
+            qtzManager.modifyJob(testCyclePlan.getJobName(), testCyclePlan.getJobGroup(), dto.getCronExpression());
+
+            // 更新任务记录
+            TestCycle testCycle = testCycleService.getById(dto.getTestCycleId());
+            testCyclePlan.setTestCycleId(testCycle.getId());
+            testCyclePlan.setTestCycleTitle(testCycle.getTitle());
+            testCyclePlanService.updateById(testCyclePlan);
+            return new Resp.Builder<TestCyclePlan>().setData(testCyclePlan).ok();
+        } catch (Exception e) {
+            log.error("更新失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<TestCyclePlan>().fail();
+        }
+    }
+
+    @Operation(summary = "删除测试周期计划")
+    @DeleteMapping("/{planId}")
+    public Resp<?> deleteTestCyclePlan(@PathVariable("planId") Long planId) {
+        try {
+            TestCyclePlan testCyclePlan = testCyclePlanService.getById(planId);
+            if (testCyclePlan == null) {
+                return new Resp.Builder<TestCase>().ok();
+            }
+            // 删除计划任务
+            qtzManager.deleteJob(testCyclePlan.getJobName(), testCyclePlan.getJobGroup());
+            // 删除计划记录
+            testCyclePlanService.removeById(planId);
         } catch (Exception e) {
             log.error("删除失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
