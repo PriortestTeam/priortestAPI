@@ -3,11 +3,11 @@ package com.hu.oneclick.model.domain.dto;
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Date;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 /**
  * @Author: jhh
@@ -65,7 +65,7 @@ public class SprintSaveDto {
     private String sprintGoal;
 
     @Schema(description = "状态")
-    private String status;
+    private String sprintStatus;
 
     /**
      * 自定义字段值
