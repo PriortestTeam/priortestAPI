@@ -10,10 +10,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 /**
  * @author qingyang
  */
-@SpringBootApplication(exclude = {
-        springfox.documentation.spring.web.SpringfoxWebMvcConfiguration.class,
-        springfox.documentation.oas.configuration.OpenApiDocumentationConfiguration.class
-})
+@SpringBootApplication
 @MapperScan("com.hu.oneclick.**.dao")
 @EnableScheduling
 @EnableSpringUtil
