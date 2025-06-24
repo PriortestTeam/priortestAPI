@@ -17,7 +17,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-@Schema"故事Param"
+@Schema(description = "故事Param")
 public class FeatureParam implements Serializable {
     @Schema(description = "名称")
     private String title;

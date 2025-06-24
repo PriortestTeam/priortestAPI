@@ -18,7 +18,7 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@Schema"测试周期计划关联添加DTO"
+@Schema(description = "测试计划保存DTO")
 public class TestCyclePlanSaveDto implements Serializable {
 
     private static final long serialVersionUID = 5515234928549567892L;
