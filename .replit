@@ -13,8 +13,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "export ONECLICK_PATH=/home/runner/workspace/"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "mvn spring-boot:run"
+args = "ONECLICK_PATH=/home/runner/workspace/ mvn spring-boot:run"

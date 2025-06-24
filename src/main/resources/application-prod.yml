@@ -83,7 +83,7 @@ onclick:
     time:
         firstTime: 30
         secondTime: 15
-    dirPath: ${ONECLICK_PATH}
+    dirPath: ${ONECLICK_PATH:/home/runner/workspace/}
 
 prior-test:
     git:
