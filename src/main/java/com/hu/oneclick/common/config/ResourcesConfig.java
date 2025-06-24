@@ -21,7 +21,9 @@ public class ResourcesConfig implements WebMvcConfigurer {
 
         /** knife4j doc配置 */
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");ars/");
+        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+}ars/");
     }
 
 }
