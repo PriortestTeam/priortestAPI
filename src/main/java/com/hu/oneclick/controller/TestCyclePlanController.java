@@ -148,7 +148,7 @@ public class TestCyclePlanController extends BaseController {
         try {
             TestCyclePlan testCyclePlan = testCyclePlanService.getById(planId);
             if (testCyclePlan == null) {
-                return new Resp.Builder<TestCyclePlanSaveDto>().fail("未找到对应的测试周期计划");
+                return new Resp.Builder<TestCyclePlanSaveDto>().buildResult("未找到对应的测试周期计划");
             }
             TestCyclePlanSaveDto dto = new TestCyclePlanSaveDto();
             // convert TestCyclePlan to TestCyclePlanSaveDto
@@ -201,12 +201,12 @@ public class TestCyclePlanController extends BaseController {
         try {
             TestCyclePlan testCyclePlan = testCyclePlanService.getById(planId);
             if (testCyclePlan == null) {
-                return new Resp.Builder<TestCyclePlan>().fail("未找到对应的测试周期计划");
+                return new Resp.Builder<TestCyclePlan>().buildResult("未找到对应的测试周期计划");
             }
             // 更新计划任务
             JobDetails jobDetails = qtzManager.jobInfo(testCyclePlan.getJobName(), testCyclePlan.getJobGroup());
             if (jobDetails == null) {
-                return new Resp.Builder<TestCyclePlan>().fail("未找到对应的计划任务");
+                return new Resp.Builder<TestCyclePlan>().buildResult("未找到对应的计划任务");
             }
             if (StrUtil.isNotBlank(dto.getJenkinsJobName())) {
                 Map<String, Object> jobDataMap = new HashMap<>();
