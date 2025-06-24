@@ -211,7 +211,7 @@ public class TestCyclePlanController extends BaseController {
             if (StrUtil.isNotBlank(dto.getJenkinsJobName())) {
                 Map<String, Object> jobDataMap = new HashMap<>();
                 jobDataMap.put("jenkinsJobName", dto.getJenkinsJobName());
-                qtzManager.modifyJobDetail(testCyclePlan.getJobName(), testCyclePlan.getJobGroup(), jobDataMap);
+                qtzManager.updateJob(testCyclePlan.getJobName(), testCyclePlan.getJobGroup(), dto.getCronExpression(), jobDataMap);
             }
             return new Resp.Builder<TestCyclePlan>().buildResult("更新成功");
         } catch (Exception e) {
