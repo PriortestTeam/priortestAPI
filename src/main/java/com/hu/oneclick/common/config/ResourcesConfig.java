@@ -1,3 +1,4 @@
+
 package com.hu.oneclick.common.config;
 
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,4 @@ public class ResourcesConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
-}ars/");
-    }
-
 }
