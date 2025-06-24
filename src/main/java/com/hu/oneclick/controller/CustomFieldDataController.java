@@ -56,19 +56,6 @@ public class CustomFieldDataController {
     @Operation(summary = "新建时获取所有系统字段")
     public Resp<List<SysCustomField>> getAllSysCustomField(@RequestParam String scope) {
         return customFieldDataService.getAllSysCustomField(scope);
-    }
-
-    @Operation(summary = "新增数据")
-    @PostMapping("insertCustomFieldData")
-    public Resp<?> insert(@RequestBody CustomFieldData customFieldData) {
-        return customFieldDataService.insertCustomFieldData(customFieldData); // Assuming a method exists in the service
-    }
-
-    @Operation(summary = "修改数据")
-    @PutMapping("updateCustomFieldData")
-    public Resp<?> update(@RequestBody CustomFieldData customFieldData) {
-        return customFieldDataService.updateCustomFieldData(customFieldData); // Assuming a method exists in the service
-    }
-
+    }   
 
 }
