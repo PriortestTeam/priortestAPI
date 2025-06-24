@@ -1,3 +1,4 @@
+
 package com.hu.oneclick.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,7 +40,7 @@ public class SignOffParam {
     @NotNull
     private boolean autoGenerate;
 
-    @Schemavalue = "当前默认版本-1|0|1",example = "-1"
+    @Schema(description = "当前发布")
     @NotNull
-    private Integer currentRelease;
+    private int currentRelease;
 }
