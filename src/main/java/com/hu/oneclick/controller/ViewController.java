@@ -90,7 +90,7 @@ public class ViewController extends BaseController {
         } catch (BizException e) {
             log.error("新增失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().buildResult(e.getCode(), e.getMessage(), 400);
-    } catch (Exception e) {
+        } catch (Exception e) {
             log.error("新增失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
         }
