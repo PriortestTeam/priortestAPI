@@ -65,8 +65,7 @@ public class SprintSaveDto {
     private String sprintGoal;
 
     @Schema(description = "状态")
-    private String status;ing sprintStatus;
-
+    private String status;
 
     /**
      * 自定义字段值
