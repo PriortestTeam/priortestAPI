@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @Setter
 @Getter
-@Schema"定时任务变更DTO"
+@Schema(description = "定时任务变更DTO")
 public class JobSaveDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;

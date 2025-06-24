@@ -21,7 +21,7 @@ import java.util.Date;
  */
 @Setter
 @Getter
-@Schema"测试用例DTO"
+@Schema(description = "测试用例DTO")
 //@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TestCaseSaveDto implements Serializable {
 

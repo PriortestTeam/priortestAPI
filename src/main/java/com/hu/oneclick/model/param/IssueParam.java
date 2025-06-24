@@ -17,7 +17,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-@Schema"缺陷Param"
+@Schema(description = "缺陷Param")
 public class IssueParam implements Serializable {
     @Schema(description = "名称")
     private String title;

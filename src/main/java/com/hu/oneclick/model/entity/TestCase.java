@@ -23,7 +23,7 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema"测试用例"
+@Schema(description = "测试用例")
 @TableName("test_case")
 public class TestCase extends AssignBaseEntity implements Serializable {
 

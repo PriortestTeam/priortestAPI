@@ -20,7 +20,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema"测试周期"
+@Schema(description = "测试周期")
 @TableName("test_cycle")
 public class TestCycle extends AssignBaseEntity implements Serializable {
 
@@ -79,7 +79,7 @@ public class TestCycle extends AssignBaseEntity implements Serializable {
     /**
      * 0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。)
      */
-    @Schema(description = "0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。)")
+    @Schema(description = "0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。))")
     private Integer released;
     /**
      * 用例执行人

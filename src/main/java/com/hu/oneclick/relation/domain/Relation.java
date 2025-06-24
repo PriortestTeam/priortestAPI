@@ -44,7 +44,7 @@ public class Relation {
     private String category;
 
     //** 扩展信息 *//*
-    @Schema(description = "扩展信息(JSON)")
+    @Schema(description = "扩展信息(JSON))")
     private String extJson;
 
     /**

@@ -15,7 +15,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema"测试周期计划关联表"
+@Schema(description = "测试周期计划关联表")
 @TableName("test_cycle_plan")
 public class TestCyclePlan extends AssignBaseEntity implements Serializable {
 

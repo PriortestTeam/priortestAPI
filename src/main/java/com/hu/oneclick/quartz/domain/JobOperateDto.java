@@ -16,7 +16,7 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@Schema"定时任务操作DTO"
+@Schema(description = "定时任务操作DTO")
 public class JobOperateDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;

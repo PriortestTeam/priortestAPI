@@ -16,7 +16,7 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@Schema"Jenkins操作DTO"
+@Schema(description = "Jenkins操作DTO")
 public class JenkinsOperateDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;

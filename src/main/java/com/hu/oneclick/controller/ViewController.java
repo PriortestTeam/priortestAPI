@@ -44,7 +44,7 @@ public class ViewController extends BaseController {
     }
 
     @GetMapping("getViewScopeChildParams")
-    @Operation(summary="根据范围搜索所有字段(弃用请使用getViewScope"))
+    @Operation(summary="根据范围搜索所有字段(弃用请使用getViewScope")
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope) {
         return viewService.getViewScopeChildParams(scope);
     }
@@ -75,14 +75,14 @@ public class ViewController extends BaseController {
     }
 
     @PostMapping("addView")
-    @Operation(summary="添加视图(已弃用请使用addViewRE"))
+    @Operation(summary="添加视图(已弃用请使用addViewRE")
     private Resp<String> addView(@RequestBody View view) {
         return viewService.addView(view);
     }
 
 
     @PostMapping("addViewRE")
-    @Operation(summary="添加视图(新"))
+    @Operation(summary="添加视图(新")
     private Resp<?> addViewRE(@RequestBody View view) {
         try {
             view = viewService.addViewRE(view);

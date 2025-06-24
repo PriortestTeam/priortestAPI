@@ -21,7 +21,7 @@ import java.util.Date;
  */
 @Setter
 @Getter
-@Schema"测试周期DTO"
+@Schema(description = "测试周期DTO")
 public class TestCycleSaveDto implements Serializable {
 
     private static final long serialVersionUID = 3621834190197699211L;
@@ -85,7 +85,7 @@ public class TestCycleSaveDto implements Serializable {
     /**
      * 0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。)
      */
-    @Schema(description = "0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。)")
+    @Schema(description = "0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。))")
     private Integer released;
     /**
      * 用例执行人

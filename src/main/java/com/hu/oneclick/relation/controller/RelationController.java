@@ -33,7 +33,7 @@ public class RelationController extends BaseController {
     private RelationService relationService;
 
 
-    @Operation(summary="查询(根据对象"))
+    @Operation(summary="查询(根据对象")
     @PostMapping("/object/list")
     public Resp<PageInfo<Relation>> objectList(@RequestBody RelationParam param) {
         startPage();
@@ -41,7 +41,7 @@ public class RelationController extends BaseController {
         return new Resp.Builder<PageInfo<Relation>>().setData(PageInfo.of(list)).ok();
     }
 
-    @Operation(summary="查询(根据目标"))
+    @Operation(summary="查询(根据目标")
     @PostMapping("/target/list")
     public Resp<PageInfo<Relation>> targetList(@RequestBody RelationParam param) {
         startPage();

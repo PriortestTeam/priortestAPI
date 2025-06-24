@@ -16,7 +16,7 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@Schema"测试用例步骤Param"
+@Schema(description = "测试用例步骤Param")
 public class TestCaseStepParam implements Serializable {
 
     private static final long serialVersionUID = -8652622701616802765L;

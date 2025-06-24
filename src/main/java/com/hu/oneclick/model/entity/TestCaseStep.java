@@ -19,7 +19,7 @@ import java.io.Serializable;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema"测试用例步骤"
+@Schema(description = "测试用例步骤")
 @TableName("test_case_step")
 @Component
 public class TestCaseStep extends AssignIdEntity implements Serializable {

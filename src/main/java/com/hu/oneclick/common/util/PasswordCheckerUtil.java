@@ -91,7 +91,7 @@ public class PasswordCheckerUtil {
         Set<Character> specialChars = new LinkedHashSet<>();
         // 键盘上能找到的符号
         specialChars.add(Character.valueOf('~'));
-        specialChars.add(Character.valueOf('`'));
+        specialChars.add(Character.valueOf(''));
         specialChars.add(Character.valueOf('!'));
         specialChars.add(Character.valueOf('@'));
         specialChars.add(Character.valueOf('#'));
