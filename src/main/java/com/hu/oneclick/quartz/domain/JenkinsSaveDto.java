@@ -24,7 +24,7 @@ public class JenkinsSaveDto implements Serializable {
     @NotBlank(message = "任务名称不能为空")
     private String jobName;
 
-    @Schema(description = "xml配置")
+    @Schema(description = "xml")
     @NotBlank(message = "xml不能为空")
     private String xml;
 
