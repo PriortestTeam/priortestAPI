@@ -208,14 +208,12 @@ public class TestCyclePlanController extends BaseController {
             if (jobDetails == null) {
                 return new Resp.Builder<TestCyclePlan>().fail("未找到对应的计划任务");
             }
-            qtzManager.modifyJob(testCyclePlan.getJobName(), testCyclePlan.getJobGroup(), dto.getCronExpression());
-
-            // 更新任务记录
-            TestCycle testCycle = testCycleService.getById(dto.getTestCycleId());
-            testCyclePlan.setTestCycleId(testCycle.getId());
-            testCyclePlan.setTestCycleTitle(testCycle.getTitle());
-            testCyclePlanService.updateById(testCyclePlan);
-            return new Resp.Builder<TestCyclePlan>().setData(testCyclePlan).ok();
+            if (StrUtil.isNotBlank(dto.getJenkinsJobName())) {
+                Map<String, Object> jobDataMap = new HashMap<>();
+                jobDataMap.put("jenkinsJobName", dto.getJenkinsJobName());
+                qtzManager.modifyJobDetail(testCyclePlan.getJobName(), testCyclePlan.getJobGroup(), jobDataMap);
+            }
+            return new Resp.Builder<TestCyclePlan>().buildResult("更新成功");
         } catch (Exception e) {
             log.error("更新失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<TestCyclePlan>().fail();
