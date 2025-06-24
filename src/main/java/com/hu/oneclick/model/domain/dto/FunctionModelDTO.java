@@ -2,7 +2,6 @@ package com.hu.oneclick.model.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.io.Serializable;
  * 权限设置DTO
  */
 @Data
-@ApiModel
+@Schema(description = "权限设置DTO")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FunctionModelDTO  implements Serializable {
 
