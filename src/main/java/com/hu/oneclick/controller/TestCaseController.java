@@ -30,18 +30,19 @@ public class TestCaseController extends BaseController {
     private TestCaseService testCaseService;
 
     //@GetMapping("queryById/{id}")
-    //@Operation"查询测试用例"
+    //@Operation(summary = "查询测试用例")
     //public Resp<TestCase> queryById(@PathVariable Long id) {
     //    return testCaseService.queryById(id);
     //}
     //
     //@PostMapping("queryList")
-    //@Operation"查询测试用例"
+    //@Operation(summary = "查询测试用例")
     //public Resp<List<TestCase>> queryList(@RequestBody TestCaseDto testCase) {
     //    return testCaseService.queryList(testCase);
     //}
     //
     //@PostMapping("update")
+    //@Operation(summary = "更新测试用例")
     //public Resp<String> update(@RequestBody TestCase testCase) {
     //    return testCaseService.update(testCase);
     //}
@@ -56,24 +57,25 @@ public class TestCaseController extends BaseController {
     // * 根据选择的故事id查询testcase 的需要的值
     // */
     //@GetMapping("queryTestNeedByFeatureId")
+    //@Operation(summary = "根据Feature获取测试用例列表")
     //public Resp<Feature> queryTestNeedByFeatureId(@RequestParam String featureId) {
     //    return testCaseService.queryTestNeedByFeatureId(featureId);
     //}
     //
     //@PostMapping("addTestCase")
-    //@Operation"添加测试用例"
+    //@Operation(summary = "新增测试用例")
     //public Resp<String> addTestCase(@RequestBody TestCycleDto testCycleDto) {
     //    return testCaseService.addTestCase(testCycleDto);
     //}
     //
     //@PostMapping("updateAction")
-    //@Operation"更新action"
+    //@Operation(summary = "更新action")
     //public Resp<List<TestCase>> updateAction(@RequestBody List<String> testCaseId, @RequestParam String actionType
     //        , @RequestParam String testCycleId) {
     //    return testCaseService.updateAction(testCaseId, actionType, testCycleId);
     //}
 
-    @Operation("列表")
+    @Operation(summary = "获取测试用例列表")
     @PostMapping("/list")
     public Resp<PageInfo<TestCase>> list(@RequestBody @Validated TestCaseParam param) {
         startPage();
@@ -81,7 +83,7 @@ public class TestCaseController extends BaseController {
         return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
     }
 
-    @Operation("新增")
+    @Operation(summary = "新增测试用例")
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated TestCaseSaveDto dto) {
         try {
@@ -93,7 +95,7 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation("修改")
+    @Operation(summary = "修改测试用例")
     @PutMapping("/update")
     public Resp<?> update(@RequestBody @Validated TestCaseSaveDto dto) {
         try {
@@ -105,14 +107,14 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation("详情")
+    @Operation(summary = "获取测试用例列表")
     @GetMapping("/info/{id}")
     public Resp<TestCase> info(@PathVariable Long id) {
         TestCase testCase = testCaseService.info(id);
         return new Resp.Builder<TestCase>().setData(testCase).ok();
     }
 
-//    @Operation"删除"
+//    @Operation(summary = "删除测试用例")
 //    @DeleteMapping("/delete/{ids}")
 //    public Resp<?> delete(@PathVariable Long[] ids) {
 //        try {
@@ -124,7 +126,7 @@ public class TestCaseController extends BaseController {
 //        return new Resp.Builder<TestCase>().ok();
 //    }
 
-    @Operation("克隆")
+    @Operation(summary = "复制测试用例")
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {
@@ -136,14 +138,14 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation("测试用例输入框回显")
+    @Operation(summary = "获取测试用例列表")
     @GetMapping("/testCaseSearch")
     public  Resp<List<TestCase>> testCaseSearch(@RequestParam  Long projectId, @RequestParam String title) {
         List<TestCase> testCaseList = testCaseService.testCaseSearch(projectId,title);
         return new Resp.Builder<List<TestCase>>().setData(testCaseList).ok();
     }
 
-    @Operation("删除")
+    @Operation(summary = "删除测试用例")
     @DeleteMapping("/delete/{id}")
     public Resp<?> delete(@PathVariable Long id) {
        return testCaseService.removeAndChild(id);
