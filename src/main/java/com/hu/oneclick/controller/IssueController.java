@@ -53,7 +53,7 @@ public class IssueController extends BaseController {
         }
     }
 
-    @Operation(summary = "修改", description = "修改问题"))
+    @Operation(summary = "修改", description = "修改问题")
     @PutMapping("/update")
     public Resp<Issue> update(@RequestBody @Validated IssueSaveDto dto) {
         try {
@@ -68,14 +68,14 @@ public class IssueController extends BaseController {
         }
     }
 
-    @Operation(summary = "详情", description = "获取问题详情"))
+    @Operation(summary = "详情", description = "获取问题详情")
     @GetMapping("/info/{id}")
     public Resp<Issue> info(@PathVariable Long id) {
         Issue issue = this.issueService.info(id);
         return new Resp.Builder<Issue>().setData(issue).ok();
     }
 
-    @Operation(summary = "删除", description = "删除问题"))
+    @Operation(summary = "删除", description = "删除问题")
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
@@ -88,7 +88,7 @@ public class IssueController extends BaseController {
     }
 
 
-    @Operation(summary = "克隆", description = "克隆问题"))
+    @Operation(summary = "克隆", description = "克隆问题")
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {
