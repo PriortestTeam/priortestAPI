@@ -13,7 +13,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "export ONECLICK_PATH=/home/signoff/"
+args = "export ONECLICK_PATH=/home/runner/workspace/"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
