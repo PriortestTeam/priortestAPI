@@ -58,16 +58,6 @@ public class CustomFieldDataController {
         return customFieldDataService.getAllSysCustomField(scope);
     }
 
-    @Operation(summary = "新增数据")
-    @PostMapping("insertCustomFieldData")
-    public Resp<?> insert(@RequestBody CustomFieldData customFieldData) {
-        return customFieldDataService.insertCustomFieldData(customFieldData);
-    }
-
-    @Operation(summary = "修改数据")
-    @PutMapping("updateCustomFieldData")
-    public Resp<?> update(@RequestBody CustomFieldData customFieldData) {
-        return customFieldDataService.updateCustomFieldData(customFieldData);
-    }
+    
 
 }
