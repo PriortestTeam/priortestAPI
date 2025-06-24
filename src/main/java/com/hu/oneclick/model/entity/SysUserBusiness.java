@@ -60,22 +60,22 @@ public class SysUserBusiness implements Serializable {
     @Schemavalue="删除标记，0未删除，1删除"
     private String deleteFlag;
 
-    @Schemaname= "roleId", value = "角色id"
+    @Schema(description = "角色id")
     private Long  roleId;
 
-    @Schemaname= "roleName", value = "角色名称"
+    @Schema(description = "角色名称")
     private String roleName;
 
-    @Schemaname= "projectId", value = "项目id"
+    @Schema(description = "项目id")
     private Long projectId;
 
-    @Schemaname= "projectName", value = "项目名称"
+    @Schema(description = "项目名称")
     private String projectName;
 
-    @Schemaname= "userId", value = "用户id"
+    @Schema(description = "用户id")
     private Long userId;
 
-    @Schemaname= "userName", value = "用户名称"
+    @Schema(description = "用户名称")
     private String userName;
 
     private static final long serialVersionUID = 1L;
