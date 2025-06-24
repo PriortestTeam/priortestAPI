@@ -10,7 +10,7 @@ import java.util.Date;
  * project_sign_off
  * @author 
  */
-@Schemavalue="com.hu.oneclick.model.entity.ProjectSignOff"
+@Schema(description = "com.hu.oneclick.model.entity.ProjectSignOff")
 @Data
 public class ProjectSignOff implements Serializable {
     private String id;

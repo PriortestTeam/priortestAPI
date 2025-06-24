@@ -11,7 +11,7 @@ import java.io.Serializable;
  * 用户故事返回对象
  */
 @Data
-@Schemavalue = "用户故事返回对象"
+@Schema(description = "用户故事返回对象")
 public class UserCaseVo implements Serializable {
 
     @Schema(description = "id")

@@ -86,49 +86,49 @@ public class UserController {
         return userService.queryByNameSubUsers(subUserName);
     }
 
-    @Operation"激活账户"
+    @Operation(summary = "激活账户")
     @PostMapping("activateAccount")
     public Resp<String> activateAccount(@RequestBody ActivateAccountDto activateAccountDto) {
         return userService.activateAccount(activateAccountDto, OneConstant.PASSWORD.ACTIVATION);
     }
 
-    @Operation"忘记密码填写邮箱"
+    @Operation(summary = "忘记密码填写邮箱")
     @PostMapping("forgetThePassword")
     public Resp<String> forgetThePassword(@RequestParam String email) {
         return userService.forgetThePassword(email);
     }
 
-    @Operation"忘记密码输入密码"
+    @Operation(summary = "忘记密码输入密码")
     @PostMapping("forgetThePasswordIn")
     public Resp<String> forgetThePasswordIn(@RequestBody ActivateAccountDto activateAccountDto) {
         return userService.forgetThePasswordIn(activateAccountDto);
     }
 
-    @Operation"申请延期填写邮箱"
+    @Operation(summary = "申请延期填写邮箱")
     @PostMapping("applyForAnExtension")
     public Resp<String> applyForAnExtension(@RequestParam String email) {
         return userService.applyForAnExtension(email);
     }
 
-    @Operation"申请延期输入密码"
+    @Operation(summary = "申请延期输入密码")
     @PostMapping("applyForAnExtensionIn")
     public Resp<String> applyForAnExtensionIn(@RequestBody ActivateAccountDto activateAccountDto) {
         return userService.applyForAnExtensionIn(activateAccountDto);
     }
 
-    @Operation"返回用户的激活次数"
+    @Operation(summary = "返回用户的激活次数")
     @PostMapping("getUserActivNumber")
     public Resp<String> getUserActivNumber(@RequestParam String email) {
         return userService.getUserActivNumber(email);
     }
 
-    @Operation"管理员生成token"
+    @Operation(summary = "管理员生成token")
     @PostMapping("makeToken")
     public Resp<SysUserToken> makeToken(@RequestBody SysUserTokenDto sysUserTokenDto) {
         return userService.makeToken(sysUserTokenDto);
     }
 
-    @Operation"获取生成的token列表"
+    @Operation(summary = "获取生成的token列表")
     @PostMapping("listTokens")
     public Resp<List<SysUserToken>> listTokens() {
         return userService.listTokens();
