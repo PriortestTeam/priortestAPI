@@ -19,7 +19,7 @@ public class RelationParam {
     private String targetId;
 
     /** 分类 */
-    @Schemavalue = "分类", notes = "com.hu.oneclick.relation.enums.RelationCategoryEnum"
+    @Schema(description = "分类"), notes = "com.hu.oneclick.relation.enums.RelationCategoryEnum"
     private String category;
 
 }

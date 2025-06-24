@@ -26,7 +26,7 @@ public class UserCaseController extends BaseController {
     private UserCaseService userCaseService;
 
     @PostMapping(value = "list")
-    @Operation"列表"
+    @Operation(summary="列表")
     public Resp<List<UserCaseVo>> listData(@RequestBody UserCaseParam reqEntity) {
         if (ObjectUtil.isEmpty(reqEntity)) {
             reqEntity = new UserCaseParam();

@@ -20,7 +20,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @TableName("relation")
-@Schema"关系实体"
+@Schema(description = "关系实体")
 public class Relation {
 
     /** id */
@@ -39,7 +39,7 @@ public class Relation {
     private String targetId;
 
     /** 分类 */
-    @Schemavalue = "分类", notes = "com.hu.oneclick.relation.enums.RelationCategoryEnum"
+    @Schema(description = "分类")
     @NotBlank(message = "分类不能为空")
     private String category;
 

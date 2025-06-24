@@ -135,20 +135,20 @@ public class UserController {
     }
 
 
-    @Operation"删除token"
+    @Operation(summary="删除token")
     @PostMapping("deleteToken")
     public Resp<String> deleteToken(@RequestParam Integer tokenId) {
         return userService.deleteToken(tokenId);
     }
 
 
-    @Operation"验证链接字符串"
+    @Operation(summary="验证链接字符串")
     @PostMapping("verifyLinkString")
     public Resp<String> verifyLinkString(@RequestParam String params) {
         return userService.verifyLinkString(params);
     }
 
-    @Operation"通过项目Id获取用户列表"
+    @Operation(summary="通过项目Id获取用户列表")
     @GetMapping("/listUserByProjectId/{projectId}")
     public Resp<List<Map<String, Object>>> listUserByProjectId(@PathVariable("projectId") Long projectId) {
         return userService.listUserByProjectId(projectId);

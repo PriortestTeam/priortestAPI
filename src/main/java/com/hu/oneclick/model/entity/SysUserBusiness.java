@@ -1,7 +1,6 @@
 package com.hu.oneclick.model.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import lombok.Data;
 
@@ -9,55 +8,55 @@ import lombok.Data;
  * sys_user_business
  * @author 
  */
-@Schemavalue="用户角色模块关系表"
+@Schema(description="用户角色模块关系表")
 @Data
 public class SysUserBusiness implements Serializable {
     /**
      * 主键
      */
-    @Schemavalue="主键"
+    @Schema(description="主键")
     private Long id;
 
     /**
      * 类别
      */
-    @Schemavalue="类别"
+    @Schema(description="类别")
     private String type;
 
     /**
      * 主id
      */
-    @Schemavalue="主id"
+    @Schema(description="主id")
     private String keyId;
 
     /**
      * 值
      */
-    @Schemavalue="值"
+    @Schema(description="值")
     private String value;
 
     /**
      * 值
      */
-    @Schemavalue="不可见项"
+    @Schema(description="不可见项")
     private String invisible;
 
     /**
      * 按钮权限
      */
-    @Schemavalue="按钮权限"
+    @Schema(description="按钮权限")
     private String btnStr;
 
     /**
      * 租户id
      */
-    @Schemavalue="租户id"
+    @Schema(description="租户id")
     private Long tenantId;
 
     /**
      * 删除标记，0未删除，1删除
      */
-    @Schemavalue="删除标记，0未删除，1删除"
+    @Schema(description="删除标记，0未删除，1删除")
     private String deleteFlag;
 
     @Schema(description = "角色id")

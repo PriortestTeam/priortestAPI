@@ -8,7 +8,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-@Schemavalue = "用户故事请求对象"
+@Schema(description = "用户故事请求对象")
 @Data
 public class UserCaseParam implements Serializable {
 

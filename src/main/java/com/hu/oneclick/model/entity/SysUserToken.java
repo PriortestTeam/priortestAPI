@@ -1,7 +1,6 @@
 package com.hu.oneclick.model.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -67,7 +66,7 @@ public class SysUserToken implements Serializable {
     /**
      * 创建人
      */
-    @Schemavalue="创建人"
+    @Schema(description="创建人")
     private String createId;
 
     private static final long serialVersionUID = 1L;

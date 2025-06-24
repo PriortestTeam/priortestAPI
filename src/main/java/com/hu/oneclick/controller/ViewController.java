@@ -44,7 +44,7 @@ public class ViewController extends BaseController {
     }
 
     @GetMapping("getViewScopeChildParams")
-    @Operation"根据范围搜索所有字段(弃用请使用getViewScope")
+    @Operation(summary="根据范围搜索所有字段(弃用请使用getViewScope"))
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope) {
         return viewService.getViewScopeChildParams(scope);
     }
@@ -56,13 +56,13 @@ public class ViewController extends BaseController {
      * @Date: 2021/12/29
      */
     @GetMapping("getViewScope")
-    @Operation"根据范围搜索所有字段"
+    @Operation(summary="根据范围搜索所有字段")
     public Resp<Map<String, Object>> getViewScope(@RequestParam String scope) {
         return viewService.getViewScope(scope);
     }
 
     @PostMapping("queryViews")
-    @Operation"查询以当前项目的所有视图"
+    @Operation(summary="查询以当前项目的所有视图")
     private Resp<PageInfo<View>> queryViews(@RequestBody View view) {
         try {
             startPage();
@@ -75,14 +75,14 @@ public class ViewController extends BaseController {
     }
 
     @PostMapping("addView")
-    @Operation"添加视图(已弃用请使用addViewRE")
+    @Operation(summary="添加视图(已弃用请使用addViewRE"))
     private Resp<String> addView(@RequestBody View view) {
         return viewService.addView(view);
     }
 
 
     @PostMapping("addViewRE")
-    @Operation"添加视图(新")
+    @Operation(summary="添加视图(新"))
     private Resp<?> addViewRE(@RequestBody View view) {
         try {
             view = viewService.addViewRE(view);
@@ -97,7 +97,7 @@ public class ViewController extends BaseController {
     }
 
     @PostMapping("updateView")
-    @Operation"修改视图"
+    @Operation(summary="修改视图")
     private Resp<?> updateView(@RequestBody View view) {
         try {
             view = viewService.updateView(view);
@@ -118,7 +118,7 @@ public class ViewController extends BaseController {
 
 
     @GetMapping("queryById/{viewId}")
-    @Operation"根据ID查询视图详细信息"
+    @Operation(summary="根据ID查询视图详细信息")
     private Resp<View> queryById(@PathVariable String viewId) {
         try {
             return viewService.queryById(viewId);
@@ -129,7 +129,7 @@ public class ViewController extends BaseController {
     }
 
     @GetMapping("queryViewParents")
-    @Operation"查询父视图"
+    @Operation(summary="查询父视图")
     private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String projectId) {
         try {
             List<View> views = viewService.queryViewParents(scope, projectId);
@@ -141,13 +141,13 @@ public class ViewController extends BaseController {
     }
 
     @GetMapping("queryViewTrees")
-    @Operation"查询视图树"
+    @Operation(summary="查询视图树")
     private Resp<List<ViewTreeDto>> queryViewTrees(@RequestParam String scope) {
         return viewService.queryViewTrees(scope);
     }
 
     @PostMapping("renderingView")
-    @Operation"渲染视图"
+    @Operation(summary="渲染视图")
     public Resp<Object> renderingView(@RequestBody String viewId) {
         try {
             return viewService.renderingView(viewId);
@@ -158,7 +158,7 @@ public class ViewController extends BaseController {
     }
 
     @PostMapping("getViewFilter")
-    @Operation"获取filter字段"
+    @Operation(summary="获取filter字段")
     public Resp<Object> getViewFilter() {
         return viewService.getViewFilter();
     }

@@ -33,7 +33,7 @@ public class RelationController extends BaseController {
     private RelationService relationService;
 
 
-    @Operation"查询(根据对象")
+    @Operation(summary="查询(根据对象"))
     @PostMapping("/object/list")
     public Resp<PageInfo<Relation>> objectList(@RequestBody RelationParam param) {
         startPage();
@@ -41,7 +41,7 @@ public class RelationController extends BaseController {
         return new Resp.Builder<PageInfo<Relation>>().setData(PageInfo.of(list)).ok();
     }
 
-    @Operation"查询(根据目标")
+    @Operation(summary="查询(根据目标"))
     @PostMapping("/target/list")
     public Resp<PageInfo<Relation>> targetList(@RequestBody RelationParam param) {
         startPage();
@@ -49,7 +49,7 @@ public class RelationController extends BaseController {
         return new Resp.Builder<PageInfo<Relation>>().setData(PageInfo.of(list)).ok();
     }
 
-    @Operation"追加关系"
+    @Operation(summary="追加关系")
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated Relation dto) {
         try {
@@ -61,7 +61,7 @@ public class RelationController extends BaseController {
         }
     }
 
-    @Operation"删除"
+    @Operation(summary="删除")
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {

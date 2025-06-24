@@ -1,7 +1,6 @@
 package com.hu.oneclick.model.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -74,7 +73,7 @@ public class CustomFieldData implements Serializable {
     /**
      * 创建用户id
      */
-    @Schemavalue="创建用户id"
+    @Schema(description="自定义字段数据表")
     private String createUserId;
 
     private static final long serialVersionUID = 1L;
