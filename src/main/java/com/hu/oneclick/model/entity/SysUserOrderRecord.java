@@ -96,25 +96,26 @@ public class SysUserOrderRecord implements Serializable {
     /**
      * apiCall价格
      */
-    @Schema(description="apiCall价格"))
+    @Schema(description="apiCall价格")
     private BigDecimal api_call_price;
 
     /**
      * 采购模式
      */
-    @Schema(description="采购模式"))
+    @Schema(description="采购模式")
     private String sub_scription;
 
     /**
      * 折扣
      */
-    @Schema(description="折扣"))
+    @Schema(description="折扣")
     private BigDecimal discount;
 
     /**
      * 实际支付
      */
-    @Schema(description="实际支付"))
+    @Schema(description="实际支付")
+    private BigDecimal actual_payment;ma(description="实际支付"))
     private BigDecimal expenditure;
 
     /**
