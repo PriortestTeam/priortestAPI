@@ -40,3 +40,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Environment variable expansion artifacts - prevent from being committed
+${env:ONECLICK_PATH:
+${env:ONECLICK_PATH}
+\${env:ONECLICK_PATH:
+\${env:ONECLICK_PATH}
