@@ -18,3 +18,7 @@ args = "ONECLICK_PATH=/home/runner/workspace/ mvn spring-boot:run"
 [[ports]]
 localPort = 8082
 externalPort = 3000
+
+[[ports]]
+localPort = 35729
+externalPort = 80
