@@ -10,7 +10,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 /**
  * @author qingyang
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+    org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration.class
+})
 @MapperScan("com.hu.oneclick.**.dao")
 @EnableScheduling
 @EnableSpringUtil
