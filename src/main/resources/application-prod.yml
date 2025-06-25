@@ -89,4 +89,4 @@ onclick:
 
 prior-test:
     git:
-        local-repo: ${GIT_REPO_DIR}
+        local-repo: ${GIT_REPO_DIR:/tmp/git-repos}
