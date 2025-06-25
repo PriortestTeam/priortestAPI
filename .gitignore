@@ -6,6 +6,13 @@ target/
 storage
 .DS_Store
 
+# Java compiled class files
+*.class
+
+# Maven build output
+target/
+build/
+
 ### STS ###
 .apt_generated
 .classpath
