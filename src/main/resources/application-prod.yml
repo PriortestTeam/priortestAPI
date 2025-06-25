@@ -58,6 +58,17 @@ mybatis:
 logging:
     config: classpath:log4j2.yml
 
+# SpringDoc OpenAPI 3 Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  packages-to-scan: com.hu.oneclick.controller
+  show-actuator: false
+
 onclick:
     config:
         interceptor:
@@ -73,8 +84,8 @@ onclick:
     time:
         firstTime: 30
         secondTime: 15
-    dirPath: ${ONECLICK_PATH}
+    dirPath: ${ONECLICK_PATH:/home/runner/workspace/}
 
 prior-test:
     git:
-        local-repo: ${GIT_REPO_DIR}
+        local-repo: ${GIT_REPO_DIR:/tmp/git-repos}

@@ -6,8 +6,8 @@ import com.hu.oneclick.model.entity.UITestGitSettings;
 import com.hu.oneclick.model.param.GitRepoInitParam;
 import com.hu.oneclick.model.param.GitSettingsParam;
 import com.hu.oneclick.server.service.GitMangerService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigInteger;
 import java.util.regex.Pattern;
 
-@Api(tags = "Git管理")
+@Tag(name = "Git管理", description = "Git管理相关接口")
 @RestController
 @RequestMapping("gitManager")
 public class GitManagerController {
@@ -25,7 +25,7 @@ public class GitManagerController {
         this.gitMangerService = gitMangerService;
     }
 
-    @ApiOperation("获取room_id下的Git信息")
+    @Operation(summary = "获取room_id下的Git信息")
     @GetMapping("retrive/{room_id}")
     public Object retrive(@PathVariable("room_id") String roomId) {
         String pattern = "^\\d+";
@@ -38,7 +38,7 @@ public class GitManagerController {
         return new Resp.Builder<>().setData(rst).ok();
     }
 
-    @ApiOperation("设置Git信息")
+    @Operation(summary = "设置Git信息")
     @PostMapping("settings")
     public Object settings(@RequestBody @Validated GitSettingsParam settings) {
         UITestGitSettings access = new UITestGitSettings();
@@ -51,7 +51,7 @@ public class GitManagerController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("更新Git信息")
+    @Operation(summary = "更新Git信息")
     @PostMapping("change/{id}")
     public Object change(@PathVariable String id, @RequestBody @Validated GitSettingsParam settings) {
         var pattern = "^\\d+";
@@ -70,7 +70,7 @@ public class GitManagerController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("删除Git信息")
+    @Operation(summary = "删除Git信息")
     @DeleteMapping("delete/{id}")
     public Object delete(@PathVariable String id) {
         String regex = "^\\d+";
@@ -83,7 +83,7 @@ public class GitManagerController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("删除room_id下的Git信息")
+    @Operation(summary = "删除room_id下的Git信息")
     @DeleteMapping("destroy/{room_id}")
     public Object destroy(@PathVariable("room_id") String roomId) {
         String regex = "^\\d+";
@@ -96,7 +96,7 @@ public class GitManagerController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("初始化项目的Git仓库")
+    @Operation(summary = "初始化项目的Git仓库")
     @PostMapping("project/{room_id}/init")
     public Object init(@PathVariable("room_id") String roomId, @RequestBody @Validated GitRepoInitParam param) {
         var regex = "^\\d+";

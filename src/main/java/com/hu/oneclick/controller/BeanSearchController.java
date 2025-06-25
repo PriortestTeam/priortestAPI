@@ -13,9 +13,9 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.OneFilter;
 import com.hu.oneclick.model.entity.View;
 import com.hu.oneclick.server.service.ViewService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +37,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/bean/search")
-@Api(tags = "复杂查询统一管理")
+@Tag(name = "复杂查询统一管理", description = "复杂查询统一管理相关接口")
 @Slf4j
 public class BeanSearchController {
 
@@ -57,10 +57,10 @@ public class BeanSearchController {
     private JwtUserServiceImpl jwtUserService;
 
 
-    @ApiOperation("通用查询")
+    @Operation(summary = "通用查询")
     @GetMapping("/{scope}/{viewId}")
-    public Resp<PageInfo<?>> generalQuery(@ApiParam("范围") @PathVariable String scope,
-                                           @ApiParam("视图ID") @PathVariable Long viewId
+    public Resp<PageInfo<?>> generalQuery(@Parameter(description = "范围") @PathVariable String scope,
+                                           @Parameter(description = "视图ID") @PathVariable Long viewId
     ) {
         ScopeEnum scopeEnum = ScopeEnum.getByName(scope);
         if (scopeEnum == null) {

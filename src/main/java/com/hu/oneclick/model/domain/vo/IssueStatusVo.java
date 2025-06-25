@@ -1,15 +1,15 @@
 package com.hu.oneclick.model.domain.vo;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 public class IssueStatusVo {
 
-    @ApiModelProperty("id")
+    @Schema(description = "id")
     private Long id;
 
-    @ApiModelProperty("状态")
+    @Schema(description = "状态")
     private String issueStatus;
 
 

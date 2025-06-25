@@ -6,15 +6,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import springfox.documentation.oas.annotations.EnableOpenApi;
 
 /**
  * @author qingyang
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = {
+    org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration.class
+})
 @MapperScan("com.hu.oneclick.**.dao")
 @EnableScheduling
-@EnableOpenApi
 @EnableSpringUtil
 public class OneClickApplication {
 

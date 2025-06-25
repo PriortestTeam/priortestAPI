@@ -9,7 +9,7 @@ Configuration:
             -   name: log.level.console
                 value: info
             -   name: log.path
-                value: ${env:ONECLICK_PATH}
+                value: ${env:ONECLICK_PATH:/home/runner/workspace/}
             -   name: project.name
                 value: oneclick
             -   name: log.pattern

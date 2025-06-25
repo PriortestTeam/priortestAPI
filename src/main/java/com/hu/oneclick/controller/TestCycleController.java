@@ -19,8 +19,8 @@ import com.hu.oneclick.server.service.TestCaseService;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
 import com.hu.oneclick.server.service.TestCycleService;
 import com.hu.oneclick.server.service.TestCycleTcService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("testCycle")
-@Api(tags = "测试周期")
+@Tag(name = "测试周期", description = "测试周期相关接口")
 @Slf4j
 public class TestCycleController extends BaseController {
 
@@ -62,7 +62,7 @@ public class TestCycleController extends BaseController {
     }
 
 //    @GetMapping("queryById/{id}")
-//    @ApiOperation("查询测试周期")
+//    @Operation(summary="查询测试周期")
 //    public Resp<TestCycle> queryById(@PathVariable String id) {
 //        return testCycleService.queryById(id);
 //    }
@@ -74,7 +74,7 @@ public class TestCycleController extends BaseController {
 //    }
 //
 //    @PostMapping("insert")
-//    @ApiOperation("测试周期")
+//    @Operation(summary="测试周期")
 //    public Resp<String> insert(@RequestBody TestCycle testCycle) {
 //        return testCycleService.insert(testCycle);
 //    }
@@ -147,12 +147,12 @@ public class TestCycleController extends BaseController {
 //    /* WJK新增 END*/
 //
 //    @PostMapping("addSchedule")
-//    @ApiModelProperty("添加计划")
+//    @Schema(description = "添加计划")
 //    public Resp<String> addSchedule(@RequestBody TestCycleScheduleModel model) {
 //        return testCycleService.addSchedule(model);
 //    }
 
-    @ApiOperation("列表")
+    @Operation(summary="列表")
     @PostMapping("/list")
     public Resp<PageInfo<TestCycle>> list(@RequestBody @Validated TestCycleParam param) {
         startPage();
@@ -160,7 +160,7 @@ public class TestCycleController extends BaseController {
         return new Resp.Builder<PageInfo<TestCycle>>().setData(PageInfo.of(testCycleList)).ok();
     }
 
-    @ApiOperation("新增")
+    @Operation(summary="新增")
     @PostMapping("/saveTestCycle")
     public Resp<?> save(@RequestBody @Validated TestCycleSaveDto dto) {
         try {
@@ -176,7 +176,7 @@ public class TestCycleController extends BaseController {
         }
     }
 
-    @ApiOperation("修改")
+    @Operation(summary="修改")
     @PutMapping("/updateTestCycle")
     public Resp<?> update(@RequestBody @Validated TestCycleSaveDto dto) {
         try {
@@ -192,14 +192,14 @@ public class TestCycleController extends BaseController {
         }
     }
 
-    @ApiOperation("详情")
+    @Operation(summary="详情")
     @GetMapping("/info/{id}")
     public Resp<TestCycle> info(@PathVariable Long id) {
         TestCycle testCycle = testCycleService.info(id);
         return new Resp.Builder<TestCycle>().setData(testCycle).ok();
     }
 
-    @ApiOperation("删除")
+    @Operation(summary="删除")
     @DeleteMapping("/deleteTestCycle/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
@@ -211,7 +211,7 @@ public class TestCycleController extends BaseController {
         return new Resp.Builder<TestCycle>().ok();
     }
 
-    @ApiOperation("克隆")
+    @Operation(summary="克隆")
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {
@@ -223,7 +223,7 @@ public class TestCycleController extends BaseController {
         }
     }
 
-    @ApiOperation("列表")
+    @Operation(summary="列表")
     @PostMapping("/instance/listByTestCycle")
     public Resp<PageInfo<TestCaseBisDto>> listByTestCycle(@RequestBody TestCycleParam param) {
         if (null == param.getTestCycleId()) {
@@ -244,7 +244,7 @@ public class TestCycleController extends BaseController {
     }
 
 
-    @ApiOperation("绑定测试用例到测试周期")
+    @Operation(summary="绑定测试用例到测试周期")
     @PostMapping("/instance/saveInstance")
     public Resp<?> saveInstance(
         @RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
@@ -259,7 +259,7 @@ public class TestCycleController extends BaseController {
         }
     }
 
-    @ApiOperation("删除测试周期绑定的测试用例")
+    @Operation(summary="删除测试周期绑定的测试用例")
     @DeleteMapping("/instance/deleteInstance")
     public Resp<?> deleteInstance(
         @RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {

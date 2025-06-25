@@ -2,8 +2,8 @@ package com.hu.oneclick.model.domain.dto;
 
 import cn.hutool.json.JSONArray;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,34 +17,34 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@ApiModel("测试用例步骤子步骤DTO")
+@Schema(description = "测试用例步骤子步骤DTO")
 public class TestCaseStepSaveSubDto implements Serializable {
 
     private static final long serialVersionUID = 2326317164248935852L;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @ApiModelProperty(value = "主键id")
+    @Schema(description = "主键id")
     private Long id;
 
-    @ApiModelProperty("步骤")
+    @Schema(description = "步骤")
     private String testStep;
 
-    @ApiModelProperty("预期结果")
+    @Schema(description = "预期结果")
     private String expectedResult;
 
-    @ApiModelProperty("测试数据")
+    @Schema(description = "测试数据")
     private String testData;
 
-    @ApiModelProperty("remarks")
+    @Schema(description = "remarks")
     private String remarks;
 
-    @ApiModelProperty("test_step_id")
+    @Schema(description = "test_step_id")
     private Long testStepId;
 
-    @ApiModelProperty("执行条件")
+    @Schema(description = "执行条件")
     private String teststepCondition;
 
-    @ApiModelProperty("自定义字段值")
+    @Schema(description = "自定义字段值")
     private JSONArray customFieldDatas;
 
 }

@@ -1,27 +1,27 @@
 package com.hu.oneclick.model.param;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 
 @Data
-@ApiModel("Git设置")
+@Schema(description = "Git设置")
 public class GitSettingsParam {
-    @ApiModelProperty(value = "所属组织ID", required = true)
+    @Schema(description = "所属组织ID", required = true)
     @NotEmpty(message = "roomId不能为空")
     private String roomId;
 
-    @ApiModelProperty(value = "Git用户", required = true)
+    @Schema(description = "Git用户", required = true)
     @NotEmpty(message = "username不能为空")
     private String username;
 
-    @ApiModelProperty(value = "Git密码", required = true)
+    @Schema(description = "Git密码", required = true)
     @NotEmpty(message = "password不能为空")
     private String password;
     
-    @ApiModelProperty(value = "远程URL", required = true)
+    @Schema(description = "远程URL", required = true)
     @NotEmpty(message = "remoteUrl不能为空")
     private String remoteUrl;
 }

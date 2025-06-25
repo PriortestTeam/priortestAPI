@@ -2,12 +2,12 @@ package com.hu.oneclick.model.domain.dto;
 
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Date;
+import javax.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 /**
  * @Author: jhh
@@ -18,25 +18,25 @@ public class SprintSaveDto {
 
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @ApiModelProperty(value = "主键id")
+    @Schema(description = "主键id")
     private Long id;
 
     /**
      * 关联项目id
      */
-    @ApiModelProperty("关联项目id")
+    @Schema(description = "关联项目id")
     @NotNull(message = "项目ID不能为空")
     private Long projectId;
     /**
      * 名称
      */
-    @ApiModelProperty("名称")
+    @Schema(description = "名称")
     private String title;
 
     /**
      * 开始时间
      */
-    @ApiModelProperty("开始时间")
+    @Schema(description = "开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "开始时间不能为空")
@@ -44,7 +44,7 @@ public class SprintSaveDto {
     /**
      * 结束时间
      */
-    @ApiModelProperty("结束时间")
+    @Schema(description = "结束时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "结束时间不能为空")
@@ -52,25 +52,24 @@ public class SprintSaveDto {
     /**
      * 描述
      */
-    @ApiModelProperty("描述")
+    @Schema(description = "描述")
     private String description;
 
-    @ApiModelProperty("记录")
+    @Schema(description = "记录")
     private String epic;
 
-    @ApiModelProperty("模块")
+    @Schema(description = "模块")
     private String module;
 
-    @ApiModelProperty("sprintGoal")
+    @Schema(description = "sprintGoal")
     private String sprintGoal;
 
-    @ApiModelProperty("状态")
+    @Schema(description = "状态")
     private String sprintStatus;
-
 
     /**
      * 自定义字段值
      */
-    @ApiModelProperty("自定义字段值")
+    @Schema(description = "自定义字段值")
     private JSONObject customFieldDatas;
 }

@@ -1,6 +1,6 @@
 package com.hu.oneclick.model.entity;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,96 +16,96 @@ public class SysUserOrder implements Serializable {
     /**
      * 订单表id
      */
-    @ApiModelProperty(value="订单表id")
+    @Schema(description="订单表id")
     private Integer id;
 
     /**
      * 用户id
      */
-    @ApiModelProperty(value="用户id")
+    @Schema(description="用户id")
     private String userId;
 
     /**
      * 业务id
      */
-    @ApiModelProperty(value="业务id")
+    @Schema(description="业务id")
     private Long orderId;
 
     /**
      * 支付方式
      */
-    @ApiModelProperty(value="支付方式")
+    @Schema(description="支付方式")
     private String paymentType;
 
     /**
      * 支付账号
      */
-    @ApiModelProperty(value="支付账号")
+    @Schema(description="支付账号")
     private String payCard;
 
     /**
      * 支付姓名
      */
-    @ApiModelProperty(value="支付姓名")
+    @Schema(description="支付姓名")
     private String payName;
 
     /**
      * 服务周期-一共订阅多久
      */
-    @ApiModelProperty(value="服务周期")
+    @Schema(description="服务周期")
     private String serviceDuration;
 
     /**
      * 容量大小
      */
-    @ApiModelProperty(value="容量大小")
+    @Schema(description="容量大小")
     private String dataStrorage;
 
     /**
      * 订阅时长-我是怎么付款，月付，季付
      */
-    @ApiModelProperty(value="订阅时长")
+    @Schema(description="订阅时长")
     private String subScription;
 
     /**
      * apiCall
      */
-    @ApiModelProperty(value="apiCall")
+    @Schema(description="apiCall")
     private String apiCall;
 
     /**
      * 原价
      */
-    @ApiModelProperty(value="原价")
+    @Schema(description="原价")
     private BigDecimal originalPrice;
     /**
      * 现价
      */
-    @ApiModelProperty(value="现价")
+    @Schema(description="现价")
     private BigDecimal currentPrice;
 
     /**
      * 创建时间
      */
-    @ApiModelProperty(value="创建时间")
+    @Schema(description="创建时间")
     private Date createTime;
 
     /**
      * 修改时间
      */
-    @ApiModelProperty(value="修改时间")
+    @Schema(description="修改时间")
     private Date updateTime;
 
     /**
      * 状态0未支付1已支付
      */
-    @ApiModelProperty(value="状态0未支付1已支付")
+    @Schema(description="状态0未支付1已支付")
     private Boolean status;
 
     /**
      * 逻辑删除0未1已
      */
-    @ApiModelProperty(value="逻辑删除0未1已")
+    @Schema(description="逻辑删除0未1已")
     private Boolean isDel;
 
 

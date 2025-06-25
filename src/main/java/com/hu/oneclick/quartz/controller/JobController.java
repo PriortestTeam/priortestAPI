@@ -7,8 +7,8 @@ import com.hu.oneclick.quartz.domain.JobDetails;
 import com.hu.oneclick.quartz.domain.JobOperateDto;
 import com.hu.oneclick.quartz.domain.JobSaveDto;
 import com.hu.oneclick.quartz.domain.JobUpdateDto;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.validation.annotation.Validated;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/job")
-@Api(tags = "定时任务调度管理")
+@Tag(name = "定时任务调度管理", description = "定时任务调度管理相关接口")
 @Slf4j
 public class JobController {
 
@@ -35,7 +35,7 @@ public class JobController {
         return (Class<? extends QuartzJobBean>) class1;
     }
 
-    @ApiOperation("添加任务")
+    @Operation(summary = "添加任务")
     @PostMapping(value = "/addJob")
     public Resp<?> addJob(@RequestBody @Validated JobSaveDto dto) {
         try {
@@ -47,7 +47,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("更新任务")
+    @Operation(summary = "更新任务")
     @PutMapping(value = "/updateJob")
     public Resp<?> updateJob(@RequestBody @Validated JobUpdateDto dto) {
         try {
@@ -59,7 +59,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("任务详情")
+    @Operation(summary = "任务详情")
     @GetMapping(value = "/jobInfo")
     public Resp<?> jobInfo(@RequestParam(value = "jobName") String jobName,
                            @RequestParam(value = "jobGroupName", defaultValue = "DEFAULT", required = false) String jobGroupName) {
@@ -72,7 +72,7 @@ public class JobController {
         }
     }
 
-    @ApiOperation("暂停任务")
+    @Operation(summary = "暂停任务")
     @PutMapping("/pauseJob")
     public Resp<?> pauseJob(@RequestBody @Validated JobOperateDto dto) {
         try {
@@ -84,7 +84,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("恢复任务")
+    @Operation(summary = "恢复任务")
     @PutMapping("/resumeJob")
     public Resp<?> resumeJob(@RequestBody @Validated JobOperateDto dto) {
         try {
@@ -96,7 +96,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("删除任务")
+    @Operation(summary = "删除任务")
     @DeleteMapping("/deleteJob")
     public Resp<?> deleteJob(@RequestBody @Validated JobOperateDto dto) {
         try {
@@ -108,7 +108,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @ApiOperation("查询任务列表")
+    @Operation(summary = "查询任务列表")
     @GetMapping(value = "/queryJob")
     public Resp<?> queryJob() {
         try {

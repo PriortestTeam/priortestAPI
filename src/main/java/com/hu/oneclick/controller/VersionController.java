@@ -5,8 +5,8 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.VersionDto;
 import com.hu.oneclick.model.domain.dto.VersionRequestDto;
 import com.hu.oneclick.server.service.VersionService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,27 +15,27 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/release/versionManagement")
-@Api(tags = "版本api")
+@Tag(name = "版本api", description = "版本api相关接口")
 public class VersionController extends BaseController {
 
     @Autowired
     VersionService versionService;
 
-    @ApiOperation("增加")
+    @Operation(summary="增加")
     @PostMapping("releaseCreation")
     public Resp releaseCreation(@Valid @RequestBody VersionRequestDto releaseCreationDto) {
         var id = versionService.releaseCreation(releaseCreationDto);
         return new Resp.Builder().setData(id).ok();
     }
 
-    @ApiOperation("修改")
+    @Operation(summary="修改")
     @PutMapping("releaseModification")
     public Resp releaseModification(@Valid @RequestBody VersionRequestDto releaseModification) {
         versionService.releaseModification(releaseModification);
         return new Resp.Builder().ok();
     }
 
-    @ApiOperation("查询")
+    @Operation(summary="查询")
     @GetMapping("getVersion")
     public Resp<VersionDto> getVersion(@RequestParam Long id) {
         VersionDto versionDto = versionService.getVersion(id);
@@ -43,7 +43,7 @@ public class VersionController extends BaseController {
     }
 
 
-    @ApiOperation("列表查询")
+    @Operation(summary="列表查询")
     @PostMapping("getVersionList")
     public Resp<List<VersionDto>> getVersionList(@RequestBody VersionRequestDto releaseModification) {
         List<VersionDto> versionDto = versionService.getVersionList(releaseModification);

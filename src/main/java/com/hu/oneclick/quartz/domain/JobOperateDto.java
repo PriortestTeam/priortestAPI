@@ -1,7 +1,7 @@
 package com.hu.oneclick.quartz.domain;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,16 +16,16 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@ApiModel("定时任务操作DTO")
+@Schema(description = "定时任务操作DTO")
 public class JobOperateDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;
 
-    @ApiModelProperty(value = "任务名称")
+    @Schema(description = "任务名称")
     @NotBlank(message = "任务名称不能为空")
     private String jobName;
 
-    @ApiModelProperty(value = "任务组名")
+    @Schema(description = "任务组名")
     private String jobGroupName = "DEFAULT";
 
 }

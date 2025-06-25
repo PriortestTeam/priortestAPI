@@ -8,7 +8,7 @@ import com.hu.oneclick.model.entity.Sprint;
 import com.hu.oneclick.model.domain.dto.SprintSaveDto;
 import com.hu.oneclick.model.param.SprintParam;
 import com.hu.oneclick.server.service.SprintService;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +31,7 @@ public class SprintController extends BaseController {
     }
 
 
-    @ApiOperation("列表")
+    @Operation(summary="列表")
     @PostMapping("/list")
     public Resp<PageInfo<Sprint>> list(@RequestBody SprintParam param) {
         if (null == param) {
@@ -42,7 +42,7 @@ public class SprintController extends BaseController {
         return new Resp.Builder<PageInfo<Sprint>>().setData(PageInfo.of(dataList)).ok();
     }
 
-    @ApiOperation("新增")
+    @Operation(summary="新增")
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated SprintSaveDto dto) {
         try {
@@ -54,7 +54,7 @@ public class SprintController extends BaseController {
         }
     }
 
-    @ApiOperation("修改")
+    @Operation(summary="修改")
     @PutMapping("/update")
     public Resp<Sprint> update(@RequestBody @Validated SprintSaveDto dto) {
         try {
@@ -69,14 +69,14 @@ public class SprintController extends BaseController {
         }
     }
 
-    @ApiOperation("详情")
+    @Operation(summary="详情")
     @GetMapping("/info/{id}")
     public Resp<Sprint> info(@PathVariable Long id) {
         Sprint sprint = this.sprintService.info(id);
         return new Resp.Builder<Sprint>().setData(sprint).ok();
     }
 
-    @ApiOperation("删除")
+    @Operation(summary="删除")
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
@@ -89,7 +89,7 @@ public class SprintController extends BaseController {
     }
 
 
-    @ApiOperation("克隆")
+    @Operation(summary="克隆")
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {

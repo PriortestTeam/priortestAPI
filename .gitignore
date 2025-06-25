@@ -6,6 +6,13 @@ target/
 storage
 .DS_Store
 
+# Java compiled class files
+*.class
+
+# Maven build output
+target/
+build/
+
 ### STS ###
 .apt_generated
 .classpath
@@ -33,3 +40,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Environment variable expansion artifacts - prevent from being committed
+${env:ONECLICK_PATH:
+${env:ONECLICK_PATH}
+\${env:ONECLICK_PATH:
+\${env:ONECLICK_PATH}
