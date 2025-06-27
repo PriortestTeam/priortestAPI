@@ -253,6 +253,20 @@
             <version>6.6.1.202309021850-r</version>
         </dependency>
 
+        <!-- JSON library -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20230227</version>
+        </dependency>
+
+        <!-- AssertJ core for testing utilities -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
