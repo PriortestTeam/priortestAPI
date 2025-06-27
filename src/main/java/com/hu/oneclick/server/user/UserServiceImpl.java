@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.RandomUtil;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.hu.oneclick.common.constant.OneConstant;
@@ -575,7 +575,7 @@ public class UserServiceImpl implements UserService {
         if (bucket.isExists()) {
             bucket.delete();
         }
-        bucket.set(JSONObject.toJSONString(userLoginInfo));
+        bucket.set(JSON.toJSONString(userLoginInfo));
         bucket.expire(datePoor3, TimeUnit.MINUTES);
 
 

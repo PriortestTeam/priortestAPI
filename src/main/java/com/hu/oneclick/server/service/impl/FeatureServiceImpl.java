@@ -12,22 +12,22 @@ import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.FeatureJoinSprintDao;
 import com.hu.oneclick.dao.SprintDao;
-import com.hu.oneclick.model.entity.Feature;
 import com.hu.oneclick.model.domain.dto.FeatureSaveDto;
+import com.hu.oneclick.model.entity.Feature;
 import com.hu.oneclick.model.param.FeatureParam;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.FeatureService;
 import com.hu.oneclick.server.service.QueryFilterService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 
 /**
  * @author qingyang
