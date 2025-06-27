@@ -54,12 +54,11 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .and()
-                .csrf().disable()
-                .formLogin().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+        return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .formLogin(form -> form.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/authentication").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -68,18 +67,17 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(httpStatusLoginSuccessHandler)
-                .and()
-                .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
-                .permissiveRequestUrls("/authentication")
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessHandler(httpStatusLogoutSuccessHandler)
-                .and()
-                .headers().frameOptions().deny()
-                .and()
-                .headers(headers -> headers.addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")))
+                .with(new JsonLoginConfigurer<>(), configurer -> 
+                        configurer.loginSuccessHandler(httpStatusLoginSuccessHandler))
+                .with(new JwtLoginConfigurer<>(), configurer -> 
+                        configurer.tokenValidSuccessHandler(jwtRefreshSuccessHandler)
+                                .permissiveRequestUrls("/authentication"))
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.deny())
+                        .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")))
                 .build();
     }
 
