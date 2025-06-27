@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -60,18 +61,20 @@ public class WebSecurityConfig {
                 .formLogin(form -> form.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/authentication").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/authentication")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
                         .anyRequest().authenticated()
                 )
-                .with(new JsonLoginConfigurer<>(), configurer -> 
-                        configurer.loginSuccessHandler(httpStatusLoginSuccessHandler))
-                .with(new JwtLoginConfigurer<>(), configurer -> 
-                        configurer.tokenValidSuccessHandler(jwtRefreshSuccessHandler)
-                                .permissiveRequestUrls("/authentication"))
+                .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(httpStatusLoginSuccessHandler)
+                .and()
+                .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
+                .permissiveRequestUrls("/authentication")
+                .and()
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
