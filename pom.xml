@@ -148,11 +148,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        <!-- Minio -->
+        <!-- Minio 客户端 -->
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
-            <version>6.0.8</version>
+            <version>8.5.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

@@ -1,8 +1,7 @@
+
 package com.hu.oneclick.common.config;
 
 import io.minio.MinioClient;
-import io.minio.errors.InvalidEndpointException;
-import io.minio.errors.InvalidPortException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class MinioConfig {
-
 
     @Value("${onclick.minioConfig.endpoint}")
     private String endpoint;
@@ -27,8 +25,11 @@ public class MinioConfig {
     private String source;
 
     @Bean
-    public MinioClient buildMinIoClientFactory() throws InvalidPortException, InvalidEndpointException {
-        return new MinioClient(endpoint, accountKey, password,source);
+    public MinioClient buildMinIoClientFactory() {
+        return MinioClient.builder()
+                .endpoint(endpoint)
+                .credentials(accountKey, password)
+                .region(source)
+                .build();
     }
-
 }
