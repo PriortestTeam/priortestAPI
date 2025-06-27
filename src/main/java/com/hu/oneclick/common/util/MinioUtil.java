@@ -1,9 +1,10 @@
+
 package com.hu.oneclick.common.util;
 
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
-import io.minio.MinioClient;
+import io.minio.*;
 import io.minio.errors.MinioException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +22,15 @@ public class MinioUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(MinioUtil.class);
 
-    /**有给定区域的新存储桶
-     * 创建具
+    /**
+     * 创建具有给定区域的新存储桶
      */
     public static boolean createRegion(MinioClient client, String bucketName, String region){
         boolean flag = false;
         try {
-            flag = client.bucketExists(bucketName);
+            flag = client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
             if (!flag) {
-                client.makeBucket(bucketName,region);
+                client.makeBucket(MakeBucketArgs.builder().bucket(bucketName).region(region).build());
             }
         } catch (Exception ignored) {
             logger.error("MinioUtil.class#createRegion() error:{}" + ignored.getMessage());
@@ -38,16 +39,16 @@ public class MinioUtil {
     }
 
     /**
-     * 如果存储桶不存在 创建存储通
+     * 如果存储桶不存在 创建存储桶
      * @param client
      * @param bucketName
      * @throws Exception
      */
     public static void checkBucket(MinioClient client, String bucketName) throws Exception {
 
-        // 如果存储桶不存在 创建存储通
-        if(!client.bucketExists(bucketName)){
-            client.makeBucket(bucketName);
+        // 如果存储桶不存在 创建存储桶
+        if(!client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())){
+            client.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             // 设置隐私权限 公开读
             String builder = "{\n" +
                     "    \"Statement\": [\n" +
@@ -69,7 +70,7 @@ public class MinioUtil {
                     "    ],\n" +
                     "    \"Version\": \"2012-10-17\"\n" +
                     "}\n";
-            client.setBucketPolicy(bucketName, builder);
+            client.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(bucketName).config(builder).build());
         }
     }
 
@@ -82,13 +83,13 @@ public class MinioUtil {
     public static boolean removeBucket(MinioClient client, String bucketName){
         boolean flag = false;
         try {
-            boolean found = client.bucketExists("bucketName");
+            boolean found = client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
             if (found)
-                client.removeBucket("bucketName");
+                client.removeBucket(RemoveBucketArgs.builder().bucket(bucketName).build());
         } catch(Exception e) {
             flag = false;
             logger.error("MinioUtil.class#removeBucket() error:{}" + e.getMessage());
-    }
+        }
         return flag;
     }
 
@@ -104,15 +105,14 @@ public class MinioUtil {
     public static InputStream getObject(MinioClient client,String bucketName, String objectName, long offset){
         InputStream stream = null;
         try {
-            client.statObject(bucketName, objectName);
-            stream = client.getObject(bucketName, objectName, offset);
+            client.statObject(StatObjectArgs.builder().bucket(bucketName).object(objectName).build());
+            stream = client.getObject(GetObjectArgs.builder().bucket(bucketName).object(objectName).offset(offset).build());
             return stream;
         } catch (Exception e) {
             logger.error("MinioUtil.class#getObject() error:{}" + e.getMessage());
         }
         return stream;
     }
-
 
     /**
      * 使用指定的元数据将文件中的内容作为对象上传到给定存储桶，并使用sse密钥进行加密。
@@ -127,21 +127,31 @@ public class MinioUtil {
      * @param objectName
      * @param stream
      */
-    public static void putObject(MinioClient client, String bucketName, String objectName, InputStream stream,  MultipartFile file){
+    public static void putObject(MinioClient client, String bucketName, String objectName, InputStream stream, MultipartFile file){
         try {
             checkBucket(client,bucketName);
-            client.putObject(bucketName, objectName, stream, file.getSize(), null, null, file.getContentType());
+            client.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(objectName)
+                    .stream(stream, file.getSize(), -1)
+                    .contentType(file.getContentType())
+                    .build());
         } catch (Exception e) {
-            throw new BizException(SysConstantEnum.UPLOAD_FILE_FAILED.getCode(),SysConstantEnum.UPLOAD_FILE_FAILED.getValue() +"{}" + e.getMessage());
+            logger.error("MinioUtil.class#putObject() error:{}" + e.getMessage());
         }
     }
 
-    public static void rmObject(MinioClient client, String bucketName, String objectName ){
+    /**
+     * 删除对象
+     * @param client
+     * @param bucketName
+     * @param objectName
+     */
+    public static void rmObject(MinioClient client, String bucketName, String objectName){
         try {
-            client.removeObject(bucketName, objectName);
+            client.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build());
         } catch (Exception e) {
-            throw new BizException(SysConstantEnum.SYS_ERROR.getCode(),SysConstantEnum.SYS_ERROR.getValue() +"{}" + e.getMessage());
+            logger.error("MinioUtil.class#rmObject() error:{}" + e.getMessage());
         }
     }
-
 }
