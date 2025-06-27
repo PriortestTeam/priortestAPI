@@ -39,6 +39,9 @@ public class WebSecurityConfig {
     @Autowired
     private HttpStatusLoginSuccessHandler httpStatusLoginSuccessHandler;
 
+    @Autowired
+    private HttpStatusLogoutSuccessHandler httpStatusLogoutSuccessHandler;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -73,7 +76,7 @@ public class WebSecurityConfig {
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessHandler(new HttpStatusLogoutSuccessHandler())
+                .logoutSuccessHandler(httpStatusLogoutSuccessHandler)
                 .and()
                 .headers().frameOptions().deny()
                 .and()
