@@ -448,7 +448,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             viewDownChildParamsDao.insert(viewDownChildParams);
         } else if (viewDownChildParams1.size() == 1) {
             String defaultValues = viewDownChildParams.getDefaultValues();
-            List<ViewScopeChildParams> childParams = com.alibaba.fastjson.JSONArray.parseArray(defaultValues, ViewScopeChildParams.class);
+            List<ViewScopeChildParams> childParams = JSON.parseArray(defaultValues, ViewScopeChildParams.class);
             if (childParams == null) {
                 childParams = new ArrayList<>();
             }
