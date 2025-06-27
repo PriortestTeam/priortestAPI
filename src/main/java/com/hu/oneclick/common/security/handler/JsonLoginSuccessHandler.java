@@ -1,6 +1,6 @@
 package com.hu.oneclick.common.security.handler;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.model.base.Resp;

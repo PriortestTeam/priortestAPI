@@ -1,6 +1,6 @@
 package com.hu.oneclick.model.entity;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
