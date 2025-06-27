@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import com.alibaba.fastjson2.JSON;
 
 @Service
 public class SysCustomFieldServiceImpl implements SysCustomFieldService {
@@ -64,7 +65,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             RBucket<String> bucket = redisClient.getBucket(redisKey);
             String s = bucket.get();
             if (s != null) {
-                result = JSONObject.parseArray(s, SysCustomFieldVo.class);
+                result = JSON.parseArray(s, SysCustomFieldVo.class);
                 return new Resp.Builder<List<SysCustomFieldVo>>().setData(result).totalSize(result.size()).ok();
             }
             //缓存没有查数据库
@@ -171,7 +172,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             RBucket<String> bucket = redisClient.getBucket(redisKey);
             String s = bucket.get();
             if (s != null) {
-                result = JSONObject.parseArray(s, SysCustomFieldVo.class);
+                result = JSON.parseArray(s, SysCustomFieldVo.class);
             } else {
                 result = queryAll(masterId, projectId);
             }

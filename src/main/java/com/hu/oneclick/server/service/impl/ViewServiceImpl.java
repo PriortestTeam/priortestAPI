@@ -134,7 +134,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
      */
     private List<View> coverViews(List<View> queryViews) {
         String s = JSONObject.toJSONString(queryViews);
-        return JSONObject.parseArray(s, View.class);
+        return JSON.parseArray(s, View.class);
     }
 
 
