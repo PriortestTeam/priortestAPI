@@ -1,7 +1,7 @@
 package com.hu.oneclick.server.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.exception.BizException;
@@ -448,7 +448,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             viewDownChildParamsDao.insert(viewDownChildParams);
         } else if (viewDownChildParams1.size() == 1) {
             String defaultValues = viewDownChildParams.getDefaultValues();
-            List<ViewScopeChildParams> childParams = JSONArray.parseArray(defaultValues, ViewScopeChildParams.class);
+            List<ViewScopeChildParams> childParams = JSON.parseArray(defaultValues, ViewScopeChildParams.class);
             if (childParams == null) {
                 childParams = new ArrayList<>();
             }

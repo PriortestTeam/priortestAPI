@@ -1,6 +1,6 @@
 package com.hu.oneclick.server.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -164,7 +164,7 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
      */
     private void deleteSubUserLoginStatus(String username) {
         RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + username);
-        AuthLoginUser authLoginUser = JSONObject.parseObject(bucket.get(), AuthLoginUser.class);
+        AuthLoginUser authLoginUser = com.alibaba.fastjson2.JSON.parseObject(bucket.get(), AuthLoginUser.class);
         if (authLoginUser != null) {
             bucket.delete();
         }

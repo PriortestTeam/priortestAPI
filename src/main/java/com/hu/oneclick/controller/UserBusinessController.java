@@ -1,6 +1,6 @@
 package com.hu.oneclick.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.server.service.UserBusinessService;
 import io.swagger.v3.oas.annotations.tags.Tag;

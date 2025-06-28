@@ -1,6 +1,6 @@
 package com.hu.oneclick.common.security.flutter;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.hu.oneclick.common.constant.OneConstant.REDIS_KEY_PREFIX;

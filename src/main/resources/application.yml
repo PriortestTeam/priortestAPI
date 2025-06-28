@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: @profileActive@
+  main:
+    allow-circular-references: true
   quartz:
     #相关属性配置
     properties:
@@ -29,7 +31,7 @@ spring:
 #      enabled: false
 #      additional-paths: src/main/java
 server:
-  port: 8082
+  port: 5000
   servlet:
     context-path: /api
 

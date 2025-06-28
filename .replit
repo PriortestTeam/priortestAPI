@@ -16,9 +16,5 @@ task = "shell.exec"
 args = "ONECLICK_PATH=/home/runner/workspace/ mvn spring-boot:run"
 
 [[ports]]
-localPort = 8082
+localPort = 5000
 externalPort = 3000
-
-[[ports]]
-localPort = 35729
-externalPort = 80

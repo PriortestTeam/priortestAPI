@@ -3,9 +3,9 @@ package com.hu.oneclick.server.service.impl;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -134,7 +134,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
      */
     private List<View> coverViews(List<View> queryViews) {
         String s = JSONObject.toJSONString(queryViews);
-        return JSONObject.parseArray(s, View.class);
+        return JSON.parseArray(s, View.class);
     }
 
 

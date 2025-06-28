@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.12.RELEASE</version>
+        <version>2.7.18</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.hu</groupId>
@@ -37,6 +37,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -71,7 +78,7 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>3.0.0</version>
+            <version>2.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -83,7 +90,7 @@
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper-spring-boot-starter</artifactId>
-            <version>1.4.6</version>
+            <version>1.4.7</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.mybatis.spring.boot</groupId>
@@ -91,11 +98,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Replace vulnerable FastJSON with patched version -->
+        <!-- FastJSON2 - Secure replacement for FastJSON -->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.83</version>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.45</version>
         </dependency>
 
         <!--time-->
@@ -139,14 +146,13 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-redis</artifactId>
-            <version>1.3.2.RELEASE</version>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        <!-- Minio -->
+        <!-- Minio 客户端 -->
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
-            <version>6.0.8</version>
+            <version>8.5.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -190,12 +196,14 @@
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
         </dependency>
-        <!-- SpringDoc OpenAPI 3 dependencies only -->
+
+        <!-- SpringDoc OpenAPI 3 for API documentation -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.7.0</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/net.sourceforge.jexcelapi/jxl -->
         <dependency>
             <groupId>net.sourceforge.jexcelapi</groupId>
@@ -243,6 +251,20 @@
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
             <version>6.6.1.202309021850-r</version>
+        </dependency>
+
+        <!-- JSON library -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20230227</version>
+        </dependency>
+
+        <!-- AssertJ core for testing utilities -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
         </dependency>
 
     </dependencies>

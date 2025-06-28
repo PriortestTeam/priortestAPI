@@ -1,6 +1,7 @@
 package com.hu.oneclick.common.constant;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import org.apache.commons.lang3.StringUtils;
@@ -107,7 +108,7 @@ public class TwoConstant {
         if(StringUtils.isEmpty(source)){
             return new ArrayList<>();
         }
-        return JSONObject.parseArray(source, clazz);
+        return JSON.parseArray(source, clazz);
     }
 
 }

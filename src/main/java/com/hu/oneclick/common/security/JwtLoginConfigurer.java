@@ -20,7 +20,7 @@ public class JwtLoginConfigurer<T extends JwtLoginConfigurer<T, B>, B extends Ht
 	}
 
 	@Override
-	public void configure(B http) throws Exception {
+	public void configure(B http) {
 		authFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
 		authFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
 
