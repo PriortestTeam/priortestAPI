@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.bean.BeanUtil;
 
 /**
  * @author qingyang
@@ -43,21 +44,9 @@ public class TestCaseController extends BaseController {
             String projectId = param.getProjectId().toString();
             List<Map<String, Object>> resultList = testCaseService.listWithBeanSearcher(param.getViewId(), projectId);
             
-            // 将Map转换为TestCase对象
+            // 自动将Map转换为TestCase对象，所有字段自动赋值
             List<TestCase> testCaseList = resultList.stream()
-                .map(map -> {
-                    TestCase testCase = new TestCase();
-                    // 这里需要根据实际的字段映射进行转换
-                    // 为了简化，我们返回一个基本的TestCase对象
-                    if (map.get("id") != null) {
-                        testCase.setId(Long.valueOf(map.get("id").toString()));
-                    }
-                    if (map.get("title") != null) {
-                        testCase.setTitle(map.get("title").toString());
-                    }
-                    // 可以继续添加其他字段的映射...
-                    return testCase;
-                })
+                .map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class))
                 .collect(Collectors.toList());
             
             return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
