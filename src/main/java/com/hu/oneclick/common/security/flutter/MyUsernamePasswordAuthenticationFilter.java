@@ -49,6 +49,8 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
             masterIdentifier = jsonObj.getString("masterIdentifier");
         }
 
+        System.out.println(">>> 登录参数 username: " + username + ", password: " + password);
+
         if (username == null) {
             username = "";
         }
