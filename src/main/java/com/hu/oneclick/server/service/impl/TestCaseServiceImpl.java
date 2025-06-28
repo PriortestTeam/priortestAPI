@@ -108,8 +108,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
   @Resource
   private cn.zhxu.bs.MapSearcher mapSearcher;
-  @Resource
-  private cn.zhxu.bs.util.MapUtils mapUtils;
 
   @Resource
   private IssueService issueService;
