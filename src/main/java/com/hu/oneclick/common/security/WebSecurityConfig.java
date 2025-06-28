@@ -60,7 +60,7 @@ public class WebSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(new AntPathRequestMatcher("/authentication")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/login")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
@@ -72,7 +72,7 @@ public class WebSecurityConfig {
             .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(httpStatusLoginSuccessHandler)
             .and()
             .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
-            .permissiveRequestUrls("/authentication", "/api/login")
+            .permissiveRequestUrls("/authentication", "/login")
             .and()
             .logout(logout -> logout
                 .logoutUrl("/logout")
