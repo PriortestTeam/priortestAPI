@@ -66,7 +66,7 @@ public interface TestCaseService extends IService<TestCase> {
 
   /**
    * 支持视图过滤的测试用例列表查询
-   * 支持 viewTreeDto 和 viewId 两种参数格式
+   * 支持 viewId 参数格式
    *
    * @param param 查询参数，包含视图过滤条件
    * @return 测试用例列表

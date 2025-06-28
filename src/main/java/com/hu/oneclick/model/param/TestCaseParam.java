@@ -1,6 +1,5 @@
 package com.hu.oneclick.model.param;
 
-import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,9 +29,6 @@ public class TestCaseParam implements Serializable {
     private Long projectId;
 
     private List<Long> testCaseIdList;
-
-    @Schema(description = "视图树DTO，用于复杂查询过滤")
-    private ViewTreeDto viewTreeDto;
 
     @Schema(description = "视图ID，用于复杂查询过滤")
     private String viewId;

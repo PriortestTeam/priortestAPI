@@ -2,7 +2,6 @@ package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.model.entity.OneFilter;
 import com.hu.oneclick.model.entity.View;
 import com.hu.oneclick.server.service.ViewFilterService;
@@ -48,27 +47,6 @@ public class ViewFilterServiceImpl implements ViewFilterService {
             return buildQueryParams(filterList, projectId);
         } catch (Exception e) {
             log.error("获取视图过滤参数失败，viewId: {}, projectId: {}", viewId, projectId, e);
-            return null;
-        }
-    }
-
-    @Override
-    public Map<String, Object> getFilterParamsByViewTreeDto(ViewTreeDto viewTreeDto, String projectId) {
-        if (!shouldApplyViewFilter(viewTreeDto)) {
-            return null;
-        }
-
-        try {
-            View view = viewService.getById(viewTreeDto.getId().toString());
-            if (view == null) {
-                log.warn("视图不存在，viewId: {}", viewTreeDto.getId());
-                return null;
-            }
-
-            List<List<OneFilter>> filterList = processAllFilters(view);
-            return buildQueryParams(filterList, projectId);
-        } catch (Exception e) {
-            log.error("获取视图过滤参数失败，viewTreeDto: {}, projectId: {}", viewTreeDto, projectId, e);
             return null;
         }
     }
@@ -124,11 +102,6 @@ public class ViewFilterServiceImpl implements ViewFilterService {
         
         params.put("gexpr", gexpr.toString());
         return params;
-    }
-
-    @Override
-    public boolean shouldApplyViewFilter(ViewTreeDto viewTreeDto) {
-        return viewTreeDto != null && viewTreeDto.getId() != null && StrUtil.isNotBlank(viewTreeDto.getId().toString());
     }
 
     @Override

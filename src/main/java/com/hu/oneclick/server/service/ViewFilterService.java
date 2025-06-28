@@ -1,6 +1,5 @@
 package com.hu.oneclick.server.service;
 
-import com.hu.oneclick.model.domain.dto.ViewTreeDto;
 import com.hu.oneclick.model.entity.OneFilter;
 
 import java.util.List;
@@ -25,15 +24,6 @@ public interface ViewFilterService {
     Map<String, Object> getFilterParamsByViewId(String viewId, String projectId);
 
     /**
-     * 根据视图树DTO获取过滤条件
-     *
-     * @param viewTreeDto 视图树DTO
-     * @param projectId 项目ID
-     * @return 过滤条件Map
-     */
-    Map<String, Object> getFilterParamsByViewTreeDto(ViewTreeDto viewTreeDto, String projectId);
-
-    /**
      * 处理所有过滤条件（包括父视图）
      *
      * @param view 视图对象
@@ -49,14 +39,6 @@ public interface ViewFilterService {
      * @return 查询参数Map
      */
     Map<String, Object> buildQueryParams(List<List<OneFilter>> filterList, String projectId);
-
-    /**
-     * 检查是否需要应用视图过滤
-     *
-     * @param viewTreeDto 视图树DTO
-     * @return 是否需要过滤
-     */
-    boolean shouldApplyViewFilter(ViewTreeDto viewTreeDto);
 
     /**
      * 检查是否需要应用视图过滤（基于viewId）
