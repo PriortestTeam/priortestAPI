@@ -9,36 +9,33 @@
         <result property="priority" column="priority" jdbcType="VARCHAR"/>
         <result property="feature" column="feature" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="executedDate" column="executed_date" jdbcType="TIMESTAMP"/>
-        <result property="authorName" column="author_name" jdbcType="VARCHAR"/>
+        <result property="executeTime" column="execute_time" jdbcType="TIMESTAMP"/>
+        <result property="createUserId" column="create_user_id" jdbcType="INTEGER"/>
+        <result property="updateUserId" column="update_user_id" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="browser" column="browser" jdbcType="VARCHAR"/>
         <result property="platform" column="platform" jdbcType="VARCHAR"/>
         <result property="version" column="version" jdbcType="VARCHAR"/>
         <result property="caseCategory" column="case_category" jdbcType="VARCHAR"/>
         <result property="testType" column="test_type" jdbcType="VARCHAR"/>
-        <result property="externaId" column="externa_id" jdbcType="VARCHAR"/>
+        <result property="externalLinkId" column="external_link_id" jdbcType="VARCHAR"/>
         <result property="env" column="env" jdbcType="VARCHAR"/>
-        <result property="preCondition" column="pre_condition" jdbcType="VARCHAR"/>
+        <result property="testCondition" column="test_condition" jdbcType="VARCHAR"/>
         <result property="lastRunStatus" column="last_run_status" jdbcType="INTEGER"/>
-
-
         <result property="module" column="module" jdbcType="VARCHAR"/>
         <result property="testDevice" column="test_device" jdbcType="VARCHAR"/>
         <result property="testData" column="test_data" jdbcType="VARCHAR"/>
         <result property="testMethod" column="test_method" jdbcType="VARCHAR"/>
-        <result property="foreignId" column="foreign_id" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="VARCHAR"/>
-        <result property="comments" column="comments" jdbcType="VARCHAR"/>
+        <result property="testStatus" column="test_status" jdbcType="VARCHAR"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
     </resultMap>
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="TestCaseMap">
         select
-        id, project_id, title, priority, feature, description, executed_date, author_name, create_time, update_time,
-        user_id, browser, platform, version, case_category, test_type, externa_id, env, pre_condition, last_run_status,
-        `module`,test_device,test_data,test_method,foreign_id,status
+        id, project_id, title, priority, feature, description, execute_time, create_user_id, create_time, update_time,
+        browser, platform, version, case_category, test_type, external_link_id, env, test_condition, last_run_status,
+        `module`,test_device,test_data,test_method,test_status
         from oneclick.test_case
         <where>
             <if test="id != null">
@@ -59,20 +56,17 @@
             <if test="description != null and description != ''">
                 and description = #{description}
             </if>
-            <if test="executedDate != null">
-                and executed_date = #{executedDate}
+            <if test="executeTime != null">
+                and execute_time = #{executeTime}
             </if>
-            <if test="authorName != null and authorName != ''">
-                and author_name = #{authorName}
+            <if test="createUserId != null">
+                and create_user_id = #{createUserId}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime}
-            </if>
-            <if test="userId != null">
-                and user_id = #{userId}
             </if>
             <if test="browser != null and browser != ''">
                 and browser = #{browser}
@@ -89,17 +83,20 @@
             <if test="testType != null and testType != ''">
                 and test_type = #{testType}
             </if>
-            <if test="externaId != null and externaId != ''">
-                and externa_id = #{externaId}
+            <if test="externalLinkId != null and externalLinkId != ''">
+                and external_link_id = #{externalLinkId}
             </if>
             <if test="env != null and env != ''">
                 and env = #{env}
             </if>
-            <if test="preCondition != null and preCondition != ''">
-                and pre_condition = #{preCondition}
+            <if test="testCondition != null and testCondition != ''">
+                and test_condition = #{testCondition}
             </if>
             <if test="lastRunStatus != null">
                 and last_run_status = #{lastRunStatus}
+            </if>
+            <if test="testStatus != null">
+                and test_status = #{testStatus}
             </if>
 
             <if test="filter != null and filter != ''">
@@ -117,30 +114,26 @@
                t.priority as priority,
                t.feature as feature,
                t.description as description,
-               t.executed_date as executedDate,
-               t.author_name as authorName,
+               t.execute_time as executeTime,
+               t.user_id as createUserId,
                t.create_time as createTime,
                t.update_time as updateTime,
-               t.user_id as userId,
                t.browser as browser,
                t.platform as platform,
                t.version as version,
                t.case_category as caseCategory,
                t.test_type as testType,
-               t.externa_id as externaId,
+               t.external_id as externalLinkId,
                t.env as env,
-               t.pre_condition as preCondition,
+               t.test_condition as testCondition,
                t.last_run_status as lastRunStatus,
                t.module as `module`,
                t.test_device as testDevice,
                t.test_data as testData,
                t.test_method as testMethod,
-               t.foreign_id as foreignId,
-               f.title as featureTitle,
-               t.status as status,
-               t.comments as comments
+               t.test_status as testStatus,
+               t.comments as remarks
         from test_case t
-        left join feature f on f.id = t.feature
         where t.id = #{id}
     </select>
 
@@ -176,17 +169,17 @@
             <if test="description != null and description != ''">
                 description = #{description},
             </if>
-            <if test="executedDate != null">
-                executed_date = #{executedDate},
+            <if test="executeTime != null">
+                execute_time = #{executeTime},
             </if>
-            <if test="authorName != null and authorName != ''">
-                author_name = #{authorName},
+            <if test="createUserId != null">
+                create_user_id = #{createUserId},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime},
             </if>
-            <if test="userId != null">
-                user_id = #{userId},
+            <if test="updateTime != null">
+                update_time = #{updateTime},
             </if>
             <if test="browser != null and browser != ''">
                 browser = #{browser},
@@ -203,11 +196,14 @@
             <if test="testType != null and testType != ''">
                 test_type = #{testType},
             </if>
-            <if test="externaId != null and externaId != ''">
-                externa_id = #{externaId},
+            <if test="externalLinkId != null and externalLinkId != ''">
+                external_link_id = #{externalLinkId},
             </if>
             <if test="env != null and env != ''">
                 env = #{env},
+            </if>
+            <if test="testCondition != null and testCondition != ''">
+                test_condition = #{testCondition},
             </if>
             <if test="lastRunStatus != null and lastRunStatus != ''">
                 last_run_status = #{lastRunStatus},
@@ -225,8 +221,8 @@
             <if test="testMethod != null and testMethod != ''">
                 test_method = #{testMethod},
             </if>
-            <if test="status != null and status != ''">
-                status = #{status},
+            <if test="testStatus != null and testStatus != ''">
+                test_status = #{testStatus},
             </if>
             <!-- 新增 WJK BEGIN-->
             <if test="runStatus != null and runStatus != ''">
