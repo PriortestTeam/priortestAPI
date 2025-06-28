@@ -200,7 +200,7 @@
                scope_name,
                scope_id,
                is_private,
-               owner,
+               creater,
                filter,
                create_time,
                update_time,
