@@ -127,4 +127,11 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+    @Autowired
+    public void configureGlobal(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder auth) {
+        System.out.println(">>> configureGlobal 注册 provider: " + daoAuthenticationProvider() + ", " + jwtAuthenticationProvider);
+        auth.authenticationProvider(daoAuthenticationProvider());
+        auth.authenticationProvider(jwtAuthenticationProvider);
+    }
 }
