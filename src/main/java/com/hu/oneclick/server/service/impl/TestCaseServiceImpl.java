@@ -104,10 +104,15 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   private RelationService relationService;
 
   @Resource
-  private IssueService issueService;
+  TestCycleService testCycleService;
 
   @Resource
-  TestCycleService testCycleService;
+  private cn.zhxu.bs.MapSearcher mapSearcher;
+  @Resource
+  private cn.zhxu.bs.util.MapUtils mapUtils;
+
+  @Resource
+  private IssueService issueService;
 
   @Override
   public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -1222,6 +1227,26 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     return testCycleService.save(dto);
   }
 
-
+  @Override
+  public List<Map<String, Object>> listWithBeanSearcher(String viewId, String projectId) {
+    try {
+      // 获取视图过滤参数
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
+      
+      if (filterParams == null) {
+        // 如果没有过滤条件，返回空列表
+        return new ArrayList<>();
+      }
+      
+      // 使用BeanSearcher进行查询，使用testCase作为查询类
+      Class<?> testCaseClass = Class.forName("com.hu.oneclick.model.entity.TestCase");
+      List<Map<String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
+      
+      return result;
+    } catch (Exception e) {
+      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
+      return new ArrayList<>();
+    }
+  }
 
 }

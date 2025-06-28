@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import cn.hutool.core.util.StrUtil;
 
 /**
  * @author qingyang
@@ -33,8 +36,36 @@ public class TestCaseController extends BaseController {
     @PostMapping("/list")
     public Resp<PageInfo<TestCase>> list(@RequestBody @Validated TestCaseParam param) {
         startPage();
-        List<TestCase> testCaseList = testCaseService.listWithViewFilter(param);
-        return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
+        
+        // 检查是否有viewId参数
+        if (StrUtil.isNotBlank(param.getViewId())) {
+            // 使用BeanSearcher查询，与BeanSearchController保持一致
+            String projectId = param.getProjectId().toString();
+            List<Map<String, Object>> resultList = testCaseService.listWithBeanSearcher(param.getViewId(), projectId);
+            
+            // 将Map转换为TestCase对象
+            List<TestCase> testCaseList = resultList.stream()
+                .map(map -> {
+                    TestCase testCase = new TestCase();
+                    // 这里需要根据实际的字段映射进行转换
+                    // 为了简化，我们返回一个基本的TestCase对象
+                    if (map.get("id") != null) {
+                        testCase.setId(Long.valueOf(map.get("id").toString()));
+                    }
+                    if (map.get("title") != null) {
+                        testCase.setTitle(map.get("title").toString());
+                    }
+                    // 可以继续添加其他字段的映射...
+                    return testCase;
+                })
+                .collect(Collectors.toList());
+            
+            return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
+        } else {
+            // 使用原有的查询逻辑
+            List<TestCase> testCaseList = testCaseService.listWithViewFilter(param);
+            return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
+        }
     }
 
     @Operation(summary = "新增测试用例")

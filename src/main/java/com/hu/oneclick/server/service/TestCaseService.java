@@ -73,6 +73,16 @@ public interface TestCaseService extends IService<TestCase> {
    */
   List<TestCase> listWithViewFilter(TestCaseParam param);
 
+  /**
+   * 使用BeanSearcher框架的视图过滤查询
+   * 与BeanSearchController使用相同的查询逻辑
+   *
+   * @param viewId 视图ID
+   * @param projectId 项目ID
+   * @return 测试用例列表
+   */
+  List<Map<String, Object>> listWithBeanSearcher(String viewId, String projectId);
+
   TestCase save(TestCaseSaveDto dto);
 
   TestCase update(TestCaseSaveDto dto);
