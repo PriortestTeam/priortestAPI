@@ -49,6 +49,19 @@ spring:
     # Quartz 配置 - 针对本地开发使用内存存储
     quartz:
         job-store-type: memory
+        # 覆盖默认的 JDBC 配置
+        properties:
+            org:
+                quartz:
+                    scheduler:
+                        instanceName: memoryScheduler
+                        instanceId: AUTO
+                    jobStore:
+                        class: org.quartz.simpl.RAMJobStore
+                    threadPool:
+                        class: org.quartz.simpl.SimpleThreadPool
+                        threadCount: 10
+                        threadPriority: 5
 
 mybatis:
     mapper-locations: classpath:mapper/*Mapper.xml
