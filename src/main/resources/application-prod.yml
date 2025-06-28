@@ -58,6 +58,11 @@ mybatis:
 logging:
     config: classpath:log4j2.yml
 
+# Override Quartz for local development (use memory store instead of JDBC)
+spring:
+    quartz:
+        job-store-type: memory
+
 # SpringDoc OpenAPI 3 Configuration
 springdoc:
   api-docs:
