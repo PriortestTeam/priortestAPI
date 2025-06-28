@@ -3,7 +3,6 @@ package com.hu.oneclick.common.security.flutter;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -26,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public MyUsernamePasswordAuthenticationFilter() {
-        super(new AntPathRequestMatcher("/login", "POST"));
+        super(new AntPathRequestMatcher("/api/login", "POST"));
     }
 
     @Override
