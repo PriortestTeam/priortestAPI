@@ -3,9 +3,6 @@ package com.hu.oneclick.model.domain.dto;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import lombok.Data;
-import org.json.JSONObject;
-
-import java.io.Serializable;
 
 @Data
 @TableName(value = "use_case")

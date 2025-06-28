@@ -2,8 +2,6 @@ package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.biz.TestCycleBiz;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -13,27 +11,25 @@ import com.hu.oneclick.dao.TestCycleDao;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.entity.TestCase;
-import com.hu.oneclick.model.entity.TestCasesExecution;
-import com.hu.oneclick.model.entity.TestCycle;
-import com.hu.oneclick.model.entity.TestCycleJoinTestCase;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseDto;
 import com.hu.oneclick.model.domain.dto.TestCycleJoinTestCaseSaveDto;
 import com.hu.oneclick.model.domain.vo.TestCycleJoinTestCaseVo;
+import com.hu.oneclick.model.entity.TestCase;
+import com.hu.oneclick.model.entity.TestCycle;
+import com.hu.oneclick.model.entity.TestCycleJoinTestCase;
 import com.hu.oneclick.server.service.TestCycleJoinTestCaseService;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author: jhh

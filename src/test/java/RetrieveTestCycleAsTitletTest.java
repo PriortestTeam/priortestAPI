@@ -1,8 +1,6 @@
 import com.hu.oneclick.OneClickApplication;
 import com.hu.oneclick.dao.TestCycleDao;
-import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.server.service.RetrieveTestCycleAsTitleService;
-import lombok.NonNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

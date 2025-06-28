@@ -1,18 +1,15 @@
 package com.hu.oneclick.server.service.impl;
 
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
@@ -45,7 +42,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -679,6 +679,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
 
         return new Resp.Builder<>().setData(PageUtil.manualPaging(records.getRecords())).ok();
     }
+
     @Override
     public Object findSubViewRecordByScopeName(int page, int pageSize, ViewGetSubViewRecordParam param) {
         if (param == null || StringUtils.isEmpty(param.getScopeName())) {
@@ -704,7 +705,7 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
                 param.getFieldNameEn(),
                 param.getValue(),
                 projectId,
-               null, // 不排除任何用户创建的记录
+                null, // 不排除任何用户创建的记录
                 offset,
                 pageSize
             );
@@ -716,7 +717,8 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         }
     }
 
-    /**Add commentMore actions
+    /**
+     * Add commentMore actions
      * 根据 scopeName 返回对应的表名
      */
     private String getTableNameByScopeName(String scopeName) {

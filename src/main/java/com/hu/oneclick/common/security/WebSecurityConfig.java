@@ -2,17 +2,20 @@ package com.hu.oneclick.common.security;
 
 import com.hu.oneclick.common.security.handler.HttpStatusLoginSuccessHandler;
 import com.hu.oneclick.common.security.handler.HttpStatusLogoutSuccessHandler;
-import com.hu.oneclick.common.security.handler.JwtRefreshSuccessHandler;
 import com.hu.oneclick.common.security.handler.JsonLoginSuccessHandler;
+import com.hu.oneclick.common.security.handler.JwtRefreshSuccessHandler;
+import com.hu.oneclick.common.security.service.JwtAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
@@ -20,14 +23,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import com.hu.oneclick.common.security.service.JwtAuthenticationProvider;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Collections;
-import javax.annotation.PostConstruct;
 
 /**
  * @author qingyang
@@ -77,9 +76,9 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .authenticationProvider(daoAuthenticationProvider())
-                .authenticationProvider(jwtAuthenticationProvider)
-                .build();
+            .authenticationProvider(daoAuthenticationProvider())
+            .authenticationProvider(jwtAuthenticationProvider)
+            .build();
     }
 
     @Bean

@@ -1,15 +1,14 @@
 package com.hu.oneclick.controller.user;
 
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.entity.SysRole;
 import com.hu.oneclick.model.domain.dto.SysUserRoleDto;
+import com.hu.oneclick.model.entity.SysRole;
 import com.hu.oneclick.server.service.SysRoleService;
 import com.hu.oneclick.server.service.UserBusinessService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
