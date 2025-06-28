@@ -2,7 +2,6 @@ package com.hu.oneclick.model.domain.dto;
 
 
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -14,7 +13,7 @@ public class TestCaseBisDto {
 
     TestCaseDataCaseDto testCase;
 
-    public void setTestCaseRun(int run, int status, Date updateTime, BigInteger createUserId,BigInteger updateUserId,BigInteger caseRunDuration,BigInteger caseTotalPeriod) {
+    public void setTestCaseRun(int run, int status, Date updateTime, BigInteger createUserId, BigInteger updateUserId, BigInteger caseRunDuration, BigInteger caseTotalPeriod) {
         testCaseRun = new TestCaseDataRunDto();
         testCaseRun.setRunCount(run);
         testCaseRun.setRunStatus(status);

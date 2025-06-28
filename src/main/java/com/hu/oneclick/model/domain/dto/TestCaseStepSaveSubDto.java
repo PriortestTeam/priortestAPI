@@ -3,7 +3,6 @@ package com.hu.oneclick.model.domain.dto;
 import cn.hutool.json.JSONArray;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 

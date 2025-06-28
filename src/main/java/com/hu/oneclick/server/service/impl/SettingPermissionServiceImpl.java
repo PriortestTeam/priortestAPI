@@ -1,6 +1,5 @@
 package com.hu.oneclick.server.service.impl;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -10,11 +9,11 @@ import com.hu.oneclick.dao.ProjectDao;
 import com.hu.oneclick.dao.SysProjectPermissionDao;
 import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.entity.Project;
-import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SubUserDto;
 import com.hu.oneclick.model.domain.dto.SubUserPermissionDto;
+import com.hu.oneclick.model.entity.Project;
+import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.server.service.SettingPermissionService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

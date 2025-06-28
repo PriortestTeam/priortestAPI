@@ -3,7 +3,6 @@ package com.hu.oneclick.common.security.flutter;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.common.constant.OneConstant;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -39,6 +38,7 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
         throws AuthenticationException, IOException, ServletException {
+        System.out.println(">>> 进入 attemptAuthentication 方法，收到登录请求: " + request.getRequestURI());
         String body = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
         String username = null, password = null, masterIdentifier = null;
 
@@ -48,6 +48,8 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
             password = jsonObj.getString("password");
             masterIdentifier = jsonObj.getString("masterIdentifier");
         }
+
+        System.out.println(">>> 登录参数 username: " + username + ", password: " + password);
 
         if (username == null) {
             username = "";

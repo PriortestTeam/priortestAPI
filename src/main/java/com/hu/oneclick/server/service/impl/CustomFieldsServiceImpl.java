@@ -1,6 +1,5 @@
 package com.hu.oneclick.server.service.impl;
 
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -15,14 +14,14 @@ import com.hu.oneclick.dao.CustomFieldsDao;
 import com.hu.oneclick.dao.CustomFileldLinkDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.entity.CustomFields;
-import com.hu.oneclick.model.entity.CustomFileldLink;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto;
 import com.hu.oneclick.model.domain.dto.CustomFieldsDto;
 import com.hu.oneclick.model.domain.vo.ComponentAttributesVo;
 import com.hu.oneclick.model.domain.vo.CustomFieldVo;
 import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
+import com.hu.oneclick.model.entity.CustomFields;
+import com.hu.oneclick.model.entity.CustomFileldLink;
 import com.hu.oneclick.server.service.CustomFieldsService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;

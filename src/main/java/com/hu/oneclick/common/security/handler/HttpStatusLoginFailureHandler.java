@@ -24,6 +24,7 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException {
+		System.out.println(">>> 登录失败，异常信息: " + (exception == null ? "null" : exception.getMessage()));
 		String result = "";
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType("application/json;charset=UTF-8");

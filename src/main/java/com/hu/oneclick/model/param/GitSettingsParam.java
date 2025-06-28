@@ -1,7 +1,6 @@
 package com.hu.oneclick.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
@@ -20,7 +19,7 @@ public class GitSettingsParam {
     @Schema(description = "Git密码", required = true)
     @NotEmpty(message = "password不能为空")
     private String password;
-    
+
     @Schema(description = "远程URL", required = true)
     @NotEmpty(message = "remoteUrl不能为空")
     private String remoteUrl;

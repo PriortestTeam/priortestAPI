@@ -3,10 +3,9 @@ package com.hu.oneclick.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import javax.validation.constraints.NotNull;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.math.BigInteger;
 import java.util.Map;
 
 @Data
@@ -26,7 +25,7 @@ public class SignOffParam {
 
     @Schema(description = "测试周期的标题", example = "[{testcycleId:'',testcycleTitle:''}]")
     @NotNull
-    private List<Map<String,String>> testCycle;
+    private List<Map<String, String>> testCycle;
 
     @Schema(description = "缺陷的状态", example = "修改中,关闭")
     @NotNull

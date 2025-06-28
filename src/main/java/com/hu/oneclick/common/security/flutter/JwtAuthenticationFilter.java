@@ -8,8 +8,8 @@ import com.hu.oneclick.common.security.ApiToken;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.entity.SysUserToken;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
+import com.hu.oneclick.model.entity.SysUserToken;
 import com.hu.oneclick.server.user.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
@@ -79,8 +79,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
+        System.out.println(">>> JwtAuthenticationFilter 收到请求: " + request.getRequestURI() + ", Authorization: " + authorization);
 
         SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authorization);
+        System.out.println(">>> sysUserTokenDao.selectByTokenValue 结果: " + (sysUserToken == null ? "null" : sysUserToken.getTokenValue()));
 
         if (!org.springframework.util.StringUtils.isEmpty(sysUserToken)) {
             Date expirationTime = sysUserToken.getExpirationTime();
@@ -125,16 +127,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             try {
                 String token = getJwtToken(request);
-
+                System.out.println(">>> getJwtToken: " + token);
                 if (StringUtils.isNotBlank(token)) {
                     JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
                     authResult = this.getAuthenticationManager().authenticate(authToken);
-                    // 这里添加读取redis逻辑，如果有这个token，继续往下走，如果没有，则认为失效，或者有其他设备登陆被踢了
                     String username = ((AuthLoginUser) authResult.getPrincipal()).getUsername();
                     RBucket<String> bucket = redisClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + username);
                     String redisToken = bucket.get();
+                    System.out.println(">>> Redis中查到的token: " + redisToken);
                     if (!StringUtils.equals(redisToken, token)) {
-                        authResult = null;
+                        System.out.println(">>> Redis token与请求token不一致，token无效或已被踢下线");
                     }
                 } else {
                     failed = new InsufficientAuthenticationException("JWT is Empty");
@@ -208,6 +210,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         for (String url : urls) {
             permissiveRequestMatchers.add(new AntPathRequestMatcher(url));
         }
+        // 兼容 context-path: /api 的情况，自动加 /api/login
+        permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/login"));
     }
 
     public void setAuthenticationSuccessHandler(

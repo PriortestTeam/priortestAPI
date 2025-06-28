@@ -1,26 +1,16 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
-import com.hu.oneclick.dao.CustomFieldDao;
-import com.hu.oneclick.dao.FieldDropDownDao;
-import com.hu.oneclick.dao.FieldRadioDao;
-import com.hu.oneclick.dao.FieldTextDao;
-import com.hu.oneclick.dao.ViewDownChildParamsDao;
+import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
-import com.hu.oneclick.model.entity.CustomField;
-import com.hu.oneclick.model.entity.FieldDropDown;
-import com.hu.oneclick.model.entity.FieldRadio;
-import com.hu.oneclick.model.entity.FieldRichText;
-import com.hu.oneclick.model.entity.FieldText;
-import com.hu.oneclick.model.entity.ViewDownChildParams;
 import com.hu.oneclick.model.domain.dto.CustomFieldDto;
 import com.hu.oneclick.model.domain.dto.ViewScopeChildParams;
+import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.server.service.CustomFieldService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -99,7 +89,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
             addViewDownChildParams(fieldRadio);
             return Result.addResult((customFieldDao.insert(fieldRadio) > 0
-                    && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
+                && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
         } catch (BizException e) {
             logger.error("class: CustomFieldServiceImpl#addCustomRadio,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -118,7 +108,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             //masiyi 2021年11月27日10:39:52 更新视图字段
             updateViewDownChildParams(fieldRadio);
             return Result.updateResult((customFieldDao.update(fieldRadio) > 0
-                    && fieldRadioDao.update(fieldRadio) > 0) ? 1 : 0);
+                && fieldRadioDao.update(fieldRadio) > 0) ? 1 : 0);
         } catch (BizException e) {
             logger.error("class: CustomFieldServiceImpl#updateCustomRadio,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -132,7 +122,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         try {
             String userId = jwtUserServiceImpl.getMasterId();
             return Result.deleteResult((customFieldDao.deleteById(id, userId) > 0
-                    && fieldRadioDao.deleteById(id) > 0) ? 1 : 0);
+                && fieldRadioDao.deleteById(id) > 0) ? 1 : 0);
         } catch (BizException e) {
             logger.error("class: CustomFieldServiceImpl#deleteCustomRadio,error []" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -169,7 +159,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
             addViewDownChildParams(fieldText);
             return Result.addResult((customFieldDao.insert(fieldText) > 0
-                    && fieldTextDao.insert(fieldText) > 0) ? 1 : 0);
+                && fieldTextDao.insert(fieldText) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#addCustomText2,error []" + e.getMessage());
@@ -192,7 +182,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             fieldText.setUserId(jwtUserServiceImpl.getMasterId());
             Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(), fieldText.getProjectId()), fieldText.getFieldName());
             return Result.updateResult((customFieldDao.update(fieldText) > 0
-                    && fieldTextDao.update(fieldText) > 0) ? 1 : 0);
+                && fieldTextDao.update(fieldText) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#updateCustomText2,error []" + e.getMessage());
@@ -206,7 +196,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         try {
             String userId = jwtUserServiceImpl.getMasterId();
             return Result.deleteResult((customFieldDao.deleteById(id, userId) > 0
-                    && fieldTextDao.deleteById(id) > 0) ? 1 : 0);
+                && fieldTextDao.deleteById(id) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#deleteCustomText,error []" + e.getMessage());
@@ -251,7 +241,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
             addViewDownChildParams(fieldDropDown);
             return Result.addResult((customFieldDao.insert(fieldDropDown) > 0
-                    && fieldDropDownDao.insert(fieldDropDown) > 0) ? 1 : 0);
+                && fieldDropDownDao.insert(fieldDropDown) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#addCustomDropDown,error []" + e.getMessage());
@@ -269,7 +259,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             //masiyi 2021年11月27日10:39:52 更新视图字段
             updateViewDownChildParams(fieldDropDown);
             return Result.updateResult((customFieldDao.update(fieldDropDown) > 0
-                    && fieldDropDownDao.update(fieldDropDown) > 0) ? 1 : 0);
+                && fieldDropDownDao.update(fieldDropDown) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#updateCustomDropDown,error []" + e.getMessage());
@@ -283,7 +273,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         try {
             String userId = jwtUserServiceImpl.getMasterId();
             return Result.deleteResult((customFieldDao.deleteById(customFieldId, userId) > 0
-                    && fieldDropDownDao.deleteById(customFieldId) > 0) ? 1 : 0);
+                && fieldDropDownDao.deleteById(customFieldId) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             logger.error("class: CustomFieldServiceImpl#deleteCustomDropDown,error []" + e.getMessage());

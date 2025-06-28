@@ -4,7 +4,6 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.VerifyParam;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,6 +11,7 @@ import java.io.Serializable;
 
 /**
  * sys_order_discount
+ *
  * @author masiyi
  */
 @Schema(description = "折扣表")
@@ -59,7 +59,7 @@ public class SysOrderDiscountDto implements Serializable, VerifyParam {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "apiCall" + SysConstantEnum.PARAM_EMPTY.getValue());
         } else if (StringUtils.isEmpty(userClass)) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "用户类型" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if (StringUtils.isEmpty(serviceDuration)) {
+        } else if (StringUtils.isEmpty(serviceDuration)) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "服务周期" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
     }

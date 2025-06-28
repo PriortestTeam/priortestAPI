@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,22 +22,30 @@ import javax.validation.constraints.NotBlank;
 @Schema(description = "关系实体")
 public class Relation {
 
-    /** id */
+    /**
+     * id
+     */
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
-    /** 对象id */
+    /**
+     * 对象id
+     */
     @Schema(description = "对象id")
     @NotBlank(message = "对象id不能为空")
     private String objectId;
 
-    /** 目标id */
+    /**
+     * 目标id
+     */
     @Schema(description = "目标id")
     @NotBlank(message = "目标id不能为空")
     private String targetId;
 
-    /** 分类 */
+    /**
+     * 分类
+     */
     @Schema(description = "分类")
     @NotBlank(message = "分类不能为空")
     private String category;
