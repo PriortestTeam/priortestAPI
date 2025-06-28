@@ -34,4 +34,7 @@ public class TestCaseParam implements Serializable {
     @Schema(description = "视图树DTO，用于复杂查询过滤")
     private ViewTreeDto viewTreeDto;
 
+    @Schema(description = "视图ID，用于复杂查询过滤")
+    private String viewId;
+
 }

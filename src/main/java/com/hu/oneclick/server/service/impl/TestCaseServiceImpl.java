@@ -982,7 +982,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   @Override
   public List<TestCase> listWithViewFilter(TestCaseParam param) {
     // 检查是否需要应用视图过滤
-    if (viewFilterService.shouldApplyViewFilter(param.getViewTreeDto())) {
+    if (viewFilterService.shouldApplyViewFilter(param.getViewTreeDto()) || 
+        viewFilterService.shouldApplyViewFilter(param.getViewId())) {
       // 使用视图过滤进行查询
       return listWithViewFilterLogic(param);
     } else {
@@ -1005,9 +1006,16 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    */
   private List<TestCase> listWithViewFilterLogic(TestCaseParam param) {
     try {
-      // 获取视图过滤参数
-      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewTreeDto(
-          param.getViewTreeDto(), param.getProjectId().toString());
+      Map<String, Object> filterParams = null;
+      
+      // 优先使用 viewId，如果没有则使用 viewTreeDto
+      if (viewFilterService.shouldApplyViewFilter(param.getViewId())) {
+        filterParams = viewFilterService.getFilterParamsByViewId(
+            param.getViewId(), param.getProjectId().toString());
+      } else if (viewFilterService.shouldApplyViewFilter(param.getViewTreeDto())) {
+        filterParams = viewFilterService.getFilterParamsByViewTreeDto(
+            param.getViewTreeDto(), param.getProjectId().toString());
+      }
       
       if (filterParams == null) {
         // 如果获取过滤参数失败，回退到简单查询
@@ -1022,7 +1030,15 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       // 临时方案：使用现有的 queryList 方法
       TestCaseDto testCaseDto = new TestCaseDto();
       testCaseDto.setProjectId(param.getProjectId());
-      testCaseDto.setViewTreeDto(param.getViewTreeDto());
+      
+      // 创建 ViewTreeDto 对象
+      ViewTreeDto viewTreeDto = new ViewTreeDto();
+      if (StrUtil.isNotBlank(param.getViewId())) {
+        viewTreeDto.setId(Long.valueOf(param.getViewId()));
+      } else {
+        viewTreeDto = param.getViewTreeDto();
+      }
+      testCaseDto.setViewTreeDto(viewTreeDto);
       
       Resp<List<TestCase>> resp = queryList(testCaseDto);
       if (resp != null && resp.getData() != null) {

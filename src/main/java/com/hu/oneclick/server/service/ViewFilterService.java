@@ -57,4 +57,12 @@ public interface ViewFilterService {
      * @return 是否需要过滤
      */
     boolean shouldApplyViewFilter(ViewTreeDto viewTreeDto);
+
+    /**
+     * 检查是否需要应用视图过滤（基于viewId）
+     *
+     * @param viewId 视图ID
+     * @return 是否需要过滤
+     */
+    boolean shouldApplyViewFilter(String viewId);
 } 

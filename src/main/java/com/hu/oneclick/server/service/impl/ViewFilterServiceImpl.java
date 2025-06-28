@@ -131,6 +131,11 @@ public class ViewFilterServiceImpl implements ViewFilterService {
         return viewTreeDto != null && viewTreeDto.getId() != null && StrUtil.isNotBlank(viewTreeDto.getId().toString());
     }
 
+    @Override
+    public boolean shouldApplyViewFilter(String viewId) {
+        return StrUtil.isNotBlank(viewId);
+    }
+
     /**
      * 递归处理所有过滤条件（包括父视图）
      */
