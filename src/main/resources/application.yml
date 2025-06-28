@@ -1,68 +1,62 @@
 spring:
-  profiles:
-    active: @profileActive@
-  main:
-    allow-circular-references: true
-  quartz:
-    #相关属性配置
-    properties:
-      org:
-        quartz:
-          scheduler:
-            instanceName: clusteredScheduler
-            instanceId: AUTO
-          jobStore:
-            class: org.quartz.impl.jdbcjobstore.JobStoreTX
-            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
-            tablePrefix: QRTZ_
-            isClustered: false
-            clusterCheckinInterval: 10000
-            useProperties: false
-          threadPool:
-            class: org.quartz.simpl.SimpleThreadPool
-            threadCount: 10
-            threadPriority: 5
-            threadsInheritContextClassLoaderOfInitializingThread: true
-    #数据库方式
-    job-store-type: jdbc
+    profiles:
+        active: @profileActive@
+    main:
+        allow-circular-references: true
+    quartz:
+        # 使用内存存储方式（适合开发环境）
+        job-store-type: memory
+        properties:
+            org:
+                quartz:
+                    scheduler:
+                        instanceName: memoryScheduler
+                        instanceId: AUTO
+                    jobStore:
+                        class: org.quartz.simpl.RAMJobStore
+                    threadPool:
+                        class: org.quartz.simpl.SimpleThreadPool
+                        threadCount: 10
+                        threadPriority: 5
+                        threadsInheritContextClassLoaderOfInitializingThread: true
 
 #  devtools:
 #    restart:
 #      enabled: false
 #      additional-paths: src/main/java
 server:
-  port: 5000
-  servlet:
-    context-path: /api
+    port: 5000
+    servlet:
+        context-path: /api
 
 # SpringDoc OpenAPI 3 Configuration
 springdoc:
-  api-docs:
-    path: /v3/api-docs
-    enabled: true
-  swagger-ui:
-    path: /swagger-ui.html
-    enabled: true
-  packages-to-scan: com.hu.oneclick.controller
-  show-actuator: false
+    api-docs:
+        path: /v3/api-docs
+        enabled: true
+    swagger-ui:
+        path: /swagger-ui.html
+        enabled: true
+    packages-to-scan: com.hu.oneclick.controller
+    show-actuator: false
 
 # MyBatis-plus
 mybatis-plus:
-  # 搜索指定包别名
-  typeAliasesPackage: com.hu.oneclick.**.domain
-  # 配置mapper的扫描，找到所有的mapper.xml映射文件
-  mapperLocations: classpath*:mapper/**/*Mapper.xml
-  global-config:
-    db-config:
-      # 只更新属性值不为空的字段
-      update-strategy: not_null
+    # 搜索指定包别名
+    typeAliasesPackage: com.hu.oneclick.**.domain
+    # 配置mapper的扫描，找到所有的mapper.xml映射文件
+    mapperLocations: classpath*:mapper/**/*Mapper.xml
+    global-config:
+        db-config:
+            # 只更新属性值不为空的字段
+            update-strategy: not_null
 
 # Jenkins 配置
 jenkins:
-  url: http://43.139.159.146:8080
-  username: jenkins
-  password: jenkins
+    url: http://43.139.159.146:8080
+    username: jenkins
+    password: jenkins
 
 logging:
-  level:
-    cn.zhxu.bs: DEBUG
+    level:
+        cn.zhxu.bs: DEBUG
