@@ -46,10 +46,9 @@ spring:
         password: VPNTMNKMGNIQMVSS #这个密码是邮箱设置里SMTP服务生成的授权码
         default-encoding: UTF-8
 
-    # Quartz 配置 - 针对本地开发使用内存存储
+    # Quartz 配置 - 使用内存存储（适合本地开发）
     quartz:
         job-store-type: memory
-        # 覆盖默认的 JDBC 配置
         properties:
             org:
                 quartz:
@@ -62,6 +61,7 @@ spring:
                         class: org.quartz.simpl.SimpleThreadPool
                         threadCount: 10
                         threadPriority: 5
+                        threadsInheritContextClassLoaderOfInitializingThread: true
 
 mybatis:
     mapper-locations: classpath:mapper/*Mapper.xml
