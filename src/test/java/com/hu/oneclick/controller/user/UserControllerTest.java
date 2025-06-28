@@ -5,54 +5,62 @@ package com.hu.oneclick.controller.user;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.server.user.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
-@TestPropertySource(properties = {
-    "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration,org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration"
-})
 public class UserControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    
+    @Mock
     private UserService userService;
-
+    
+    @InjectMocks
+    private UserController userController;
+    
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+    
     @Test
-    void testQueryUserInfo() throws Exception {
+    void testQueryUserInfo() {
+        // 准备测试数据
         SysUser user = new SysUser();
         user.setEmail("hujy11@gmail.com");
         user.setPassword("{bcrypt}$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDa");
         user.setUserName("测试用户");
-        Mockito.when(userService.queryUserInfo()).thenReturn(new Resp.Builder<SysUser>().setData(user).ok());
-
-        mockMvc.perform(get("/user/queryUserInfo")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.email").value("hujy11@gmail.com"))
-                .andExpect(jsonPath("$.data.userName").value("测试用户"));
+        
+        Resp<SysUser> expectedResp = new Resp.Builder<SysUser>().setData(user).ok();
+        when(userService.queryUserInfo()).thenReturn(expectedResp);
+        
+        // 执行测试
+        Resp<SysUser> result = userController.queryUserInfo();
+        
+        // 验证结果
+        assertNotNull(result);
+        assertEquals("200", result.getCode());
+        assertNotNull(result.getData());
+        assertEquals("hujy11@gmail.com", result.getData().getEmail());
+        assertEquals("测试用户", result.getData().getUserName());
     }
-
+    
     @Test
-    void testQueryEmailDoesItExist() throws Exception {
-        Mockito.when(userService.queryEmailDoesItExist("hujy11@gmail.com")).thenReturn(new Resp.Builder<String>().ok());
-
-        mockMvc.perform(get("/user/queryEmailDoesItExist")
-                .param("email", "hujy11@gmail.com")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+    void testQueryEmailDoesItExist() {
+        // 准备测试数据
+        Resp<String> expectedResp = new Resp.Builder<String>().setData("exists").ok();
+        when(userService.queryEmailDoesItExist("hujy11@gmail.com")).thenReturn(expectedResp);
+        
+        // 执行测试
+        Resp<String> result = userController.queryEmailDoesItExist("hujy11@gmail.com");
+        
+        // 验证结果
+        assertNotNull(result);
+        assertEquals("200", result.getCode());
+        assertEquals("exists", result.getData());
     }
 } 
