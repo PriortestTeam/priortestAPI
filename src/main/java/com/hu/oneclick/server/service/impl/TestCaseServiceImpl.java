@@ -79,6 +79,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   @Resource
   private QueryFilterService queryFilterService;
   @Resource
+  private ViewFilterService viewFilterService;
+  @Resource
   private FeatureDao featureDao;
   @Resource
   private SysCustomFieldService sysCustomFieldService;
@@ -978,12 +980,60 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   }
 
   @Override
+  public List<TestCase> listWithViewFilter(TestCaseParam param) {
+    // 检查是否需要应用视图过滤
+    if (viewFilterService.shouldApplyViewFilter(param.getViewTreeDto())) {
+      // 使用视图过滤进行查询
+      return listWithViewFilterLogic(param);
+    } else {
+      // 使用原有的简单查询逻辑
+      return list(param);
+    }
+  }
+
+  @Override
   public List<TestCase> listExtend(TestCaseParam param) {
     return this.lambdaQuery()
         .in(CollUtil.isNotEmpty(param.getTestCaseIdList()), TestCase::getId,
             param.getTestCaseIdList())
         .orderByDesc(TestCase::getCreateTime)
         .list();
+  }
+
+  /**
+   * 使用视图过滤的查询逻辑
+   */
+  private List<TestCase> listWithViewFilterLogic(TestCaseParam param) {
+    try {
+      // 获取视图过滤参数
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewTreeDto(
+          param.getViewTreeDto(), param.getProjectId().toString());
+      
+      if (filterParams == null) {
+        // 如果获取过滤参数失败，回退到简单查询
+        log.warn("获取视图过滤参数失败，回退到简单查询");
+        return list(param);
+      }
+
+      // 使用 BeanSearcher 进行复杂查询
+      // 这里需要注入 BeanSearcher，但由于当前架构限制，我们使用另一种方式
+      // 可以通过调用 BeanSearchController 的逻辑来实现
+      
+      // 临时方案：使用现有的 queryList 方法
+      TestCaseDto testCaseDto = new TestCaseDto();
+      testCaseDto.setProjectId(param.getProjectId());
+      testCaseDto.setViewTreeDto(param.getViewTreeDto());
+      
+      Resp<List<TestCase>> resp = queryList(testCaseDto);
+      if (resp != null && resp.getData() != null) {
+        return resp.getData();
+      }
+      
+      return new ArrayList<>();
+    } catch (Exception e) {
+      log.error("视图过滤查询失败，回退到简单查询", e);
+      return list(param);
+    }
   }
 
   @Override

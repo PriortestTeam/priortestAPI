@@ -29,57 +29,11 @@ public class TestCaseController extends BaseController {
     @Resource
     private TestCaseService testCaseService;
 
-    //@GetMapping("queryById/{id}")
-    //@Operation(summary = "查询测试用例")
-    //public Resp<TestCase> queryById(@PathVariable Long id) {
-    //    return testCaseService.queryById(id);
-    //}
-    //
-    //@PostMapping("queryList")
-    //@Operation(summary = "查询测试用例")
-    //public Resp<List<TestCase>> queryList(@RequestBody TestCaseDto testCase) {
-    //    return testCaseService.queryList(testCase);
-    //}
-    //
-    //@PostMapping("update")
-    //@Operation(summary = "更新测试用例")
-    //public Resp<String> update(@RequestBody TestCase testCase) {
-    //    return testCaseService.update(testCase);
-    //}
-
-    //@DeleteMapping("delete/{id}")
-    //public Resp<String> delete(@PathVariable String id) {
-    //    return testCaseService.delete(id);
-    //}
-
-
-    ///**
-    // * 根据选择的故事id查询testcase 的需要的值
-    // */
-    //@GetMapping("queryTestNeedByFeatureId")
-    //@Operation(summary = "根据Feature获取测试用例列表")
-    //public Resp<Feature> queryTestNeedByFeatureId(@RequestParam String featureId) {
-    //    return testCaseService.queryTestNeedByFeatureId(featureId);
-    //}
-    //
-    //@PostMapping("addTestCase")
-    //@Operation(summary = "新增测试用例")
-    //public Resp<String> addTestCase(@RequestBody TestCycleDto testCycleDto) {
-    //    return testCaseService.addTestCase(testCycleDto);
-    //}
-    //
-    //@PostMapping("updateAction")
-    //@Operation(summary = "更新action")
-    //public Resp<List<TestCase>> updateAction(@RequestBody List<String> testCaseId, @RequestParam String actionType
-    //        , @RequestParam String testCycleId) {
-    //    return testCaseService.updateAction(testCaseId, actionType, testCycleId);
-    //}
-
     @Operation(summary = "获取测试用例列表")
     @PostMapping("/list")
     public Resp<PageInfo<TestCase>> list(@RequestBody @Validated TestCaseParam param) {
         startPage();
-        List<TestCase> testCaseList = testCaseService.list(param);
+        List<TestCase> testCaseList = testCaseService.listWithViewFilter(param);
         return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
     }
 
@@ -114,17 +68,6 @@ public class TestCaseController extends BaseController {
         return new Resp.Builder<TestCase>().setData(testCase).ok();
     }
 
-//    @Operation(summary = "删除测试用例")
-//    @DeleteMapping("/delete/{ids}")
-//    public Resp<?> delete(@PathVariable Long[] ids) {
-//        try {
-//            testCaseService.removeByIds(Arrays.asList(ids));
-//        } catch (Exception e) {
-//            log.error("删除测试用例失败，原因：" + e.getMessage(), e);
-//            return new Resp.Builder<TestCase>().fail();
-//        }
-//        return new Resp.Builder<TestCase>().ok();
-//    }
 
     @Operation(summary = "复制测试用例")
     @PostMapping("/clone")

@@ -64,6 +64,14 @@ public interface TestCaseService extends IService<TestCase> {
 
   List<TestCase> list(TestCaseParam param);
 
+  /**
+   * 支持视图过滤的测试用例列表查询
+   *
+   * @param param 查询参数，包含视图过滤条件
+   * @return 测试用例列表
+   */
+  List<TestCase> listWithViewFilter(TestCaseParam param);
+
   TestCase save(TestCaseSaveDto dto);
 
   TestCase update(TestCaseSaveDto dto);
