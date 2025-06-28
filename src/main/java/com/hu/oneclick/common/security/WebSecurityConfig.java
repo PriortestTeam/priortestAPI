@@ -27,6 +27,7 @@ import com.hu.oneclick.common.security.service.JwtAuthenticationProvider;
 
 import java.util.Arrays;
 import java.util.Collections;
+import javax.annotation.PostConstruct;
 
 /**
  * @author qingyang
@@ -53,6 +54,11 @@ public class WebSecurityConfig {
 
     @Autowired
     private JwtAuthenticationProvider jwtAuthenticationProvider;
+
+    @PostConstruct
+    public void checkJwtProvider() {
+        System.out.println(">>> JwtAuthenticationProvider 注入结果: " + jwtAuthenticationProvider);
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
