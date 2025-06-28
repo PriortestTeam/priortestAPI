@@ -3,6 +3,7 @@ package com.hu.oneclick.common.security;
 import com.hu.oneclick.common.security.handler.HttpStatusLoginSuccessHandler;
 import com.hu.oneclick.common.security.handler.HttpStatusLogoutSuccessHandler;
 import com.hu.oneclick.common.security.handler.JwtRefreshSuccessHandler;
+import com.hu.oneclick.common.security.handler.JsonLoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,9 @@ public class WebSecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private JsonLoginSuccessHandler jsonLoginSuccessHandler;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         // 支持 {bcrypt}、{noop} 等多种格式
@@ -85,7 +89,7 @@ public class WebSecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
                 .anyRequest().authenticated()
             )
-            .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(httpStatusLoginSuccessHandler)
+            .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler)
             .and()
             .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
             .permissiveRequestUrls("/authentication", "/login")
