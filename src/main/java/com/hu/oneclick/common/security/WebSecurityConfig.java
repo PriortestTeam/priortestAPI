@@ -23,6 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import com.hu.oneclick.common.security.service.JwtAuthenticationProvider;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,6 +51,9 @@ public class WebSecurityConfig {
     @Autowired
     private JsonLoginSuccessHandler jsonLoginSuccessHandler;
 
+    @Autowired
+    private JwtAuthenticationProvider jwtAuthenticationProvider;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         // 支持 {bcrypt}、{noop} 等多种格式
@@ -68,6 +72,7 @@ public class WebSecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .authenticationProvider(daoAuthenticationProvider())
+                .authenticationProvider(jwtAuthenticationProvider)
                 .build();
     }
 
