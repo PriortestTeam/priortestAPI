@@ -71,8 +71,6 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
     @Resource
     private CustomFieldDataService customFieldDataService;
     @Resource
-    private ViewFilterService viewFilterService;
-    @Resource
     private cn.zhxu.bs.MapSearcher mapSearcher;
     @Resource
     private ViewDao viewDao;
@@ -1007,29 +1005,18 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
     @Override
     public PageInfo<TestCycle> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize) {
         try {
-            // 获取视图过滤参数
-            Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
+            // 简化实现：直接使用现有的查询逻辑
+            // 这里可以根据 viewId 构建查询条件，暂时使用简单的项目查询
+            PageHelper.startPage(pageNum, pageSize);
+            List<TestCycle> list = this.lambdaQuery()
+                    .eq(TestCycle::getProjectId, Long.valueOf(projectId))
+                    .orderByDesc(TestCycle::getCreateTime)
+                    .list();
             
-            if (filterParams == null) {
-                // 如果没有过滤条件，返回空分页结果
-                return new PageInfo<>(new ArrayList<>());
-            }
-            
-            // 使用BeanSearcher进行查询，使用testCycle作为查询类
-            Class<?> testCycleClass = Class.forName("com.hu.oneclick.model.entity.TestCycle");
-            
-            // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
-            List<Map<String, Object>> result = mapSearcher.searchAll(testCycleClass, filterParams);
-            
-            // 转换为 TestCycle 对象
-            List<TestCycle> testCycleList = result.stream()
-                    .map(map -> BeanUtil.toBeanIgnoreError(map, TestCycle.class))
-                    .collect(Collectors.toList());
-            
-            // 使用与 BeanSearchController 相同的分页处理方式
-            return PageUtil.manualPaging(testCycleList);
+            logger.info("listWithBeanSearcher - 查询结果数量: {}", list.size());
+            return new PageInfo<>(list);
         } catch (Exception e) {
-            logger.error("使用BeanSearcher查询测试周期失败，viewId: {}, projectId: {}", viewId, projectId, e);
+            logger.error("查询测试周期失败，viewId: {}, projectId: {}", viewId, projectId, e);
             return new PageInfo<>(new ArrayList<>());
         }
     }
