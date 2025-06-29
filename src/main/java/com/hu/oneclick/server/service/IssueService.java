@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.model.entity.Issue;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.param.IssueParam;
@@ -72,4 +73,35 @@ public interface IssueService extends IService<Issue> {
      * @return
      */
     Issue retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId);
+
+    /**
+     * 第一种参数类型：普通列表查询
+     * @param param
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<Issue> listWithViewFilter(IssueParam param, int pageNum, int pageSize);
+
+    /**
+     * 第二种参数类型：视图过滤查询
+     * @param viewId
+     * @param projectId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<Issue> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize);
+
+    /**
+     * 第三种参数类型：字段过滤查询
+     * @param fieldNameEn
+     * @param value
+     * @param scopeName
+     * @param scopeId
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    PageInfo<Issue> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize);
 }

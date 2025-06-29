@@ -25,6 +25,9 @@ public class IssueParam implements Serializable {
     @NotNull(message = "项目ID不能为空")
     private Long projectId;
 
+    @Schema(description = "视图ID")
+    private String viewId;
+
     public LambdaQueryWrapper getQueryCondition() {
         LambdaQueryWrapper<Issue> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotBlank(this.title), Issue::getTitle, this.title);
