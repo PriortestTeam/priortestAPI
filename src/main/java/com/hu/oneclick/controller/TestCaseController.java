@@ -35,25 +35,40 @@ public class TestCaseController extends BaseController {
 
     @Operation(summary = "获取测试用例列表")
     @PostMapping("/list")
-    public Resp<PageInfo<TestCase>> list(@RequestBody @Validated TestCaseParam param) {
-        startPage();
-        
-        // 检查是否有viewId参数
-        if (StrUtil.isNotBlank(param.getViewId())) {
-            // 使用BeanSearcher查询，与BeanSearchController保持一致
-            String projectId = param.getProjectId().toString();
-            List<Map<String, Object>> resultList = testCaseService.listWithBeanSearcher(param.getViewId(), projectId);
-            
-            // 自动将Map转换为TestCase对象，所有字段自动赋值
-            List<TestCase> testCaseList = resultList.stream()
-                .map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class))
-                .collect(Collectors.toList());
-            
-            return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
+    public Resp<PageInfo<TestCase>> list(@RequestBody Map<String, Object> param) {
+        int pageNum = param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString()) : 1;
+        int pageSize = param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString()) : 20;
+
+        // 3. 子视图字段过滤参数
+        if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName")) {
+            String fieldNameEn = param.get("fieldNameEn").toString();
+            String value = param.get("value").toString();
+            String scopeName = param.get("scopeName").toString();
+            String scopeId = param.get("scopeId") != null ? param.get("scopeId").toString() : null;
+            PageInfo<TestCase> pageInfo = testCaseService.queryByFieldAndValue(fieldNameEn, value, scopeName, scopeId, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<TestCase>>().setData(pageInfo).ok();
+        }
+        // 2. 视图过滤参数
+        else if (param.containsKey("viewId") && param.get("viewId") != null && !param.get("viewId").toString().isEmpty()) {
+            String viewId = param.get("viewId").toString();
+            String projectId = param.get("projectId").toString();
+            List<Map<String, Object>> resultList = testCaseService.listWithBeanSearcher(viewId, projectId);
+            List<TestCase> testCaseList = resultList.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class)).collect(Collectors.toList());
+            PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
+            pageInfo.setPageNum(pageNum);
+            pageInfo.setPageSize(pageSize);
+            return new Resp.Builder<PageInfo<TestCase>>().setData(pageInfo).ok();
+        }
+        // 1. 普通列表参数
+        else if (param.containsKey("projectId")) {
+            TestCaseParam testCaseParam = BeanUtil.toBean(param, TestCaseParam.class);
+            List<TestCase> testCaseList = testCaseService.listWithViewFilter(testCaseParam);
+            PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
+            pageInfo.setPageNum(pageNum);
+            pageInfo.setPageSize(pageSize);
+            return new Resp.Builder<PageInfo<TestCase>>().setData(pageInfo).ok();
         } else {
-            // 使用原有的查询逻辑
-            List<TestCase> testCaseList = testCaseService.listWithViewFilter(param);
-            return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
+            return new Resp.Builder<PageInfo<TestCase>>().fail();
         }
     }
 

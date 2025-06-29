@@ -22,6 +22,7 @@ import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.dao.TestCaseStepDao;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
+import com.hu.oneclick.dao.ViewDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.dto.*;
@@ -30,6 +31,7 @@ import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.*;
+import com.github.pagehelper.PageInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -111,6 +113,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
   @Resource
   private IssueService issueService;
+
+  @Resource
+  private ViewDao viewDao;
 
   @Override
   public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -1245,6 +1250,33 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
       return new ArrayList<>();
     }
+  }
+
+  @Override
+  public PageInfo<TestCase> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize) {
+    // 1. 确定表名
+    String tableName = null;
+    switch (scopeName) {
+      case "故事": tableName = "feature"; break;
+      case "测试用例": tableName = "test_case"; break;
+      case "缺陷": tableName = "issue"; break;
+      case "测试周期": tableName = "test_cycle"; break;
+      default: tableName = "test_case";
+    }
+    // 2. 获取 projectId
+    String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+    // 3. 计算 offset
+    int offset = (pageNum - 1) * pageSize;
+    // 4. 查询
+    List<Map<String, Object>> result = viewDao.queryRecordsByScope(tableName, fieldNameEn, value, projectId, null, offset, pageSize);
+    // 5. 转 bean
+    List<TestCase> testCaseList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class)).collect(Collectors.toList());
+    // 6. 构造 PageInfo
+    PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
+    pageInfo.setPageNum(pageNum);
+    pageInfo.setPageSize(pageSize);
+    // 这里无法获取总数，如需精确总数可再查一次 count
+    return pageInfo;
   }
 
 }

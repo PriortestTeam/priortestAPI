@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import org.springframework.web.multipart.MultipartFile;
+import com.github.pagehelper.PageInfo;
 
 /**
  * @author qingyang
@@ -113,5 +114,17 @@ public interface TestCaseService extends IService<TestCase> {
     IssueStatusVo retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId);
 
   TestCycle saveTestCycle(Long projectId, TestCycleSaveDto dto);
+
+  /**
+   * 通过字段名、字段值、scopeName、scopeId 查询测试用例，分页返回
+   * @param fieldNameEn 字段名
+   * @param value 字段值
+   * @param scopeName 作用域名
+   * @param scopeId 作用域ID
+   * @param pageNum 页码（从1开始）
+   * @param pageSize 每页数量
+   * @return 分页结果
+   */
+  PageInfo<TestCase> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize);
 
 }
