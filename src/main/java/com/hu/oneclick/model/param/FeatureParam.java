@@ -25,6 +25,9 @@ public class FeatureParam implements Serializable {
     @NotNull(message = "项目ID不能为空")
     private Long projectId;
 
+    @Schema(description = "视图ID")
+    private String viewId;
+
     public LambdaQueryWrapper getQueryCondition() {
         LambdaQueryWrapper<Feature> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotBlank(this.title), Feature::getTitle, this.title);

@@ -1,5 +1,6 @@
 package com.hu.oneclick.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.page.BaseController;
@@ -36,13 +37,45 @@ public class FeatureController extends BaseController {
 
     @Operation(summary="列表")
     @PostMapping("/list")
-    public Resp<PageInfo<Feature>> list(@RequestBody FeatureParam param) {
-        if (null == param) {
-            param = new FeatureParam();
+    public Resp<PageInfo<Feature>> list(@RequestBody Map<String, Object> param,
+                                       @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
+                                       @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
+        // 优先使用 URL 参数，如果没有则使用请求体参数
+        int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString()) : 1);
+        int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString()) : 20);
+
+        // 添加调试日志
+        log.info("FeatureController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
+        log.info("FeatureController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize"));
+        log.info("FeatureController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
+
+        // 3. 子视图字段过滤参数
+        if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName")) {
+            String fieldNameEn = param.get("fieldNameEn").toString();
+            String value = param.get("value").toString();
+            String scopeName = param.get("scopeName").toString();
+            String scopeId = param.get("scopeId") != null ? param.get("scopeId").toString() : null;
+            log.info("FeatureController.list - 第三种参数类型: fieldNameEn={}, value={}, scopeName={}, scopeId={}", fieldNameEn, value, scopeName, scopeId);
+            PageInfo<Feature> pageInfo = featureService.queryByFieldAndValue(fieldNameEn, value, scopeName, scopeId, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<Feature>>().setData(pageInfo).ok();
         }
-        startPage();
-        List<Feature> dataList = this.featureService.list(param);
-        return new Resp.Builder<PageInfo<Feature>>().setData(PageInfo.of(dataList)).ok();
+        // 2. 视图过滤参数
+        else if (param.containsKey("viewId") && param.get("viewId") != null && !param.get("viewId").toString().isEmpty()) {
+            String viewId = param.get("viewId").toString();
+            String projectId = param.get("projectId").toString();
+            log.info("FeatureController.list - 第二种参数类型: viewId={}, projectId={}", viewId, projectId);
+            PageInfo<Feature> pageInfo = featureService.listWithBeanSearcher(viewId, projectId, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<Feature>>().setData(pageInfo).ok();
+        }
+        // 1. 普通列表参数
+        else if (param.containsKey("projectId")) {
+            FeatureParam featureParam = BeanUtil.toBean(param, FeatureParam.class);
+            log.info("FeatureController.list - 第一种参数类型: projectId={}", featureParam.getProjectId());
+            PageInfo<Feature> pageInfo = featureService.listWithViewFilter(featureParam, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<Feature>>().setData(pageInfo).ok();
+        } else {
+            return new Resp.Builder<PageInfo<Feature>>().fail();
+        }
     }
 
     @Operation(summary="新增")
