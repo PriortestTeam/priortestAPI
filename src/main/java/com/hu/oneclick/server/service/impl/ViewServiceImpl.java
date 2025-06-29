@@ -280,9 +280,9 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
             cond = new HashMap<>();
             cond.put("type", viewTreeDto.getOneFilters().get(0).getType());
             
-            // 特殊处理：当 scope=7000001 时，将 issueVersion 和 fixedVersion 转换为 version
+            // 特殊处理：当 scope=7000001 时，将 issueVersion 和 fixVersion 转换为 version
             String fieldNameEn = viewTreeDto.getOneFilters().get(0).getFieldNameEn();
-            if ("7000001".equals(scope) && ("issueVersion".equals(fieldNameEn) || "fixedVersion".equals(fieldNameEn))) {
+            if ("7000001".equals(scope) && ("issueVersion".equals(fieldNameEn) || "fixVersion".equals(fieldNameEn))) {
                 cond.put("fieldNameEn", "version");
             } else {
                 cond.put("fieldNameEn", fieldNameEn);
