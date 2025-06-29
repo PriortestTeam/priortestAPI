@@ -17,12 +17,15 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.common.util.DateUtil;
+import com.hu.oneclick.common.util.PageUtil;
+import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.dao.TestCaseStepDao;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
 import com.hu.oneclick.dao.ViewDao;
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.dto.*;
@@ -1346,17 +1349,25 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     // 2. 获取 projectId
     String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
     
-    // 3. 使用 PageHelper 进行物理分页
-    PageHelper.startPage(pageNum, pageSize);
+    // 3. 计算偏移量（与 ViewServiceImpl.findSubViewRecordByScopeName 保持一致）
+    int offset = (pageNum - 1) * pageSize;
     
-    // 4. 查询
-    List<Map<String, Object>> result = viewDao.queryRecordsByScope(tableName, fieldNameEn, value, projectId, null, 0, 0);
+    // 4. 使用 DAO 方法查询（与 ViewServiceImpl.findSubViewRecordByScopeName 使用相同的参数）
+    List<Map<String, Object>> result = viewDao.queryRecordsByScope(
+        tableName,
+        fieldNameEn,
+        value,
+        projectId,
+        null, // 不排除任何用户创建的记录
+        offset,
+        pageSize
+    );
     
     // 5. 转 bean
     List<TestCase> testCaseList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class)).collect(Collectors.toList());
     
-    // 6. 返回 PageInfo
-    return new PageInfo<>(testCaseList);
+    // 6. 使用 PageUtil.manualPaging 进行分页处理（与 ViewServiceImpl.findSubViewRecordByScopeName 保持一致）
+    return PageUtil.manualPaging(testCaseList);
   }
 
   @Override
