@@ -1400,20 +1400,36 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         return new PageInfo<>(new ArrayList<>());
       }
       
-      // 使用 PageHelper 进行物理分页
-      PageHelper.startPage(pageNum, pageSize);
+      // 添加 BeanSearcher 的分页参数
+      filterParams.put("page", pageNum);
+      filterParams.put("size", pageSize);
       
       // 使用BeanSearcher进行查询，使用testCase作为查询类
       Class<?> testCaseClass = Class.forName("com.hu.oneclick.model.entity.TestCase");
-      List<Map<String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
+      
+      // 使用 search 方法而不是 searchAll，这样 BeanSearcher 会处理分页
+      cn.zhxu.bs.SearchResult<Map<String, Object>> searchResult = mapSearcher.search(testCaseClass, filterParams);
+      
+      // 获取分页数据
+      List<Map<String, Object>> result = searchResult.getDataList();
       
       // 转换为 TestCase 对象
       List<TestCase> testCaseList = result.stream()
           .map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class))
           .collect(Collectors.toList());
       
-      // 直接返回 PageInfo，PageHelper 会自动处理分页信息
-      return new PageInfo<>(testCaseList);
+      // 构造 PageInfo
+      PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
+      pageInfo.setPageNum(pageNum);
+      pageInfo.setPageSize(pageSize);
+      pageInfo.setTotal(searchResult.getTotalCount().longValue());
+      pageInfo.setPages((int) ((searchResult.getTotalCount().longValue() + pageSize - 1) / pageSize));
+      pageInfo.setIsFirstPage(pageNum == 1);
+      pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
+      pageInfo.setHasPreviousPage(pageNum > 1);
+      pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
+      
+      return pageInfo;
     } catch (Exception e) {
       log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
       return new PageInfo<>(new ArrayList<>());
