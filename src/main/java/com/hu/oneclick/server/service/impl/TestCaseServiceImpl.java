@@ -1352,6 +1352,10 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     // 3. 计算偏移量
     int offset = (pageNum - 1) * pageSize;
     
+    // 添加调试日志
+    log.info("queryByFieldAndValue - 分页参数: pageNum={}, pageSize={}, offset={}", pageNum, pageSize, offset);
+    log.info("queryByFieldAndValue - 查询参数: tableName={}, fieldNameEn={}, value={}, projectId={}", tableName, fieldNameEn, value, projectId);
+    
     // 4. 使用 DAO 方法查询数据
     List<Map<String, Object>> result = viewDao.queryRecordsByScope(
         tableName,
@@ -1363,6 +1367,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         pageSize
     );
     
+    log.info("queryByFieldAndValue - 查询结果数量: {}", result.size());
+    
     // 5. 查询总数（需要添加一个新的 DAO 方法）
     long total = viewDao.countRecordsByScope(
         tableName,
@@ -1371,6 +1377,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         projectId,
         null
     );
+    
+    log.info("queryByFieldAndValue - 总记录数: {}", total);
     
     // 6. 转 bean
     List<TestCase> testCaseList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class)).collect(Collectors.toList());
@@ -1385,6 +1393,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
     pageInfo.setHasPreviousPage(pageNum > 1);
     pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
+    
+    log.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
+             pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage());
     
     return pageInfo;
   }
