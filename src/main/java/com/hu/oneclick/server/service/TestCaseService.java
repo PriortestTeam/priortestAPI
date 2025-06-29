@@ -127,4 +127,36 @@ public interface TestCaseService extends IService<TestCase> {
    */
   PageInfo<TestCase> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize);
 
+  /**
+   * 基础测试用例列表查询，支持物理分页
+   * @param param 查询参数
+   * @param pageNum 页码（从1开始）
+   * @param pageSize 每页数量
+   * @return 分页结果
+   */
+  PageInfo<TestCase> list(TestCaseParam param, int pageNum, int pageSize);
+
+  /**
+   * 支持视图过滤的测试用例列表查询，支持物理分页
+   * 支持 viewId 参数格式
+   *
+   * @param param 查询参数，包含视图过滤条件
+   * @param pageNum 页码（从1开始）
+   * @param pageSize 每页数量
+   * @return 分页结果
+   */
+  PageInfo<TestCase> listWithViewFilter(TestCaseParam param, int pageNum, int pageSize);
+
+  /**
+   * 使用BeanSearcher框架的视图过滤查询，支持物理分页
+   * 与BeanSearchController使用相同的查询逻辑
+   *
+   * @param viewId 视图ID
+   * @param projectId 项目ID
+   * @param pageNum 页码（从1开始）
+   * @param pageSize 每页数量
+   * @return 分页结果
+   */
+  PageInfo<TestCase> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize);
+
 }

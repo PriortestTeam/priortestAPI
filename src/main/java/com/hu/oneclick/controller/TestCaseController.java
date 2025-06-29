@@ -52,20 +52,13 @@ public class TestCaseController extends BaseController {
         else if (param.containsKey("viewId") && param.get("viewId") != null && !param.get("viewId").toString().isEmpty()) {
             String viewId = param.get("viewId").toString();
             String projectId = param.get("projectId").toString();
-            List<Map<String, Object>> resultList = testCaseService.listWithBeanSearcher(viewId, projectId);
-            List<TestCase> testCaseList = resultList.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class)).collect(Collectors.toList());
-            PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
-            pageInfo.setPageNum(pageNum);
-            pageInfo.setPageSize(pageSize);
+            PageInfo<TestCase> pageInfo = testCaseService.listWithBeanSearcher(viewId, projectId, pageNum, pageSize);
             return new Resp.Builder<PageInfo<TestCase>>().setData(pageInfo).ok();
         }
         // 1. 普通列表参数
         else if (param.containsKey("projectId")) {
             TestCaseParam testCaseParam = BeanUtil.toBean(param, TestCaseParam.class);
-            List<TestCase> testCaseList = testCaseService.listWithViewFilter(testCaseParam);
-            PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
-            pageInfo.setPageNum(pageNum);
-            pageInfo.setPageSize(pageSize);
+            PageInfo<TestCase> pageInfo = testCaseService.listWithViewFilter(testCaseParam, pageNum, pageSize);
             return new Resp.Builder<PageInfo<TestCase>>().setData(pageInfo).ok();
         } else {
             return new Resp.Builder<PageInfo<TestCase>>().fail();
