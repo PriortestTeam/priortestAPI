@@ -279,7 +279,15 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         for (ViewTreeDto viewTreeDto : auto_view) {
             cond = new HashMap<>();
             cond.put("type", viewTreeDto.getOneFilters().get(0).getType());
-            cond.put("fieldNameEn", viewTreeDto.getOneFilters().get(0).getFieldNameEn());
+            
+            // 特殊处理：当 scope=7000001 时，将 issueVersion 和 fixedVersion 转换为 version
+            String fieldNameEn = viewTreeDto.getOneFilters().get(0).getFieldNameEn();
+            if ("7000001".equals(scope) && ("issueVersion".equals(fieldNameEn) || "fixedVersion".equals(fieldNameEn))) {
+                cond.put("fieldNameEn", "version");
+            } else {
+                cond.put("fieldNameEn", fieldNameEn);
+            }
+            
             cond.put("scopeId", viewTreeDto.getScopeId());
             cond.put("projectId", viewTreeDto.getProjectId());
 
