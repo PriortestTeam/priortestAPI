@@ -4,10 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.CloneFormatUtil;
+import com.hu.oneclick.common.util.PageUtil;
 import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.TestCycle;
@@ -27,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> implements TestCycleService {
@@ -66,6 +70,12 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
     private SystemConfigService systemConfigService;
     @Resource
     private CustomFieldDataService customFieldDataService;
+    @Resource
+    private ViewFilterService viewFilterService;
+    @Resource
+    private cn.zhxu.bs.MapSearcher mapSearcher;
+    @Resource
+    private ViewDao viewDao;
 
 
     @Override
@@ -980,5 +990,115 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
                .eq(Objects.nonNull(projectId), TestCycle::getProjectId, projectId)
                .ne(Objects.nonNull(id), TestCycle::getId, id)
                .list();
+    }
+
+    @Override
+    public PageInfo<TestCycle> listWithViewFilter(TestCycleParam param, int pageNum, int pageSize) {
+        // 使用 PageHelper 进行分页
+        PageHelper.startPage(pageNum, pageSize);
+        List<TestCycle> list = this.lambdaQuery()
+                .eq(TestCycle::getProjectId, param.getProjectId())
+                .like(StrUtil.isNotBlank(param.getTitle()), TestCycle::getTitle, param.getTitle())
+                .orderByDesc(TestCycle::getCreateTime)
+                .list();
+        return new PageInfo<>(list);
+    }
+
+    @Override
+    public PageInfo<TestCycle> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize) {
+        try {
+            // 获取视图过滤参数
+            Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
+            
+            if (filterParams == null) {
+                // 如果没有过滤条件，返回空分页结果
+                return new PageInfo<>(new ArrayList<>());
+            }
+            
+            // 使用BeanSearcher进行查询，使用testCycle作为查询类
+            Class<?> testCycleClass = Class.forName("com.hu.oneclick.model.entity.TestCycle");
+            
+            // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
+            List<Map<String, Object>> result = mapSearcher.searchAll(testCycleClass, filterParams);
+            
+            // 转换为 TestCycle 对象
+            List<TestCycle> testCycleList = result.stream()
+                    .map(map -> BeanUtil.toBeanIgnoreError(map, TestCycle.class))
+                    .collect(Collectors.toList());
+            
+            // 使用与 BeanSearchController 相同的分页处理方式
+            return PageUtil.manualPaging(testCycleList);
+        } catch (Exception e) {
+            logger.error("使用BeanSearcher查询测试周期失败，viewId: {}, projectId: {}", viewId, projectId, e);
+            return new PageInfo<>(new ArrayList<>());
+        }
+    }
+
+    @Override
+    public PageInfo<TestCycle> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize) {
+        // 1. 确定表名
+        String tableName = null;
+        switch (scopeName) {
+            case "故事": tableName = "feature"; break;
+            case "测试用例": tableName = "test_case"; break;
+            case "缺陷": tableName = "issue"; break;
+            case "测试周期": tableName = "test_cycle"; break;
+            default: tableName = "test_cycle";
+        }
+        // 2. 获取 projectId
+        String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+        
+        // 3. 计算偏移量
+        int offset = (pageNum - 1) * pageSize;
+        
+        // 添加调试日志
+        logger.info("queryByFieldAndValue - 分页参数: pageNum={}, pageSize={}, offset={}", pageNum, pageSize, offset);
+        logger.info("queryByFieldAndValue - 查询参数: tableName={}, fieldNameEn={}, value={}, projectId={}", tableName, fieldNameEn, value, projectId);
+        
+        // 4. 使用 DAO 方法查询数据
+        List<Map<String, Object>> result = viewDao.queryRecordsByScope(
+            tableName,
+            fieldNameEn,
+            value,
+            projectId,
+            null, // 不排除任何用户创建的记录
+            offset,
+            pageSize
+        );
+        
+        logger.info("queryByFieldAndValue - 查询结果数量: {}", result.size());
+        if (!result.isEmpty()) {
+            logger.info("queryByFieldAndValue - 第一条记录: {}", result.get(0));
+        }
+        
+        // 5. 查询总数
+        long total = viewDao.countRecordsByScope(
+            tableName,
+            fieldNameEn,
+            value,
+            projectId,
+            null
+        );
+        
+        logger.info("queryByFieldAndValue - 总记录数: {}", total);
+        
+        // 6. 转 bean
+        List<TestCycle> testCycleList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCycle.class)).collect(Collectors.toList());
+        
+        // 7. 构造 PageInfo
+        PageInfo<TestCycle> pageInfo = new PageInfo<>(testCycleList);
+        pageInfo.setPageNum(pageNum);
+        pageInfo.setPageSize(pageSize);
+        pageInfo.setTotal(total);
+        pageInfo.setPages((int) ((total + pageSize - 1) / pageSize));
+        pageInfo.setIsFirstPage(pageNum == 1);
+        pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
+        pageInfo.setHasPreviousPage(pageNum > 1);
+        pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
+        
+        logger.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
+                 pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage());
+        
+        return pageInfo;
     }
 }
