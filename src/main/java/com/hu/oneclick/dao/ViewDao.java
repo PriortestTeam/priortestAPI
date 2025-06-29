@@ -107,6 +107,15 @@ public interface ViewDao extends BaseMapper<View> {
                                                   @Param("limit") int limit);
 
     /**
+     * 根据 scope 动态查询记录总数
+     */
+    long countRecordsByScope(@Param("tableName") String tableName,
+                            @Param("fieldNameEn") String fieldNameEn,
+                            @Param("value") String value,
+                            @Param("projectId") String projectId,
+                            @Param("createUserId") String createUserId);
+
+    /**
      * 通过ID查询单条数据
      *
      * @Param: [id, masterId]

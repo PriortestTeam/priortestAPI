@@ -1349,10 +1349,10 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     // 2. 获取 projectId
     String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
     
-    // 3. 计算偏移量（与 ViewServiceImpl.findSubViewRecordByScopeName 保持一致）
+    // 3. 计算偏移量
     int offset = (pageNum - 1) * pageSize;
     
-    // 4. 使用 DAO 方法查询（与 ViewServiceImpl.findSubViewRecordByScopeName 使用相同的参数）
+    // 4. 使用 DAO 方法查询数据
     List<Map<String, Object>> result = viewDao.queryRecordsByScope(
         tableName,
         fieldNameEn,
@@ -1363,11 +1363,30 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         pageSize
     );
     
-    // 5. 转 bean
+    // 5. 查询总数（需要添加一个新的 DAO 方法）
+    long total = viewDao.countRecordsByScope(
+        tableName,
+        fieldNameEn,
+        value,
+        projectId,
+        null
+    );
+    
+    // 6. 转 bean
     List<TestCase> testCaseList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class)).collect(Collectors.toList());
     
-    // 6. 使用 PageUtil.manualPaging 进行分页处理（与 ViewServiceImpl.findSubViewRecordByScopeName 保持一致）
-    return PageUtil.manualPaging(testCaseList);
+    // 7. 构造 PageInfo
+    PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
+    pageInfo.setPageNum(pageNum);
+    pageInfo.setPageSize(pageSize);
+    pageInfo.setTotal(total);
+    pageInfo.setPages((int) ((total + pageSize - 1) / pageSize));
+    pageInfo.setIsFirstPage(pageNum == 1);
+    pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
+    pageInfo.setHasPreviousPage(pageNum > 1);
+    pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
+    
+    return pageInfo;
   }
 
   @Override
@@ -1381,9 +1400,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         return new PageInfo<>(new ArrayList<>());
       }
       
-      // 添加分页参数
-      filterParams.put("page", pageNum);
-      filterParams.put("size", pageSize);
+      // 使用 PageHelper 进行物理分页
+      PageHelper.startPage(pageNum, pageSize);
       
       // 使用BeanSearcher进行查询，使用testCase作为查询类
       Class<?> testCaseClass = Class.forName("com.hu.oneclick.model.entity.TestCase");
@@ -1394,6 +1412,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
           .map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class))
           .collect(Collectors.toList());
       
+      // 直接返回 PageInfo，PageHelper 会自动处理分页信息
       return new PageInfo<>(testCaseList);
     } catch (Exception e) {
       log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);

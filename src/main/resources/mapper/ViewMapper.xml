@@ -249,4 +249,13 @@
         </if>
         LIMIT #{offset}, #{limit}
     </select>
+
+    <select id="countRecordsByScope" parameterType="map" resultType="long">
+        SELECT COUNT(*) FROM ${tableName}
+        WHERE ${fieldNameEn} = #{value}
+        AND project_id = #{projectId}
+        <if test="createUserId != null">
+            AND create_user_id != #{createUserId}
+        </if>
+    </select>
 </mapper>
