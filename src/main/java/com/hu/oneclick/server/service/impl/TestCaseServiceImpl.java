@@ -1368,8 +1368,11 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     );
     
     log.info("queryByFieldAndValue - 查询结果数量: {}", result.size());
+    if (!result.isEmpty()) {
+      log.info("queryByFieldAndValue - 第一条记录: {}", result.get(0));
+    }
     
-    // 5. 查询总数（需要添加一个新的 DAO 方法）
+    // 5. 查询总数
     long total = viewDao.countRecordsByScope(
         tableName,
         fieldNameEn,

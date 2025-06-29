@@ -35,9 +35,17 @@ public class TestCaseController extends BaseController {
 
     @Operation(summary = "获取测试用例列表")
     @PostMapping("/list")
-    public Resp<PageInfo<TestCase>> list(@RequestBody Map<String, Object> param) {
-        int pageNum = param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString()) : 1;
-        int pageSize = param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString()) : 20;
+    public Resp<PageInfo<TestCase>> list(@RequestBody Map<String, Object> param,
+                                        @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
+                                        @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
+        // 优先使用 URL 参数，如果没有则使用请求体参数
+        int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString()) : 1);
+        int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString()) : 20);
+
+        // 添加调试日志
+        log.info("TestCaseController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
+        log.info("TestCaseController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize"));
+        log.info("TestCaseController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
 
         // 3. 子视图字段过滤参数
         if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName")) {
@@ -45,6 +53,7 @@ public class TestCaseController extends BaseController {
             String value = param.get("value").toString();
             String scopeName = param.get("scopeName").toString();
             String scopeId = param.get("scopeId") != null ? param.get("scopeId").toString() : null;
+            log.info("TestCaseController.list - 第三种参数类型: fieldNameEn={}, value={}, scopeName={}, scopeId={}", fieldNameEn, value, scopeName, scopeId);
             PageInfo<TestCase> pageInfo = testCaseService.queryByFieldAndValue(fieldNameEn, value, scopeName, scopeId, pageNum, pageSize);
             return new Resp.Builder<PageInfo<TestCase>>().setData(pageInfo).ok();
         }
