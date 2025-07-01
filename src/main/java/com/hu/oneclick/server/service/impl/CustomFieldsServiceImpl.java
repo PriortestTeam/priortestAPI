@@ -179,7 +179,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         }
 
         // 特殊处理：当 scopeId=7000001 时，将 version 字段拆分成两个字段
-        if ("7000001".equals(customFieldDto.getScopeId())) {
+        if (customFieldDto.getScopeId() != null && customFieldDto.getScopeId() == 7000001L) {
             List<CustomFileldLinkVo> processedFields = new ArrayList<>();
             
             for (CustomFileldLinkVo field : fields) {
