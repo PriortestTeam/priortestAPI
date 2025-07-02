@@ -59,4 +59,13 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
 
     private Object child;
 
+    // 新增：用于前端展示的字符串类型customFieldId
+    private String customFieldIdStr;
+    public String getCustomFieldIdStr() {
+        return customFieldIdStr;
+    }
+    public void setCustomFieldIdStr(String customFieldIdStr) {
+        this.customFieldIdStr = customFieldIdStr;
+    }
+
 }
