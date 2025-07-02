@@ -748,11 +748,11 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
     public Resp<Map<String, Object>> getCountAsVersion(String projectId, String version) {
         Map<String, Object> result = new HashMap<>();
         // 测试用例记录数
-        int testCaseCount = Math.toIntExact(testCaseService.count(new QueryWrapper<TestCase>().eq("project_id", projectId)));
+        int testCaseCount = Math.toIntExact(testCaseService.count(new QueryWrapper<TestCase>().eq("project_id", projectId).eq("version", version)));
         // 测试周期记录数
-        int testCycleCount = Math.toIntExact(testCycleService.count(new QueryWrapper<TestCycle>().eq("project_id", projectId)));
+        int testCycleCount = Math.toIntExact(testCycleService.count(new QueryWrapper<TestCycle>().eq("project_id", projectId).eq("version", version)));
         // 故事记录数
-        int featureCount = Math.toIntExact(featureService.count(new QueryWrapper<Feature>().eq("project_id", projectId)));
+        int featureCount = Math.toIntExact(featureService.count(new QueryWrapper<Feature>().eq("project_id", projectId).eq("version", version)));
         // 缺陷记录数（发现版本 issue_version，修改版本 fix_version）
         int issueVersionCount = Math.toIntExact(issueService.count(new QueryWrapper<Issue>().eq("project_id", projectId).eq("issue_version", version)));
         int fixVersionCount = Math.toIntExact(issueService.count(new QueryWrapper<Issue>().eq("project_id", projectId).eq("fix_version", version)));
