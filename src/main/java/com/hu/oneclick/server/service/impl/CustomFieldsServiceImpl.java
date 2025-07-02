@@ -195,9 +195,9 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                     CustomFileldLinkVo fixVersionField = cloneCustomField(field);
                     fixVersionField.setFieldNameCn("修改版本");
                     fixVersionField.setFieldNameEn("fixVersion");
-                    // customFieldIdStr 加 _fix 后缀（字符串）
+                    // customFieldId 直接加 _fix 后缀（字符串）
                     if (fixVersionField.getCustomFieldId() != null) {
-                        fixVersionField.setCustomFieldIdStr(fixVersionField.getCustomFieldId().toString() + "_fix");
+                        fixVersionField.setCustomFieldId(fixVersionField.getCustomFieldId().toString() + "_fix");
                     }
                     processedFields.add(fixVersionField);
                 } else {

@@ -64,8 +64,9 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
     public String getCustomFieldIdStr() {
         return customFieldIdStr;
     }
-    public void setCustomFieldIdStr(String customFieldIdStr) {
-        this.customFieldIdStr = customFieldIdStr;
+    public void setCustomFieldId(String customFieldId) {
+        this.customFieldIdStr = customFieldId;
+        super.setCustomFieldId(null); // 避免Long类型混淆
     }
 
 }
