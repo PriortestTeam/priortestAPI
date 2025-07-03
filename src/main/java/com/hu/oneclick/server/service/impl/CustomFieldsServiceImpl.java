@@ -197,7 +197,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                     fixVersionField.setFieldNameEn("fixVersion");
                     // customFieldId 直接加 _fix 后缀（字符串）
                     if (fixVersionField.getCustomFieldId() != null) {
-                        fixVersionField.setCustomFieldId(fixVersionField.getCustomFieldId().toString() + "_fix");
+                        fixVersionField.setCustomFieldId(fixVersionField.getCustomFieldId().toString() + "000");
                     }
                     processedFields.add(fixVersionField);
                 } else {
