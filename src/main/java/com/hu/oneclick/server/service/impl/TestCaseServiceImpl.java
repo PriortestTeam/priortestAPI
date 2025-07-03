@@ -17,11 +17,15 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.common.util.DateUtil;
+import com.hu.oneclick.common.util.PageUtil;
+import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.dao.TestCaseStepDao;
 import com.hu.oneclick.dao.TestCycleJoinTestCaseDao;
 import com.hu.oneclick.dao.TestCycleTcDao;
+import com.hu.oneclick.dao.ViewDao;
+import com.hu.oneclick.model.annotation.Page;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.base.Result;
 import com.hu.oneclick.model.domain.dto.*;
@@ -30,6 +34,8 @@ import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.*;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -79,6 +85,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   @Resource
   private QueryFilterService queryFilterService;
   @Resource
+  private ViewFilterService viewFilterService;
+  @Resource
   private FeatureDao featureDao;
   @Resource
   private SysCustomFieldService sysCustomFieldService;
@@ -102,10 +110,16 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   private RelationService relationService;
 
   @Resource
+  TestCycleService testCycleService;
+
+  @Resource
+  private cn.zhxu.bs.MapSearcher mapSearcher;
+
+  @Resource
   private IssueService issueService;
 
   @Resource
-  TestCycleService testCycleService;
+  private ViewDao viewDao;
 
   @Override
   public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -978,12 +992,143 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   }
 
   @Override
+  public PageInfo<TestCase> list(TestCaseParam param, int pageNum, int pageSize) {
+    PageHelper.startPage(pageNum, pageSize);
+    List<TestCase> list = this.lambdaQuery()
+        .like(StrUtil.isNotBlank(param.getTitle()), TestCase::getTitle, param.getTitle())
+        .eq(TestCase::getProjectId, param.getProjectId())
+        .orderByDesc(TestCase::getCreateTime)
+        .list();
+    return new PageInfo<>(list);
+  }
+
+  @Override
+  public List<TestCase> listWithViewFilter(TestCaseParam param) {
+    // 检查是否需要应用视图过滤
+    if (viewFilterService.shouldApplyViewFilter(param.getViewId())) {
+      // 使用视图过滤进行查询
+      return listWithViewFilterLogic(param);
+    } else {
+      // 使用原有的简单查询逻辑
+      return list(param);
+    }
+  }
+
+  @Override
+  public PageInfo<TestCase> listWithViewFilter(TestCaseParam param, int pageNum, int pageSize) {
+    // 检查是否需要应用视图过滤
+    if (viewFilterService.shouldApplyViewFilter(param.getViewId())) {
+      // 使用视图过滤进行查询
+      return listWithViewFilterLogic(param, pageNum, pageSize);
+    } else {
+      // 使用原有的简单查询逻辑
+      return list(param, pageNum, pageSize);
+    }
+  }
+
+  @Override
   public List<TestCase> listExtend(TestCaseParam param) {
     return this.lambdaQuery()
         .in(CollUtil.isNotEmpty(param.getTestCaseIdList()), TestCase::getId,
             param.getTestCaseIdList())
         .orderByDesc(TestCase::getCreateTime)
         .list();
+  }
+
+  /**
+   * 使用视图过滤的查询逻辑
+   */
+  private List<TestCase> listWithViewFilterLogic(TestCaseParam param) {
+    try {
+      // 获取视图过滤参数
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
+          param.getViewId(), param.getProjectId().toString());
+      
+      if (filterParams == null) {
+        // 如果获取过滤参数失败，回退到简单查询
+        log.warn("获取视图过滤参数失败，回退到简单查询");
+        return list(param);
+      }
+
+      // 使用 BeanSearcher 进行复杂查询
+      // 这里需要注入 BeanSearcher，但由于当前架构限制，我们使用另一种方式
+      // 可以通过调用 BeanSearchController 的逻辑来实现
+      
+      // 临时方案：使用现有的 queryList 方法
+      TestCaseDto testCaseDto = new TestCaseDto();
+      testCaseDto.setProjectId(param.getProjectId());
+      
+      // 创建 ViewTreeDto 对象
+      ViewTreeDto viewTreeDto = new ViewTreeDto();
+      viewTreeDto.setId(Long.valueOf(param.getViewId()));
+      testCaseDto.setViewTreeDto(viewTreeDto);
+      
+      Resp<List<TestCase>> resp = queryList(testCaseDto);
+      if (resp != null && resp.getData() != null) {
+        return resp.getData();
+      }
+      
+      return new ArrayList<>();
+    } catch (Exception e) {
+      log.error("视图过滤查询失败，回退到简单查询", e);
+      return list(param);
+    }
+  }
+
+  /**
+   * 使用视图过滤的查询逻辑，支持分页
+   */
+  private PageInfo<TestCase> listWithViewFilterLogic(TestCaseParam param, int pageNum, int pageSize) {
+    try {
+      // 获取视图过滤参数
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
+          param.getViewId(), param.getProjectId().toString());
+      
+      if (filterParams == null) {
+        // 如果获取过滤参数失败，回退到简单查询
+        log.warn("获取视图过滤参数失败，回退到简单查询");
+        return list(param, pageNum, pageSize);
+      }
+
+      // 使用 BeanSearcher 进行复杂查询
+      // 这里需要注入 BeanSearcher，但由于当前架构限制，我们使用另一种方式
+      // 可以通过调用 BeanSearchController 的逻辑来实现
+      
+      // 临时方案：使用现有的 queryList 方法
+      TestCaseDto testCaseDto = new TestCaseDto();
+      testCaseDto.setProjectId(param.getProjectId());
+      
+      // 创建 ViewTreeDto 对象
+      ViewTreeDto viewTreeDto = new ViewTreeDto();
+      viewTreeDto.setId(Long.valueOf(param.getViewId()));
+      testCaseDto.setViewTreeDto(viewTreeDto);
+      
+      Resp<List<TestCase>> resp = queryList(testCaseDto);
+      if (resp != null && resp.getData() != null) {
+        // 手动分页处理
+        List<TestCase> allData = resp.getData();
+        int total = allData.size();
+        int startIndex = (pageNum - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, total);
+        
+        List<TestCase> pageData = new ArrayList<>();
+        if (startIndex < total) {
+          pageData = allData.subList(startIndex, endIndex);
+        }
+        
+        PageInfo<TestCase> pageInfo = new PageInfo<>(pageData);
+        pageInfo.setPageNum(pageNum);
+        pageInfo.setPageSize(pageSize);
+        pageInfo.setTotal(total);
+        pageInfo.setPages((total + pageSize - 1) / pageSize);
+        return pageInfo;
+      }
+      
+      return new PageInfo<>(new ArrayList<>());
+    } catch (Exception e) {
+      log.error("视图过滤查询失败，回退到简单查询", e);
+      return list(param, pageNum, pageSize);
+    }
   }
 
   @Override
@@ -1168,6 +1313,124 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     return testCycleService.save(dto);
   }
 
+  @Override
+  public List<Map<String, Object>> listWithBeanSearcher(String viewId, String projectId) {
+    try {
+      // 获取视图过滤参数
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
+      
+      if (filterParams == null) {
+        // 如果没有过滤条件，返回空列表
+        return new ArrayList<>();
+      }
+      
+      // 使用BeanSearcher进行查询，使用testCase作为查询类
+      Class<?> testCaseClass = Class.forName("com.hu.oneclick.model.entity.TestCase");
+      List<Map<String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
+      
+      return result;
+    } catch (Exception e) {
+      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
+      return new ArrayList<>();
+    }
+  }
 
+  @Override
+  public PageInfo<TestCase> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize) {
+    // 1. 确定表名
+    String tableName = null;
+    switch (scopeName) {
+      case "故事": tableName = "feature"; break;
+      case "测试用例": tableName = "test_case"; break;
+      case "缺陷": tableName = "issue"; break;
+      case "测试周期": tableName = "test_cycle"; break;
+      default: tableName = "test_case";
+    }
+    // 2. 获取 projectId
+    String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
+    
+    // 3. 计算偏移量
+    int offset = (pageNum - 1) * pageSize;
+    
+    // 添加调试日志
+    log.info("queryByFieldAndValue - 分页参数: pageNum={}, pageSize={}, offset={}", pageNum, pageSize, offset);
+    log.info("queryByFieldAndValue - 查询参数: tableName={}, fieldNameEn={}, value={}, projectId={}", tableName, fieldNameEn, value, projectId);
+    
+    // 4. 使用 DAO 方法查询数据
+    List<Map<String, Object>> result = viewDao.queryRecordsByScope(
+        tableName,
+        fieldNameEn,
+        value,
+        projectId,
+        null, // 不排除任何用户创建的记录
+        offset,
+        pageSize
+    );
+    
+    log.info("queryByFieldAndValue - 查询结果数量: {}", result.size());
+    if (!result.isEmpty()) {
+      log.info("queryByFieldAndValue - 第一条记录: {}", result.get(0));
+    }
+    
+    // 5. 查询总数
+    long total = viewDao.countRecordsByScope(
+        tableName,
+        fieldNameEn,
+        value,
+        projectId,
+        null
+    );
+    
+    log.info("queryByFieldAndValue - 总记录数: {}", total);
+    
+    // 6. 转 bean
+    List<TestCase> testCaseList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class)).collect(Collectors.toList());
+    
+    // 7. 构造 PageInfo
+    PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
+    pageInfo.setPageNum(pageNum);
+    pageInfo.setPageSize(pageSize);
+    pageInfo.setTotal(total);
+    pageInfo.setPages((int) ((total + pageSize - 1) / pageSize));
+    pageInfo.setIsFirstPage(pageNum == 1);
+    pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
+    pageInfo.setHasPreviousPage(pageNum > 1);
+    pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
+    
+    log.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
+             pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage());
+    
+    return pageInfo;
+  }
+
+  @Override
+  public PageInfo<TestCase> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize) {
+    try {
+      // 获取视图过滤参数
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
+      
+      if (filterParams == null) {
+        // 如果没有过滤条件，返回空分页结果
+        return new PageInfo<>(new ArrayList<>());
+      }
+      
+      // 使用BeanSearcher进行查询，使用testCase作为查询类
+      Class<?> testCaseClass = Class.forName("com.hu.oneclick.model.entity.TestCase");
+      
+      // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
+      List<Map<String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
+      
+      // 转换为 TestCase 对象
+      List<TestCase> testCaseList = result.stream()
+          .map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class))
+          .collect(Collectors.toList());
+      
+      // 使用与 BeanSearchController 相同的分页处理方式
+      return PageUtil.manualPaging(testCaseList);
+    } catch (Exception e) {
+      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
+      return new PageInfo<>(new ArrayList<>());
+    }
+  }
 
 }

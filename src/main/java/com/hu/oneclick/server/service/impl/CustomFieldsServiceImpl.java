@@ -178,8 +178,60 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             }
         }
 
+        // 特殊处理：当 scopeId=7000001 时，将 version 字段拆分成两个字段
+        if (customFieldDto.getScopeId() != null && customFieldDto.getScopeId() == 7000001L) {
+            List<CustomFileldLinkVo> processedFields = new ArrayList<>();
+            
+            for (CustomFileldLinkVo field : fields) {
+                // 检查是否是 version 字段
+                if ("version".equals(field.getFieldNameEn())) {
+                    // 创建发现版本字段
+                    CustomFileldLinkVo issueVersionField = cloneCustomField(field);
+                    issueVersionField.setFieldNameCn("发现版本");
+                    issueVersionField.setFieldNameEn("issueVersion");
+                    processedFields.add(issueVersionField);
+                    
+                    // 创建修改版本字段
+                    CustomFileldLinkVo fixVersionField = cloneCustomField(field);
+                    fixVersionField.setFieldNameCn("修改版本");
+                    fixVersionField.setFieldNameEn("fixVersion");
+                    fixVersionField.setMandatory(0);
+                    processedFields.add(fixVersionField);
+                } else {
+                    // 其他字段保持不变
+                    processedFields.add(field);
+                }
+            }
+            
+            return new Resp.Builder<List<CustomFileldLinkVo>>().setData(processedFields).ok();
+        }
+
         return new Resp.Builder<List<CustomFileldLinkVo>>().setData(fields).ok();
-//        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(list).ok();
+    }
+    
+    /**
+     * 克隆自定义字段对象
+     */
+    private CustomFileldLinkVo cloneCustomField(CustomFileldLinkVo original) {
+        CustomFileldLinkVo cloned = new CustomFileldLinkVo();
+        cloned.setCustomFieldLinkId(original.getCustomFieldLinkId());
+        cloned.setCustomFieldId(original.getCustomFieldId());
+        cloned.setDefaultValue(original.getDefaultValue());
+        cloned.setScope(original.getScope());
+        cloned.setMandatory(original.getMandatory());
+        cloned.setScopeId(original.getScopeId());
+        cloned.setScopeNameCn(original.getScopeNameCn());
+        cloned.setProjectId(original.getProjectId());
+        cloned.setType(original.getType());
+        cloned.setFieldNameCn(original.getFieldNameCn()); // 将在调用处被覆盖
+        cloned.setFieldNameEn(original.getFieldNameEn()); // 将在调用处被覆盖
+        cloned.setModifyUser(original.getModifyUser());
+        cloned.setLength(original.getLength());
+        cloned.setPossibleValue(original.getPossibleValue());
+        cloned.setFieldType(original.getFieldType());
+        cloned.setFieldTypeCn(original.getFieldTypeCn());
+        cloned.setChild(original.getChild());
+        return cloned;
     }
 
     @Override

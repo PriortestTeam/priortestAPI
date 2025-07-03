@@ -1,6 +1,7 @@
 package com.hu.oneclick.server.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.TestCycle;
 import com.hu.oneclick.model.domain.dto.LeftJoinDto;
@@ -67,4 +68,11 @@ public interface TestCycleService extends IService<TestCycle> {
     TestCycle info(Long id);
 
     void clone(List<Long> ids);
+
+    // 新增的方法，类似 TestCaseService
+    PageInfo<TestCycle> listWithViewFilter(TestCycleParam param, int pageNum, int pageSize);
+
+    PageInfo<TestCycle> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize);
+
+    PageInfo<TestCycle> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize);
 }

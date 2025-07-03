@@ -1,6 +1,7 @@
 package com.hu.oneclick.controller;
 
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.bean.BeanUtil;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BaseException;
@@ -24,6 +25,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -154,10 +157,45 @@ public class TestCycleController extends BaseController {
 
     @Operation(summary="列表")
     @PostMapping("/list")
-    public Resp<PageInfo<TestCycle>> list(@RequestBody @Validated TestCycleParam param) {
-        startPage();
-        List<TestCycle> testCycleList = testCycleService.list(param);
-        return new Resp.Builder<PageInfo<TestCycle>>().setData(PageInfo.of(testCycleList)).ok();
+    public Resp<PageInfo<TestCycle>> list(@RequestBody Map<String, Object> param,
+                                         @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
+                                         @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
+        // 优先使用 URL 参数，如果没有则使用请求体参数
+        int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString()) : 1);
+        int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString()) : 20);
+
+        // 添加调试日志
+        log.info("TestCycleController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
+        log.info("TestCycleController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize"));
+        log.info("TestCycleController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
+
+        // 3. 子视图字段过滤参数
+        if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName")) {
+            String fieldNameEn = param.get("fieldNameEn").toString();
+            String value = param.get("value").toString();
+            String scopeName = param.get("scopeName").toString();
+            String scopeId = param.get("scopeId") != null ? param.get("scopeId").toString() : null;
+            log.info("TestCycleController.list - 第三种参数类型: fieldNameEn={}, value={}, scopeName={}, scopeId={}", fieldNameEn, value, scopeName, scopeId);
+            PageInfo<TestCycle> pageInfo = testCycleService.queryByFieldAndValue(fieldNameEn, value, scopeName, scopeId, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<TestCycle>>().setData(pageInfo).ok();
+        }
+        // 2. 视图过滤参数
+        else if (param.containsKey("viewId") && param.get("viewId") != null && !param.get("viewId").toString().isEmpty()) {
+            String viewId = param.get("viewId").toString();
+            String projectId = param.get("projectId").toString();
+            log.info("TestCycleController.list - 第二种参数类型: viewId={}, projectId={}", viewId, projectId);
+            PageInfo<TestCycle> pageInfo = testCycleService.listWithBeanSearcher(viewId, projectId, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<TestCycle>>().setData(pageInfo).ok();
+        }
+        // 1. 普通列表参数
+        else if (param.containsKey("projectId")) {
+            TestCycleParam testCycleParam = BeanUtil.toBean(param, TestCycleParam.class);
+            log.info("TestCycleController.list - 第一种参数类型: projectId={}", testCycleParam.getProjectId());
+            PageInfo<TestCycle> pageInfo = testCycleService.listWithViewFilter(testCycleParam, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<TestCycle>>().setData(pageInfo).ok();
+        } else {
+            return new Resp.Builder<PageInfo<TestCycle>>().fail();
+        }
     }
 
     @Operation(summary="新增")

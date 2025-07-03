@@ -2,6 +2,7 @@ package com.hu.oneclick.model.domain.vo;
 
 import com.hu.oneclick.model.entity.CustomFileldLink;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonGetter;
 
 import java.io.Serializable;
 
@@ -58,5 +59,13 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
     private String fieldTypeCn;
 
     private Object child;
+
+    @JsonGetter("customFieldId")
+    public Object getCustomFieldIdForJson() {
+        if ("fixVersion".equals(this.getFieldNameEn()) && super.getCustomFieldId() != null) {
+            return super.getCustomFieldId().toString() + "000";
+        }
+        return super.getCustomFieldId();
+    }
 
 }

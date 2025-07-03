@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.bean.BeanUtil;
 
 /**
  * @author qingyang
@@ -29,58 +33,45 @@ public class TestCaseController extends BaseController {
     @Resource
     private TestCaseService testCaseService;
 
-    //@GetMapping("queryById/{id}")
-    //@Operation(summary = "查询测试用例")
-    //public Resp<TestCase> queryById(@PathVariable Long id) {
-    //    return testCaseService.queryById(id);
-    //}
-    //
-    //@PostMapping("queryList")
-    //@Operation(summary = "查询测试用例")
-    //public Resp<List<TestCase>> queryList(@RequestBody TestCaseDto testCase) {
-    //    return testCaseService.queryList(testCase);
-    //}
-    //
-    //@PostMapping("update")
-    //@Operation(summary = "更新测试用例")
-    //public Resp<String> update(@RequestBody TestCase testCase) {
-    //    return testCaseService.update(testCase);
-    //}
-
-    //@DeleteMapping("delete/{id}")
-    //public Resp<String> delete(@PathVariable String id) {
-    //    return testCaseService.delete(id);
-    //}
-
-
-    ///**
-    // * 根据选择的故事id查询testcase 的需要的值
-    // */
-    //@GetMapping("queryTestNeedByFeatureId")
-    //@Operation(summary = "根据Feature获取测试用例列表")
-    //public Resp<Feature> queryTestNeedByFeatureId(@RequestParam String featureId) {
-    //    return testCaseService.queryTestNeedByFeatureId(featureId);
-    //}
-    //
-    //@PostMapping("addTestCase")
-    //@Operation(summary = "新增测试用例")
-    //public Resp<String> addTestCase(@RequestBody TestCycleDto testCycleDto) {
-    //    return testCaseService.addTestCase(testCycleDto);
-    //}
-    //
-    //@PostMapping("updateAction")
-    //@Operation(summary = "更新action")
-    //public Resp<List<TestCase>> updateAction(@RequestBody List<String> testCaseId, @RequestParam String actionType
-    //        , @RequestParam String testCycleId) {
-    //    return testCaseService.updateAction(testCaseId, actionType, testCycleId);
-    //}
-
     @Operation(summary = "获取测试用例列表")
     @PostMapping("/list")
-    public Resp<PageInfo<TestCase>> list(@RequestBody @Validated TestCaseParam param) {
-        startPage();
-        List<TestCase> testCaseList = testCaseService.list(param);
-        return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(testCaseList)).ok();
+    public Resp<PageInfo<TestCase>> list(@RequestBody Map<String, Object> param,
+                                        @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
+                                        @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
+        // 优先使用 URL 参数，如果没有则使用请求体参数
+        int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString()) : 1);
+        int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString()) : 20);
+
+        // 添加调试日志
+        log.info("TestCaseController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
+        log.info("TestCaseController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize"));
+        log.info("TestCaseController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
+
+        // 3. 子视图字段过滤参数
+        if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName")) {
+            String fieldNameEn = param.get("fieldNameEn").toString();
+            String value = param.get("value").toString();
+            String scopeName = param.get("scopeName").toString();
+            String scopeId = param.get("scopeId") != null ? param.get("scopeId").toString() : null;
+            log.info("TestCaseController.list - 第三种参数类型: fieldNameEn={}, value={}, scopeName={}, scopeId={}", fieldNameEn, value, scopeName, scopeId);
+            PageInfo<TestCase> pageInfo = testCaseService.queryByFieldAndValue(fieldNameEn, value, scopeName, scopeId, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<TestCase>>().setData(pageInfo).ok();
+        }
+        // 2. 视图过滤参数
+        else if (param.containsKey("viewId") && param.get("viewId") != null && !param.get("viewId").toString().isEmpty()) {
+            String viewId = param.get("viewId").toString();
+            String projectId = param.get("projectId").toString();
+            PageInfo<TestCase> pageInfo = testCaseService.listWithBeanSearcher(viewId, projectId, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<TestCase>>().setData(pageInfo).ok();
+        }
+        // 1. 普通列表参数
+        else if (param.containsKey("projectId")) {
+            TestCaseParam testCaseParam = BeanUtil.toBean(param, TestCaseParam.class);
+            PageInfo<TestCase> pageInfo = testCaseService.listWithViewFilter(testCaseParam, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<TestCase>>().setData(pageInfo).ok();
+        } else {
+            return new Resp.Builder<PageInfo<TestCase>>().fail();
+        }
     }
 
     @Operation(summary = "新增测试用例")
@@ -114,17 +105,6 @@ public class TestCaseController extends BaseController {
         return new Resp.Builder<TestCase>().setData(testCase).ok();
     }
 
-//    @Operation(summary = "删除测试用例")
-//    @DeleteMapping("/delete/{ids}")
-//    public Resp<?> delete(@PathVariable Long[] ids) {
-//        try {
-//            testCaseService.removeByIds(Arrays.asList(ids));
-//        } catch (Exception e) {
-//            log.error("删除测试用例失败，原因：" + e.getMessage(), e);
-//            return new Resp.Builder<TestCase>().fail();
-//        }
-//        return new Resp.Builder<TestCase>().ok();
-//    }
 
     @Operation(summary = "复制测试用例")
     @PostMapping("/clone")

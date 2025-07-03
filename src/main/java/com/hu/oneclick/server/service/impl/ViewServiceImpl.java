@@ -279,7 +279,15 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         for (ViewTreeDto viewTreeDto : auto_view) {
             cond = new HashMap<>();
             cond.put("type", viewTreeDto.getOneFilters().get(0).getType());
-            cond.put("fieldNameEn", viewTreeDto.getOneFilters().get(0).getFieldNameEn());
+            
+            // 特殊处理：当 scope=7000001 时，将 issueVersion 和 fixVersion 转换为 version
+            String fieldNameEn = viewTreeDto.getOneFilters().get(0).getFieldNameEn();
+            if ("7000001".equals(scope) && ("issueVersion".equals(fieldNameEn) || "fixVersion".equals(fieldNameEn))) {
+                cond.put("fieldNameEn", "version");
+            } else {
+                cond.put("fieldNameEn", fieldNameEn);
+            }
+            
             cond.put("scopeId", viewTreeDto.getScopeId());
             cond.put("projectId", viewTreeDto.getProjectId());
 
@@ -736,5 +744,28 @@ public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewS
         }
     }
 
+    @Override
+    public Resp<Map<String, Object>> getCountAsVersion(String projectId, String version) {
+        Map<String, Object> result = new HashMap<>();
+        // 测试用例记录数
+        int testCaseCount = Math.toIntExact(testCaseService.count(new QueryWrapper<TestCase>().eq("project_id", projectId).eq("version", version)));
+        // 测试周期记录数
+        int testCycleCount = Math.toIntExact(testCycleService.count(new QueryWrapper<TestCycle>().eq("project_id", projectId).eq("version", version)));
+        // 故事记录数
+        int featureCount = Math.toIntExact(featureService.count(new QueryWrapper<Feature>().eq("project_id", projectId).eq("version", version)));
+        // 缺陷记录数（发现版本 issue_version，修改版本 fix_version）
+        int issueVersionCount = Math.toIntExact(issueService.count(new QueryWrapper<Issue>().eq("project_id", projectId).eq("issue_version", version)));
+        int fixVersionCount = Math.toIntExact(issueService.count(new QueryWrapper<Issue>().eq("project_id", projectId).eq("fix_version", version)));
+        Map<String, Integer> issueCount = new HashMap<>();
+        issueCount.put("issueVersionCount", issueVersionCount);
+        issueCount.put("fixVersionCount", fixVersionCount);
+        result.put("projectId", projectId);
+        result.put("version", version);
+        result.put("testCaseCount", testCaseCount);
+        result.put("testCycleCount", testCycleCount);
+        result.put("featureCount", featureCount);
+        result.put("issueCount", issueCount);
+        return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+    }
 
 }

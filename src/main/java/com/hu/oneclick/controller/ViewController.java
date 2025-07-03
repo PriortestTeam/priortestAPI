@@ -171,4 +171,9 @@ public class ViewController extends BaseController {
     {
         return viewService.findSubViewRecordByScopeName(page, offset, param);
     }
+
+    @GetMapping("getCountAsVersion")
+    public Resp<Map<String, Object>> getCountAsVersion(@RequestParam String projectId, @RequestParam String version) {
+        return viewService.getCountAsVersion(projectId, version);
+    }
 }

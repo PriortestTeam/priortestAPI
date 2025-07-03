@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import cn.hutool.core.bean.BeanUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,13 +34,43 @@ public class SprintController extends BaseController {
 
     @Operation(summary="列表")
     @PostMapping("/list")
-    public Resp<PageInfo<Sprint>> list(@RequestBody SprintParam param) {
-        if (null == param) {
-            param = new SprintParam();
+    public Resp<PageInfo<Sprint>> list(@RequestBody java.util.Map<String, Object> param,
+                                       @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
+                                       @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
+        int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString()) : 1);
+        int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString()) : 20);
+
+        log.info("SprintController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
+        log.info("SprintController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize"));
+        log.info("SprintController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
+
+        // 3. 字段过滤
+        if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName")) {
+            String fieldNameEn = param.get("fieldNameEn").toString();
+            String value = param.get("value").toString();
+            String scopeName = param.get("scopeName").toString();
+            String scopeId = param.get("scopeId") != null ? param.get("scopeId").toString() : null;
+            log.info("SprintController.list - 第三种参数类型: fieldNameEn={}, value={}, scopeName={}, scopeId={}", fieldNameEn, value, scopeName, scopeId);
+            PageInfo<Sprint> pageInfo = sprintService.queryByFieldAndValue(fieldNameEn, value, scopeName, scopeId, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<Sprint>>().setData(pageInfo).ok();
         }
-        startPage();
-        List<Sprint> dataList = this.sprintService.list(param);
-        return new Resp.Builder<PageInfo<Sprint>>().setData(PageInfo.of(dataList)).ok();
+        // 2. 视图过滤
+        else if (param.containsKey("viewId") && param.get("viewId") != null && !param.get("viewId").toString().isEmpty()) {
+            String viewId = param.get("viewId").toString();
+            String projectId = param.get("projectId").toString();
+            log.info("SprintController.list - 第二种参数类型: viewId={}, projectId={}", viewId, projectId);
+            PageInfo<Sprint> pageInfo = sprintService.listWithBeanSearcher(viewId, projectId, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<Sprint>>().setData(pageInfo).ok();
+        }
+        // 1. 普通
+        else if (param.containsKey("projectId")) {
+            SprintParam sprintParam = BeanUtil.toBean(param, SprintParam.class);
+            log.info("SprintController.list - 第一种参数类型: projectId={}", sprintParam.getProjectId());
+            PageInfo<Sprint> pageInfo = sprintService.listWithViewFilter(sprintParam, pageNum, pageSize);
+            return new Resp.Builder<PageInfo<Sprint>>().setData(pageInfo).ok();
+        } else {
+            return new Resp.Builder<PageInfo<Sprint>>().fail();
+        }
     }
 
     @Operation(summary="新增")

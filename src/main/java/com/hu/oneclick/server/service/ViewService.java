@@ -86,4 +86,9 @@ public interface ViewService extends IService<View> {
      * @return 查询结果
      */
     Object findSubViewRecordByScopeName(int page, int pageSize, ViewGetSubViewRecordParam param);
+
+    /**
+     * 根据projectId和version统计各类记录数
+     */
+    Resp<Map<String, Object>> getCountAsVersion(String projectId, String version);
 }

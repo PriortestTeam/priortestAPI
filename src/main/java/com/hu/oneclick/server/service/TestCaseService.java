@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.hu.oneclick.model.domain.vo.IssueStatusVo;
 import org.springframework.web.multipart.MultipartFile;
+import com.github.pagehelper.PageInfo;
 
 /**
  * @author qingyang
@@ -64,6 +65,25 @@ public interface TestCaseService extends IService<TestCase> {
 
   List<TestCase> list(TestCaseParam param);
 
+  /**
+   * 支持视图过滤的测试用例列表查询
+   * 支持 viewId 参数格式
+   *
+   * @param param 查询参数，包含视图过滤条件
+   * @return 测试用例列表
+   */
+  List<TestCase> listWithViewFilter(TestCaseParam param);
+
+  /**
+   * 使用BeanSearcher框架的视图过滤查询
+   * 与BeanSearchController使用相同的查询逻辑
+   *
+   * @param viewId 视图ID
+   * @param projectId 项目ID
+   * @return 测试用例列表
+   */
+  List<Map<String, Object>> listWithBeanSearcher(String viewId, String projectId);
+
   TestCase save(TestCaseSaveDto dto);
 
   TestCase update(TestCaseSaveDto dto);
@@ -94,5 +114,49 @@ public interface TestCaseService extends IService<TestCase> {
     IssueStatusVo retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId);
 
   TestCycle saveTestCycle(Long projectId, TestCycleSaveDto dto);
+
+  /**
+   * 通过字段名、字段值、scopeName、scopeId 查询测试用例，分页返回
+   * @param fieldNameEn 字段名
+   * @param value 字段值
+   * @param scopeName 作用域名
+   * @param scopeId 作用域ID
+   * @param pageNum 页码（从1开始）
+   * @param pageSize 每页数量
+   * @return 分页结果
+   */
+  PageInfo<TestCase> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize);
+
+  /**
+   * 基础测试用例列表查询，支持物理分页
+   * @param param 查询参数
+   * @param pageNum 页码（从1开始）
+   * @param pageSize 每页数量
+   * @return 分页结果
+   */
+  PageInfo<TestCase> list(TestCaseParam param, int pageNum, int pageSize);
+
+  /**
+   * 支持视图过滤的测试用例列表查询，支持物理分页
+   * 支持 viewId 参数格式
+   *
+   * @param param 查询参数，包含视图过滤条件
+   * @param pageNum 页码（从1开始）
+   * @param pageSize 每页数量
+   * @return 分页结果
+   */
+  PageInfo<TestCase> listWithViewFilter(TestCaseParam param, int pageNum, int pageSize);
+
+  /**
+   * 使用BeanSearcher框架的视图过滤查询，支持物理分页
+   * 与BeanSearchController使用相同的查询逻辑
+   *
+   * @param viewId 视图ID
+   * @param projectId 项目ID
+   * @param pageNum 页码（从1开始）
+   * @param pageSize 每页数量
+   * @return 分页结果
+   */
+  PageInfo<TestCase> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize);
 
 }
