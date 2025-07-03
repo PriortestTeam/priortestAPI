@@ -195,6 +195,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                     CustomFileldLinkVo fixVersionField = cloneCustomField(field);
                     fixVersionField.setFieldNameCn("修改版本");
                     fixVersionField.setFieldNameEn("fixVersion");
+                    fixVersionField.setMandatory(0);
                     processedFields.add(fixVersionField);
                 } else {
                     // 其他字段保持不变
