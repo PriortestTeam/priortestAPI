@@ -110,7 +110,9 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated()
             )
             .with(new JsonLoginConfigurer<>(), configurer -> configurer.loginSuccessHandler(jsonLoginSuccessHandler))
-            .with(new JwtLoginConfigurer<>(), configurer -> configurer.tokenValidSuccessHandler(jwtRefreshSuccessHandler))
+            .with(new JwtLoginConfigurer<>(), configurer -> configurer
+                .permissiveRequestUrls("/api/login", "/api/auth/**", "/api/public/**")
+                .tokenValidSuccessHandler(jwtRefreshSuccessHandler))
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
