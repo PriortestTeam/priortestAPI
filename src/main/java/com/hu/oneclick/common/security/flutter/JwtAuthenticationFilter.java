@@ -60,17 +60,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
 
     public JwtAuthenticationFilter() {
-        this.requiresAuthenticationRequestMatcher = request -> {
-            if (permissiveRequestMatchers != null) {
-                for (RequestMatcher matcher : permissiveRequestMatchers) {
-                    if (matcher.matches(request)) {
-                        return false;
-                    }
-                }
-            }
-            String authHeader = request.getHeader("Authorization");
-            return authHeader != null && authHeader.startsWith("Bearer ");
-        };
+        // 默认不处理任何请求
+        this.requiresAuthenticationRequestMatcher = request -> false;
     }
 
     @Override
@@ -83,15 +74,72 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
-        System.out.println(">>> JwtAuthenticationFilter 收到请求: " + request.getRequestURI() + ", Authorization: " + request.getHeader("Authorization"));
+        String requestPath = request.getRequestURI();
+        System.out.println(">>> JwtAuthenticationFilter 收到请求: " + requestPath + ", Authorization: " + request.getHeader("Authorization"));
 
-        if (!requiresAuthenticationRequestMatcher.matches(request)) {
-            filterChain.doFilter(request, response);
+        // 如果是白名单URL，直接放行
+        if (permissiveRequestMatchers != null) {
+            for (RequestMatcher matcher : permissiveRequestMatchers) {
+                if (matcher.matches(request)) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+            }
+        }
+
+        // 获取认证头
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No token found in request headers");
             return;
         }
 
         try {
-            String token = getJwtToken(request);
+            // 检查是否是API Token（不以Bearer开头的token）
+            if (!authHeader.startsWith("Bearer ")) {
+                // API Token处理
+                String emailId = request.getHeader("emailId");
+                if (StringUtils.isBlank(emailId)) {
+                    throw new InsufficientAuthenticationException("emailId is required for API token");
+                }
+
+                // 检查是否是apiAdapter路径
+                boolean isApiAdapterPath = requestPath.contains("apiAdapter");
+                if (!isApiAdapterPath) {
+                    throw new InsufficientAuthenticationException("API token can only access apiAdapter endpoints");
+                }
+
+                SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authHeader);
+                if (sysUserToken == null) {
+                    throw new InsufficientAuthenticationException("Invalid API token");
+                }
+
+                // 检查token是否过期
+                if (sysUserToken.getExpirationTime().before(new Date())) {
+                    throw new InsufficientAuthenticationException("API token has expired");
+                }
+
+                // 验证用户账号
+                if (!userService.getUserAccountInfo(emailId, authHeader)) {
+                    throw new InsufficientAuthenticationException("Invalid emailId or token");
+                }
+
+                // 设置认证信息
+                Authentication authentication = new ApiToken(true, sysUserToken.getTokenName());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                // 缓存用户信息
+                AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(emailId);
+                Map<String, Object> map = new HashMap<>();
+                map.put(REDIS_KEY_PREFIX.LOGIN + sysUserToken.getTokenName(), JSONObject.toJSONString(authLoginUser));
+                redisClient.getBuckets().set(map);
+
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // JWT Token处理
+            String token = authHeader.substring(7); // 移除"Bearer "前缀
             if (StringUtils.isBlank(token)) {
                 throw new InsufficientAuthenticationException("JWT is Empty");
             }
@@ -104,44 +152,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String redisToken = bucket.get();
                 
                 if (!StringUtils.equals(redisToken, token)) {
-                    throw new InsufficientAuthenticationException("Token invalid or user logged out");
+                    throw new InsufficientAuthenticationException("JWT token invalid or user logged out");
                 }
                 
                 SecurityContextHolder.getContext().setAuthentication(authResult);
                 filterChain.doFilter(request, response);
-                return;
             } catch (JWTDecodeException e) {
-                SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(token);
-                System.out.println(">>> sysUserTokenDao.selectByTokenValue 结果: " + sysUserToken);
-
-                if (sysUserToken != null) {
-                    Date expirationTime = sysUserToken.getExpirationTime();
-                    if (expirationTime.before(new Date())) {
-                        throw new InsufficientAuthenticationException("Token has expired");
-                    }
-
-                    String emailId = request.getHeader("emailId");
-                    if (StringUtils.isNotBlank(emailId)) {
-                        if (!userService.getUserAccountInfo(emailId, token)) {
-                            throw new InsufficientAuthenticationException("Authentication failed");
-                        }
-                    }
-
-                    Authentication authentication = new ApiToken(true, sysUserToken.getTokenName());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                    if (StringUtils.isNotEmpty(emailId)) {
-                        AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(emailId);
-                        Map<String, Object> map = new HashMap<>();
-                        map.put(REDIS_KEY_PREFIX.LOGIN + sysUserToken.getTokenName(), JSONObject.toJSONString(authLoginUser));
-                        redisClient.getBuckets().set(map);
-                    }
-                    
-                    filterChain.doFilter(request, response);
-                    return;
-                }
-                
-                throw new InsufficientAuthenticationException("Invalid token format", e);
+                throw new InsufficientAuthenticationException("Invalid JWT format", e);
             }
         } catch (AuthenticationException e) {
             unsuccessfulAuthentication(request, response, e);
@@ -193,14 +210,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.authenticationManager = authenticationManager;
     }
 
-    public void setAuthenticationSuccessHandler(
-        AuthenticationSuccessHandler successHandler) {
+    public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler successHandler) {
         Assert.notNull(successHandler, "successHandler cannot be null");
         this.successHandler = successHandler;
     }
 
-    public void setAuthenticationFailureHandler(
-        AuthenticationFailureHandler failureHandler) {
+    public void setAuthenticationFailureHandler(AuthenticationFailureHandler failureHandler) {
         Assert.notNull(failureHandler, "failureHandler cannot be null");
         this.failureHandler = failureHandler;
     }

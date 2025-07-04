@@ -118,7 +118,22 @@ public class WebSecurityConfig {
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
         filter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
-        filter.setPermissiveUrl("/authentication", "/login", "/api/login");
+        filter.setPermissiveUrl(
+            "/api/login",
+            "/api/swagger-ui.html",
+            "/api/swagger-ui/**",
+            "/api/v3/api-docs/**",
+            "/api/swagger-resources/**",
+            "/api/webjars/**",
+            "/api/auth/**",
+            "/api/public/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/webjars/**",
+            "/actuator/**"
+        );
         return filter;
     }
 
