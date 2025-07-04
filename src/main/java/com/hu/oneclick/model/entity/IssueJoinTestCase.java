@@ -11,6 +11,7 @@ import java.io.Serializable;
 public class IssueJoinTestCase implements Serializable {
     private static final long serialVersionUID = 948868735634832580L;
 
+    @TableId(type = IdType.INPUT)
     private String issueId;
 
     private String testCaseId;
