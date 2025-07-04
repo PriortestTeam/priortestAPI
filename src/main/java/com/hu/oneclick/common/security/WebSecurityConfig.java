@@ -29,14 +29,19 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -118,18 +123,7 @@ public class WebSecurityConfig {
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
         filter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
-        filter.setPermissiveUrl(
-            "/login",
-            "/register",
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/swagger-resources/**",
-            "/webjars/**",
-            "/auth/**",
-            "/public/**",
-            "/actuator/**"
-        );
+        // 不在这里设置白名单，而是在请求匹配器中处理
         return filter;
     }
 
@@ -171,10 +165,27 @@ public class WebSecurityConfig {
                     "/webjars/**",
                     "/actuator/**"
                 ).permitAll()
+                .requestMatchers("/api/apiAdpater/**").permitAll()  // API token endpoints are handled by filter
                 .anyRequest().authenticated()
             )
-            .addFilterAt(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)  // 将登录过滤器放在用户名密码过滤器的位置
-            .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // JWT过滤器放在登录过滤器后面
+            // 先添加登录过滤器
+            .addFilterBefore(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            // 然后添加JWT过滤器，但是排除登录和API token路径
+            .addFilterBefore(new OncePerRequestFilter() {
+                @Override
+                protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+                        throws ServletException, IOException {
+                    String path = request.getRequestURI();
+                    // 如果是登录请求或API token请求，跳过JWT过滤器
+                    if (path.equals("/api/login") || path.startsWith("/api/apiAdpater/")) {
+                        System.out.println(">>> 跳过JWT过滤器，直接放行请求: " + path);
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
+                    // 否则，使用JWT过滤器处理
+                    jwtAuthFilter.doFilter(request, response, filterChain);
+                }
+            }, UsernamePasswordAuthenticationFilter.class)
             .logout(logout -> logout
                 .logoutUrl("/api/logout")
                 .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
