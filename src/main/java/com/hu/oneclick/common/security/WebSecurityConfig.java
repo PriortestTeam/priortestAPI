@@ -107,7 +107,7 @@ public class WebSecurityConfig {
             .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler)
             .and()
             .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
-            .permissiveRequestUrls("/authentication", "/login")
+            .permissiveRequestUrls("/authentication", "/login", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/configuration/**")
             .and()
             .logout(logout -> logout
                 .logoutUrl("/logout")
