@@ -2,6 +2,7 @@ modules = ["java-graalvm22.3", "web"]
 
 [nix]
 channel = "stable-24_05"
+packages = ["lsof", "psmisc"]
 
 [workflows]
 runButton = "Run Spring Boot App"
