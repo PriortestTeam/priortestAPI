@@ -89,7 +89,7 @@
             <version>3.5.5</version>
         </dependency>
 
-        <!-- pagehelper 分页插件 -->
+        <!-- pagehelper 分页插件 - 更新至兼容Spring Boot 3.x的版本 -->
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper-spring-boot-starter</artifactId>
@@ -99,7 +99,18 @@
                     <groupId>org.mybatis.spring.boot</groupId>
                     <artifactId>mybatis-spring-boot-starter</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.github.jsqlparser</groupId>
+                    <artifactId>jsqlparser</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        
+        <!-- 手动引入兼容的jsqlparser版本 -->
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>4.9</version>
         </dependency>
         <!-- FastJSON2 - Secure replacement for FastJSON -->
         <dependency>
