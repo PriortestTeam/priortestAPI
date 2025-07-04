@@ -62,6 +62,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public JwtAuthenticationFilter() {
         // 默认不处理任何请求
         this.requiresAuthenticationRequestMatcher = request -> false;
+        // 初始化白名单，添加登录接口
+        this.permissiveRequestMatchers = new ArrayList<>();
+        setPermissiveUrl("/login");
     }
 
     @Override
@@ -104,7 +107,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
 
                 // 检查是否是apiAdapter路径
-                boolean isApiAdapterPath = requestPath.contains("apiAdapter");
+                boolean isApiAdapterPath = requestPath.toLowerCase().contains("apiadapter");
                 if (!isApiAdapterPath) {
                     throw new InsufficientAuthenticationException("API token can only access apiAdapter endpoints");
                 }
@@ -174,6 +177,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                               HttpServletResponse response, AuthenticationException failed)
         throws IOException, ServletException {
         SecurityContextHolder.clearContext();
+        System.out.println(">>> 登录失败，异常信息: " + failed.getMessage());
         failureHandler.onAuthenticationFailure(request, response, failed);
     }
 
