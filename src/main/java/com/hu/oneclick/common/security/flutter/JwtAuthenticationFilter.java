@@ -221,9 +221,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         for (String url : urls) {
             permissiveRequestMatchers.add(new AntPathRequestMatcher(url));
+            // Also add the /api prefixed version
+            if (!url.startsWith("/api/")) {
+                permissiveRequestMatchers.add(new AntPathRequestMatcher("/api" + url));
+            }
         }
-        // 兼容 context-path: /api 的情况，自动加 /api/login
-        permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/login"));
     }
 
     public void setAuthenticationSuccessHandler(

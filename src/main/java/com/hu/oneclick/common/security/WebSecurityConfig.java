@@ -102,13 +102,13 @@ public class WebSecurityConfig {
         JwtAuthenticationFilter jwtAuthFilter = applicationContext.getBean(JwtAuthenticationFilter.class);
         jwtAuthFilter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
         jwtAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
-        jwtAuthFilter.setPermissiveUrl("/authentication", "/login");
+        jwtAuthFilter.setPermissiveUrl("/authentication", "/login", "/api/login");
         jwtAuthFilter.setAuthenticationManager(authenticationManager());
 
         // @formatter:off
         http
-            .addFilterAfter(jsonAuthFilter, LogoutFilter.class)
-            .addFilterBefore(jwtAuthFilter, LogoutFilter.class)
+            .addFilterBefore(jwtAuthFilter, LogoutFilter.class)  // JWT filter first
+            .addFilterAfter(jsonAuthFilter, LogoutFilter.class)  // Then username/password filter
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
@@ -117,6 +117,7 @@ public class WebSecurityConfig {
                 .requestMatchers(
                     "/authentication",
                     "/login",
+                    "/api/login",
                     "/swagger-ui.html",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",

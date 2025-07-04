@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public MyUsernamePasswordAuthenticationFilter() {
-        super(new AntPathRequestMatcher("/login", "POST"));
+        super(new AntPathRequestMatcher("/api/login", "POST"));
     }
 
     @Override
