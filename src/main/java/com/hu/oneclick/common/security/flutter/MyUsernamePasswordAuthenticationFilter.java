@@ -31,10 +31,7 @@ import java.util.Collections;
 public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public MyUsernamePasswordAuthenticationFilter() {
-        super(new AndRequestMatcher(
-            new AntPathRequestMatcher("/api/login", "POST"),
-            new MediaTypeRequestMatcher(MediaType.APPLICATION_JSON)
-        ));
+        super(new AntPathRequestMatcher("/api/login", "POST"));
     }
 
     @Override
@@ -48,7 +45,7 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
         throws AuthenticationException, IOException, ServletException {
         
-        if (!request.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
+        if (!MediaType.APPLICATION_JSON_VALUE.equalsIgnoreCase(request.getContentType())) {
             throw new HttpMediaTypeNotSupportedException(
                 request.getContentType(), 
                 Collections.singletonList(MediaType.APPLICATION_JSON));

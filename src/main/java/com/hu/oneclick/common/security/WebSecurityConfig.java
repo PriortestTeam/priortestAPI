@@ -136,39 +136,46 @@ public class WebSecurityConfig {
 
         // @formatter:off
         http
-            .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // JWT filter after login
-            .addFilterAt(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)  // Login filter at UsernamePasswordAuthenticationFilter position
+            .securityMatcher("/api/**")  // 只处理/api/**请求
+            .addFilterBefore(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)  // 确保JSON登录过滤器最先处理
+            .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // JWT过滤器在登录之后
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(
-                    "/authentication",
-                    "/login",
                     "/api/login",
+                    "/api/swagger-ui.html",
+                    "/api/swagger-ui/**",
+                    "/api/v3/api-docs/**",
+                    "/api/swagger-resources/**",
+                    "/api/webjars/**",
+                    "/api/auth/**",
+                    "/api/public/**"
+                ).permitAll()
+                .anyRequest().authenticated()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/api/logout")
+                .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.deny())
+                .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")));
+
+        // 配置非API路径的安全设置
+        http.securityMatcher("/**")
+            .authorizeHttpRequests(authz -> authz
+                .requestMatchers(
                     "/swagger-ui.html",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/swagger-resources/**",
                     "/webjars/**",
-                    "/api/swagger-ui/**",
-                    "/api/v3/api-docs/**",
-                    "/api/swagger-resources/**",
-                    "/api/webjars/**",
-                    "/actuator/**",
-                    "/api/auth/**",
-                    "/api/public/**",
-                    "/api/swagger-ui.html"
+                    "/actuator/**"
                 ).permitAll()
                 .anyRequest().authenticated()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
-            .headers(headers -> headers
-                .frameOptions(frame -> frame.deny())
-                .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")));
+            );
         // @formatter:on
 
         return http.build();
