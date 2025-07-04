@@ -7,6 +7,7 @@ import com.hu.oneclick.config.ListTypeHandler;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -20,6 +21,7 @@ import java.util.List;
  */
 @TableName(autoResultMap = true)
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class Issue extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = 418948698502600149L;
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.Date;
  * @since 2021-02-03 09:36:08
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class Sprint extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = -33132559253115264L;
 

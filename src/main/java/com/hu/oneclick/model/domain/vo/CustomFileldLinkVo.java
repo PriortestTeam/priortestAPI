@@ -3,6 +3,7 @@ package com.hu.oneclick.model.domain.vo;
 import com.hu.oneclick.model.entity.CustomFileldLink;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonGetter;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * @CreateTime 2022年12月27日 20:57:00
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class CustomFileldLinkVo extends CustomFileldLink implements Serializable {
 
     private static final long serialVersionUID = 870331260917684971L;

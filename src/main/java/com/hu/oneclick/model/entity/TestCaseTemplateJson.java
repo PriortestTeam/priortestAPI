@@ -8,6 +8,7 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
  * 
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class TestCaseTemplateJson extends BaseEntity implements VerifyParam , Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -6,6 +6,7 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.model.base.BaseEntity;
 import com.hu.oneclick.model.base.VerifyParam;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ import java.util.Date;
  * @since 2020-12-07 20:59:50
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class Project extends BaseEntity implements VerifyParam, Serializable {
     private static final long serialVersionUID = -54866876049537399L;
 

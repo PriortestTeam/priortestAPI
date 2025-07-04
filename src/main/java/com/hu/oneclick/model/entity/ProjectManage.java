@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.Date;
  */
 @Data
 @TableName(value = "project")
+@EqualsAndHashCode(callSuper=false)
 public class ProjectManage extends AssignBaseEntity implements Serializable {
 
 
