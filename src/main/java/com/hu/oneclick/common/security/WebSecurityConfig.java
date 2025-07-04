@@ -119,19 +119,15 @@ public class WebSecurityConfig {
         filter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
         filter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
         filter.setPermissiveUrl(
-            "/api/login",
-            "/api/swagger-ui.html",
-            "/api/swagger-ui/**",
-            "/api/v3/api-docs/**",
-            "/api/swagger-resources/**",
-            "/api/webjars/**",
-            "/api/auth/**",
-            "/api/public/**",
+            "/login",
+            "/register",
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
             "/webjars/**",
+            "/auth/**",
+            "/public/**",
             "/actuator/**"
         );
         return filter;
@@ -139,6 +135,8 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println(">>> 配置SecurityFilterChain");
+        
         // Configure custom authentication filters
         MyUsernamePasswordAuthenticationFilter jsonAuthFilter = new MyUsernamePasswordAuthenticationFilter();
         jsonAuthFilter.setAuthenticationSuccessHandler(jsonLoginSuccessHandler);
@@ -158,6 +156,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(
                     "/api/login",
+                    "/api/register",
                     "/api/swagger-ui.html",
                     "/api/swagger-ui/**",
                     "/api/v3/api-docs/**",
@@ -174,8 +173,8 @@ public class WebSecurityConfig {
                 ).permitAll()
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAt(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)  // 将登录过滤器放在用户名密码过滤器的位置
+            .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // JWT过滤器放在登录过滤器后面
             .logout(logout -> logout
                 .logoutUrl("/api/logout")
                 .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
@@ -184,6 +183,7 @@ public class WebSecurityConfig {
                 .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")));
         // @formatter:on
 
+        System.out.println(">>> SecurityFilterChain配置完成");
         return http.build();
     }
 
