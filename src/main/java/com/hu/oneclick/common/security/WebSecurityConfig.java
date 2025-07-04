@@ -25,6 +25,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
@@ -125,8 +126,8 @@ public class WebSecurityConfig {
 
         // @formatter:off
         http
-            .addFilterBefore(jwtAuthFilter, LogoutFilter.class)  // JWT filter first
-            .addFilterAfter(jsonAuthFilter, LogoutFilter.class)  // Then username/password filter
+            .addFilterAt(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)  // Login filter at UsernamePasswordAuthenticationFilter position
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // JWT filter before login
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
