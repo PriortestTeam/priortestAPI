@@ -79,27 +79,24 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        AuthenticationManager authManager = http.getSharedObject(AuthenticationManagerBuilder.class)
             .authenticationProvider(daoAuthenticationProvider())
             .authenticationProvider(jwtAuthenticationProvider)
             .build();
-    }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Configure custom authentication filters
         MyUsernamePasswordAuthenticationFilter jsonAuthFilter = new MyUsernamePasswordAuthenticationFilter();
         jsonAuthFilter.setAuthenticationSuccessHandler(jsonLoginSuccessHandler);
         jsonAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
         jsonAuthFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
-        jsonAuthFilter.setAuthenticationManager(authenticationManager(http));
+        jsonAuthFilter.setAuthenticationManager(authManager);
         
         JwtAuthenticationFilter jwtAuthFilter = new JwtAuthenticationFilter();
         jwtAuthFilter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
         jwtAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
         jwtAuthFilter.setPermissiveUrl("/authentication", "/login");
-        jwtAuthFilter.setAuthenticationManager(authenticationManager(http));
+        jwtAuthFilter.setAuthenticationManager(authManager);
 
         http
             .addFilterAfter(jsonAuthFilter, LogoutFilter.class)
@@ -154,9 +151,7 @@ public class WebSecurityConfig {
     }
 
     @Autowired
-    public void configureGlobal(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder auth) {
-        System.out.println(">>> configureGlobal 注册 provider: " + daoAuthenticationProvider() + ", " + jwtAuthenticationProvider);
-        auth.authenticationProvider(daoAuthenticationProvider());
-        auth.authenticationProvider(jwtAuthenticationProvider);
+    public void configureGlobal(AuthenticationManagerBuilder auth) {
+        // This method can be removed as we're configuring the authentication manager inline
     }
 }
