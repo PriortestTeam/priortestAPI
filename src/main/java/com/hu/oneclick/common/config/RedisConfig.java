@@ -39,7 +39,6 @@ public class RedisConfig {
         //指定使用单节点部署方式
         config.useSingleServer()
                 .setAddress("redis://" + redisHost + ":" + redisPort)
-                .setPassword(redisPassword)
                 .setClientName(null)
                 .setDatabase(3)
                 .setIdleConnectionTimeout(10000)
