@@ -76,8 +76,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestURI = request.getRequestURI();
+
+        // 跳过Swagger相关路径
+        if (requestURI.contains("/swagger-ui") ||
+            requestURI.contains("/v3/api-docs") ||
+            requestURI.contains("/swagger-resources") ||
+            requestURI.contains("/webjars") ||
+            requestURI.contains("/configuration")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String authorization = request.getHeader("Authorization");
         System.out.println(">>> JwtAuthenticationFilter 收到请求: " + request.getRequestURI() + ", Authorization: " + authorization);
 
