@@ -150,6 +150,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(
                     "/api/login",
+                    "/login",
                     "/api/register",
                     "/api/swagger-ui.html",
                     "/api/swagger-ui/**",
@@ -177,7 +178,7 @@ public class WebSecurityConfig {
                         throws ServletException, IOException {
                     String path = request.getRequestURI();
                     // 如果是登录请求或API token请求，跳过JWT过滤器
-                    if (path.equals("/api/login") || path.startsWith("/api/apiAdpater/")) {
+                    if (path.equals("/api/login") || path.equals("/login") || path.startsWith("/api/apiAdpater/")) {
                         System.out.println(">>> 跳过JWT过滤器，直接放行请求: " + path);
                         filterChain.doFilter(request, response);
                         return;

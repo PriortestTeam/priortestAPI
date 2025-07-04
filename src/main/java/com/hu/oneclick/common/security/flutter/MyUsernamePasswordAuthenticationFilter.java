@@ -9,8 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -31,8 +30,11 @@ import java.util.Collections;
 public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public MyUsernamePasswordAuthenticationFilter() {
-        super(new AntPathRequestMatcher("/api/login", "POST"));
-        System.out.println(">>> 初始化MyUsernamePasswordAuthenticationFilter，URL匹配模式: /api/login (POST)");
+        super(new OrRequestMatcher(
+            new AntPathRequestMatcher("/api/login", "POST"),
+            new AntPathRequestMatcher("/login", "POST")
+        ));
+        System.out.println(">>> 初始化MyUsernamePasswordAuthenticationFilter，URL匹配模式: /api/login 和 /login (POST)");
     }
 
     @Override
@@ -89,15 +91,16 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
             password = "";
         }
 
-        if (masterIdentifier == null) {
-            masterIdentifier = "";
+        //判断是否是子用户登录,不为空则拼接登录邮箱账号
+        if (!StringUtils.isEmpty(masterIdentifier)) {
+            username = masterIdentifier + OneConstant.COMMON.SUB_USER_SEPARATOR + username;
         }
+
+        username = username.trim();
 
         System.out.println(">>> 创建认证token");
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
             username, password);
-
-        authRequest.setDetails(masterIdentifier);
 
         System.out.println(">>> 开始认证");
         Authentication auth = this.getAuthenticationManager().authenticate(authRequest);
