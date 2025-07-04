@@ -136,9 +136,6 @@ public class WebSecurityConfig {
 
         // @formatter:off
         http
-            .securityMatcher("/api/**")  // 只处理/api/**请求
-            .addFilterBefore(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)  // 确保JSON登录过滤器最先处理
-            .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // JWT过滤器在登录之后
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
@@ -152,21 +149,7 @@ public class WebSecurityConfig {
                     "/api/swagger-resources/**",
                     "/api/webjars/**",
                     "/api/auth/**",
-                    "/api/public/**"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/api/logout")
-                .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
-            .headers(headers -> headers
-                .frameOptions(frame -> frame.deny())
-                .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")));
-
-        // 配置非API路径的安全设置
-        http.securityMatcher("/**")
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers(
+                    "/api/public/**",
                     "/swagger-ui.html",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
@@ -175,7 +158,15 @@ public class WebSecurityConfig {
                     "/actuator/**"
                 ).permitAll()
                 .anyRequest().authenticated()
-            );
+            )
+            .addFilterBefore(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .logout(logout -> logout
+                .logoutUrl("/api/logout")
+                .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.deny())
+                .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")));
         // @formatter:on
 
         return http.build();
