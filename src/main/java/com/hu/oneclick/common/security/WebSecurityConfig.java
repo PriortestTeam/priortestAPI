@@ -8,6 +8,9 @@ import com.hu.oneclick.common.security.service.JwtAuthenticationProvider;
 import com.hu.oneclick.common.security.flutter.MyUsernamePasswordAuthenticationFilter;
 import com.hu.oneclick.common.security.flutter.JwtAuthenticationFilter;
 import com.hu.oneclick.common.security.handler.HttpStatusLoginFailureHandler;
+import com.hu.oneclick.dao.SysUserTokenDao;
+import com.hu.oneclick.server.user.UserService;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +28,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -63,6 +65,15 @@ public class WebSecurityConfig {
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private SysUserTokenDao sysUserTokenDao;
+
+    @Autowired
+    private RedissonClient redisClient;
+
     @PostConstruct
     public void checkJwtProvider() {
         System.out.println(">>> JwtAuthenticationProvider 注入结果: " + jwtAuthenticationProvider);
@@ -91,6 +102,16 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter();
+        filter.setAuthenticationManager(authenticationManager());
+        filter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
+        filter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
+        filter.setPermissiveUrl("/authentication", "/login", "/api/login");
+        return filter;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Configure custom authentication filters
         MyUsernamePasswordAuthenticationFilter jsonAuthFilter = new MyUsernamePasswordAuthenticationFilter();
@@ -99,11 +120,8 @@ public class WebSecurityConfig {
         jsonAuthFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
         jsonAuthFilter.setAuthenticationManager(authenticationManager());
         
-        JwtAuthenticationFilter jwtAuthFilter = applicationContext.getBean(JwtAuthenticationFilter.class);
-        jwtAuthFilter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
-        jwtAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
-        jwtAuthFilter.setPermissiveUrl("/authentication", "/login", "/api/login");
-        jwtAuthFilter.setAuthenticationManager(authenticationManager());
+        // Get the JWT filter from the Spring context
+        JwtAuthenticationFilter jwtAuthFilter = jwtAuthenticationFilter();
 
         // @formatter:off
         http

@@ -28,7 +28,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -42,7 +41,6 @@ import java.util.*;
 /**
  * @author qingyang
  */
-@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final RequestMatcher requiresAuthenticationRequestMatcher;
