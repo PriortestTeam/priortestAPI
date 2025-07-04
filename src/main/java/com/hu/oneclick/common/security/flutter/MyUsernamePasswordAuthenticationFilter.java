@@ -10,7 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -31,7 +31,7 @@ import java.util.Collections;
 public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public MyUsernamePasswordAuthenticationFilter() {
-        super(new OrRequestMatcher(
+        super(new AndRequestMatcher(
             new AntPathRequestMatcher("/api/login", "POST"),
             new MediaTypeRequestMatcher(MediaType.APPLICATION_JSON)
         ));

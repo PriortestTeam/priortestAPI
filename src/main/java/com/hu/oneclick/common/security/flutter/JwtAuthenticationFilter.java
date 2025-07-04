@@ -70,11 +70,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Assert.notNull(failureHandler, "AuthenticationFailureHandler must be specified");
     }
 
-    protected String getJwtToken(HttpServletRequest request) {
-        String authInfo = request.getHeader("Authorization");
-        return StringUtils.removeStart(authInfo, "Bearer ");
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
@@ -104,7 +99,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     throw new InsufficientAuthenticationException("Token invalid or user logged out");
                 }
                 
-                successfulAuthentication(request, response, filterChain, authResult);
+                SecurityContextHolder.getContext().setAuthentication(authResult);
                 filterChain.doFilter(request, response);
                 return;
             } catch (JWTDecodeException e) {
@@ -148,26 +143,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
+    protected String getJwtToken(HttpServletRequest request) {
+        String authInfo = request.getHeader("Authorization");
+        return StringUtils.removeStart(authInfo, "Bearer ");
+    }
+
     protected void unsuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response, AuthenticationException failed)
         throws IOException, ServletException {
         SecurityContextHolder.clearContext();
         failureHandler.onAuthenticationFailure(request, response, failed);
-    }
-
-    protected void successfulAuthentication(HttpServletRequest request,
-                                            HttpServletResponse response, FilterChain chain, Authentication authResult)
-        throws IOException, ServletException {
-        SecurityContextHolder.getContext().setAuthentication(authResult);
-        successHandler.onAuthenticationSuccess(request, response, authResult);
-    }
-
-    protected AuthenticationManager getAuthenticationManager() {
-        return authenticationManager;
-    }
-
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
     }
 
     protected boolean requiresAuthentication(HttpServletRequest request,
@@ -200,6 +185,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
+
     public void setAuthenticationSuccessHandler(
         AuthenticationSuccessHandler successHandler) {
         Assert.notNull(successHandler, "successHandler cannot be null");
@@ -212,6 +201,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.failureHandler = failureHandler;
     }
 
+    protected AuthenticationManager getAuthenticationManager() {
+        return authenticationManager;
+    }
+
     protected AuthenticationSuccessHandler getSuccessHandler() {
         return successHandler;
     }
@@ -219,5 +212,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected AuthenticationFailureHandler getFailureHandler() {
         return failureHandler;
     }
-
 }
