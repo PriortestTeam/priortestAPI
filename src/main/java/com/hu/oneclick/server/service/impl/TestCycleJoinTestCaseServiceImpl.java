@@ -109,8 +109,7 @@ public class TestCycleJoinTestCaseServiceImpl extends
 
         // 验证 testCaseId 都必须存在
         final LambdaQueryWrapper<TestCase> testCaseWrapper = new LambdaQueryWrapper<>();
-        final List<Long> testCaseIdList = Arrays.stream(dto.getTestCaseIds())
-            .collect(Collectors.toList());
+        final List<Long> testCaseIdList = Arrays.asList(dto.getTestCaseIds());
         final List<TestCase> testCases = testCaseDao.selectList(
             testCaseWrapper
                 .eq(TestCase::getProjectId, dto.getProjectId())

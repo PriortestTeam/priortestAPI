@@ -83,6 +83,14 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // Configure custom authentication filters
+        http.apply(new JsonLoginConfigurer<>())
+            .loginSuccessHandler(jsonLoginSuccessHandler);
+        
+        http.apply(new JwtLoginConfigurer<>())
+            .tokenValidSuccessHandler(jwtRefreshSuccessHandler)
+            .permissiveRequestUrls("/authentication", "/login");
+
         return http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
@@ -109,11 +117,6 @@ public class WebSecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/api/webjars/**")).permitAll()
                 .anyRequest().authenticated()
             )
-            .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler)
-            .and()
-            .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
-            .permissiveRequestUrls("/authentication", "/login")
-            .and()
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
