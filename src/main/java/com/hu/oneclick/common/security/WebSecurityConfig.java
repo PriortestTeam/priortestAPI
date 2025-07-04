@@ -94,6 +94,8 @@ public class WebSecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/swagger-resources/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/webjars/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
