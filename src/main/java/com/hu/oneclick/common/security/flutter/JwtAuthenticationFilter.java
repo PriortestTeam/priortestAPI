@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.requiresAuthenticationRequestMatcher = request -> false;
         // 初始化白名单，添加登录接口
         this.permissiveRequestMatchers = new ArrayList<>();
-        setPermissiveUrl("/login");
+        setPermissiveUrl("/login", "/register", "/logout");
     }
 
     @Override
@@ -106,10 +106,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     throw new InsufficientAuthenticationException("emailId is required for API token");
                 }
 
-                // 检查是否是apiAdapter路径
-                boolean isApiAdapterPath = requestPath.toLowerCase().contains("apiadapter");
+                // 检查是否是apiAdpater路径
+                boolean isApiAdapterPath = requestPath.toLowerCase().contains("apiadpater");
+                System.out.println(">>> 检查API路径: " + requestPath + ", 是否匹配: " + isApiAdapterPath);
                 if (!isApiAdapterPath) {
-                    throw new InsufficientAuthenticationException("API token can only access apiAdapter endpoints");
+                    throw new InsufficientAuthenticationException("API token can only access apiAdpater endpoints");
                 }
 
                 SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authHeader);
