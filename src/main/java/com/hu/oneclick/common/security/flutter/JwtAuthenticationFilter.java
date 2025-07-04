@@ -76,102 +76,93 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String requestURI = request.getRequestURI();
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+        throws ServletException, IOException {
+        System.out.println(">>> JwtAuthenticationFilter 收到请求: " + request.getRequestURI() + ", Authorization: " + request.getHeader("Authorization"));
 
-        // 跳过Swagger相关路径
-        if (requestURI.contains("/swagger-ui") ||
-            requestURI.contains("/v3/api-docs") ||
-            requestURI.contains("/swagger-resources") ||
-            requestURI.contains("/webjars") ||
-            requestURI.contains("/configuration")) {
+        // First check if this is a permissive URL - if so, skip JWT validation entirely
+        if (permissiveRequest(request)) {
             filterChain.doFilter(request, response);
             return;
         }
-        String authorization = request.getHeader("Authorization");
-        System.out.println(">>> JwtAuthenticationFilter 收到请求: " + request.getRequestURI() + ", Authorization: " + authorization);
 
-        SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(authorization);
-        System.out.println(">>> sysUserTokenDao.selectByTokenValue 结果: " + (sysUserToken == null ? "null" : sysUserToken.getTokenValue()));
+        // For non-permissive URLs, require authentication
+        if (!requiresAuthentication(request, response)) {
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write(
+                JSONObject.toJSONString(new Resp.Builder<String>().buildResult("请填写账号密码")));
+            return;
+        }
 
-        if (!org.springframework.util.StringUtils.isEmpty(sysUserToken)) {
-            Date expirationTime = sysUserToken.getExpirationTime();
-            if (expirationTime.before(new Date())) {
-                response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write(
-                    JSONObject.toJSONString(new Resp.Builder<String>().buildResult("token已过期")));
-                return;
+        try {
+            String token = getJwtToken(request);
+            if (StringUtils.isBlank(token)) {
+                throw new InsufficientAuthenticationException("JWT is Empty");
             }
-            Authentication authentication = new ApiToken(true, sysUserToken.getTokenName());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            //第三方调用api
-            String emailId = request.getHeader("emailId");
-            if (StringUtils.isNotBlank(emailId)) {
-                if (!userService.getUserAccountInfo(emailId, authorization)) {
+            // Validate token from database
+            SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(token);
+            System.out.println(">>> sysUserTokenDao.selectByTokenValue 结果: " + sysUserToken);
+
+            if (sysUserToken != null) {
+                Date expirationTime = sysUserToken.getExpirationTime();
+                if (expirationTime.before(new Date())) {
                     response.setContentType("application/json;charset=UTF-8");
                     response.getWriter().write(
-                        JSONObject.toJSONString(new Resp.Builder<String>().buildResult("权限认证失败")));
+                        JSONObject.toJSONString(new Resp.Builder<String>().buildResult("token已过期")));
                     return;
+                }
+
+                // Handle API token authentication
+                String emailId = request.getHeader("emailId");
+                if (StringUtils.isNotBlank(emailId)) {
+                    if (!userService.getUserAccountInfo(emailId, token)) {
+                        response.setContentType("application/json;charset=UTF-8");
+                        response.getWriter().write(
+                            JSONObject.toJSONString(new Resp.Builder<String>().buildResult("权限认证失败")));
+                        return;
+                    }
+                }
+
+                Authentication authentication = new ApiToken(true, sysUserToken.getTokenName());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                // Cache user info in Redis if emailId is present
+                if (StringUtils.isNotEmpty(emailId)) {
+                    AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(emailId);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put(REDIS_KEY_PREFIX.LOGIN + sysUserToken.getTokenName(), JSONObject.toJSONString(authLoginUser));
+                    redisClient.getBuckets().set(map);
                 }
             } else {
-                response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write(
-                    JSONObject.toJSONString(new Resp.Builder<String>().buildResult("必须填写emailid")));
-                return;
-            }
-        } else {
-            Authentication authResult = null;
-            AuthenticationException failed = null;
-            if (!requiresAuthentication(request, response)) {
-                //过滤不用认证的请求
-                if (permissiveRequest(request)) {
-                    filterChain.doFilter(request, response);
-                    return;
-                }
-                //否则失败
-                response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().write(
-                    JSONObject.toJSONString(new Resp.Builder<String>().buildResult("请填写账号密码")));
-                return;
-            }
-            try {
-                String token = getJwtToken(request);
-                System.out.println(">>> getJwtToken: " + token);
-                if (StringUtils.isNotBlank(token)) {
+                // JWT token validation
+                try {
                     JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
-                    authResult = this.getAuthenticationManager().authenticate(authToken);
+                    Authentication authResult = this.getAuthenticationManager().authenticate(authToken);
+                    
                     String username = ((AuthLoginUser) authResult.getPrincipal()).getUsername();
                     RBucket<String> bucket = redisClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + username);
                     String redisToken = bucket.get();
-                    System.out.println(">>> Redis中查到的token: " + redisToken);
+                    
                     if (!StringUtils.equals(redisToken, token)) {
-                        System.out.println(">>> Redis token与请求token不一致，token无效或已被踢下线");
+                        throw new InsufficientAuthenticationException("Token invalid or user logged out");
                     }
-                } else {
-                    failed = new InsufficientAuthenticationException("JWT is Empty");
+                    
+                    successfulAuthentication(request, response, filterChain, authResult);
+                } catch (JWTDecodeException e) {
+                    unsuccessfulAuthentication(request, response, 
+                        new InsufficientAuthenticationException("JWT format error", e));
+                    return;
+                } catch (AuthenticationException e) {
+                    unsuccessfulAuthentication(request, response, e);
+                    return;
                 }
-            } catch (JWTDecodeException e) {
-                failed = new InsufficientAuthenticationException("JWT format error", null);
-            } catch (AuthenticationException e) {
-                failed = e;
-                logger.error(e);
             }
-            if (authResult != null) {
-                successfulAuthentication(request, response, filterChain, authResult);
-            } else if (!permissiveRequest(request)) {
-                unsuccessfulAuthentication(request, response, failed);
-                return;
-            }
+
+            filterChain.doFilter(request, response);
+        } catch (AuthenticationException e) {
+            unsuccessfulAuthentication(request, response, e);
         }
-        if (StringUtils.isNotEmpty(request.getHeader("emailid"))) {
-            //权限认证通过后把当前登录人信息放入redis缓存
-            AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(request.getHeader("emailid"));
-            Map<String, Object> map = new HashMap<>();
-            map.put(REDIS_KEY_PREFIX.LOGIN + sysUserToken.getTokenName(), JSONObject.toJSONString(authLoginUser));
-            redisClient.getBuckets().set(map);
-        }
-        filterChain.doFilter(request, response);
     }
 
     protected void unsuccessfulAuthentication(HttpServletRequest request,
