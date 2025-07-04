@@ -9,6 +9,7 @@ import com.hu.oneclick.common.security.flutter.MyUsernamePasswordAuthenticationF
 import com.hu.oneclick.common.security.flutter.JwtAuthenticationFilter;
 import com.hu.oneclick.common.security.handler.HttpStatusLoginFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -59,6 +60,9 @@ public class WebSecurityConfig {
     @Autowired
     private JwtAuthenticationProvider jwtAuthenticationProvider;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @PostConstruct
     public void checkJwtProvider() {
         System.out.println(">>> JwtAuthenticationProvider 注入结果: " + jwtAuthenticationProvider);
@@ -95,7 +99,7 @@ public class WebSecurityConfig {
         jsonAuthFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
         jsonAuthFilter.setAuthenticationManager(authenticationManager());
         
-        JwtAuthenticationFilter jwtAuthFilter = new JwtAuthenticationFilter();
+        JwtAuthenticationFilter jwtAuthFilter = applicationContext.getBean(JwtAuthenticationFilter.class);
         jwtAuthFilter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
         jwtAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
         jwtAuthFilter.setPermissiveUrl("/authentication", "/login");
