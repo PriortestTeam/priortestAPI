@@ -109,10 +109,11 @@ public class WebSecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/api/webjars/**")).permitAll()
                 .anyRequest().authenticated()
             )
-            .with(new JsonLoginConfigurer<>(), configurer -> configurer.loginSuccessHandler(jsonLoginSuccessHandler))
-            .with(new JwtLoginConfigurer<>(), configurer -> configurer
-                .permissiveRequestUrls("/api/login", "/api/auth/**", "/api/public/**")
-                .tokenValidSuccessHandler(jwtRefreshSuccessHandler))
+            .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler)
+            .and()
+            .apply(new JwtLoginConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler)
+            .permissiveRequestUrls("/authentication", "/login")
+            .and()
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessHandler(httpStatusLogoutSuccessHandler))

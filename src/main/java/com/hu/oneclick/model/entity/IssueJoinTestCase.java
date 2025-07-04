@@ -1,7 +1,5 @@
 package com.hu.oneclick.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 
 /**
@@ -13,7 +11,6 @@ import java.io.Serializable;
 public class IssueJoinTestCase implements Serializable {
     private static final long serialVersionUID = 948868735634832580L;
 
-    @TableId(type = IdType.INPUT)
     private String issueId;
 
     private String testCaseId;
