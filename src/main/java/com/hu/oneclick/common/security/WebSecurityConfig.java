@@ -5,6 +5,9 @@ import com.hu.oneclick.common.security.handler.HttpStatusLogoutSuccessHandler;
 import com.hu.oneclick.common.security.handler.JsonLoginSuccessHandler;
 import com.hu.oneclick.common.security.handler.JwtRefreshSuccessHandler;
 import com.hu.oneclick.common.security.service.JwtAuthenticationProvider;
+import com.hu.oneclick.common.security.flutter.MyUsernamePasswordAuthenticationFilter;
+import com.hu.oneclick.common.security.flutter.JwtAuthenticationFilter;
+import com.hu.oneclick.common.security.handler.HttpStatusLoginFailureHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +26,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 
 import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
@@ -84,14 +89,21 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Configure custom authentication filters
-        http.apply(new JsonLoginConfigurer<>())
-            .loginSuccessHandler(jsonLoginSuccessHandler);
+        MyUsernamePasswordAuthenticationFilter jsonAuthFilter = new MyUsernamePasswordAuthenticationFilter();
+        jsonAuthFilter.setAuthenticationSuccessHandler(jsonLoginSuccessHandler);
+        jsonAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
+        jsonAuthFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
+        jsonAuthFilter.setAuthenticationManager(authenticationManager(http));
         
-        http.apply(new JwtLoginConfigurer<>())
-            .tokenValidSuccessHandler(jwtRefreshSuccessHandler)
-            .permissiveRequestUrls("/authentication", "/login");
+        JwtAuthenticationFilter jwtAuthFilter = new JwtAuthenticationFilter();
+        jwtAuthFilter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
+        jwtAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
+        jwtAuthFilter.setPermissiveUrl("/authentication", "/login");
+        jwtAuthFilter.setAuthenticationManager(authenticationManager(http));
 
         return http
+            .addFilterAfter(jsonAuthFilter, LogoutFilter.class)
+            .addFilterBefore(jwtAuthFilter, LogoutFilter.class)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
