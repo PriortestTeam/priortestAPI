@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,13 +21,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 
 import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
@@ -79,25 +79,29 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        AuthenticationManager authManager = http.getSharedObject(AuthenticationManagerBuilder.class)
-            .authenticationProvider(daoAuthenticationProvider())
-            .authenticationProvider(jwtAuthenticationProvider)
-            .build();
+    public AuthenticationManager authenticationManager() {
+        return new ProviderManager(Arrays.asList(
+            daoAuthenticationProvider(),
+            jwtAuthenticationProvider
+        ));
+    }
 
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Configure custom authentication filters
         MyUsernamePasswordAuthenticationFilter jsonAuthFilter = new MyUsernamePasswordAuthenticationFilter();
         jsonAuthFilter.setAuthenticationSuccessHandler(jsonLoginSuccessHandler);
         jsonAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
         jsonAuthFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
-        jsonAuthFilter.setAuthenticationManager(authManager);
+        jsonAuthFilter.setAuthenticationManager(authenticationManager());
         
         JwtAuthenticationFilter jwtAuthFilter = new JwtAuthenticationFilter();
         jwtAuthFilter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
         jwtAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
         jwtAuthFilter.setPermissiveUrl("/authentication", "/login");
-        jwtAuthFilter.setAuthenticationManager(authManager);
+        jwtAuthFilter.setAuthenticationManager(authenticationManager());
 
+        // @formatter:off
         http
             .addFilterAfter(jsonAuthFilter, LogoutFilter.class)
             .addFilterBefore(jwtAuthFilter, LogoutFilter.class)
@@ -106,24 +110,23 @@ public class WebSecurityConfig {
             .formLogin(form -> form.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers(new AntPathRequestMatcher("/authentication")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/swagger-resources/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/webjars/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/swagger-ui/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v3/api-docs/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/swagger-resources/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/webjars/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/public/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/v3/api-docs/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/swagger-ui/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/swagger-ui.html")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/webjars/**")).permitAll()
+                .requestMatchers(
+                    "/authentication",
+                    "/login",
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/webjars/**",
+                    "/api/swagger-ui/**",
+                    "/api/v3/api-docs/**",
+                    "/api/swagger-resources/**",
+                    "/api/webjars/**",
+                    "/actuator/**",
+                    "/api/auth/**",
+                    "/api/public/**",
+                    "/api/swagger-ui.html"
+                ).permitAll()
                 .anyRequest().authenticated()
             )
             .logout(logout -> logout
@@ -132,6 +135,7 @@ public class WebSecurityConfig {
             .headers(headers -> headers
                 .frameOptions(frame -> frame.deny())
                 .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")));
+        // @formatter:on
 
         return http.build();
     }
@@ -148,10 +152,5 @@ public class WebSecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) {
-        // This method can be removed as we're configuring the authentication manager inline
     }
 }
