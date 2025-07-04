@@ -48,6 +48,6 @@ public class RedisConfig {
         config.setNettyThreads(4);
         config.setCodec(new JsonJacksonCodec());
         config.setTransportMode(TransportMode.NIO);
-        return Redisson.create(config);reate(config);
+        return Redisson.create(config);
     }
 }
