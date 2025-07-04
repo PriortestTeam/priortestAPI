@@ -136,8 +136,8 @@ public class WebSecurityConfig {
 
         // @formatter:off
         http
+            .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // JWT filter after login
             .addFilterAt(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)  // Login filter at UsernamePasswordAuthenticationFilter position
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)  // JWT filter before login
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())

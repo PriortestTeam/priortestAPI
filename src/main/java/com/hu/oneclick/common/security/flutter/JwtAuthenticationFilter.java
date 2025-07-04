@@ -60,7 +60,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
 
     public JwtAuthenticationFilter() {
-        this.requiresAuthenticationRequestMatcher = new RequestHeaderRequestMatcher("Authorization");
+        this.requiresAuthenticationRequestMatcher = request -> {
+            if (permissiveRequestMatchers != null) {
+                for (RequestMatcher matcher : permissiveRequestMatchers) {
+                    if (matcher.matches(request)) {
+                        return false;
+                    }
+                }
+            }
+            String authHeader = request.getHeader("Authorization");
+            return authHeader != null && authHeader.startsWith("Bearer ");
+        };
     }
 
     @Override
@@ -75,8 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
         System.out.println(">>> JwtAuthenticationFilter 收到请求: " + request.getRequestURI() + ", Authorization: " + request.getHeader("Authorization"));
 
-        // First check if this is a permissive URL - if so, skip JWT validation entirely
-        if (permissiveRequest(request)) {
+        if (!requiresAuthenticationRequestMatcher.matches(request)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -87,7 +96,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new InsufficientAuthenticationException("JWT is Empty");
             }
 
-            // Try JWT token validation first
             try {
                 JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
                 Authentication authResult = this.getAuthenticationManager().authenticate(authToken);
@@ -103,7 +111,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             } catch (JWTDecodeException e) {
-                // If JWT validation fails, try database token
                 SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(token);
                 System.out.println(">>> sysUserTokenDao.selectByTokenValue 结果: " + sysUserToken);
 
@@ -113,7 +120,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         throw new InsufficientAuthenticationException("Token has expired");
                     }
 
-                    // Handle API token authentication
                     String emailId = request.getHeader("emailId");
                     if (StringUtils.isNotBlank(emailId)) {
                         if (!userService.getUserAccountInfo(emailId, token)) {
@@ -124,7 +130,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     Authentication authentication = new ApiToken(true, sysUserToken.getTokenName());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                    // Cache user info in Redis if emailId is present
                     if (StringUtils.isNotEmpty(emailId)) {
                         AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(emailId);
                         Map<String, Object> map = new HashMap<>();
@@ -178,7 +183,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         for (String url : urls) {
             permissiveRequestMatchers.add(new AntPathRequestMatcher(url));
-            // Also add the /api prefixed version
             if (!url.startsWith("/api/")) {
                 permissiveRequestMatchers.add(new AntPathRequestMatcher("/api" + url));
             }
