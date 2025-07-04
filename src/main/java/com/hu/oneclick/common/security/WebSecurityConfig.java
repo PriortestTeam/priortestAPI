@@ -101,7 +101,7 @@ public class WebSecurityConfig {
         jwtAuthFilter.setPermissiveUrl("/authentication", "/login");
         jwtAuthFilter.setAuthenticationManager(authenticationManager(http));
 
-        return http
+        http
             .addFilterAfter(jsonAuthFilter, LogoutFilter.class)
             .addFilterBefore(jwtAuthFilter, LogoutFilter.class)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -134,8 +134,9 @@ public class WebSecurityConfig {
                 .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
             .headers(headers -> headers
                 .frameOptions(frame -> frame.deny())
-                .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")))
-            .build();
+                .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")));
+
+        return http.build();
     }
 
     @Bean
