@@ -23,6 +23,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -36,6 +39,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author qingyang
@@ -82,8 +86,7 @@ public class WebSecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // 支持 {bcrypt}、{noop} 等多种格式
-        return org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -91,6 +94,13 @@ public class WebSecurityConfig {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
+        // Allow empty passwords to be treated as {noop}
+        provider.setPasswordEncoder(new DelegatingPasswordEncoder("bcrypt", 
+            Map.of(
+                "bcrypt", new BCryptPasswordEncoder(),
+                "noop", NoOpPasswordEncoder.getInstance()
+            )
+        ));
         return provider;
     }
 

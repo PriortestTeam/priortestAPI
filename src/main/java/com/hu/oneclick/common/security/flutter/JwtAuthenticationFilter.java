@@ -86,80 +86,63 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // For non-permissive URLs, require authentication
-        if (!requiresAuthentication(request, response)) {
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(
-                JSONObject.toJSONString(new Resp.Builder<String>().buildResult("请填写账号密码")));
-            return;
-        }
-
         try {
             String token = getJwtToken(request);
             if (StringUtils.isBlank(token)) {
                 throw new InsufficientAuthenticationException("JWT is Empty");
             }
 
-            // Validate token from database
-            SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(token);
-            System.out.println(">>> sysUserTokenDao.selectByTokenValue 结果: " + sysUserToken);
-
-            if (sysUserToken != null) {
-                Date expirationTime = sysUserToken.getExpirationTime();
-                if (expirationTime.before(new Date())) {
-                    response.setContentType("application/json;charset=UTF-8");
-                    response.getWriter().write(
-                        JSONObject.toJSONString(new Resp.Builder<String>().buildResult("token已过期")));
-                    return;
+            // Try JWT token validation first
+            try {
+                JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
+                Authentication authResult = this.getAuthenticationManager().authenticate(authToken);
+                String username = ((AuthLoginUser) authResult.getPrincipal()).getUsername();
+                RBucket<String> bucket = redisClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + username);
+                String redisToken = bucket.get();
+                
+                if (!StringUtils.equals(redisToken, token)) {
+                    throw new InsufficientAuthenticationException("Token invalid or user logged out");
                 }
+                
+                successfulAuthentication(request, response, filterChain, authResult);
+                filterChain.doFilter(request, response);
+                return;
+            } catch (JWTDecodeException e) {
+                // If JWT validation fails, try database token
+                SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(token);
+                System.out.println(">>> sysUserTokenDao.selectByTokenValue 结果: " + sysUserToken);
 
-                // Handle API token authentication
-                String emailId = request.getHeader("emailId");
-                if (StringUtils.isNotBlank(emailId)) {
-                    if (!userService.getUserAccountInfo(emailId, token)) {
-                        response.setContentType("application/json;charset=UTF-8");
-                        response.getWriter().write(
-                            JSONObject.toJSONString(new Resp.Builder<String>().buildResult("权限认证失败")));
-                        return;
+                if (sysUserToken != null) {
+                    Date expirationTime = sysUserToken.getExpirationTime();
+                    if (expirationTime.before(new Date())) {
+                        throw new InsufficientAuthenticationException("Token has expired");
                     }
-                }
 
-                Authentication authentication = new ApiToken(true, sysUserToken.getTokenName());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    // Handle API token authentication
+                    String emailId = request.getHeader("emailId");
+                    if (StringUtils.isNotBlank(emailId)) {
+                        if (!userService.getUserAccountInfo(emailId, token)) {
+                            throw new InsufficientAuthenticationException("Authentication failed");
+                        }
+                    }
 
-                // Cache user info in Redis if emailId is present
-                if (StringUtils.isNotEmpty(emailId)) {
-                    AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(emailId);
-                    Map<String, Object> map = new HashMap<>();
-                    map.put(REDIS_KEY_PREFIX.LOGIN + sysUserToken.getTokenName(), JSONObject.toJSONString(authLoginUser));
-                    redisClient.getBuckets().set(map);
-                }
-            } else {
-                // JWT token validation
-                try {
-                    JwtAuthenticationToken authToken = new JwtAuthenticationToken(JWT.decode(token));
-                    Authentication authResult = this.getAuthenticationManager().authenticate(authToken);
-                    
-                    String username = ((AuthLoginUser) authResult.getPrincipal()).getUsername();
-                    RBucket<String> bucket = redisClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + username);
-                    String redisToken = bucket.get();
-                    
-                    if (!StringUtils.equals(redisToken, token)) {
-                        throw new InsufficientAuthenticationException("Token invalid or user logged out");
+                    Authentication authentication = new ApiToken(true, sysUserToken.getTokenName());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    // Cache user info in Redis if emailId is present
+                    if (StringUtils.isNotEmpty(emailId)) {
+                        AuthLoginUser authLoginUser = (AuthLoginUser) userDetailsService.loadUserByUsername(emailId);
+                        Map<String, Object> map = new HashMap<>();
+                        map.put(REDIS_KEY_PREFIX.LOGIN + sysUserToken.getTokenName(), JSONObject.toJSONString(authLoginUser));
+                        redisClient.getBuckets().set(map);
                     }
                     
-                    successfulAuthentication(request, response, filterChain, authResult);
-                } catch (JWTDecodeException e) {
-                    unsuccessfulAuthentication(request, response, 
-                        new InsufficientAuthenticationException("JWT format error", e));
-                    return;
-                } catch (AuthenticationException e) {
-                    unsuccessfulAuthentication(request, response, e);
+                    filterChain.doFilter(request, response);
                     return;
                 }
+                
+                throw new InsufficientAuthenticationException("Invalid token format", e);
             }
-
-            filterChain.doFilter(request, response);
         } catch (AuthenticationException e) {
             unsuccessfulAuthentication(request, response, e);
         }
