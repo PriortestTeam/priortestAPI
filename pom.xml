@@ -86,7 +86,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.7</version>
+            <version>3.5.5</version>
         </dependency>
 
         <!-- pagehelper 分页插件 -->
@@ -114,11 +114,11 @@
             <artifactId>joda-time</artifactId>
             <version>2.10.3</version>
         </dependency>
-        <!--Email-->
+        <!--Email - Jakarta EE compatible-->
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.6.2</version>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.1</version>
         </dependency>
 
         <dependency>
@@ -144,8 +144,8 @@
         </dependency>
         <dependency>
             <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-            <version>3.11.1</version>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>3.23.4</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -219,11 +219,7 @@
             <artifactId>itextpdf</artifactId>
             <version>5.5.13</version>
         </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.0</version>
-        </dependency>
+        <!-- JAXB API - Jakarta EE compatible, included in Spring Boot 3.x -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
