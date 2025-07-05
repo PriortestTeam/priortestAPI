@@ -120,24 +120,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             Authentication authentication = null;
 
-            try {
-                // 首先尝试JWT验证
-                if (authHeader.startsWith("Bearer ")) {
-                    System.out.println(">>> 检测到Bearer token，尝试JWT验证");
-                    authentication = authenticateBearerToken(authHeader.substring(7).trim());
-                } else {
-                    System.out.println(">>> 检测到非Bearer token，当作API token处理");
-                    // 直接将整个authHeader作为API token处理
-                    authentication = authenticateApiToken(authHeader.trim());
-                }
+            // 首先尝试JWT验证
+            if (authHeader.startsWith("Bearer ")) {
+                System.out.println(">>> 检测到Bearer token，尝试JWT验证");
+                authentication = authenticateBearerToken(authHeader.substring(7).trim());
+            } else {
+                System.out.println(">>> 检测到非Bearer token，当作API token处理");
+                // 直接将整个authHeader作为API token处理
+                authentication = authenticateApiToken(authHeader.trim());
+            }
 
-                if (authentication == null) {
-                    System.out.println(">>> 认证失败，token无效");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json;charset=UTF-8");
-                    response.getWriter().write("{\"error\":\"Invalid token\"}");
-                    return;
-                }
+            if (authentication == null) {
+                System.out.println(">>> 认证失败，token无效");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\":\"Invalid token\"}");
+                return;
+            }
 
             System.out.println(">>> 认证成功，继续处理请求");
             System.out.println(">>> 认证对象类型: " + authentication.getClass().getSimpleName());
@@ -149,7 +148,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             System.out.println(">>> Token验证失败:");
             System.out.println(">>>   - 路径: " + path);
-            System.out.println(">>>   - Authorization头格式: " + (authHeader.length() > 10 ? authHeader.substring(0, 10) + "..." : authHeader));
+            System.out.println(">>>   - Authorization头格式: " + (authHeader != null && authHeader.length() > 10 ? authHeader.substring(0, 10) + "..." : authHeader));
             System.out.println(">>>   - 错误信息: " + e.getMessage());
             System.out.println(">>> 返回401未授权");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
