@@ -21,7 +21,7 @@ public class AspectPage {
 
     @Around("@annotation(com.hu.oneclick.model.annotation.Page)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes().getRequest();
         String pageNum = request.getParameter("pageNum");
         String pageSize = request.getParameter("pageSize");
 

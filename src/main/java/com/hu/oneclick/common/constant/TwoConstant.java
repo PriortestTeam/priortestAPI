@@ -38,7 +38,7 @@ public class TwoConstant {
             case OneConstant.SCOPE.ONE_PROJECT:
                 return OneConstant.SCOPE.ONE_PROJECT;
             default:
-                throw new BizException(SysConstantEnum.SCOPE_ERROR.getCode(),SysConstantEnum.SCOPE_ERROR.getValue());
+                throw new BizException(SysConstantEnum.SCOPE_ERROR.getCode(),SysConstantEnum.SCOPE_ERROR.getValue();
         }
     }
 
@@ -49,7 +49,7 @@ public class TwoConstant {
      * @return
      */
     public static String subUserNameCrop(String username){
-        if (username.contains(OneConstant.COMMON.SUB_USER_SEPARATOR)){
+        if (username.contains(OneConstant.COMMON.SUB_USER_SEPARATOR){
             int index = username.indexOf("#*&") + 3;
             return username.substring(index);
         }
@@ -65,13 +65,13 @@ public class TwoConstant {
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0;i < strings.size(); i++){
-            if (StringUtils.isEmpty(strings.get(i))){
+            if (StringUtils.isEmpty(strings.get(i){
                 sb.append(OneConstant.COMMON.REPLACE_EMPTY_CHARACTERS);
             }else {
                 if (strings.get(i).length() > length) {
-                    throw new BizException(SysConstantEnum.LENGTH_LIMIT_EXCEEDED.getCode(), SysConstantEnum.LENGTH_LIMIT_EXCEEDED.getValue());
+                    throw new BizException(SysConstantEnum.LENGTH_LIMIT_EXCEEDED.getCode(), SysConstantEnum.LENGTH_LIMIT_EXCEEDED.getValue();
                 }
-                sb.append(strings.get(i));
+                sb.append(strings.get(i);
             }
 
             if (i == strings.size() - 1){
@@ -88,12 +88,12 @@ public class TwoConstant {
      * @return
      */
     public static List<String> convertToList(String str){
-        if (StringUtils.isEmpty(str)){
+        if (StringUtils.isEmpty(str){
             return null;
         }
-        List<String> strings = Arrays.asList(str.split(OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER));
+        List<String> strings = Arrays.asList(str.split(OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER);
         for (int i = 0; i < strings.size(); i++){
-            if (strings.get(i).equals(OneConstant.COMMON.REPLACE_EMPTY_CHARACTERS)){
+            if (strings.get(i).equals(OneConstant.COMMON.REPLACE_EMPTY_CHARACTERS){
                 strings.set(i,"");
             }
         }
@@ -105,7 +105,7 @@ public class TwoConstant {
      * 字符串转换成对象
      */
     public static <T> List<T> convertToList(String source, Class<T> clazz){
-        if(StringUtils.isEmpty(source)){
+        if(StringUtils.isEmpty(source){
             return new ArrayList<>();
         }
         return JSON.parseArray(source, clazz);

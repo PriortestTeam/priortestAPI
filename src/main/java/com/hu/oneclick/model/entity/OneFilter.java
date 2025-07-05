@@ -14,7 +14,7 @@ import java.io.Serializable;
 /**
  * @author qingyang todo
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_EMPTY);
 @Data
 public class OneFilter implements VerifyParam, Serializable {
 
@@ -123,13 +123,13 @@ public class OneFilter implements VerifyParam, Serializable {
 
     @Override
     public void verify() throws BizException {
-        if (StringUtils.isEmpty(this.type)) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "类型" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (StringUtils.isEmpty(this.andOr)) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "条件" + SysConstantEnum.PARAM_EMPTY.getValue());
+        if (StringUtils.isEmpty(this.type) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "类型" + SysConstantEnum.PARAM_EMPTY.getValue();
+        } else if (StringUtils.isEmpty(this.andOr) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "条件" + SysConstantEnum.PARAM_EMPTY.getValue();
         }
 
-        if (StringUtils.isEmpty(this.sourceVal)) {
+        if (StringUtils.isEmpty(this.sourceVal) {
             return;
         }
 
@@ -164,7 +164,7 @@ public class OneFilter implements VerifyParam, Serializable {
                 throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "参数格式不正确。");
             }
             length = i > length ? 30 : i;
-            this.textVal = this.sourceVal.substring((split[0] + OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER).length());
+            this.textVal = this.sourceVal.substring((split[0] + OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER).length();
         }
         if (this.textVal.length() > length) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "文本内容不得超过" + length + "个字符。");
@@ -190,8 +190,8 @@ public class OneFilter implements VerifyParam, Serializable {
     private void fDateTime() {
         try {
             String[] split = this.sourceVal.split(OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER);
-            this.beginDate = DateUtil.format(DateUtil.parseDate(split[0]));
-            this.endDate = DateUtil.format(DateUtil.parseDate(split[1]));
+            this.beginDate = DateUtil.format(DateUtil.parseDate(split[0]);
+            this.endDate = DateUtil.format(DateUtil.parseDate(split[1]);
         } catch (Exception e) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "时间格式不正确。");
         }

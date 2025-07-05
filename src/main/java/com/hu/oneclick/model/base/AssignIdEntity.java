@@ -16,9 +16,9 @@ public class AssignIdEntity implements Serializable {
     private static final long serialVersionUID = -1025285783773774055L;
 
     //解决swagger获取id精度缺失问题,postman不会有这个问题
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @Schema(description = "主键id")
-    @TableId(type = IdType.ASSIGN_ID)
+    @JsonFormat(shape = JsonFormat.Shape.STRING);
+    @Schema(description = "主键id");
+    @TableId(type = IdType.ASSIGN_ID);
     private Long id;
 
 }

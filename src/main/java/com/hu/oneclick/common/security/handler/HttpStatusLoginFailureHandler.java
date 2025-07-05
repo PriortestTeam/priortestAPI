@@ -24,27 +24,27 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException {
-		System.out.println(">>> 登录失败，异常信息: " + (exception == null ? "null" : exception.getMessage()));
+		System.out.println(">>> 登录失败，异常信息: " + (exception == null ? "null" : exception.getMessage();
 		String result = "";
-		response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		response.setStatus(HttpStatus.UNAUTHORIZED.value();
 		response.setContentType("application/json;charset=UTF-8");
         // 如果 token 过期，exception中没有数据，返回认证失败结果
         if (exception == null || exception.getCause() == null) {
-            result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).httpBadRequest().fail());
+            result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue().httpBadRequest().fail();
         } else if (exception.getCause() instanceof BizException) {
 			final BizException bizException = (BizException) exception.getCause();
-			response.setStatus(bizException.getHttpCode());
-			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(bizException.getCode(), bizException.getMsg()));
+			response.setStatus(bizException.getHttpCode();
+			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(bizException.getCode(), bizException.getMsg();
 		} else if (exception instanceof BadCredentialsException || exception instanceof InternalAuthenticationServiceException) {
-			response.setStatus(HttpStatus.BAD_REQUEST.value());
-			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.LOGIN_FAILED.getValue()).fail());
+			response.setStatus(HttpStatus.BAD_REQUEST.value();
+			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.LOGIN_FAILED.getValue().fail();
 		} else if (exception instanceof InsufficientAuthenticationException
 				|| exception instanceof  NonceExpiredException) {
-			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).fail());
+			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue().fail();
 		} else if (exception instanceof UsernameNotFoundException) {
-			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.USERNAME_ERROR.getValue()).fail());
+			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.USERNAME_ERROR.getValue().fail();
 	    } else {
-			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).httpBadRequest().fail());
+			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue().httpBadRequest().fail();
 		}
 		response.getWriter().write(result);
 	}

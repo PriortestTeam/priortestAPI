@@ -23,7 +23,7 @@ public class HelloJob extends QuartzJobBean {
                 (k, v) -> log.info("param, key:{}, value:{}", k, v)
         );
         // your logics
-        log.info("Hello Job执行时间: " + new Date());
+        log.info("Hello Job执行时间: " + new Date();
 //        jenkinsManager.buildJob("priortestapi");
         log.info("成功");
     }

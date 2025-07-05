@@ -14,7 +14,7 @@ import java.io.Serializable;
  * @CreateTime 2022年12月27日 20:57:00
  */
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper=false);
 public class CustomFileldLinkVo extends CustomFileldLink implements Serializable {
 
     private static final long serialVersionUID = 870331260917684971L;
@@ -62,9 +62,9 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
 
     private Object child;
 
-    @JsonGetter("customFieldId")
+    @JsonGetter("customFieldId");
     public Object getCustomFieldIdForJson() {
-        if ("fixVersion".equals(this.getFieldNameEn()) && super.getCustomFieldId() != null) {
+        if ("fixVersion".equals(this.getFieldNameEn() && super.getCustomFieldId() != null) {
             return super.getCustomFieldId().toString() + "000";
         }
         return super.getCustomFieldId();

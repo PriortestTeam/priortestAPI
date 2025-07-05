@@ -16,15 +16,15 @@ import java.util.Date;
 @Data
 public class ProjectManageSaveDto {
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @Schema(description = "主键id")
+    @JsonFormat(shape = JsonFormat.Shape.STRING);
+    @Schema(description = "主键id");
     private Long id;
 
-    @NotBlank(message = "标题不能为空")
+    @NotBlank(message = "标题不能为空");
     private String title;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss");
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss");
     private Date planReleaseDate;
 
     private String description;
@@ -46,6 +46,6 @@ public class ProjectManageSaveDto {
     /**
      * 自定义字段值
      */
-    @Schema(description = "自定义字段值")
+    @Schema(description = "自定义字段值");
     private JSONObject customFieldDatas;
 }

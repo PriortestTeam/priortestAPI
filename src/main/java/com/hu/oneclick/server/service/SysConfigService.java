@@ -11,7 +11,4 @@ import java.util.List;
  * @Author Vince
  * @CreateTime 2022年12月24日 18:45:00
  */
-public interface SysConfigService {
 
-    Resp<List<SysConfig>> listByGroup(String scope);
-}

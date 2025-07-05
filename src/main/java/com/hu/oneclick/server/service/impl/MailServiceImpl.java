@@ -36,7 +36,7 @@ public class MailServiceImpl  implements MailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.username}");
     private String from;
 
     @Override
@@ -44,13 +44,13 @@ public class MailServiceImpl  implements MailService {
         //建立邮件消息
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from); // 发送人的邮箱
-        message.setSubject(mail.getTitle()); //标题
-        message.setTo(mail.getToEmail()); //发给谁  对方邮箱
-        message.setText(mail.getContent()); //内容
+        message.setSubject(mail.getTitle(); //标题
+        message.setTo(mail.getToEmail(); //发给谁  对方邮箱
+        message.setText(mail.getContent(); //内容
         try {
             javaMailSender.send(message); //发送
         } catch (MailException e) {
-            logger.error("class: MailServiceImpl#sendTextMail,error []" + e.getMessage());
+            logger.error("class: MailServiceImpl#sendTextMail,error []" + e.getMessage();
         }
     }
 
@@ -62,26 +62,26 @@ public class MailServiceImpl  implements MailService {
             //是否发送的邮件是富文本（附件，图片，html等）
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage,true);
             messageHelper.setFrom(from);// 发送人的邮箱
-            messageHelper.setTo(mail.getToEmail());//发给谁  对方邮箱
-            messageHelper.setSubject(mail.getTitle());//标题
+            messageHelper.setTo(mail.getToEmail();//发给谁  对方邮箱
+            messageHelper.setSubject(mail.getTitle();//标题
             messageHelper.setText(mail.getContent(),isShowHtml);//false，显示原始html代码，无效果
             //判断是否有附加图片等
             if(mail.getAttachment() != null && mail.getAttachment().size() > 0){
                 mail.getAttachment().entrySet().stream().forEach(entrySet -> {
                     try {
-                        File file = new File(String.valueOf(entrySet.getValue()));
-                        if(file.exists()){
-                            messageHelper.addAttachment(entrySet.getKey(), new FileSystemResource(file));
+                        File file = new File(String.valueOf(entrySet.getValue();
+                        if(file.exists(){
+                            messageHelper.addAttachment(entrySet.getKey(), new FileSystemResource(file);
                         }
                     } catch (MessagingException e) {
-                        logger.error("class: MailServiceImpl#sendHtmlMail,error []" + e.getMessage());
+                        logger.error("class: MailServiceImpl#sendHtmlMail,error []" + e.getMessage();
                     }
                 });
             }
             //发送
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            logger.error("class: MailServiceImpl#sendHtmlMail,error []" + e.getMessage());
+            logger.error("class: MailServiceImpl#sendHtmlMail,error []" + e.getMessage();
         }
     }
 
@@ -92,20 +92,20 @@ public class MailServiceImpl  implements MailService {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage,true);
             messageHelper.setFrom(from);// 发送人的邮箱
-            messageHelper.setTo(mailDto.getToEmail());//发给谁  对方邮箱
-            messageHelper.setSubject(mailDto.getTitle()); //标题
+            messageHelper.setTo(mailDto.getToEmail();//发给谁  对方邮箱
+            messageHelper.setSubject(mailDto.getTitle(); //标题
             //使用模板thymeleaf
             //Context是导这个包import org.thymeleaf.context.Context;
             Context context = new Context();
             //定义模板数据
-            context.setVariables(mailDto.getAttachment());
+            context.setVariables(mailDto.getAttachment();
             //获取thymeleaf的html模板
             String emailContent = templateEngine.process("/mailtpl/"+mailDto.getTemplateHtmlName(),context); //指定模板路径
             messageHelper.setText(emailContent,true);
             //发送邮件
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            logger.error("class: MailServiceImpl#sendTemplateMail,error []" + e.getMessage());
+            logger.error("class: MailServiceImpl#sendTemplateMail,error []" + e.getMessage();
         }
     }
     /**
@@ -145,7 +145,7 @@ public class MailServiceImpl  implements MailService {
         helper.setText(contnet, true);
         helper.setFrom(from);
 
-        FileSystemResource file = new FileSystemResource(new File(filePath));
+        FileSystemResource file = new FileSystemResource(new File(filePath);
         helper.addAttachment(sendName, file);
 
         javaMailSender.send(message);

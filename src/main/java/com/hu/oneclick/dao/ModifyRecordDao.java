@@ -6,9 +6,5 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface ModifyRecordDao extends BaseMapper<ModifyRecord> {
 
-    int inserts(@Param("modifyRecord") List<ModifyRecord> modifyRecord);
 
-    List<ModifyRecord> queryList(ModifyRecord modifyRecord);
-}

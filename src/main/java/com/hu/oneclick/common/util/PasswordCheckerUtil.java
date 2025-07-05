@@ -52,16 +52,16 @@ public class PasswordCheckerUtil {
         //包含特殊
         boolean containSpecial = false;
 
-        for (char ch : password.toCharArray()) {
-            if (Character.isUpperCase(ch)) {
+        for (char ch : password.toCharArray() {
+            if (Character.isUpperCase(ch) {
                 containUpperCase = true;
                 containLetter = true;
-            } else if (Character.isLowerCase(ch)) {
+            } else if (Character.isLowerCase(ch) {
                 containLowerCase = true;
                 containLetter = true;
-            } else if (Character.isDigit(ch)) {
+            } else if (Character.isDigit(ch) {
                 containDigit = true;
-            } else if (this.specialCharSet.contains(ch)) {
+            } else if (this.specialCharSet.contains(ch) {
                 containSpecial = true;
             } else {
                 // 非法字符
@@ -90,38 +90,38 @@ public class PasswordCheckerUtil {
     Set<Character> defaultSpecialCharSet() {
         Set<Character> specialChars = new LinkedHashSet<>();
         // 键盘上能找到的符号
-        specialChars.add(Character.valueOf('~'));
-        specialChars.add(Character.valueOf('`'));
-        specialChars.add(Character.valueOf('!'));
-        specialChars.add(Character.valueOf('@'));
-        specialChars.add(Character.valueOf('#'));
-        specialChars.add(Character.valueOf('$'));
-        specialChars.add(Character.valueOf('%'));
-        specialChars.add(Character.valueOf('^'));
-        specialChars.add(Character.valueOf('&'));
-        specialChars.add(Character.valueOf('*'));
-        specialChars.add(Character.valueOf('('));
-        specialChars.add(Character.valueOf(')'));
+        specialChars.add(Character.valueOf('~');
+        specialChars.add(Character.valueOf('');
+        specialChars.add(Character.valueOf('!');
+        specialChars.add(Character.valueOf('@');
+        specialChars.add(Character.valueOf('#');
+        specialChars.add(Character.valueOf('$');
+        specialChars.add(Character.valueOf('%');
+        specialChars.add(Character.valueOf('^');
+        specialChars.add(Character.valueOf('&');
+        specialChars.add(Character.valueOf('*');
+        specialChars.add(Character.valueOf('(');
+        specialChars.add(Character.valueOf(')');
         specialChars.add('-');
         specialChars.add('_');
-        specialChars.add(Character.valueOf('+'));
-        specialChars.add(Character.valueOf('='));
-        specialChars.add(Character.valueOf('{'));
-        specialChars.add(Character.valueOf('['));
-        specialChars.add(Character.valueOf('}'));
-        specialChars.add(Character.valueOf(']'));
-        specialChars.add(Character.valueOf('|'));
-        specialChars.add(Character.valueOf('\\'));
-        specialChars.add(Character.valueOf(':'));
-        specialChars.add(Character.valueOf(';'));
-        specialChars.add(Character.valueOf('"'));
-        specialChars.add(Character.valueOf('\''));
-        specialChars.add(Character.valueOf('<'));
-        specialChars.add(Character.valueOf(','));
-        specialChars.add(Character.valueOf('>'));
-        specialChars.add(Character.valueOf('.'));
-        specialChars.add(Character.valueOf('?'));
-        specialChars.add(Character.valueOf('/'));
+        specialChars.add(Character.valueOf('+');
+        specialChars.add(Character.valueOf('=');
+        specialChars.add(Character.valueOf('{');
+        specialChars.add(Character.valueOf('[');
+        specialChars.add(Character.valueOf('}');
+        specialChars.add(Character.valueOf(']');
+        specialChars.add(Character.valueOf('|');
+        specialChars.add(Character.valueOf('\\');
+        specialChars.add(Character.valueOf(':');
+        specialChars.add(Character.valueOf(';');
+        specialChars.add(Character.valueOf('"');
+        specialChars.add(Character.valueOf('\'');
+        specialChars.add(Character.valueOf('<');
+        specialChars.add(Character.valueOf(',');
+        specialChars.add(Character.valueOf('>');
+        specialChars.add(Character.valueOf('.');
+        specialChars.add(Character.valueOf('?');
+        specialChars.add(Character.valueOf('/');
         return specialChars;
     }
 }

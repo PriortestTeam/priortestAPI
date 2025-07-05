@@ -18,18 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequestMapping("/retrieveTCInTestCycle")
+@RequestMapping("/retrieveTCInTestCycle");
 public class RetrieveTestCycleInTestCycleController {
 
     @Resource
     private TestCycleJoinTestCaseService testCycleJoinTestCaseService;
 
-    @GetMapping("/hasCaseId")
+    @GetMapping("/hasCaseId");
     public Resp<Boolean> hasCaseId(@RequestParam Long caseId, @RequestParam Long projectId,
         @RequestParam Long cycleId) {
         if (caseId == null || projectId == null || cycleId == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "caseId projectId cycleId 不能为空",
-                HttpStatus.BAD_REQUEST.value());
+                HttpStatus.BAD_REQUEST.value();
         }
         log.info("hasCaseId ==> caseId: {}, projectId: {}, cycleId: {}", caseId, projectId, cycleId);
         int count = testCycleJoinTestCaseService.countCycleIdByCaseId(caseId, projectId, cycleId);

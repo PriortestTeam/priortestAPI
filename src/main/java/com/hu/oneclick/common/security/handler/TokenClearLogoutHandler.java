@@ -51,20 +51,20 @@ public class TokenClearLogoutHandler implements LogoutHandler {
         String username = "";
         if (user != null && user.getUsername() != null) {
             username = user.getSysUser().getEmail();
-            jwtUserServiceImpl.deleteUserLoginInfo(user.getUsername());
+            jwtUserServiceImpl.deleteUserLoginInfo(user.getUsername();
             // 退出登陆的时候，将登陆的token清理掉；
             RBucket<Object> bucket = redissonClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + username);
-            if (!Objects.isNull(bucket)) {
+            if (!Objects.isNull(bucket) {
                 bucket.delete();
             }
         }
         Map<String, String> result = new HashMap<>(2);
-        result.put("status", SysConstantEnum.LOGOUT_SUCCESS.getCode());
-        result.put("msg", SysConstantEnum.LOGOUT_SUCCESS.getValue());
-        if (jwtUserServiceImpl.verifyUserExists(username)) {
+        result.put("status", SysConstantEnum.LOGOUT_SUCCESS.getCode();
+        result.put("msg", SysConstantEnum.LOGOUT_SUCCESS.getValue();
+        if (jwtUserServiceImpl.verifyUserExists(username) {
             //存在返回系统异常
-            result.put("status", SysConstantEnum.SYS_ERROR.getCode());
-            result.put("msg", SysConstantEnum.SYS_ERROR.getValue());
+            result.put("status", SysConstantEnum.SYS_ERROR.getCode();
+            result.put("msg", SysConstantEnum.SYS_ERROR.getValue();
         }
         Resp<Map<String, String>> ok = new Resp.Builder<Map<String, String>>().setData(result).ok();
         String s = JSON.toJSONString(ok);
@@ -72,7 +72,7 @@ public class TokenClearLogoutHandler implements LogoutHandler {
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write(s);
         } catch (IOException e) {
-            throw new BizException(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue());
+            throw new BizException(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue();
         }
     }
 

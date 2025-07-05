@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/sysConfig")
+@RequestMapping("/sysConfig");
 @RequiredArgsConstructor
 public class SysConfigController {
 
@@ -29,7 +29,7 @@ public class SysConfigController {
     @NonNull
     private final SysConfigService sysConfigService;
 
-    @GetMapping("/listByGroup/{scope}")
+    @GetMapping("/listByGroup/{scope}");
     public Resp<List<SysConfig>> listByGroup(@PathVariable("scope") String scope) {
         return sysConfigService.listByGroup(scope);
     }

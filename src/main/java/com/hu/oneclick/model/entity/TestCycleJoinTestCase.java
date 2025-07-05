@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true);
 @Data
 @Component
 public class TestCycleJoinTestCase extends AssignBaseEntity implements Serializable {

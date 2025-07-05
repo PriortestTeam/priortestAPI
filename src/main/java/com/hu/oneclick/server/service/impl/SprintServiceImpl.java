@@ -58,7 +58,7 @@ public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements
 
     @Override
     public List<Sprint> list(SprintParam param) {
-        return this.list(param.getQueryCondition());
+        return this.list(param.getQueryCondition();
     }
 
     @Override
@@ -66,8 +66,8 @@ public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements
         Sprint sprint = new Sprint();
         BeanUtil.copyProperties(dto, sprint);
         // 保存自定义字段
-        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            sprint.setSprintExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+        if (!JSONUtil.isNull(dto.getCustomFieldDatas() {
+            sprint.setSprintExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas();
         }
         this.baseMapper.insert(sprint);
         return sprint;
@@ -75,15 +75,15 @@ public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements
 
     @Override
     public Sprint edit(SprintSaveDto dto) {
-        Sprint entity = this.getByIdAndProjectId(dto.getId(), dto.getProjectId());
+        Sprint entity = this.getByIdAndProjectId(dto.getId(), dto.getProjectId();
         if (null == entity) {
-            throw new BaseException(StrUtil.format("迭代查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
+            throw new BaseException(StrUtil.format("迭代查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId();
         }
         Sprint sprint = new Sprint();
         BeanUtil.copyProperties(dto, sprint);
         // 保存自定义字段
-        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            sprint.setSprintExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+        if (!JSONUtil.isNull(dto.getCustomFieldDatas() {
+            sprint.setSprintExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas();
         }
         this.baseMapper.updateById(sprint);
         return sprint;
@@ -103,7 +103,7 @@ public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements
     public Sprint info(Long id) {
         Sprint sprint = baseMapper.selectById(id);
         if (sprint == null) {
-            throw new BaseException(StrUtil.format("迭代查询不到。ID：{}", id));
+            throw new BaseException(StrUtil.format("迭代查询不到。ID：{}", id);
         }
         return sprint;
     }
@@ -114,7 +114,7 @@ public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements
         for (Long id : ids) {
             Sprint sprint = baseMapper.selectById(id);
             if (sprint == null) {
-                throw new BaseException(StrUtil.format("迭代查询不到。ID：{}", id));
+                throw new BaseException(StrUtil.format("迭代查询不到。ID：{}", id);
             }
             Sprint sprintClone = new Sprint();
             BeanUtil.copyProperties(sprint, sprintClone);
@@ -127,7 +127,7 @@ public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements
 
     @Override
     public PageInfo<Sprint> listWithViewFilter(SprintParam param, int pageNum, int pageSize) {
-        if (viewFilterService.shouldApplyViewFilter(param.getViewId())) {
+        if (viewFilterService.shouldApplyViewFilter(param.getViewId() {
             return listWithViewFilterLogic(param, pageNum, pageSize);
         } else {
             return list(param, pageNum, pageSize);
@@ -139,15 +139,15 @@ public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements
         try {
             Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
             if (filterParams == null) {
-                return new PageInfo<>(new ArrayList<>());
+                return new PageInfo<>(new ArrayList<>();
             }
             Class<?> sprintClass = Class.forName("com.hu.oneclick.model.entity.Sprint");
             List<Map<String, Object>> result = mapSearcher.searchAll(sprintClass, filterParams);
-            List<Sprint> sprintList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Sprint.class)).collect(Collectors.toList());
+            List<Sprint> sprintList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Sprint.class).collect(Collectors.toList();
             return PageUtil.manualPaging(sprintList);
         } catch (Exception e) {
             logger.error("使用BeanSearcher查询迭代失败，viewId: {}, projectId: {}", viewId, projectId, e);
-            return new PageInfo<>(new ArrayList<>());
+            return new PageInfo<>(new ArrayList<>();
         }
     }
 
@@ -175,9 +175,9 @@ public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements
             offset,
             pageSize
         );
-        logger.info("queryByFieldAndValue - 查询结果数量: {}", result.size());
-        if (!result.isEmpty()) {
-            logger.info("queryByFieldAndValue - 第一条记录: {}", result.get(0));
+        logger.info("queryByFieldAndValue - 查询结果数量: {}", result.size();
+        if (!result.isEmpty() {
+            logger.info("queryByFieldAndValue - 第一条记录: {}", result.get(0);
         }
         long total = viewDao.countRecordsByScope(
             tableName,
@@ -187,32 +187,32 @@ public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements
             null
         );
         logger.info("queryByFieldAndValue - 总记录数: {}", total);
-        List<Sprint> sprintList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Sprint.class)).collect(Collectors.toList());
+        List<Sprint> sprintList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Sprint.class).collect(Collectors.toList();
         PageInfo<Sprint> pageInfo = new PageInfo<>(sprintList);
         pageInfo.setPageNum(pageNum);
         pageInfo.setPageSize(pageSize);
         pageInfo.setTotal(total);
-        pageInfo.setPages((int) ((total + pageSize - 1) / pageSize));
+        pageInfo.setPages((int) ((total + pageSize - 1) / pageSize);
         pageInfo.setIsFirstPage(pageNum == 1);
-        pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
+        pageInfo.setIsLastPage(pageNum >= pageInfo.getPages();
         pageInfo.setHasPreviousPage(pageNum > 1);
-        pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
+        pageInfo.setHasNextPage(pageNum < pageInfo.getPages();
         logger.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
-                 pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage());
+                 pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage();
         return pageInfo;
     }
 
     private PageInfo<Sprint> listWithViewFilterLogic(SprintParam param, int pageNum, int pageSize) {
         try {
             Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
-                param.getViewId(), param.getProjectId().toString());
+                param.getViewId(), param.getProjectId().toString();
             if (filterParams == null) {
                 logger.warn("获取视图过滤参数失败，回退到简单查询");
                 return list(param, pageNum, pageSize);
             }
             Class<?> sprintClass = Class.forName("com.hu.oneclick.model.entity.Sprint");
             List<Map<String, Object>> result = mapSearcher.searchAll(sprintClass, filterParams);
-            List<Sprint> sprintList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Sprint.class)).collect(Collectors.toList());
+            List<Sprint> sprintList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Sprint.class).collect(Collectors.toList();
             int total = sprintList.size();
             int startIndex = (pageNum - 1) * pageSize;
             int endIndex = Math.min(startIndex + pageSize, total);

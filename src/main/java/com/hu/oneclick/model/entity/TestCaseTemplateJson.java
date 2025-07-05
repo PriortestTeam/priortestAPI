@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
  * 
  */
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper=false);
 public class TestCaseTemplateJson extends BaseEntity implements VerifyParam , Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -53,10 +53,10 @@ public class TestCaseTemplateJson extends BaseEntity implements VerifyParam , Se
 
     @Override
     public void verify() throws BizException {
-        if(StringUtils.isEmpty(templateName)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"模板名称" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if(StringUtils.isEmpty(jsonContent)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"模板内容" + SysConstantEnum.PARAM_EMPTY.getValue());
+        if(StringUtils.isEmpty(templateName){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"模板名称" + SysConstantEnum.PARAM_EMPTY.getValue();
+        }else if(StringUtils.isEmpty(jsonContent){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"模板内容" + SysConstantEnum.PARAM_EMPTY.getValue();
         }
     }
 }

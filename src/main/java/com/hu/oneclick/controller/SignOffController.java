@@ -19,8 +19,8 @@ import java.util.Map;
  * @date 2021/9/16 - 21:13
  */
 @RestController
-@RequestMapping("/signOff")
-@Tag(name = "验收", description = "验收相关接口")
+@RequestMapping("/signOff");
+@Tag(name = "验收", description = "验收相关接口");
 public class SignOffController {
     @Autowired
     private ProjectService projectService;
@@ -41,65 +41,65 @@ public class SignOffController {
     @Autowired
     PdfGenerateService pdfGenerateService;
 
-    @GetMapping("/getProjectEnv")
+    @GetMapping("/getProjectEnv");
     public Resp<List<CustomFieldPossBileDto>> getProjectEnv() {
         return customFieldsService.getPossBile("env");
     }
 
 
-    @GetMapping("/getProjectVersion")
+    @GetMapping("/getProjectVersion");
     public Resp<List<CustomFieldPossBileDto>> getProjectVersion() {
         return customFieldsService.getPossBile("version");
     }
 
 
-    @GetMapping("/getIssue")
+    @GetMapping("/getIssue");
     public Resp<List<CustomFieldPossBileDto>> getIssue() {
         return customFieldsService.getPossBile("issueStatus");
     }
 
-    @GetMapping("/getTestCycleDetail")
+    @GetMapping("/getTestCycleDetail");
     public Resp<List<Map<String, String>>> getTestCycleVersion(@RequestParam String projectId, @RequestParam String env, @RequestParam String version) {
         return testCycleService.getTestCycleVersion(projectId, env, version);
     }
 
-    @PostMapping("/generate")
-    @Operation(summary = "生成pdf文档")
+    @PostMapping("/generate");
+    @Operation(summary = "生成pdf文档");
     public Object generate(@RequestBody SignOffParam signOffParam) {
         return pdfGenerateService.generatePdf(signOffParam);
     }
 
 
-    @PostMapping("/upload")
-    @Operation(summary = "文件上传")
+    @PostMapping("/upload");
+    @Operation(summary = "文件上传");
     public Resp<String> upload(@RequestBody MultipartFile file) {
         return projectService.upload(file);
     }
 
-    @GetMapping("/delete")
-    @Operation(summary = "文件删除")
+    @GetMapping("/delete");
+    @Operation(summary = "文件删除");
     public Resp<String> delete(@RequestParam String fileId) {
         return attachmentService.deleteAttachmentById(fileId);
     }
 
 
-    @GetMapping("/getPdf")
-    @Operation(summary = "返回当前项目下产生的PDF列表")
+    @GetMapping("/getPdf");
+    @Operation(summary = "返回当前项目下产生的PDF列表");
     public Resp<List<ProjectSignOff>> getPdf() {
         return signOffService.getPdf();
     }
 
 
-    @GetMapping("/getUserAttachmentSign")
-    @Operation(summary = "访问用户签名文件路径")
+    @GetMapping("/getUserAttachmentSign");
+    @Operation(summary = "访问用户签名文件路径");
     public Resp<List<Map<String, Object>>> getUserAttachmentSign() {
         return attachmentService.getUserAttachment();
     }
 
 
-    @GetMapping("getProjectListByUser")
-    @Operation(summary = "获取当前用户下title列表")
+    @GetMapping("getProjectListByUser");
+    @Operation(summary = "获取当前用户下title列表");
     public Object getProjectListByUser() {
-        return new Resp.Builder<>().setData(userProjectService.getUserProject()).ok();
+        return new Resp.Builder<>().setData(userProjectService.getUserProject().ok();
     }
 }

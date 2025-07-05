@@ -34,7 +34,7 @@ public class PDFTableUtil {
         this.dirPath = dirPath;
         document = new PDDocument();
         // Load the TrueType font from resources
-        try (InputStream is = ResourceLoader.class.getResourceAsStream("/fonts/simfang.ttf")) {
+        try (InputStream is = ResourceLoader.class.getResourceAsStream("/fonts/simfang.ttf") {
             if (is == null) {
                 throw new IOException("Font file not found: /fonts/simfang.ttf");
             }
@@ -55,11 +55,11 @@ public class PDFTableUtil {
         setYHeight(5);
         int curRow = 0;
         while (curRow < datas.length) {
-            int endRow = Math.min((curRow + (int) (yPos / cellHeight)), datas.length);
+            int endRow = Math.min((curRow + (int) (yPos / cellHeight), datas.length);
             for (int i = 0; i <= (endRow - curRow); i++) {
                 if (i != 0) {
-                    if (i == 5 && datas[4][0].equals("在线报表")) {
-                        yCur = yCur - (cellHeight + (fontSize * (datas[4][1].split(",").length)));
+                    if (i == 5 && datas[4][0].equals("在线报表") {
+                        yCur = yCur - (cellHeight + (fontSize * (datas[4][1].split(",").length);
                     } else {
                         yCur = yCur - cellHeight;
                     }
@@ -69,7 +69,7 @@ public class PDFTableUtil {
                 contentStream.stroke();
             }
             for (int i = 0; i < 3; i++) {
-                float xPoint = i == 0 ? 50 : (cellWidth + (xPos / 2)) * i;
+                float xPoint = i == 0 ? 50 : (cellWidth + (xPos / 2) * i;
                 xPoint = i == 2 ? xPoint - xPos : xPoint;
                 contentStream.moveTo(xPoint, yPos);
                 contentStream.lineTo(xPoint, yCur);
@@ -78,14 +78,14 @@ public class PDFTableUtil {
             for (int i = curRow; i < endRow; i++) {
                 yPos = yPos - (cellHeight - 10);
                 for (int j = 0; j < 2; j++) {
-                    float textX = (cellWidth * (j + 1)) / 2 + 50;
+                    float textX = (cellWidth * (j + 1) / 2 + 50;
                     textX = j == 0 ? textX - 50 : textX;
-                    if (j == 1 && !datas[i][j].isEmpty() && hasEndWith(datas[i][j])) {
+                    if (j == 1 && !datas[i][j].isEmpty() && hasEndWith(datas[i][j]) {
                         PDImageXObject image = PDImageXObject.createFromFile(datas[i][j], document);
                         contentStream.drawImage(image, (cellWidth * j) + 50, yPos - 10, 120, 20);
                     } else {
-                        if (i == 4 && j == 1 && datas[4][0].equals("在线报表")) {
-                            for (var url : datas[4][1].split(",")) {
+                        if (i == 4 && j == 1 && datas[4][0].equals("在线报表") {
+                            for (var url : datas[4][1].split(",") {
                                 contentStream.beginText();
                                 contentStream.newLineAtOffset(textX, yPos);
                                 contentStream.showText(url);
@@ -143,11 +143,11 @@ public class PDFTableUtil {
     }
 
     private boolean hasEndWith(String path) {
-        if (!path.startsWith("/")) {
+        if (!path.startsWith("/") {
             return false;
         }
         Path path1 = Path.of(path);
-        if (!path1.isAbsolute()) {
+        if (!path1.isAbsolute() {
             return false;
         }
         Set<String> suffix = new HashSet<>();
@@ -157,7 +157,7 @@ public class PDFTableUtil {
         suffix.add(".jpeg");
 
         for (String s : suffix) {
-            if (path.endsWith(s)) {
+            if (path.endsWith(s) {
                 return true;
             }
         }

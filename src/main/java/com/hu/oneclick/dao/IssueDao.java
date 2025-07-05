@@ -7,17 +7,9 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface IssueDao extends BaseMapper<Issue> {
 
 
-    Issue queryById(@Param("id") String id,@Param("masterId") String masterId);
 
-    int updateByPrimaryKeySelective(Issue issue);
 
-    @Page
-    List<Issue> queryList(Issue issue);
 
-    Issue queryCycleAndTest(String testCaseId, String testCycleId);
 
-    List<Issue> findAll();
-}

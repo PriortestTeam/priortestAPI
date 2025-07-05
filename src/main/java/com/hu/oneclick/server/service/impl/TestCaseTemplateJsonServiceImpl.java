@@ -36,31 +36,31 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> insert(TestCaseTemplateJson testCaseTemplateJson) {
         try {
             testCaseTemplateJson.verify();
-            testCaseTemplateJson.setUserId(jwtUserService.getMasterId());
-            testCaseTemplateJson.setCreateTime(LocalDateTime.now());
-            return Result.addResult( testCaseTemplateJsonDAO.insertOne(testCaseTemplateJson));
+            testCaseTemplateJson.setUserId(jwtUserService.getMasterId();
+            testCaseTemplateJson.setCreateTime(LocalDateTime.now();
+            return Result.addResult( testCaseTemplateJsonDAO.insertOne(testCaseTemplateJson);
         }catch (BizException e){
-            logger.error("class: TestCaseTemplateJsonServiceImpl#insert,error []" + e.getMessage());
+            logger.error("class: TestCaseTemplateJsonServiceImpl#insert,error []" + e.getMessage();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> update(TestCaseTemplateJson testCaseTemplateJson) {
         try {
             testCaseTemplateJson.verify();
-            testCaseTemplateJson.setUpdateTime(LocalDateTime.now());
-            return Result.updateResult(testCaseTemplateJsonDAO.updateByPrimaryKeySelective(testCaseTemplateJson));
+            testCaseTemplateJson.setUpdateTime(LocalDateTime.now();
+            return Result.updateResult(testCaseTemplateJsonDAO.updateByPrimaryKeySelective(testCaseTemplateJson);
         }catch (BizException e){
-            logger.error("class: TestCaseTemplateJsonServiceImpl#update,error []" + e.getMessage());
+            logger.error("class: TestCaseTemplateJsonServiceImpl#update,error []" + e.getMessage();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage();
         }
     }
 
@@ -72,21 +72,21 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteById(String id) {
         try {
             TestCaseTemplateJson testCaseTemplateJson = new TestCaseTemplateJson();
             testCaseTemplateJson.setId(id);
             testCaseTemplateJson.setDelFlag(1);
-            return Result.deleteResult(testCaseTemplateJsonDAO.updateByPrimaryKeySelective(testCaseTemplateJson));
+            return Result.deleteResult(testCaseTemplateJsonDAO.updateByPrimaryKeySelective(testCaseTemplateJson);
         }catch (BizException e){
-            logger.error("class: TestCaseTemplateJsonServiceImpl#deleteById,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage());
+            logger.error("class: TestCaseTemplateJsonServiceImpl#deleteById,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage();
         }
     }
 
     @Override
     public Resp<TestCaseTemplateJson> queryById(String id) {
-        return new Resp.Builder<TestCaseTemplateJson>().setData(testCaseTemplateJsonDAO.selectByPrimaryKey(id)).ok();
+        return new Resp.Builder<TestCaseTemplateJson>().setData(testCaseTemplateJsonDAO.selectByPrimaryKey(id).ok();
     }
 }

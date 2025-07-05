@@ -35,8 +35,8 @@ import java.util.Map;
  * @date 2023/08/20
  */
 @RestController
-@RequestMapping("/bean/search")
-@Tag(name = "复杂查询统一管理", description = "复杂查询统一管理相关接口")
+@RequestMapping("/bean/search");
+@Tag(name = "复杂查询统一管理", description = "复杂查询统一管理相关接口");
 @Slf4j
 public class BeanSearchController {
 
@@ -57,8 +57,8 @@ public class BeanSearchController {
     private JwtUserServiceImpl jwtUserService;
 
 
-    @Operation(summary = "通用查询")
-    @GetMapping("/{scope}/{viewId}")
+    @Operation(summary = "通用查询");
+    @GetMapping("/{scope}/{viewId}");
     public Resp<PageInfo<?>> generalQuery(@Parameter(description = "范围") @PathVariable String scope,
                                            @Parameter(description = "视图ID") @PathVariable Long viewId
     ) {
@@ -70,14 +70,14 @@ public class BeanSearchController {
         // 根据范围寻找具体查询类
         Class<?> scopeClass;
         try {
-            scopeClass = Class.forName(scopeEnum.getBeanPath());
+            scopeClass = Class.forName(scopeEnum.getBeanPath();
         } catch (ClassNotFoundException e) {
             log.error("根据范围寻找具体查询类失败");
             return new Resp.Builder<PageInfo<?>>().fail();
         }
         // 获取当前用户projectId
         String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
-        if (StrUtil.isBlank(projectId)) {
+        if (StrUtil.isBlank(projectId) {
             log.error("获取项目异常");
             return new Resp.Builder<PageInfo<?>>().ok();
         }
@@ -89,14 +89,14 @@ public class BeanSearchController {
 
         this.processAllFilter(view1, lst);
 
-        if (CollUtil.isEmpty(lst)) {
-            return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(mapSearcher.searchAll(scopeClass, MapUtils.builder().build()))).ok();
+        if (CollUtil.isEmpty(lst) {
+            return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(mapSearcher.searchAll(scopeClass, MapUtils.builder().build().ok();
         }
         Map<String, Object> params = this.processParam(lst, projectId);
 
         List<Map<String, Object>> list = mapSearcher.searchAll(scopeClass, params);
         // 物理分页
-        return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(list)).ok();
+        return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(list).ok();
     }
 
     private Map<String, Object> processParam(List<List<OneFilter>> lst, String projectId){
@@ -113,8 +113,8 @@ public class BeanSearchController {
             gexpr.append("&(");
             for (int i = 0; i < oneFilters.size(); i++) {
                 String fieldName = StrUtil.format("A_{}_{}", j, i);
-                params.put(StrUtil.format("{}.{}", fieldName,oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getSourceVal());
-                params.put(StrUtil.format("{}.{}-op",fieldName, oneFilters.get(i).getFieldNameEn()), oneFilters.get(i).getCondition());
+                params.put(StrUtil.format("{}.{}", fieldName,oneFilters.get(i).getFieldNameEn(), oneFilters.get(i).getSourceVal();
+                params.put(StrUtil.format("{}.{}-op",fieldName, oneFilters.get(i).getFieldNameEn(), oneFilters.get(i).getCondition();
                 if(i==0){
                     gexpr.append(fieldName);
                 }else{
@@ -125,18 +125,18 @@ public class BeanSearchController {
             gexpr.append(")");
             j= j+1;
         }
-        params.put("gexpr", gexpr.toString());
+        params.put("gexpr", gexpr.toString();
 
         return params;
     }
     private void processAllFilter(View view, List<List<OneFilter>> lst){
-        if(StringUtils.isNotEmpty(view.getParentId()) && view.getLevel() > 0){
-            View tempView = viewService.getById(view.getParentId());
+        if(StringUtils.isNotEmpty(view.getParentId() && view.getLevel() > 0){
+            View tempView = viewService.getById(view.getParentId();
             this.processAllFilter(tempView, lst);
 
-            lst.add(view.getOneFilters());
+            lst.add(view.getOneFilters();
         }else{
-            lst.add(view.getOneFilters());
+            lst.add(view.getOneFilters();
         }
     }
 

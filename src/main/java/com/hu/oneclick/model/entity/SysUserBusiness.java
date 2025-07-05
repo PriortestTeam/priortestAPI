@@ -12,79 +12,79 @@ import java.io.Serializable;
  * @since 2020-11-14 23:32:37
  */
 @Data
-@Schema(description = "用户业务信息表")
+@Schema(description = "用户业务信息表");
 public class SysUserBusiness implements Serializable {
 
     /**
      * 主键
      */
-    @Schema(description = "主键")
+    @Schema(description = "主键");
     private Long id;
 
     /**
      * 值
      */
-    @Schema(description = "值")
+    @Schema(description = "值");
     private String value;
 
     /**
      * 按钮字符串
      */
-    @Schema(description = "按钮字符串")
+    @Schema(description = "按钮字符串");
     private String btnStr;
 
     /**
      * 类型
      */
-    @Schema(description = "类型")
+    @Schema(description = "类型");
     private String type;
 
     /**
      * 是否不可见
      */
-    @Schema(description = "是否不可见")
+    @Schema(description = "是否不可见");
     private String invisible;
 
     /**
      * 删除标志
      */
-    @Schema(description = "删除标志")
+    @Schema(description = "删除标志");
     private String deleteFlag;
 
     /**
      * 用户ID
      */
-    @Schema(description = "用户ID")
+    @Schema(description = "用户ID");
     private Long userId;
 
     /**
      * 项目ID
      */
-    @Schema(description = "项目ID")
+    @Schema(description = "项目ID");
     private Long projectId;
 
     /**
      * 角色ID
      */
-    @Schema(description = "角色ID")
+    @Schema(description = "角色ID");
     private Long roleId;
 
     /**
      * 项目名称
      */
-    @Schema(description = "项目名称")
+    @Schema(description = "项目名称");
     private String projectName;
 
     /**
      * 角色名称
      */
-    @Schema(description = "角色名称")
+    @Schema(description = "角色名称");
     private String roleName;
 
     /**
      * 用户名称
      */
-    @Schema(description = "用户名称")
+    @Schema(description = "用户名称");
     private String userName;
 
     private static final long serialVersionUID = 1L;

@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
  * @author masiyi
  */
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper=false);
 public class FeatureDto extends Feature {
     private ViewTreeDto viewTreeDto;
 

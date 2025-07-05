@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class PdfGenerateServiceImpl implements PdfGenerateService {
     private final static Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
-    @Value("${onclick.dirPath}")
+    @Value("${onclick.dirPath}");
     private String dirPath;
     @Autowired
     ProjectDao projectDao;
@@ -50,41 +50,41 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
     @Override
     public Object generatePdf(SignOffParam signOffParam) {
         File dir = new File(dirPath);
-        if (!dir.exists()) {
-            if (!dir.mkdirs()) {
+        if (!dir.exists() {
+            if (!dir.mkdirs() {
                 throw new RuntimeException("无法创建目录");
             }
         }
 
-        Project project = projectDao.queryById(signOffParam.getProjectId());
+        Project project = projectDao.queryById(signOffParam.getProjectId();
 
         Map<String, Object> cond = new HashMap<>();
 
         if (signOffParam.getCurrentRelease() <= 0) {
-            String ids = signOffParam.getTestCycle().stream().map(e -> e.get("testCycleId")).collect(Collectors.joining(","));
+            String ids = signOffParam.getTestCycle().stream().map(e -> e.get("testCycleId").collect(Collectors.joining(",");
             cond.put("ids", ids);
         } else {
-            cond.put("project_id", signOffParam.getProjectId());
-            cond.put("env", signOffParam.getEnv());
-            cond.put("version", signOffParam.getVersion());
-            cond.put("current_release", signOffParam.getCurrentRelease());
+            cond.put("project_id", signOffParam.getProjectId();
+            cond.put("env", signOffParam.getEnv();
+            cond.put("version", signOffParam.getVersion();
+            cond.put("current_release", signOffParam.getCurrentRelease();
         }
 
         List<Map<String, Object>> cycles = testCycleDao.queryTestCyclesWithCasesByConditions(cond);
-        if (cycles.isEmpty()) {
-//            return new Resp.Builder<String>().setData(SysConstantEnum.TEST_CASE_NOT_EXIST.getValue()).fail();
-            var resp = new Resp.Builder<String>().buildResult("404", SysConstantEnum.FAILED.getValue(), HttpStatus.NOT_FOUND.value());
-            resp.setData(SysConstantEnum.TEST_CASE_NOT_EXIST.getValue());
+        if (cycles.isEmpty() {
+//            return new Resp.Builder<String>().setData(SysConstantEnum.TEST_CASE_NOT_EXIST.getValue().fail();
+            var resp = new Resp.Builder<String>().buildResult("404", SysConstantEnum.FAILED.getValue(), HttpStatus.NOT_FOUND.value();
+            resp.setData(SysConstantEnum.TEST_CASE_NOT_EXIST.getValue();
             return resp;
         }
 
         int cycle_instance = cycles.stream().collect(Collectors.collectingAndThen(
             Collectors.toMap(k -> k.get("test_cycle_id"), v -> v.get("test_cycle_instance"), (oldValue, newValue) -> oldValue),
-            map -> new ArrayList<>(map.values())
-        )).stream().mapToInt(v -> Integer.parseInt(v.toString())).sum();
+            map -> new ArrayList<>(map.values()
+        ).stream().mapToInt(v -> Integer.parseInt(v.toString().sum();
 
-        var allures = cycles.stream().filter(v -> !v.get("allure_report_url").toString().isEmpty()).map(v -> v.get("allure_report_url").toString())
-            .collect(Collectors.toSet());
+        var allures = cycles.stream().filter(v -> !v.get("allure_report_url").toString().isEmpty().map(v -> v.get("allure_report_url").toString()
+            .collect(Collectors.toSet();
         String allures_str = String.join(",", allures);
 
         //总览
@@ -117,9 +117,9 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
 
         //测试覆盖报告
         int idx = 0;
-        Map<String, List<Map<String, Object>>> modules = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_case_module").toString()));
+        Map<String, List<Map<String, Object>>> modules = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_case_module").toString();
         String[][] coverageReportTable = new String[modules.keySet().size()][];
-        for (var m : modules.keySet()) {
+        for (var m : modules.keySet() {
             coverageReportTable[idx] = new String[]{m, ""};
             idx++;
         }
@@ -140,7 +140,7 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
 
         //测试周期
         idx = 0;
-        Set<Object> titles = cycles.stream().map(arg -> arg.get("test_cycle_title")).collect(Collectors.toSet());
+        Set<Object> titles = cycles.stream().map(arg -> arg.get("test_cycle_title").collect(Collectors.toSet();
         String[][] testCycleReportTable = new String[titles.size()][];
         for (var item : titles) {
             testCycleReportTable[idx] = new String[]{item.toString(), ""};
@@ -149,9 +149,9 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
 
         //测试平台
         idx = 0;
-        Map<String, List<Map<String, Object>>> platforms = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_platform").toString()));
+        Map<String, List<Map<String, Object>>> platforms = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_platform").toString();
         String[][] platformReportTable = new String[platforms.keySet().size()][];
-        for (var item : platforms.keySet()) {
+        for (var item : platforms.keySet() {
             platformReportTable[idx] = new String[]{item, ""};
             idx++;
         }
@@ -160,13 +160,13 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
         String[][] signOffReportTable = new String[][]{
             {"签队团队", signOffParam.getFileUrl()},
             {"状态", "通过"},
-            {"日期", DateUtil.format(new Date())},
+            {"日期", DateUtil.format(new Date()},
             {"备注", ""},
         };
 
         var saveFile = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS").concat("-").
-            concat(project.getTitle()).concat("_").concat(signOffParam.getEnv()).concat("_").
-            concat(signOffParam.getVersion()).concat("_").concat("通过_SignOff.pdf");
+            concat(project.getTitle().concat("_").concat(signOffParam.getEnv().concat("_").
+            concat(signOffParam.getVersion().concat("_").concat("通过_SignOff.pdf");
 
         try {
             PDFTableUtil pdfTable = new PDFTableUtil(dirPath);
@@ -202,25 +202,25 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
             //发送邮件
             String desFilePathd = dirPath + "/" + saveFile;
             AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
-            String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId());
+            String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId();
             String sendName = signOffId + project.getTitle() + signOffParam.getEnv() + signOffParam.getVersion() + ".pdf";
 
             //存储签收邮件
             ProjectSignOff projectSignOff = new ProjectSignOff();
             projectSignOff.setId(signOffId);
-            projectSignOff.setProjectId(project.getId());
-            projectSignOff.setUserId(userLoginInfo.getSysUser().getId());
-            projectSignOff.setCreateTime(new Date());
+            projectSignOff.setProjectId(project.getId();
+            projectSignOff.setUserId(userLoginInfo.getSysUser().getId();
+            projectSignOff.setCreateTime(new Date();
             projectSignOff.setFilePath(desFilePathd);
             projectSignOff.setFileName(sendName);
-            projectSignOff.setCreateUser(userLoginInfo.getSysUser().getId());
+            projectSignOff.setCreateUser(userLoginInfo.getSysUser().getId();
             projectSignOffDao.insert(projectSignOff);
 
             mailService.sendAttachmentsMail(userLoginInfo.getUsername(), "OneClick验收结果", "请查收验收结果", desFilePathd, sendName);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
-            return new Resp.Builder<String>().setData(SysConstantEnum.SYS_ERROR.getValue()).fail();
+            logger.error(e.getMessage();
+            return new Resp.Builder<String>().setData(SysConstantEnum.SYS_ERROR.getValue().fail();
         }
         return new Resp.Builder<String>().ok();
     }

@@ -16,16 +16,16 @@ import java.util.List;
  * @since 2021-02-03 13:54:35
  */
 @Data
-@Schema(description = "特性保存DTO")
+@Schema(description = "特性保存DTO");
 public class FeatureSaveDto {
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @Schema(description = "主键id")
+    @JsonFormat(shape = JsonFormat.Shape.STRING);
+    @Schema(description = "主键id");
     private Long id;
 
-    @Schema(description = "关联项目id")
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @NotNull(message = "项目ID不能为空")
+    @Schema(description = "关联项目id");
+    @JsonFormat(shape = JsonFormat.Shape.STRING);
+    @NotNull(message = "项目ID不能为空");
     private Long projectId;
 
     /**
@@ -64,19 +64,19 @@ public class FeatureSaveDto {
     /**
      * 自定义字段值
      */
-    @Schema(description = "自定义字段值")
+    @Schema(description = "自定义字段值");
     private JSONObject customFieldDatas;
 
     /**
      * 扩展信息
      */
-    @Schema(description = "扩展信息")
+    @Schema(description = "扩展信息");
     private String extJson;
 
     /**
      * 关联的自定义字段
      */
-    @Schema(description = "关联的自定义字段")
+    @Schema(description = "关联的自定义字段");
     private List<CustomFieldData> customFieldDataList;
     // 手动添加getId方法以解决编译错误
     public Long getId() {

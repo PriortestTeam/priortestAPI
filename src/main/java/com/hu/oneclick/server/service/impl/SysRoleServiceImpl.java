@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.SysRoleDao;
 import com.hu.oneclick.dao.SysUserDao;
@@ -9,9 +8,7 @@ import com.hu.oneclick.model.domain.dto.SysUserRoleDto;
 import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.server.service.SysRoleService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 /**
  * @author qingyang
  */
@@ -33,7 +30,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public Resp<List<SysRole>> queryRoles() {
         List<SysRole> sysRoles = sysRoleDao.queryAll(null);
-        return new Resp.Builder<List<SysRole>>().setData(sysRoles).totalSize(sysRoles.size()).ok();
+        return new Resp.Builder<List<SysRole>>().setData(sysRoles).totalSize(sysRoles.size().ok();
     }
 
 

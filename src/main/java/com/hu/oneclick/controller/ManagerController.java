@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @PreAuthorize("@ps.backstageManagement()")
 @RestController
-@RequestMapping("/manage")
+@RequestMapping("/manage");
 public class ManagerController {
 
-    @GetMapping("/getHello")
+    @GetMapping("/getHello");
     public String getHello(){
         return "hello 管理员";
     }

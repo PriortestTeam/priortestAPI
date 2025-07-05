@@ -27,8 +27,8 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
         UserCaseDto entity = BeanUtil.copyProperties(userCaseParam, UserCaseDto.class);
 
         // 保存自定义字段
-        if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand())) {
-            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand());
+        if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand() {
+            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand();
             entity.setUsecaseExpand(jsonStr);
         }
         super.save(entity);
@@ -40,8 +40,8 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
         UserCaseDto entity = BeanUtil.copyProperties(userCaseParam, UserCaseDto.class);
 
         // 修改自定义字段
-        if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand())) {
-            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand());
+        if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand() {
+            String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand();
             entity.setUsecaseExpand(jsonStr);
         }
 
@@ -52,16 +52,16 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
     @Override
     public List<UserCaseVo> listData(UserCaseParam userCaseParam) {
         LambdaQueryWrapper<UserCaseDto> queryWrapper = Wrappers.lambdaQuery();
-        queryWrapper.like(StrUtil.isNotBlank(userCaseParam.getTitle()), UserCaseDto::getTitle, userCaseParam.getTitle())
-                .eq(StrUtil.isNotBlank(userCaseParam.getUseCategory()), UserCaseDto::getUseCategory, userCaseParam.getUseCategory())
-                //.eq(StrUtil.isNotEmpty(userCaseParam.getGrade()), UserCaseDto::getGrade, userCaseParam.getGrade())
-                //.eq(StrUtil.isNotEmpty(userCaseParam.getLevel()), UserCaseDto::getLevel, userCaseParam.getLevel())
-                //.eq(StrUtil.isNotBlank(userCaseParam.getFeatureId()), UserCaseDto::getFeatureId, userCaseParam.getFeatureId());
-                .eq(StrUtil.isNotBlank(Long.toString(userCaseParam.getFeatureId())), UserCaseDto::getFeatureId, userCaseParam.getFeatureId());
+        queryWrapper.like(StrUtil.isNotBlank(userCaseParam.getTitle(), UserCaseDto::getTitle, userCaseParam.getTitle()
+                .eq(StrUtil.isNotBlank(userCaseParam.getUseCategory(), UserCaseDto::getUseCategory, userCaseParam.getUseCategory()
+                //.eq(StrUtil.isNotEmpty(userCaseParam.getGrade(), UserCaseDto::getGrade, userCaseParam.getGrade()
+                //.eq(StrUtil.isNotEmpty(userCaseParam.getLevel(), UserCaseDto::getLevel, userCaseParam.getLevel()
+                //.eq(StrUtil.isNotBlank(userCaseParam.getFeatureId(), UserCaseDto::getFeatureId, userCaseParam.getFeatureId();
+                .eq(StrUtil.isNotBlank(Long.toString(userCaseParam.getFeatureId(), UserCaseDto::getFeatureId, userCaseParam.getFeatureId();
         List<UserCaseDto> list = this.baseMapper.selectList(queryWrapper);
         List<UserCaseVo> resultList = BeanUtil.copyToList(list, UserCaseVo.class);
         resultList.forEach(obj -> {
-            //obj.setCustomFieldDatas(obj.getUsecaseExpand());
+            //obj.setCustomFieldDatas(obj.getUsecaseExpand();
             obj.getUsecaseExpand();
 
         });

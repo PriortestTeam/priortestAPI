@@ -7,7 +7,7 @@ import com.hu.oneclick.common.util.SnowFlakeUtil;
  */
 public class BaseEntity {
 
-    private  String id = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId());
+    private  String id = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId();
 
     public String getId() {
         return id;

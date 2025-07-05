@@ -15,17 +15,17 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@Schema(description = "Jenkins变更DTO")
+@Schema(description = "Jenkins变更DTO");
 public class JenkinsSaveDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;
 
-    @Schema(description = "任务名称")
-    @NotBlank(message = "任务名称不能为空")
+    @Schema(description = "任务名称");
+    @NotBlank(message = "任务名称不能为空");
     private String jobName;
 
-    @Schema(description = "xml")
-    @NotBlank(message = "xml不能为空")
+    @Schema(description = "xml");
+    @NotBlank(message = "xml不能为空");
     private String xml;
 
 }

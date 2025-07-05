@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
     private final static Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
-    @Value("${onclick.dirPath}")
+    @Value("${onclick.dirPath}");
     private String dirPath;
 
     private final SysPermissionService sysPermissionService;
@@ -99,7 +99,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Resp<Project> queryById(String id) {
         Project project = projectDao.queryById(id);
-//        List<CustomFieldData> customFieldData = customFieldDataService.projectRenderingCustom(project.getId());
+//        List<CustomFieldData> customFieldData = customFieldDataService.projectRenderingCustom(project.getId();
 //        project.setCustomFieldDatas(customFieldData);
         return new Resp.Builder<Project>().setData(project).ok();
     }
@@ -110,7 +110,7 @@ public class ProjectServiceImpl implements ProjectService {
             Result.verifyDoesExist(queryByTitle(title), title);
             return new Resp.Builder<String>().ok();
         } catch (BizException e) {
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
@@ -119,11 +119,11 @@ public class ProjectServiceImpl implements ProjectService {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         List<Project> projects = new ArrayList<>();
         String sysUserId = sysUser.getId();
-        if (ObjectUtil.isNotNull(sysUser.getSysRoleId()) && sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
+        if (ObjectUtil.isNotNull(sysUser.getSysRoleId() && sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT) {
             projects = projectDao.queryAllProjects(sysUserId);
         } else {
             SubUserProject subUserProject = subUserProjectDao.queryByUserId(sysUserId);
-            if (ObjectUtil.isNotNull(subUserProject)) {
+            if (ObjectUtil.isNotNull(subUserProject) {
                 String[] split = subUserProject.getProjectId().split(",");
                 for (String projectId : split) {
                     Project projectGet = projectDao.queryById(projectId);
@@ -133,7 +133,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 //        project.setUserId(masterId);
 
-//        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto(), masterId));
+//        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto(), masterId);
 
 //        List<Project> projects = projectDao.queryAll(project);
         return new Resp.Builder<List<Project>>().setData(projects).total(projects).ok();
@@ -143,8 +143,8 @@ public class ProjectServiceImpl implements ProjectService {
     public Resp<List<Project>> queryForProjects() {
         SysUser masterUser = jwtUserService.getUserLoginInfo().getSysUser();
         Long roomId = masterUser.getRoomId();
-        List<Project> projects = projectDao.queryAllProjects(String.valueOf(roomId));
-        return new Resp.Builder<List<Project>>().setData(projects).totalSize(projects.size()).ok();
+        List<Project> projects = projectDao.queryAllProjects(String.valueOf(roomId);
+        return new Resp.Builder<List<Project>>().setData(projects).totalSize(projects.size().ok();
     }
 
     /**
@@ -156,13 +156,13 @@ public class ProjectServiceImpl implements ProjectService {
      * @Date: 2021/12/27
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> addProject(Project project) {
         try {
             sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
-                OneConstant.PERMISSION.ADD, project.getId());
-            Result.verifyDoesExist(queryByTitle(project.getTitle()), project.getTitle());
-            project.setUserId(jwtUserService.getMasterId());
+                OneConstant.PERMISSION.ADD, project.getId();
+            Result.verifyDoesExist(queryByTitle(project.getTitle(), project.getTitle();
+            project.setUserId(jwtUserService.getMasterId();
             int insert = projectDao.insert(project);
             if (insert > 0) {
                 //插入用户自定义值
@@ -171,40 +171,40 @@ public class ProjectServiceImpl implements ProjectService {
             }
             return Result.addResult(insert);
         } catch (BizException e) {
-            logger.error("class: ProjectServiceImpl#addProject,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: ProjectServiceImpl#addProject,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateProject(Project project) {
         try {
             sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
-                OneConstant.PERMISSION.EDIT, project.getId());
-            Result.verifyDoesExist(queryByTitle(project.getTitle()), project.getTitle());
-            return Result.updateResult(projectDao.update(project));
+                OneConstant.PERMISSION.EDIT, project.getId();
+            Result.verifyDoesExist(queryByTitle(project.getTitle(), project.getTitle();
+            return Result.updateResult(projectDao.update(project);
         } catch (BizException e) {
-            logger.error("class: ProjectServiceImpl#updateProject,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: ProjectServiceImpl#updateProject,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteProject(String projectId) {
         try {
             sysPermissionService.hasPermission(OneConstant.PERMISSION.PROJECT,
                 OneConstant.PERMISSION.DELETE, projectId);
-            return Result.deleteResult(projectDao.deleteById(projectId));
+            return Result.deleteResult(projectDao.deleteById(projectId);
         } catch (BizException e) {
-            logger.error("class: ProjectServiceImpl#deleteProject,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: ProjectServiceImpl#deleteProject,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> checkProject(String projectId) {
         int flag = 0;
         try {
@@ -215,24 +215,24 @@ public class ProjectServiceImpl implements ProjectService {
             if (project != null) {
                 UpdateWrapper<SysUserProject> update = Wrappers.update();
                 update.set("is_default", 0);
-                update.eq("user_id", new BigInteger(sysUser.getId())).eq("project_id", new BigInteger(sysUser.getUserUseOpenProject().getProjectId()));
+                update.eq("user_id", new BigInteger(sysUser.getId().eq("project_id", new BigInteger(sysUser.getUserUseOpenProject().getProjectId();
                 sysUserProjectDao.update(new SysUserProject(), update);
 
                 UpdateWrapper<SysUserProject> update2 = Wrappers.update();
                 update2.set("is_default", 1);
-                update2.eq("user_id", new BigInteger(sysUser.getId())).eq("project_id", new BigInteger(projectId));
+                update2.eq("user_id", new BigInteger(sysUser.getId().eq("project_id", new BigInteger(projectId);
                 sysUserProjectDao.update(new SysUserProject(), update2);
 
                 UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
                 userUseOpenProject.setProjectId(projectId);
-                userUseOpenProject.setUserId(sysUser.getId());
-                userUseOpenProject.setTitle(project.getTitle());
+                userUseOpenProject.setUserId(sysUser.getId();
+                userUseOpenProject.setTitle(project.getTitle();
                 sysUser.setUserUseOpenProject(userUseOpenProject);
                 jwtUserService.saveUserLoginInfo2(sysUser);
                 flag = 1;
 
 //                if (sysUser.getUserUseOpenProject() != null) {
-//                    projectDao.deleteUseOpenProject(sysUser.getUserUseOpenProject().getId());
+//                    projectDao.deleteUseOpenProject(sysUser.getUserUseOpenProject().getId();
 //                }
 //                if (projectDao.insertUseOpenProject(userUseOpenProject) > 0) {
 //                    sysUser.setUserUseOpenProject(userUseOpenProject);
@@ -242,25 +242,25 @@ public class ProjectServiceImpl implements ProjectService {
             }
             return Result.updateResult(flag);
         } catch (BizException e) {
-            logger.error("class: ProjectServiceImpl#checkProject,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: ProjectServiceImpl#checkProject,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> getCloseProject(String id, String closeDesc) {
         try {
             Project project = new Project();
-            project.setUserId(jwtUserService.getMasterId());
+            project.setUserId(jwtUserService.getMasterId();
             project.setId(id);
             project.setStatus("关闭");
-//            project.setCloseDate(new Date());
+//            project.setCloseDate(new Date();
 //            project.setCloseDesc(closeDesc);
-            return Result.updateResult(projectDao.update(project));
+            return Result.updateResult(projectDao.update(project);
         } catch (BizException e) {
-            logger.error("class: ProjectServiceImpl#getCloseProject,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: ProjectServiceImpl#getCloseProject,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
@@ -272,7 +272,7 @@ public class ProjectServiceImpl implements ProjectService {
      * @return
      */
     private Integer queryByTitle(String title) {
-        if (StringUtils.isEmpty(title)) {
+        if (StringUtils.isEmpty(title) {
             return null;
         }
         if (projectDao.queryByTitle(jwtUserService.getMasterId(), title) > 0) {
@@ -287,12 +287,12 @@ public class ProjectServiceImpl implements ProjectService {
      */
     @Override
     public Resp<String> generate(SignOffDto signOffDto) {
-        if (StringUtils.isEmpty(signOffDto.getProjectId())) {
+        if (StringUtils.isEmpty(signOffDto.getProjectId() {
             return new Resp.Builder<String>().setData("请选择一个项目").fail();
         }
         String realPath = dirPath;
         File folder = new File(realPath);
-        if (!folder.exists()) {
+        if (!folder.exists() {
             folder.mkdirs();
         }
 
@@ -302,9 +302,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<Map<String, Object>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
         int value = allTestCycle.size();
-        long count = allTestCycle.stream().filter(f -> String.valueOf(f.get("execute_status")).equals(String.valueOf(1))).count();
+        long count = allTestCycle.stream().filter(f -> String.valueOf(f.get("execute_status").equals(String.valueOf(1).count();
         float testEx = (float) count / value;
-        long runStatus = allTestCycle.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(1))).count();
+        long runStatus = allTestCycle.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(1).count();
         float testPass = (float) runStatus / count == 0 ? 1 : count;
 
         String[][] reportTable = new String[][]{
@@ -314,18 +314,18 @@ public class ProjectServiceImpl implements ProjectService {
             {"编译URL", ""},
             {"在线报表", ""},
             {"全部测试用例", String.valueOf(value)},
-            {"测试执行率", String.format("%.1f", (testEx * 100)) + "%"},
-            {"测试通过率", String.format("%.1f", (testPass * 100)) + "%"},
+            {"测试执行率", String.format("%.1f", (testEx * 100) + "%"},
+            {"测试通过率", String.format("%.1f", (testPass * 100) + "%"},
         };
 
         //功能测试结果
-        Map<String, List<Map<String, Object>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category").toString()));
+        Map<String, List<Map<String, Object>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category").toString();
         List<Map<String, Object>> function = caseCategory.get("功能") == null ? new ArrayList<>() : caseCategory.get("功能");
-        long runStatusPass = function.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(1))).count();
-        long runStatusFail = function.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(2))).count();
+        long runStatusPass = function.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(1).count();
+        long runStatusFail = function.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(2).count();
 
         String[][] functionalReportTable = new String[][]{
-            {"测试用例", String.valueOf(function.size())},
+            {"测试用例", String.valueOf(function.size()},
             {"没有执行", String.valueOf(function.size() - runStatusPass - runStatusFail)},
             {"成功", String.valueOf(runStatusPass)},
             {"失败", String.valueOf(runStatusFail)},
@@ -333,23 +333,23 @@ public class ProjectServiceImpl implements ProjectService {
 
         //性能测试结果
         List<Map<String, Object>> performance = caseCategory.get("性能") == null ? new ArrayList<>() : caseCategory.get("性能");
-        long runStatusPassCs = performance.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(1))).count();
-        long runStatusFailCs = performance.stream().filter(f -> String.valueOf(f.get("run_status")).equals(String.valueOf(2))).count();
+        long runStatusPassCs = performance.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(1).count();
+        long runStatusFailCs = performance.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(2).count();
 
         String[][] performanceReportTable = new String[][]{
-            {"测试用例", String.valueOf(performance.size())},
+            {"测试用例", String.valueOf(performance.size()},
             {"没有执行", String.valueOf(performance.size() - runStatusPassCs - runStatusFailCs)},
             {"成功", String.valueOf(runStatusPass)},
             {"失败", String.valueOf(runStatusFailCs)},
         };
 
         //测试覆盖
-        Map<String, List<Map<String, Object>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module").toString()));
+        Map<String, List<Map<String, Object>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module").toString();
         String[][] coverageReportTable = new String[feature.keySet().size()][];
         int index = 0;
-        for (String featureId : feature.keySet()) {
+        for (String featureId : feature.keySet() {
             List<Map<String, Object>> maps = feature.get(featureId);
-            coverageReportTable[index] = new String[]{featureId, String.valueOf(maps.size())};
+            coverageReportTable[index] = new String[]{featureId, String.valueOf(maps.size()};
             index++;
         }
 
@@ -359,13 +359,13 @@ public class ProjectServiceImpl implements ProjectService {
             String testCaseId = map.get("test_case_id").toString();
             String testCycleId = map.get("test_cycle_id").toString();
             Issue issue = issueDao.queryCycleAndTest(testCaseId, testCycleId);
-            if (issue != null && issue.getIssueStatus() == "4" && "高".equals(issue.getPriority())) {
+            if (issue != null && issue.getIssueStatus() == "4" && "高".equals(issue.getPriority() {
                 issuesList.add(issue);
             }
         }
-        long urgent = issuesList.stream().filter(f -> "高".equals(f.getPriority())).count();
-        long important = issuesList.stream().filter(f -> "中".equals(f.getPriority())).count();
-        long general = issuesList.stream().filter(f -> "低".equals(f.getPriority())).count();
+        long urgent = issuesList.stream().filter(f -> "高".equals(f.getPriority().count();
+        long important = issuesList.stream().filter(f -> "中".equals(f.getPriority().count();
+        long general = issuesList.stream().filter(f -> "低".equals(f.getPriority().count();
 
         String[][] issueRepostTable = new String[][]{
             {"紧急", String.valueOf(urgent)},
@@ -376,9 +376,9 @@ public class ProjectServiceImpl implements ProjectService {
         //已知缺陷
         List<Issue> allIssue = issueDao.findAll();
         allIssue.removeAll(issuesList);
-        long haveUrgent = allIssue.stream().filter(f -> "高".equals(f.getPriority())).count();
-        long haveImportant = allIssue.stream().filter(f -> "中".equals(f.getPriority())).count();
-        long haveGeneral = allIssue.stream().filter(f -> "低".equals(f.getPriority())).count();
+        long haveUrgent = allIssue.stream().filter(f -> "高".equals(f.getPriority().count();
+        long haveImportant = allIssue.stream().filter(f -> "中".equals(f.getPriority().count();
+        long haveGeneral = allIssue.stream().filter(f -> "低".equals(f.getPriority().count();
 
         String[][] existedIssueReportTable = new String[][]{
             {"紧急", String.valueOf(haveUrgent)},
@@ -390,7 +390,7 @@ public class ProjectServiceImpl implements ProjectService {
         String testCycle = signOffDto.getTestCycle();
         testCycle = testCycle.substring(testCycle.lastIndexOf("=") + 1);
         List<String> testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, signOffDto.getEnv(), testCycle);
-        if (testCycleName.isEmpty()) {
+        if (testCycleName.isEmpty() {
             return new Resp.Builder<String>().buildResult("没有查询到当前发布版本的测试周期");
         }
         String[][] testCycleReportTable = new String[testCycleName.size()][];
@@ -401,12 +401,12 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         //测试平台/设备
-        Map<String, List<Map<String, Object>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform").toString()));
+        Map<String, List<Map<String, Object>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform").toString();
         String[][] platformReportTable = new String[platforms.keySet().size()][];
         index = 0;
-        for (String platForm : platforms.keySet()) {
+        for (String platForm : platforms.keySet() {
             List<Map<String, Object>> maps = platforms.get(platForm);
-            platformReportTable[index] = new String[]{platForm, String.valueOf(maps.size())};
+            platformReportTable[index] = new String[]{platForm, String.valueOf(maps.size()};
         }
 
         //签发
@@ -425,7 +425,7 @@ public class ProjectServiceImpl implements ProjectService {
         String[][] signOffReportTable = new String[][]{
             {"签队团队", signOffDto.getFileUrl()},
             {"状态", flag ? "通过" : "失败"},
-            {"日期", DateUtil.format(new Date())},
+            {"日期", DateUtil.format(new Date()},
             {"备注", ""},
         };
 
@@ -460,14 +460,14 @@ public class ProjectServiceImpl implements ProjectService {
 //            String uuid = UUID.randomUUID().toString();
             // 20241012103012 - ProjectTitle_ENV_Version_Status_SignOff.pdf
             var saveFile = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS").concat("-").
-                concat(project.getTitle()).concat("_").concat(signOffDto.getEnv()).concat("_").
-                concat(signOffDto.getVersion()).concat("_").concat(flag ? "通过_SignOff.pdf" : "失败_SignOff.pdf");
+                concat(project.getTitle().concat("_").concat(signOffDto.getEnv().concat("_").
+                concat(signOffDto.getVersion().concat("_").concat(flag ? "通过_SignOff.pdf" : "失败_SignOff.pdf");
             pdfTable.save(saveFile);
 
             //发送邮件
             String desFilePathd = realPath + "/" + saveFile;//uuid + ".pdf";
             AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
-            String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId());
+            String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId();
             String sendName = signOffId + project.getTitle() + signOffDto.getEnv() + signOffDto.getVersion() + ".pdf";
 
             //存储签收邮件
@@ -476,8 +476,8 @@ public class ProjectServiceImpl implements ProjectService {
             mailService.sendAttachmentsMail(userLoginInfo.getUsername(), "OneClick验收结果", "请查收验收结果", desFilePathd, sendName);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.getMessage());
-            return new Resp.Builder<String>().setData(SysConstantEnum.SYS_ERROR.getValue()).fail();
+            logger.error(e.getMessage();
+            return new Resp.Builder<String>().setData(SysConstantEnum.SYS_ERROR.getValue().fail();
         }
         return new Resp.Builder<String>().ok();
     }
@@ -493,47 +493,47 @@ public class ProjectServiceImpl implements ProjectService {
     private void saveSignOff(String signOffId, AuthLoginUser userLoginInfo, SignOffDto signOffDto, Project project, String desFilePathd, String sendName) {
         ProjectSignOff projectSignOff = new ProjectSignOff();
         projectSignOff.setId(signOffId);
-        projectSignOff.setProjectId(project.getId());
-        projectSignOff.setUserId(userLoginInfo.getSysUser().getId());
-        projectSignOff.setCreateTime(new Date());
+        projectSignOff.setProjectId(project.getId();
+        projectSignOff.setUserId(userLoginInfo.getSysUser().getId();
+        projectSignOff.setCreateTime(new Date();
         projectSignOff.setFilePath(desFilePathd);
         projectSignOff.setFileName(sendName);
-        projectSignOff.setCreateUser(userLoginInfo.getSysUser().getId());
+        projectSignOff.setCreateUser(userLoginInfo.getSysUser().getId();
         projectSignOffDao.insert(projectSignOff);
     }
 
 
     @Override
     public Resp<String> upload(MultipartFile file) {
-        if (cheakUserSignFile()) {
+        if (cheakUserSignFile() {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.UPDATE_FILE_OUT_COUNT.getCode()
-                , SysConstantEnum.UPDATE_FILE_OUT_COUNT.getValue());
+                , SysConstantEnum.UPDATE_FILE_OUT_COUNT.getValue();
         }
         String realPath = dirPath;
         File folder = new File(realPath);
-        if (!folder.exists()) {
+        if (!folder.exists() {
             folder.mkdirs();
         }
         String oldName = file.getOriginalFilename();
         String imageName = UUID.randomUUID().toString();
-        String newName = imageName + oldName.substring(oldName.lastIndexOf("."));
+        String newName = imageName + oldName.substring(oldName.lastIndexOf(".");
         String uri = folder.getPath() + File.separator + newName;
         //保存文件信息
         Attachment attachment = new Attachment();
-        attachment.setUserId(jwtUserService.getId());
+        attachment.setUserId(jwtUserService.getId();
         attachment.setUuidFileName(oldName);
         attachment.setFilePath(uri);
-        attachment.setUploadTime(new Date(System.currentTimeMillis()));
-        attachment.setUploader(jwtUserService.getUserLoginInfo().getUsername());
+        attachment.setUploadTime(new Date(System.currentTimeMillis();
+        attachment.setUploader(jwtUserService.getUserLoginInfo().getUsername();
         attachment.setAreaType(OneConstant.AREA_TYPE.SIGNOFFSIGN);
-        attachment.setFileName(file.getOriginalFilename());
+        attachment.setFileName(file.getOriginalFilename();
         attachmentService.insertAttachment(attachment);
 
         try {
-            FileUtils.copyInputStreamToFile(file.getInputStream(), new File(uri));
+            FileUtils.copyInputStreamToFile(file.getInputStream(), new File(uri);
         } catch (IOException e) {
             e.printStackTrace();
-            return new Resp.Builder<String>().setData(e.getMessage()).fail();
+            return new Resp.Builder<String>().setData(e.getMessage().fail();
         }
 
         return new Resp.Builder<String>().setData(uri).ok();

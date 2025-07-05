@@ -12,7 +12,7 @@ import java.sql.Date;
 @Getter
 @Setter
 @Data
-@TableName("uitest_git_settings")
+@TableName("uitest_git_settings");
 public class UITestGitSettings {
 
     @TableId

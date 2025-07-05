@@ -18,14 +18,14 @@ import java.util.Date;
  * @author Johnson
  * @date 2024年01月05日 14:22
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true);
 @Data
 @Component
-@TableName(value ="test_cases_execution")
+@TableName(value ="test_cases_execution");
 public class TestCasesExecution extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2641443521395154160L;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = " GMT+8")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = " GMT+8");
+    @TableField(fill = FieldFill.INSERT_UPDATE);
     private Date rerunTime;
     private int runCount;
     private Long testCaseId;

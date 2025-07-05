@@ -37,11 +37,11 @@ public class TestCycleBiz {
         UpdateWrapper<TestCycle> updateWrapper = Wrappers.update();
         updateWrapper.eq("id", id);
         String sql = "";
-        if (predicate.equals("up")) {
+        if (predicate.equals("up") {
             sql = "instance_count=instance_count+" + num;
-        } else if (predicate.equals("down")) {
+        } else if (predicate.equals("down") {
             sql = "instance_count=instance_count-" + num;
-        } else if (predicate.equals("refresh")) {
+        } else if (predicate.equals("refresh") {
             sql = "instance_count=" + num;
         }
         updateWrapper.setSql(sql);
@@ -51,21 +51,21 @@ public class TestCycleBiz {
     public List<Long> deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
         List<Long> testCasesIds = new ArrayList<>();
 
-        for (Long testCaseId : dto.getTestCaseIds()) {
+        for (Long testCaseId : dto.getTestCaseIds() {
             // 删除关联的test_cycle_join_test_case表
             this.testCycleJoinTestCaseDao.deleteByParam(dto.getProjectId(), dto.getTestCycleId(),
                 testCaseId);
             testCasesIds.add(testCaseId);
         }
-        testCasesIds = Arrays.asList(dto.getTestCaseIds());
+        testCasesIds = Arrays.asList(dto.getTestCaseIds();
 //        //删除关联的relation表
 //        this.relationService.removeBatchByTestCaseIds(testCasesIds);
 
         // 删除test_cases_execution表
         testCycleTcDao.delete(
             new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId,
-                    testCasesIds).eq(TestCasesExecution::getTestCycleId, dto.getTestCycleId())
-                .eq(TestCasesExecution::getProjectId, dto.getProjectId()));
+                    testCasesIds).eq(TestCasesExecution::getTestCycleId, dto.getTestCycleId()
+                .eq(TestCasesExecution::getProjectId, dto.getProjectId();
 
         return testCasesIds;
     }

@@ -30,11 +30,11 @@ public class JsonLoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        String token = jwtUserServiceImpl.saveUserLoginInfo((AuthLoginUser) authentication.getPrincipal());
+        String token = jwtUserServiceImpl.saveUserLoginInfo((AuthLoginUser) authentication.getPrincipal();
         response.setContentType("application/json;charset=UTF-8");
         Map<String,String> result = new HashMap<>(2);
         result.put("token",token);
-        result.put("msg",SysConstantEnum.LOGIN_SUCCESS.getValue());
+        result.put("msg",SysConstantEnum.LOGIN_SUCCESS.getValue();
         Resp<Map<String,String>> ok = new Resp.Builder<Map<String,String>>().setData(result).ok();
         String s = JSON.toJSONString(ok);
         response.getWriter().write(s);

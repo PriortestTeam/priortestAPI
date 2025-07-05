@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
  * @author xiaohai
  * @date 2023/06/06
  */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface SwaggerDisplayEnum {
+@Target({ElementType.TYPE});
+@Retention(RetentionPolicy.RUNTIME);
 
-}

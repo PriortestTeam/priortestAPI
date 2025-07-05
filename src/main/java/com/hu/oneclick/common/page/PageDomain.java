@@ -62,8 +62,8 @@ public class PageDomain {
      */
     public static PageDomain getPageDomain() {
         PageDomain pageDomain = new PageDomain();
-        pageDomain.setPageNum(Convert.toInt(ServletUtil.getParameter(PAGE_NUM), 1));
-        pageDomain.setPageSize(Convert.toInt(ServletUtil.getParameter(PAGE_SIZE), 20));
+        pageDomain.setPageNum(Convert.toInt(ServletUtil.getParameter(PAGE_NUM), 1);
+        pageDomain.setPageSize(Convert.toInt(ServletUtil.getParameter(PAGE_SIZE), 20);
         return pageDomain;
     }
 

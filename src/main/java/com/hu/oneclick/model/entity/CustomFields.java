@@ -14,7 +14,7 @@ import java.util.Date;
  * @CreateTime 2022年12月13日 17:27:00
  */
 @Data
-@TableName("custom_fields")
+@TableName("custom_fields");
 public class CustomFields implements Serializable {
     private static final long serialVersionUID = 870331260917684968L;
     /**

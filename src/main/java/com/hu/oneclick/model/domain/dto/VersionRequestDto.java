@@ -12,17 +12,17 @@ public class VersionRequestDto {
     /**
      * 项目id
      */
-    @NotNull(message = "projectId不能为空")
+    @NotNull(message = "projectId不能为空");
     private Long projectId;
 
     /**
      *发布日期
      */
-    @NotNull(message = "发布日期不能为空")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "发布日期不能为空");
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss");
     private Date releaseDate;
 
-    @NotNull(message = "版本不能为空")
+    @NotNull(message = "版本不能为空");
     private String version;
 
     /**

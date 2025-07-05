@@ -32,19 +32,19 @@ public class ModifyRecordsServiceImpl implements ModifyRecordsService {
     public Resp<List<ModifyRecord>> queryList(ModifyRecord modifyRecord) {
         try {
             modifyRecord.verify();
-            modifyRecord.setUserId(jwtUserService.getMasterId());
+            modifyRecord.setUserId(jwtUserService.getMasterId();
             List<ModifyRecord> select = modifyRecordDao.queryList(modifyRecord);
-            return new Resp.Builder<List<ModifyRecord>>().setData(select).total(select.size()).ok();
+            return new Resp.Builder<List<ModifyRecord>>().setData(select).total(select.size().ok();
         } catch (BizException e) {
-            logger.error("class: ModifyRecordServiceImpl#queryList,error []" + e.getMessage());
-            return new Resp.Builder<List<ModifyRecord>>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: ModifyRecordServiceImpl#queryList,error []" + e.getMessage();
+            return new Resp.Builder<List<ModifyRecord>>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public void insert(List<ModifyRecord> modifyRecord) {
-        Result.addResult(modifyRecordDao.inserts(modifyRecord));
+        Result.addResult(modifyRecordDao.inserts(modifyRecord);
     }
 
 }

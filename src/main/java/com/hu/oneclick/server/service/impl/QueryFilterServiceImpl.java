@@ -31,7 +31,7 @@ public class QueryFilterServiceImpl implements QueryFilterService {
         if (viewTr == null){
             return null;
         }
-        List<ViewTreeDto> viewTreeDtoList = viewDao.queryViewTreeById(masterId, viewTr.getId().toString());
+        List<ViewTreeDto> viewTreeDtoList = viewDao.queryViewTreeById(masterId, viewTr.getId().toString();
         if (viewTreeDtoList == null || viewTreeDtoList.size() <= 0){
             return null;
         }
@@ -43,7 +43,7 @@ public class QueryFilterServiceImpl implements QueryFilterService {
         for (View view : listView) {
             List<OneFilter> oneFilters = TwoConstant.convertToList(view.getFilter(), OneFilter.class);
             //3 根据字段类型进行sql 拼接
-            rs.append(antiOneFilter(oneFilters));
+            rs.append(antiOneFilter(oneFilters);
             rs.append(" ");
         }
         return rs.toString();
@@ -60,12 +60,12 @@ public class QueryFilterServiceImpl implements QueryFilterService {
         for (OneFilter oneFilter : oneFilters) {
             if (oneFilter == null){continue;}
             //驼峰转下划线
-            String fieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, oneFilter.getFieldNameCn());
+            String fieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, oneFilter.getFieldNameCn();
             //4 取type
-            switch (oneFilter.getType()){
+            switch (oneFilter.getType(){
                 case "fString":
-                    if (StringUtils.isEmpty(oneFilter.getTextVal())){continue;}
-                    rs.append(oneFilter.getAndOr())
+                    if (StringUtils.isEmpty(oneFilter.getTextVal(){continue;}
+                    rs.append(oneFilter.getAndOr()
                             .append(" ");
                     String buildFString = fieldName
                             + " like concat('%',"
@@ -73,7 +73,7 @@ public class QueryFilterServiceImpl implements QueryFilterService {
                     rs.append(buildFString);
                     break;
                 case "fInteger":
-                    rs.append(oneFilter.getAndOr())
+                    rs.append(oneFilter.getAndOr()
                             .append(" ");
                     String buildFInteger = fieldName
                             + " = "
@@ -81,7 +81,7 @@ public class QueryFilterServiceImpl implements QueryFilterService {
                     rs.append(buildFInteger);
                     break;
                 case "fDateTime":
-                    rs.append(oneFilter.getAndOr())
+                    rs.append(oneFilter.getAndOr()
                             .append(" ");
                     String buildFDate = fieldName  + " >= '" + oneFilter.getBeginDate() + "'"
                             + " and " +

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.List;
 
-@EnableTransactionManagement(proxyTargetClass = true)
+@EnableTransactionManagement(proxyTargetClass = true);
 @Configuration
 public class MybatisPlusConfig {
 
@@ -24,11 +24,11 @@ public class MybatisPlusConfig {
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         // 分页插件
-        interceptor.addInnerInterceptor(paginationInnerInterceptor());
+        interceptor.addInnerInterceptor(paginationInnerInterceptor();
         // 乐观锁插件
-        interceptor.addInnerInterceptor(optimisticLockerInnerInterceptor());
+        interceptor.addInnerInterceptor(optimisticLockerInnerInterceptor();
         // 阻断插件
-        interceptor.addInnerInterceptor(blockAttackInnerInterceptor());
+        interceptor.addInnerInterceptor(blockAttackInnerInterceptor();
         return interceptor;
     }
 
@@ -62,7 +62,7 @@ public class MybatisPlusConfig {
     @Bean
     public GlobalConfig globalConfig() {
         GlobalConfig globalConfig = new GlobalConfig();
-        globalConfig.setMetaObjectHandler(new FillMetaObjectHandler());
+        globalConfig.setMetaObjectHandler(new FillMetaObjectHandler();
         return globalConfig;
     }
 
@@ -73,7 +73,7 @@ public class MybatisPlusConfig {
     public ConfigurationCustomizer configurationCustomizer() {
         return configuration -> {
             // 创建并注册 ListTypeHandler 实例
-            configuration.getTypeHandlerRegistry().register(List.class, JdbcType.VARCHAR, new ListTypeHandler());
+            configuration.getTypeHandlerRegistry().register(List.class, JdbcType.VARCHAR, new ListTypeHandler();
         };
     }
 }

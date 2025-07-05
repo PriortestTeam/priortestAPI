@@ -27,12 +27,12 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     @Autowired
     private RelationDao relationDao;
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public void saveRelation(String objectId, String targetId, String category, String extJson, boolean clear) {
         // 是否需要先删除关系
         if (clear) {
             this.remove(new LambdaQueryWrapper<Relation>().eq(Relation::getObjectId, objectId)
-                .eq(Relation::getCategory, category));
+                .eq(Relation::getCategory, category);
         }
         Relation Relation = new Relation();
         Relation.setObjectId(objectId);
@@ -42,25 +42,25 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
         this.save(Relation);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public void saveRelationBatch(String objectId, List<String> targetIdList, String category, List<String> extJsonList, boolean clear) {
         // 是否需要先删除关系
         if (clear) {
             this.remove(new LambdaQueryWrapper<Relation>().eq(Relation::getObjectId, objectId)
-                .eq(Relation::getCategory, category));
+                .eq(Relation::getCategory, category);
         }
         List<Relation> RelationList = CollectionUtil.newArrayList();
         for (int i = 0; i < targetIdList.size(); i++) {
             Relation Relation = new Relation();
             Relation.setObjectId(objectId);
-            Relation.setTargetId(targetIdList.get(i));
+            Relation.setTargetId(targetIdList.get(i);
             Relation.setCategory(category);
-            if (ObjectUtil.isNotEmpty(extJsonList)) {
-                Relation.setExtJson(extJsonList.get(i));
+            if (ObjectUtil.isNotEmpty(extJsonList) {
+                Relation.setExtJson(extJsonList.get(i);
             }
             RelationList.add(Relation);
         }
-        if (ObjectUtil.isNotEmpty(RelationList)) {
+        if (ObjectUtil.isNotEmpty(RelationList) {
             this.saveBatch(RelationList);
         }
     }
@@ -119,7 +119,7 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     public List<Relation> getRelationListByObjectIdAndCategory(String objectId, String category) {
         LambdaQueryWrapper<Relation> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Relation::getObjectId, objectId);
-        if (ObjectUtil.isNotEmpty(category)) {
+        if (ObjectUtil.isNotEmpty(category) {
             lambdaQueryWrapper.eq(Relation::getCategory, category);
         }
         return this.list(lambdaQueryWrapper);
@@ -129,7 +129,7 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     public List<Relation> getRelationListByObjectIdListAndCategory(List<String> objectIdList, String category) {
         LambdaQueryWrapper<Relation> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.in(Relation::getObjectId, objectIdList);
-        if (ObjectUtil.isNotEmpty(category)) {
+        if (ObjectUtil.isNotEmpty(category) {
             lambdaQueryWrapper.eq(Relation::getCategory, category);
         }
         return this.list(lambdaQueryWrapper);
@@ -149,7 +149,7 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     public List<Relation> getRelationListByTargetIdAndCategory(String targetId, String category) {
         LambdaQueryWrapper<Relation> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Relation::getTargetId, targetId);
-        if (ObjectUtil.isNotEmpty(category)) {
+        if (ObjectUtil.isNotEmpty(category) {
             lambdaQueryWrapper.eq(Relation::getCategory, category);
         }
         return this.list(lambdaQueryWrapper);
@@ -159,7 +159,7 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     public List<Relation> getRelationListByTargetIdListAndCategory(List<String> targetIdList, String category) {
         LambdaQueryWrapper<Relation> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.in(Relation::getTargetId, targetIdList);
-        if (ObjectUtil.isNotEmpty(category)) {
+        if (ObjectUtil.isNotEmpty(category) {
             lambdaQueryWrapper.eq(Relation::getCategory, category);
         }
         return this.list(lambdaQueryWrapper);
@@ -178,13 +178,13 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     @Override
     public List<String> getRelationTargetIdListByObjectIdAndCategory(String objectId, String category) {
         return this.getRelationListByObjectIdAndCategory(objectId, category).stream()
-            .map(Relation::getTargetId).collect(Collectors.toList());
+            .map(Relation::getTargetId).collect(Collectors.toList();
     }
 
     @Override
     public List<String> getRelationTargetIdListByObjectIdListAndCategory(List<String> objectIdList, String category) {
         return this.getRelationListByObjectIdListAndCategory(objectIdList, category).stream()
-            .map(Relation::getTargetId).collect(Collectors.toList());
+            .map(Relation::getTargetId).collect(Collectors.toList();
     }
 
     @Override
@@ -200,13 +200,13 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     @Override
     public List<String> getRelationObjectIdListByTargetIdAndCategory(String targetId, String category) {
         return this.getRelationListByTargetIdAndCategory(targetId, category).stream()
-            .map(Relation::getObjectId).collect(Collectors.toList());
+            .map(Relation::getObjectId).collect(Collectors.toList();
     }
 
     @Override
     public List<String> getRelationObjectIdListByTargetIdListAndCategory(List<String> targetIdList, String category) {
         return this.getRelationListByTargetIdListAndCategory(targetIdList, category).stream()
-            .map(Relation::getObjectId).collect(Collectors.toList());
+            .map(Relation::getObjectId).collect(Collectors.toList();
     }
 
     @Override
@@ -218,7 +218,7 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
     public int removeBatchByTestCaseIds(List<Long> testCasesIds) {
         return relationDao.delete(new LambdaQueryWrapper<Relation>()
             .in(Relation::getObjectId, testCasesIds)
-            .or().in(Relation::getTargetId, testCasesIds));
+            .or().in(Relation::getTargetId, testCasesIds);
     }
 
     /**
@@ -233,9 +233,9 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
         String[] categorys
             = new String[]{RelationCategoryEnum.ISSUE_TEST_CASE.getValue(), RelationCategoryEnum.TEST_CASE_TO_ISSUE.getValue()};
         List<Relation> relationList = relationDao.getRelationListByObjectIdAndTargetIdAndCategory(testCaseId, categorys);
-        Set<String> issueIds = relationList.stream().flatMap(obj -> Stream.of(obj.getTargetId(), obj.getObjectId()))
-            .collect(Collectors.toSet());
-        issueIds.remove(String.valueOf(testCaseId));
+        Set<String> issueIds = relationList.stream().flatMap(obj -> Stream.of(obj.getTargetId(), obj.getObjectId()
+            .collect(Collectors.toSet();
+        issueIds.remove(String.valueOf(testCaseId);
         Map<String, Object> resultMap = new HashMap<>(2);
         resultMap.put("testCaseId", testCaseId);
         resultMap.put("issueId", issueIds);

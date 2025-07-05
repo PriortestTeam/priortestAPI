@@ -67,11 +67,11 @@ public class SysUserOrderRecordImpl implements SysUserOrderRecordService {
     public Resp<List<SysUserOrderRecord>> getUserOrderRecord() {
 
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        List<SysUserOrder> sysUserOrders = userOrderService.listOrder(sysUser.getId());
+        List<SysUserOrder> sysUserOrders = userOrderService.listOrder(sysUser.getId();
         for (SysUserOrder sysUserOrder : sysUserOrders) {
             calculateThisMonthSDiscount(sysUserOrder.getOrderId(), sysUser);
         }
-        List<SysUserOrderRecord> sysUserOrderRecords = sysUserOrderRecordDao.getUserOrderRecord(sysUser.getId());
+        List<SysUserOrderRecord> sysUserOrderRecords = sysUserOrderRecordDao.getUserOrderRecord(sysUser.getId();
 
         return new Resp.Builder<List<SysUserOrderRecord>>().setData(sysUserOrderRecords).ok();
     }
@@ -91,7 +91,7 @@ public class SysUserOrderRecordImpl implements SysUserOrderRecordService {
         Date[] monthLimit = DateUtil.getMonthLimit(date);
         //查询当月订单
         SysUserOrderRecord sysUserOrderRecord = sysUserOrderRecordDao.getOrderRecordForDate(monthLimit[0], monthLimit[1], orderId);
-        if (StringUtils.isEmpty(sysUserOrderRecord) || StringUtils.isEmpty(sysUserOrderRecord.getOrder_id())) {
+        if (StringUtils.isEmpty(sysUserOrderRecord) || StringUtils.isEmpty(sysUserOrderRecord.getOrder_id() {
             return;
         }
         //获取单月折扣
@@ -101,7 +101,7 @@ public class SysUserOrderRecordImpl implements SysUserOrderRecordService {
         BigDecimal originalPrice = sysUserOrderRecord.getOriginal_price() == null ? BigDecimal.ZERO : sysUserOrderRecord.getOriginal_price();
         //折扣价
         BigDecimal multiply = originalPrice.multiply(referenceDiscount);
-        sysUserOrderRecord.setExpenditure(originalPrice.subtract(multiply));
+        sysUserOrderRecord.setExpenditure(originalPrice.subtract(multiply);
         sysUserOrderRecordDao.updateByPrimaryKeySelective(sysUserOrderRecord);
     }
 

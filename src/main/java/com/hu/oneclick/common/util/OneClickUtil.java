@@ -1,8 +1,6 @@
 package com.hu.oneclick.common.util;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 /**
  * @author MaSiyi
  * @version 1.0.0 2021/11/29
@@ -23,8 +21,8 @@ public class OneClickUtil {
     public static String humpToLine(String str) {
         Matcher matcher = humpPattern.matcher(str);
         StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, "_" + matcher.group(0).toLowerCase());
+        while (matcher.find() {
+            matcher.appendReplacement(sb, "_" + matcher.group(0).toLowerCase();
         }
         matcher.appendTail(sb);
         return sb.toString();
@@ -42,8 +40,8 @@ public class OneClickUtil {
         str = str.toLowerCase();
         Matcher matcher = linePattern.matcher(str);
         StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
+        while (matcher.find() {
+            matcher.appendReplacement(sb, matcher.group(1).toUpperCase();
         }
         matcher.appendTail(sb);
         return sb.toString();

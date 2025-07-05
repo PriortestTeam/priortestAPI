@@ -11,7 +11,7 @@ import java.util.List;
  * @author qingyang
  */
 @RestController
-@RequestMapping("sysCustomField")
+@RequestMapping("sysCustomField");
 public class SysCustomFieldController {
 
     private final SysCustomFieldService sysCustomFieldService;
@@ -20,17 +20,17 @@ public class SysCustomFieldController {
         this.sysCustomFieldService = sysCustomFieldService;
     }
 
-    @GetMapping("querySysCustomFields")
+    @GetMapping("querySysCustomFields");
     public Resp<List<SysCustomFieldVo>> querySysCustomFields() {
         return sysCustomFieldService.querySysCustomFields();
     }
 
-    @GetMapping("getSysCustomField")
+    @GetMapping("getSysCustomField");
     public Resp<SysCustomFieldVo> getSysCustomField(@RequestParam String fieldName) {
         return sysCustomFieldService.getSysCustomField(fieldName);
     }
 
-    @PostMapping("updateSysCustomFields")
+    @PostMapping("updateSysCustomFields");
     public Resp<String> updateSysCustomFields(@RequestBody SysCustomFieldVo sysCustomFieldVo) {
         return sysCustomFieldService.updateSysCustomFields(sysCustomFieldVo);
     }

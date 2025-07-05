@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.Date;
 
-@Schema(description = "版本Dto")
+@Schema(description = "版本Dto");
 @Data
 public class VersionDto implements Serializable {
     /**

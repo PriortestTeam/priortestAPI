@@ -1,5 +1,4 @@
 package com.hu.oneclick.common.util;
-
 /**
  * @author qingyang
  */

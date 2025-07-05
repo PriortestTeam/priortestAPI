@@ -15,11 +15,6 @@ import java.util.Set;
  * @author vince
  * @since 2022-12-14
  */
-public interface CustomFileldLinkDao extends BaseMapper<CustomFileldLink> {
 
-    int insertBatch(@Param("customFileldLinkList") List<CustomFileldLink> customFileldLinkList);
 
-    int deleteBatchByCustomFieldId(@Param("customFieldIds")  Set<Long> customFieldIds);
 
-    List<CustomFileldLink> findByCustomFieldIds (@Param("customFieldIds") Set<Long> customFieldIds);
-}

@@ -34,10 +34,10 @@ public class GlobalControllerAdvice implements ResponseBodyAdvice<Object> {
             }
 
             if (httpStatus > 0) {
-                response.setStatusCode(HttpStatus.valueOf(httpStatus));
+                response.setStatusCode(HttpStatus.valueOf(httpStatus);
             }
         } catch (Exception e) {
-            log.warn("global add http status failed, message: {}", e.getMessage());
+            log.warn("global add http status failed, message: {}", e.getMessage();
         }
         return body;
     }

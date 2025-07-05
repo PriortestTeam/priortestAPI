@@ -42,7 +42,7 @@ public class FunctionServiceImpl implements FunctionService {
         String[] d=strArr.split(",");
         for (int i = 0, size = d.length; i < size; i++) {
             if(d[i]!=null) {
-                idList.add(Long.parseLong(d[i]));
+                idList.add(Long.parseLong(d[i]);
             }
         }
         return idList;

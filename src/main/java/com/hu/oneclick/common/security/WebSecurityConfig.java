@@ -51,7 +51,7 @@ import java.util.Map;
  */
 @EnableWebSecurity
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true);
 public class WebSecurityConfig {
 
     @Autowired
@@ -98,14 +98,14 @@ public class WebSecurityConfig {
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder();
         // Allow empty passwords to be treated as {noop}
         provider.setPasswordEncoder(new DelegatingPasswordEncoder("bcrypt", 
             Map.of(
                 "bcrypt", new BCryptPasswordEncoder(),
                 "noop", NoOpPasswordEncoder.getInstance()
             )
-        ));
+        );
         return provider;
     }
 
@@ -114,15 +114,15 @@ public class WebSecurityConfig {
         return new ProviderManager(Arrays.asList(
             daoAuthenticationProvider(),
             jwtAuthenticationProvider
-        ));
+        );
     }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter();
-        filter.setAuthenticationManager(authenticationManager());
+        filter.setAuthenticationManager(authenticationManager();
         filter.setAuthenticationSuccessHandler(jwtRefreshSuccessHandler);
-        filter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
+        filter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler();
         // 不在这里设置白名单，而是在请求匹配器中处理
         return filter;
     }
@@ -134,19 +134,19 @@ public class WebSecurityConfig {
         // Configure custom authentication filters
         MyUsernamePasswordAuthenticationFilter jsonAuthFilter = new MyUsernamePasswordAuthenticationFilter();
         jsonAuthFilter.setAuthenticationSuccessHandler(jsonLoginSuccessHandler);
-        jsonAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
-        jsonAuthFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
-        jsonAuthFilter.setAuthenticationManager(authenticationManager());
+        jsonAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler();
+        jsonAuthFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy();
+        jsonAuthFilter.setAuthenticationManager(authenticationManager();
 
         // Get the JWT filter from the Spring context
         JwtAuthenticationFilter jwtAuthFilter = jwtAuthenticationFilter();
 
         // @formatter:off
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .formLogin(form -> form.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()
+            .csrf(csrf -> csrf.disable()
+            .formLogin(form -> form.disable()
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(
                     "/api/login",
@@ -185,7 +185,7 @@ public class WebSecurityConfig {
                         path.equals("/api/swagger-ui.html") ||
                         path.startsWith("/swagger-ui/") ||
                         path.startsWith("/v3/api-docs") ||
-                        path.equals("/swagger-ui.html")) {
+                        path.equals("/swagger-ui.html") {
                         System.out.println(">>> 跳过JWT过滤器，直接放行请求: " + path);
                         filterChain.doFilter(request, response);
                         return;
@@ -196,10 +196,10 @@ public class WebSecurityConfig {
             }, UsernamePasswordAuthenticationFilter.class)
             .logout(logout -> logout
                 .logoutUrl("/api/logout")
-                .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
+                .logoutSuccessHandler(httpStatusLogoutSuccessHandler)
             .headers(headers -> headers
-                .frameOptions(frame -> frame.deny())
-                .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")));
+                .frameOptions(frame -> frame.deny()
+                .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'");
         // @formatter:on
 
         System.out.println(">>> SecurityFilterChain配置完成");
@@ -209,9 +209,9 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*");
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS");
+        configuration.setAllowedHeaders(Collections.singletonList("*");
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

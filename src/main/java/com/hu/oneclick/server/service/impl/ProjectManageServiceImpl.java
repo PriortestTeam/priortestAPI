@@ -39,18 +39,18 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
 
     @Override
     public List<ProjectManage> listAll(ProjectManageParam param) {
-        param.setRoomId(jwtUserService.getUserLoginInfo().getSysUser().getRoomId());
-        return this.list(param.getQueryCondition());
+        param.setRoomId(jwtUserService.getUserLoginInfo().getSysUser().getRoomId();
+        return this.list(param.getQueryCondition();
     }
 
     @Override
     public ProjectManage add(ProjectManageSaveDto dto) {
         ProjectManage projectManage = new ProjectManage();
         BeanUtil.copyProperties(dto, projectManage);
-        projectManage.setRoomId(jwtUserService.getUserLoginInfo().getSysUser().getRoomId());
+        projectManage.setRoomId(jwtUserService.getUserLoginInfo().getSysUser().getRoomId();
         // 保存自定义字段
-        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            projectManage.setProjectExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+        if (!JSONUtil.isNull(dto.getCustomFieldDatas() {
+            projectManage.setProjectExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas();
         }
         this.baseMapper.insert(projectManage);
         return projectManage;
@@ -60,10 +60,10 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
     public ProjectManage edit(ProjectManageSaveDto dto) {
         ProjectManage projectManage = new ProjectManage();
         BeanUtil.copyProperties(dto, projectManage);
-        projectManage.setRoomId(jwtUserService.getUserLoginInfo().getSysUser().getRoomId());
+        projectManage.setRoomId(jwtUserService.getUserLoginInfo().getSysUser().getRoomId();
         // 保存自定义字段
-        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            projectManage.setProjectExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+        if (!JSONUtil.isNull(dto.getCustomFieldDatas() {
+            projectManage.setProjectExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas();
         }
         this.baseMapper.updateById(projectManage);
         return projectManage;
@@ -73,7 +73,7 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
     public ProjectManage info(Long id) {
         ProjectManage projectManage = baseMapper.selectById(id);
         if (projectManage == null) {
-            throw new BaseException(StrUtil.format("项目查询不到。ID：{}", id));
+            throw new BaseException(StrUtil.format("项目查询不到。ID：{}", id);
         }
         return projectManage;
     }
@@ -84,7 +84,7 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
         for (Long id : ids) {
             ProjectManage projectManage = baseMapper.selectById(id);
             if (projectManage == null) {
-                throw new BaseException(StrUtil.format("故事查询不到。ID：{}", id));
+                throw new BaseException(StrUtil.format("故事查询不到。ID：{}", id);
             }
             ProjectManage projectManageClone = new ProjectManage();
             BeanUtil.copyProperties(projectManage, projectManageClone);
@@ -97,16 +97,16 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
 
     public void delete(Long[] ids) {
         QueryWrapper<SysUserProject> query = Wrappers.query();
-        query.eq("is_default", 1).in("project_id", Arrays.asList(ids));
+        query.eq("is_default", 1).in("project_id", Arrays.asList(ids);
         Long count = sysUserProjectDao.selectCount(query);
         if (count > 0) {
             throw new BaseException("有项目被占用,暂时无法删除");
         }
 
         QueryWrapper<SysUserProject> query2 = Wrappers.query();
-        query2.in("project_id", Arrays.asList(ids));
+        query2.in("project_id", Arrays.asList(ids);
         sysUserProjectDao.delete(query2);
 
-        this.removeByIds(Arrays.asList(ids));
+        this.removeByIds(Arrays.asList(ids);
     }
 }

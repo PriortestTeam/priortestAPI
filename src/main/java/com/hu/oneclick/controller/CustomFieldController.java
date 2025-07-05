@@ -1,12 +1,9 @@
 package com.hu.oneclick.controller;
-
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.server.service.CustomFieldService;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 /**
  * @author qingyang
  */

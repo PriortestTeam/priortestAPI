@@ -22,10 +22,10 @@ public class FeatureJoinSprint implements VerifyParam, Serializable {
 
     @Override
     public void verify() throws BizException {
-        if(StringUtils.isEmpty(featureId)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"故事ID" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if(StringUtils.isEmpty(sprint)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"迭代ID" + SysConstantEnum.PARAM_EMPTY.getValue());
+        if(StringUtils.isEmpty(featureId){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"故事ID" + SysConstantEnum.PARAM_EMPTY.getValue();
+        }else if(StringUtils.isEmpty(sprint){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"迭代ID" + SysConstantEnum.PARAM_EMPTY.getValue();
         }
     }
     public String getFeatureId() {

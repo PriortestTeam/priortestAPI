@@ -42,9 +42,9 @@ public class GlobalExceptionHandler {
      * @author Vince
      * @createTime 2022/12/13 21:18
      */
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class});
     @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST);
     public Resp<String> handleConstraintViolationException(Exception e) {
         logger.error("class: GlobalExceptionHandler#handleConstraintViolationException 请求参数校验异常ERROR==>：" + e);
         List<ObjectError> allErrors = Lists.newArrayList();
@@ -55,17 +55,17 @@ public class GlobalExceptionHandler {
             BindException ex = (BindException)e;
             allErrors = ex.getAllErrors();
         }
-        if (!ObjectUtils.isEmpty(allErrors)) {
+        if (!ObjectUtils.isEmpty(allErrors) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.PARAM_EMPTY.getCode(),
-                allErrors.get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST.value());
+                allErrors.get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST.value();
         }
-        return new Resp.Builder<String>().httpBadRequest().buildResult(SysConstantEnum.SYS_ERROR.getValue(), HttpStatus.BAD_REQUEST.value());
+        return new Resp.Builder<String>().httpBadRequest().buildResult(SysConstantEnum.SYS_ERROR.getValue(), HttpStatus.BAD_REQUEST.value();
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(Exception.class);
     public Resp<String> handleException(Exception e, HttpServletRequest request) {
         logger.info("class: GlobalExceptionHandler#handleException type: {}, message: {}", e.getClass(),
-            e.getMessage());
+            e.getMessage();
         String bizCode = "";
         String msg = SysConstantEnum.SYSTEM_BUSY.getValue();
         int httpStatus = 0;

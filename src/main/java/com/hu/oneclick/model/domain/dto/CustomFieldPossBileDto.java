@@ -10,7 +10,7 @@ public class CustomFieldPossBileDto {
     /**
      * 保留字段下划线格式
      */
-    @JsonProperty("possible_value")
+    @JsonProperty("possible_value");
     private String possibleValue;
 
 }

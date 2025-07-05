@@ -13,8 +13,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-@MappedJdbcTypes(JdbcType.VARCHAR)
-@MappedTypes({List.class})
+@MappedJdbcTypes(JdbcType.VARCHAR);
+@MappedTypes({List.class});
 public class ListTypeHandler extends BaseTypeHandler<List<String>> {
  
     private static final String DELIM = ",";
@@ -28,18 +28,18 @@ public class ListTypeHandler extends BaseTypeHandler<List<String>> {
     @Override
     public List<String> getNullableResult(ResultSet resultSet, String s) throws SQLException {
         String value = resultSet.getString(s);
-        return Arrays.asList(StringUtils.tokenizeToStringArray(value, DELIM));
+        return Arrays.asList(StringUtils.tokenizeToStringArray(value, DELIM);
     }
  
     @Override
     public List<String> getNullableResult(ResultSet resultSet, int i) throws SQLException {
         String value = resultSet.getString(i);
-        return Arrays.asList(StringUtils.tokenizeToStringArray(value, DELIM));
+        return Arrays.asList(StringUtils.tokenizeToStringArray(value, DELIM);
     }
  
     @Override
     public List<String> getNullableResult(CallableStatement callableStatement, int i) throws SQLException {
         String value = callableStatement.getString(i);
-        return Arrays.asList(StringUtils.tokenizeToStringArray(value, DELIM));
+        return Arrays.asList(StringUtils.tokenizeToStringArray(value, DELIM);
     }
 }

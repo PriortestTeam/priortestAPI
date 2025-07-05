@@ -6,49 +6,49 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(description = "角色项目功能DTO")
+@Schema(description = "角色项目功能DTO");
 public class RoleProjectFunctionDTO {
 
-    @Schema(description = "角色ID")
+    @Schema(description = "角色ID");
     private Long roleId;
 
-    @Schema(description = "项目ID")
+    @Schema(description = "项目ID");
     private Long projectId;
 
-    @Schema(description = "用户ID")
+    @Schema(description = "用户ID");
     private Long userId;
 
-    @Schema(description = "功能列表")
+    @Schema(description = "功能列表");
     private List<FunctionModelDTO> functionList;
 
-    @Schema(description = "角色id")
+    @Schema(description = "角色id");
     private Long  roleId;
 
-    @Schema(description = "角色名称")
+    @Schema(description = "角色名称");
     private String roleName;
 
-    @Schema(description = "项目id")
+    @Schema(description = "项目id");
     private Long projectId;
 
-    @Schema(description = "项目名称")
+    @Schema(description = "项目名称");
     private String projectName;
 
-    @Schema(description = "用户id")
+    @Schema(description = "用户id");
     private Long userId;
 
-    @Schema(description = "用户名称")
+    @Schema(description = "用户名称");
     private String userName;
 
-    @Schema(description = "功能id格式[1][2]")
+    @Schema(description = "功能id格式[1][2]");
     private String value;
 
-    @Schema(description = "功能权限")
+    @Schema(description = "功能权限");
     private List<FunctionModelDTO> functionList;
 
-    @Schema(description = "角色ID")
+    @Schema(description = "角色ID");
     private String roleIdStr;
 
-    @Schema(description = "项目ID")
+    @Schema(description = "项目ID");
     private String projectIdStr;
 
     public Long getRoleId() {

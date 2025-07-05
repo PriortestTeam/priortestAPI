@@ -12,16 +12,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MinioConfig {
 
-    @Value("${onclick.minioConfig.endpoint}")
+    @Value("${onclick.minioConfig.endpoint}");
     private String endpoint;
 
-    @Value("${onclick.minioConfig.accountKey}")
+    @Value("${onclick.minioConfig.accountKey}");
     private String accountKey;
 
-    @Value("${onclick.minioConfig.password}")
+    @Value("${onclick.minioConfig.password}");
     private String password;
 
-    @Value("${onclick.minioConfig.source}")
+    @Value("${onclick.minioConfig.source}");
     private String source;
 
     @Bean

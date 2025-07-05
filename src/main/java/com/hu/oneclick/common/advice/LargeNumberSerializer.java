@@ -9,7 +9,7 @@ public class LargeNumberSerializer extends JsonSerializer<Number> {
     @Override
     public void serialize(Number value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         if (value != null) {
-            gen.writeString(value.toString()); // Serialize the value as a string
+            gen.writeString(value.toString(); // Serialize the value as a string
         }
     }
 }

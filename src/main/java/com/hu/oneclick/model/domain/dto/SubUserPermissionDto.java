@@ -34,10 +34,10 @@ public class SubUserPermissionDto implements VerifyParam,Serializable {
 
     @Override
     public void verify() throws BizException {
-        if (StringUtils.isEmpty(subUserDto.getId())){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"用户ID"+ SysConstantEnum.PARAM_EMPTY.getValue());
+        if (StringUtils.isEmpty(subUserDto.getId(){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"用户ID"+ SysConstantEnum.PARAM_EMPTY.getValue();
         }else if (projectPermissions == null || projectPermissions.size() <= 0) {
-            throw new BizException(SysConstantEnum.LIST_PARAM_EMPTY.getCode(),"权限"+ SysConstantEnum.LIST_PARAM_EMPTY.getValue());
+            throw new BizException(SysConstantEnum.LIST_PARAM_EMPTY.getCode(),"权限"+ SysConstantEnum.LIST_PARAM_EMPTY.getValue();
         }
     }
 

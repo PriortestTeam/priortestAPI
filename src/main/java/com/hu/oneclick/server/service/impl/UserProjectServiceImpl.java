@@ -38,7 +38,7 @@ public class UserProjectServiceImpl implements UserProjectService {
         SubUserProject userProject = subUserProjectDao.queryByUserId(userId);
         String projectIds = userProject.getProjectId();
         // 通过projectIds 获取项目标题
-        List<String> projectIdList = Arrays.asList(projectIds.split(","));
+        List<String> projectIdList = Arrays.asList(projectIds.split(",");
         List<LeftJoinDto> select = projectDao.queryTitleByIds(projectIdList);
         return new Resp.Builder<List<LeftJoinDto>>().setData(select).ok();
     }
@@ -47,12 +47,12 @@ public class UserProjectServiceImpl implements UserProjectService {
     public List<Map<String, Object>> getUserProject() {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
 
-        List<Map<String, Object>> maps = sysUserProjectDao.queryProjectByUserId(new BigInteger(sysUser.getId()));
+        List<Map<String, Object>> maps = sysUserProjectDao.queryProjectByUserId(new BigInteger(sysUser.getId();
         return maps.stream().map(map -> {
             Map<String, Object> newmap = new HashMap<>();
-            newmap.put("title", map.get("title"));
-            newmap.put("projectId", map.get("project_id"));
+            newmap.put("title", map.get("title");
+            newmap.put("projectId", map.get("project_id");
             return newmap;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList();
     }
 }

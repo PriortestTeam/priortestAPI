@@ -28,24 +28,24 @@ import jakarta.annotation.Resource;
  */
 @Slf4j
 @RestController
-@RequestMapping("/retrieveTestCycleAsTitle")
+@RequestMapping("/retrieveTestCycleAsTitle");
 public class RetrieveTestCycleAsTitleController {
 
     @Resource
     private RetrieveTestCycleAsTitleService rtcatService;
 
-    @GetMapping("/getId")
+    @GetMapping("/getId");
     public Resp<TestCycleVo> getIdByTitle(@RequestParam String title, @RequestParam() Long projectId) {
-        if (StringUtil.isEmpty(title)) {
+        if (StringUtil.isEmpty(title) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "title不能为空",
-                HttpStatus.BAD_REQUEST.value());
+                HttpStatus.BAD_REQUEST.value();
         }
         if (projectId == null || projectId == 0L) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId不能为空",
-                HttpStatus.BAD_REQUEST.value());
+                HttpStatus.BAD_REQUEST.value();
         }
-        log.info("getIdByTitle ==> title:{}", JSON.toJSONString(title));
-        log.info("getIdByTitle ==> projectId:{}", JSON.toJSONString(projectId));
+        log.info("getIdByTitle ==> title:{}", JSON.toJSONString(title);
+        log.info("getIdByTitle ==> projectId:{}", JSON.toJSONString(projectId);
         return rtcatService.getIdForTitle(title, projectId);
     }
 }

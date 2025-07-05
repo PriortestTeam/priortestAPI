@@ -10,12 +10,9 @@ import java.lang.annotation.Target;
 /**
  * @author qingyang
  */
-@Target({ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD});
+@Retention(RetentionPolicy.RUNTIME);
 @Component
-public @interface Resubmit {
-
-    int delaySeconds();
 
 
-}
+

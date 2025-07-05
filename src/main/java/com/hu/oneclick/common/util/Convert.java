@@ -60,11 +60,11 @@ public class Convert {
             return ((Number) value).intValue();
         }
         final String valueStr = toStr(value, null);
-        if (StrUtil.isEmpty(valueStr)) {
+        if (StrUtil.isEmpty(valueStr) {
             return defaultValue;
         }
         try {
-            return Integer.parseInt(valueStr.trim());
+            return Integer.parseInt(valueStr.trim();
         } catch (Exception e) {
             return defaultValue;
         }

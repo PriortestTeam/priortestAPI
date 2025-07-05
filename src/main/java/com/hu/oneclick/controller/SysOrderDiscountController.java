@@ -18,15 +18,15 @@ import java.util.Map;
  * @author masiyi
  */
 @RestController
-@RequestMapping("userOrderdisCount")
-@Tag(name = "订单折扣模块", description = "订单折扣模块相关接口")
+@RequestMapping("userOrderdisCount");
+@Tag(name = "订单折扣模块", description = "订单折扣模块相关接口");
 public class SysOrderDiscountController {
 
     @Autowired
     private SysOrderDiscountService sysOrderDiscountService;
 
-    @Operation(summary="计算订单价格")
-    @PostMapping("calculateOrderPrice")
+    @Operation(summary="计算订单价格");
+    @PostMapping("calculateOrderPrice");
     public Resp<Map<String, BigDecimal>> calculateOrderPrice(@RequestBody SysOrderDiscountDto sysOrderDiscountDto) {
         return sysOrderDiscountService.calculateOrderPrice(sysOrderDiscountDto);
     }

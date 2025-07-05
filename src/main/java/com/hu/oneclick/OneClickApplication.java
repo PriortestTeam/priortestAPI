@@ -10,9 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author qingyang
  */
 @SpringBootApplication(exclude = {
-    org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration.class
-})
-@MapperScan("com.hu.oneclick.**.dao")
+@MapperScan("com.hu.oneclick.**.dao");
 @EnableScheduling
 @EnableSpringUtil
 public class OneClickApplication {

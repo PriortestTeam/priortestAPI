@@ -66,14 +66,14 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             String s = bucket.get();
             if (s != null) {
                 result = JSON.parseArray(s, SysCustomFieldVo.class);
-                return new Resp.Builder<List<SysCustomFieldVo>>().setData(result).totalSize(result.size()).ok();
+                return new Resp.Builder<List<SysCustomFieldVo>>().setData(result).totalSize(result.size().ok();
             }
             //缓存没有查数据库
             List<SysCustomFieldVo> sysCustomFieldVos = queryAll(masterId, projectId);
             bucket.set(JSONObject.toJSONString(sysCustomFieldVos), 24, TimeUnit.HOURS);
-            return new Resp.Builder<List<SysCustomFieldVo>>().setData(sysCustomFieldVos).totalSize(sysCustomFieldVos.size()).ok();
+            return new Resp.Builder<List<SysCustomFieldVo>>().setData(sysCustomFieldVos).totalSize(sysCustomFieldVos.size().ok();
         } catch (BizException e) {
-            logger.error("class: SysCustomFieldServiceImpl#querySysCustomFields,error []" + e.getMessage());
+            logger.error("class: SysCustomFieldServiceImpl#querySysCustomFields,error []" + e.getMessage();
             return new Resp.Builder<List<SysCustomFieldVo>>().buildResult("查询失败");
         }
     }
@@ -91,20 +91,20 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             //查询系统字段
             SysCustomField sysCustomField = sysCustomFieldVo.getSysCustomField();
             //过滤系统字段
-            SysCustomField querySysCustomField = sysCustomFieldDao.queryByFieldName(sysCustomField.getFieldName());
-            String defaultValues = StringUtils.isEmpty(querySysCustomField.getDefaultValues()) ? "" : querySysCustomField.getDefaultValues();
+            SysCustomField querySysCustomField = sysCustomFieldDao.queryByFieldName(sysCustomField.getFieldName();
+            String defaultValues = StringUtils.isEmpty(querySysCustomField.getDefaultValues() ? "" : querySysCustomField.getDefaultValues();
 
-            List<String> sysDefaultValues = StringUtils.isEmpty(defaultValues) ? null : Arrays.asList(defaultValues.split(","));
+            List<String> sysDefaultValues = StringUtils.isEmpty(defaultValues) ? null : Arrays.asList(defaultValues.split(",");
 
             if (sysDefaultValues == null) {
                 saveValues.addAll(requestValues);
             } else {
                 for (String requestValue : requestValues) {
                     //检查是否为空,为空代表没有默认值
-                    if (sysDefaultValues.contains(requestValue)) {
+                    if (sysDefaultValues.contains(requestValue) {
                         continue;
                     }
-                    saveValues.add(requestValue.trim());
+                    saveValues.add(requestValue.trim();
                 }
             }
 
@@ -129,10 +129,10 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
                 //没有添加
                 querySysCustomFieldExpand = new SysCustomFieldExpand();
                 querySysCustomFieldExpand.setValues(s);
-                querySysCustomFieldExpand.setId(String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId()));
+                querySysCustomFieldExpand.setId(String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId();
                 querySysCustomFieldExpand.setProjectId(projectId);
-                querySysCustomFieldExpand.setLinkSysCustomField(querySysCustomField.getFieldName());
-                querySysCustomFieldExpand.setSysCustomFieldId(querySysCustomField.getId());
+                querySysCustomFieldExpand.setLinkSysCustomField(querySysCustomField.getFieldName();
+                querySysCustomFieldExpand.setSysCustomFieldId(querySysCustomField.getId();
                 // 移除 master id - 待修改
                 SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
                 String userId = sysUser.getId();
@@ -149,11 +149,11 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
                 //不为空删除缓存
                 bucket.delete();
             }
-            return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
+            return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue().ok();
         } catch (BizException e) {
-            logger.error("class: SysCustomFieldServiceImpl#updateSysCustomFields,error []" + e.getMessage());
+            logger.error("class: SysCustomFieldServiceImpl#updateSysCustomFields,error []" + e.getMessage();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
@@ -161,7 +161,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
     public Resp<SysCustomFieldVo> getSysCustomField(String fieldName) {
         try {
             //做一下驼峰转下划线
-            if (!StringUtils.isEmpty(fieldName)) {
+            if (!StringUtils.isEmpty(fieldName) {
                 fieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
             }
             List<SysCustomFieldVo> result;
@@ -178,13 +178,13 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             }
             //循环获取值
             for (SysCustomFieldVo sysCustomFieldVo : result) {
-                if (sysCustomFieldVo.getSysCustomField().getFieldName().equals(fieldName)) {
+                if (sysCustomFieldVo.getSysCustomField().getFieldName().equals(fieldName) {
                     return new Resp.Builder<SysCustomFieldVo>().setData(sysCustomFieldVo).ok();
                 }
             }
             return new Resp.Builder<SysCustomFieldVo>().setData(null).ok();
         } catch (BizException e) {
-            logger.error("class: SysCustomFieldServiceImpl#getSysCustomField,error []" + e.getMessage());
+            logger.error("class: SysCustomFieldServiceImpl#getSysCustomField,error []" + e.getMessage();
             return new Resp.Builder<SysCustomFieldVo>().buildResult("查询失败");
         }
 
@@ -200,21 +200,21 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
         sysCustomFieldExpand.setProjectId(projectId);
         List<SysCustomFieldExpand> sysCustomFieldExpands = sysCustomFieldExpandDao.queryList(sysCustomFieldExpand);
         //组装 SysCustomFieldExpand
-        List<SysCustomFieldVo> result = new ArrayList<>(sysCustomFields.size());
+        List<SysCustomFieldVo> result = new ArrayList<>(sysCustomFields.size();
         for (SysCustomField customField : sysCustomFields) {
             SysCustomFieldVo sysCustomFieldVo = new SysCustomFieldVo();
             //如果相等了，先取出系统默认值，在取出扩展合并
             StringBuilder defaultValues =
-                    new StringBuilder((StringUtils.isEmpty(customField.getDefaultValues()) ? "" : customField.getDefaultValues()));
+                    new StringBuilder((StringUtils.isEmpty(customField.getDefaultValues() ? "" : customField.getDefaultValues();
             int flag = 0;
             for (SysCustomFieldExpand customFieldExpand : sysCustomFieldExpands) {
-                if (customField.getFieldName().equals(customFieldExpand.getLinkSysCustomField())) {
-                    if (!"".equals(defaultValues.toString()) && flag == 0) {
+                if (customField.getFieldName().equals(customFieldExpand.getLinkSysCustomField() {
+                    if (!"".equals(defaultValues.toString() && flag == 0) {
                         defaultValues.append(",");
                     }
                     flag++;
                     //取扩展值
-                    String values = StringUtils.isEmpty(customFieldExpand.getValues()) ? "" : customFieldExpand.getValues();
+                    String values = StringUtils.isEmpty(customFieldExpand.getValues() ? "" : customFieldExpand.getValues();
                     //合并
                     defaultValues.append(values);
                     sysCustomFieldVo.setSysCustomFieldExpand(customFieldExpand);
@@ -226,8 +226,8 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             customField.setDefaultValues("");
             List<String> mergeValues;
 
-            mergeValues = StringUtils.isEmpty(defaultValues.toString()) ? new ArrayList<>()
-                    : Arrays.asList(defaultValues.toString().split(","));
+            mergeValues = StringUtils.isEmpty(defaultValues.toString() ? new ArrayList<>()
+                    : Arrays.asList(defaultValues.toString().split(",");
 
             sysCustomFieldVo.setSysCustomField(customField);
             sysCustomFieldVo.setMergeValues(mergeValues);
@@ -251,7 +251,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
         //系统字段
         SysCustomField report_name = sysCustomFieldDao.queryByFieldName("report_name");
         String defaultValues = report_name.getDefaultValues();
-        if (!StringUtils.isEmpty(defaultValues)) {
+        if (!StringUtils.isEmpty(defaultValues) {
             String[] split = defaultValues.split(",");
             for (String s : split) {
                 list.add(s);
@@ -261,7 +261,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
         String masterId = jwtUserService.getMasterId();
         List<SysUser> listPsn = userService.queryByUserIdAndParentId(masterId);
         for (SysUser sysUser : listPsn) {
-            list.add(sysUser.getUserName());
+            list.add(sysUser.getUserName();
         }
         return new Resp.Builder<List<String>>().setData(list).ok();
     }

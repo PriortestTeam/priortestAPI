@@ -1,9 +1,6 @@
 package com.hu.oneclick.model.domain.dto;
-
 import lombok.Data;
-
 import java.io.Serializable;
-
 /**
  * SysUserRoleDto
  *

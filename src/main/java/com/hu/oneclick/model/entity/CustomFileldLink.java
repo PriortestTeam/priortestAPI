@@ -60,7 +60,7 @@ public class CustomFileldLink implements Serializable {
         this.customFieldId = customFieldId;
     }
 
-    @Schema(description = "删除标识")
+    @Schema(description = "删除标识");
     private Integer delFlag;
 
     // 手动添加getCustomFieldId方法

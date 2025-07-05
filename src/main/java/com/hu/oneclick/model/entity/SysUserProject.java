@@ -10,20 +10,20 @@ import java.math.BigInteger;
 import java.sql.Date;
 
 @Data
-@TableName("sys_user_project")
+@TableName("sys_user_project");
 public class SysUserProject {
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.AUTO);
     private BigInteger id;
 
-    @TableField("user_id")
+    @TableField("user_id");
     private BigInteger userId;
 
-    @TableField("project_id")
+    @TableField("project_id");
     private BigInteger projectId;
 
-    @TableField("is_default")
+    @TableField("is_default");
     private Integer isDefault;
 
-    @TableField(value = "created_at")
+    @TableField(value = "created_at");
     private Date createdAt;
 }

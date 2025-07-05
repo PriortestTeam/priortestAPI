@@ -9,10 +9,5 @@ import java.util.List;
  * @version 1.0.0 2021/11/13
  * @since JDK 1.8.0
  */
-public interface FunctionService {
-    List<SysFunction> getRoleFunction(String pNumber);
 
-    List<SysFunction> findRoleFunction(String s);
 
-    List<SysFunction> findByIds(String funIds);
-}

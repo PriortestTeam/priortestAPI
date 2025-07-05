@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller.user;
-
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.model.base.Resp;
@@ -12,10 +11,8 @@ import com.hu.oneclick.model.domain.dto.SysUserTokenDto;
 import com.hu.oneclick.server.user.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
-
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 /**
  * @author qingyang
  */

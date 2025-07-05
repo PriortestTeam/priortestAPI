@@ -1,12 +1,9 @@
 package com.hu.oneclick.model.domain.dto;
-
 import com.hu.oneclick.model.entity.TestCase;
 import com.hu.oneclick.model.entity.TestCycle;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import java.util.List;
-
 /**
  * @author qingyang
  */

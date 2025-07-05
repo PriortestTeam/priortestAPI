@@ -18,23 +18,12 @@ import java.util.Set;
  * @author vince
  * @since 2022-12-13
  */
-public interface CustomFieldsService {
 
 
-    Resp<List<CustomFieldVo>>  queryCustomList(CustomFieldDto customFieldDto);
-    Resp<String> add(CustomFieldVo customFieldVo);
 
-    Resp<String> update(CustomFieldVo customFieldVo);
 
-    Resp<String> delete(Set<Long> customFieldIds);
 
-    Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto);
 
-    Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto);
 
-    Resp<String> updateValueDropDownBox(CustomFieldsDto customFieldsDto);
 
-    List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId);
 
-    Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName);
-}

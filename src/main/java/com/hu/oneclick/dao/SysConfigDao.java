@@ -11,7 +11,4 @@ import java.util.List;
  * @Author Vince
  * @CreateTime 2022年12月24日 18:31:00
  */
-public interface SysConfigDao extends BaseMapper<SysConfig> {
 
-    List<SysConfig> selectByGroup(@Param("scope") String scope);
-}

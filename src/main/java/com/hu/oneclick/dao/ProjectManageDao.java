@@ -9,5 +9,3 @@ import org.apache.ibatis.annotations.Mapper;
  * @Date: 2023/5/22
  */
 @Mapper
-public interface ProjectManageDao extends BaseMapper<ProjectManage> {
-}

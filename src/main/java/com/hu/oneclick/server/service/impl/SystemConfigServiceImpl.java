@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.dao.SystemConfigDao;
@@ -8,9 +7,7 @@ import com.hu.oneclick.model.entity.SystemConfig;
 import com.hu.oneclick.server.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 /**
  * @author MaSiyi
  * @version 1.0.0 2021/10/11
@@ -34,9 +31,9 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     @Override
     public Resp<String> insert(SystemConfig systemConfig) {
         if (systemConfigDao.insert(systemConfig) == 0) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.ADD_FAILED.getCode(), SysConstantEnum.ADD_FAILED.getValue());
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.ADD_FAILED.getCode(), SysConstantEnum.ADD_FAILED.getValue();
         }
-        return new Resp.Builder<String>().buildResult(SysConstantEnum.ADD_SUCCESS.getCode(), SysConstantEnum.ADD_SUCCESS.getValue());
+        return new Resp.Builder<String>().buildResult(SysConstantEnum.ADD_SUCCESS.getCode(), SysConstantEnum.ADD_SUCCESS.getValue();
     }
 
     /**
@@ -51,9 +48,9 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     @Override
     public Resp<String> update(SystemConfig systemConfig) {
         if (systemConfigDao.updateByKey(systemConfig) == 0) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.UPDATE_FAILED.getCode(), SysConstantEnum.UPDATE_FAILED.getValue());
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.UPDATE_FAILED.getCode(), SysConstantEnum.UPDATE_FAILED.getValue();
         }
-        return new Resp.Builder<String>().buildResult(SysConstantEnum.UPDATE_SUCCESS.getCode(), SysConstantEnum.UPDATE_SUCCESS.getValue());
+        return new Resp.Builder<String>().buildResult(SysConstantEnum.UPDATE_SUCCESS.getCode(), SysConstantEnum.UPDATE_SUCCESS.getValue();
     }
 
     /**
@@ -82,7 +79,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     @Override
     public String delete(String key) {
         if (systemConfigDao.deleteByKey(key) == 0) {
-            throw new BizException(SysConstantEnum.DELETE_FAILED.getCode(),SysConstantEnum.DELETE_FAILED.getValue());
+            throw new BizException(SysConstantEnum.DELETE_FAILED.getCode(),SysConstantEnum.DELETE_FAILED.getValue();
         }
         return SysConstantEnum.DELETE_SUCCESS.getValue();
     }

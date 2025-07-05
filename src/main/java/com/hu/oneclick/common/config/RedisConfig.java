@@ -35,7 +35,7 @@ public class RedisConfig {
     @Bean
     public RedissonClient redissonSingle() {
         Config config = new Config();
-        config.setCodec(new StringCodec());
+        config.setCodec(new StringCodec();
         //指定使用单节点部署方式
         config.useSingleServer()
                 .setAddress("redis://" + redisHost + ":" + redisPort)
@@ -55,7 +55,7 @@ public class RedisConfig {
                 .setDnsMonitoringInterval(5000);
         config.setThreads(4);
         config.setNettyThreads(4);
-        config.setCodec(new JsonJacksonCodec());
+        config.setCodec(new JsonJacksonCodec();
         config.setTransportMode(TransportMode.NIO);
         return Redisson.create(config);
     }

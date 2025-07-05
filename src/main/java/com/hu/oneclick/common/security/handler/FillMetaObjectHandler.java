@@ -20,19 +20,19 @@ public class FillMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.setFieldValByName("createUserId", Long.valueOf(jwtUserService.getMasterId()), metaObject);
+        this.setFieldValByName("createUserId", Long.valueOf(jwtUserService.getMasterId(), metaObject);
         //this.setFieldValByName("createUserName", SecurityUtils.getUserNameOrDefault(), metaObject);
-        this.setFieldValByName("updateUserId", Long.valueOf(jwtUserService.getMasterId()), metaObject);
+        this.setFieldValByName("updateUserId", Long.valueOf(jwtUserService.getMasterId(), metaObject);
         //this.setFieldValByName("updateUserName", SecurityUtils.getUserNameOrDefault(), metaObject);
-        this.setFieldValByName("createTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()), metaObject);
-        this.setFieldValByName("updateTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()), metaObject);
+        this.setFieldValByName("createTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault().toInstant(), metaObject);
+        this.setFieldValByName("updateTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault().toInstant(), metaObject);
         //this.setFieldValByName("isDelete", DeleteStatus.VALID.ordinal(), metaObject);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setFieldValByName("updateUserId", Long.valueOf(jwtUserService.getMasterId()), metaObject);
+        this.setFieldValByName("updateUserId", Long.valueOf(jwtUserService.getMasterId(), metaObject);
         //this.setFieldValByName("updateUserName", SecurityUtils.getUserNameOrDefault(), metaObject);
-        this.setFieldValByName("updateTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()), metaObject);
+        this.setFieldValByName("updateTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault().toInstant(), metaObject);
     }
 }

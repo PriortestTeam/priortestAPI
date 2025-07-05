@@ -21,8 +21,8 @@ public class JwtLoginConfigurer<T extends JwtLoginConfigurer<T, B>, B extends Ht
 
 	@Override
 	public void configure(B http) {
-		authFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
-		authFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
+		authFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class);
+		authFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler();
 
 		JwtAuthenticationFilter filter = postProcess(authFilter);
 		http.addFilterBefore(filter, LogoutFilter.class);

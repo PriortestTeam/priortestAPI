@@ -24,7 +24,7 @@ public class GitMangerServiceImpl implements GitMangerService {
     private final UITestGitSettingsDao uiTestGitSettingsDao;
     private final UITestGitRepoDao uiTestGitRepoDao;
 
-    @Value("${prior-test.git.local-repo}")
+    @Value("${prior-test.git.local-repo}");
     private String localGitRepo;
 
     public GitMangerServiceImpl(UITestGitSettingsDao uiTestGitSettingsDao, UITestGitRepoDao uiTestGitRepoDao) {
@@ -35,11 +35,11 @@ public class GitMangerServiceImpl implements GitMangerService {
     @Override
     public List<UITestGitSettings> getWithRoomId(String roomId) {
         QueryWrapper<UITestGitSettings> query = Wrappers.query();
-        query.eq("room_id", new BigInteger(roomId));
+        query.eq("room_id", new BigInteger(roomId);
 
         Long count = uiTestGitSettingsDao.selectCount(query);
         if (count <= 0) {
-            throw new BizException("200", "没有记录", HttpStatus.NOT_FOUND.value());
+            throw new BizException("200", "没有记录", HttpStatus.NOT_FOUND.value();
         }
 
         return uiTestGitSettingsDao.selectList(query);
@@ -47,35 +47,35 @@ public class GitMangerServiceImpl implements GitMangerService {
 
     @Override
     public void create(UITestGitSettings access) {
-        access.setPasswd(Base64.getEncoder().encodeToString(access.getPasswd().getBytes()));
+        access.setPasswd(Base64.getEncoder().encodeToString(access.getPasswd().getBytes();
         uiTestGitSettingsDao.insert(access);
     }
 
     @Override
     public void update(String id, UITestGitSettings access) {
         QueryWrapper<UITestGitSettings> query = Wrappers.query();
-        query.eq("id", new BigInteger(id));
+        query.eq("id", new BigInteger(id);
 
         Long count = uiTestGitSettingsDao.selectCount(query);
         if (count <= 0) {
-            throw new BizException("200", "找不到更新记录", HttpStatus.NOT_FOUND.value());
+            throw new BizException("200", "找不到更新记录", HttpStatus.NOT_FOUND.value();
         }
 
         UpdateWrapper<UITestGitSettings> update = Wrappers.update();
-        update.eq("id", new BigInteger(id));
+        update.eq("id", new BigInteger(id);
 
-        access.setPasswd(Base64.getEncoder().encodeToString(access.getPasswd().getBytes()));
+        access.setPasswd(Base64.getEncoder().encodeToString(access.getPasswd().getBytes();
         uiTestGitSettingsDao.update(access, update);
     }
 
     @Override
     public void remove(String id) {
         QueryWrapper<UITestGitSettings> query = Wrappers.query();
-        query.eq("id", new BigInteger(id));
+        query.eq("id", new BigInteger(id);
 
         Long count = uiTestGitSettingsDao.selectCount(query);
         if (count <= 0) {
-            throw new BizException("200", "没此记录", HttpStatus.NOT_FOUND.value());
+            throw new BizException("200", "没此记录", HttpStatus.NOT_FOUND.value();
         }
 
         uiTestGitSettingsDao.deleteById(id);
@@ -84,10 +84,10 @@ public class GitMangerServiceImpl implements GitMangerService {
     @Override
     public void removeByRoomId(String roomId) {
         QueryWrapper<UITestGitSettings> query = Wrappers.query();
-        query.eq("room_id", new BigInteger(roomId));
+        query.eq("room_id", new BigInteger(roomId);
         Long count = uiTestGitSettingsDao.selectCount(query);
         if (count <= 0) {
-            throw new BizException("200", "无此记录", HttpStatus.NOT_FOUND.value());
+            throw new BizException("200", "无此记录", HttpStatus.NOT_FOUND.value();
         }
         uiTestGitSettingsDao.delete(query);
     }
@@ -95,28 +95,28 @@ public class GitMangerServiceImpl implements GitMangerService {
     @Override
     public void initProjectRepo(String roomId, UITestGitRepo gitRepo) {
         QueryWrapper<UITestGitSettings> query = Wrappers.query();
-        query.eq("room_id", new BigInteger(roomId));
+        query.eq("room_id", new BigInteger(roomId);
         UITestGitSettings uiTestGitSettings = uiTestGitSettingsDao.selectOne(query);
 
         if (uiTestGitSettings == null) {
-            throw new BizException("200", "此roomId下没有配置Git", HttpStatus.NOT_FOUND.value());
+            throw new BizException("200", "此roomId下没有配置Git", HttpStatus.NOT_FOUND.value();
         }
 
-        String decode_str = new String(Base64.getDecoder().decode(uiTestGitSettings.getPasswd()));
+        String decode_str = new String(Base64.getDecoder().decode(uiTestGitSettings.getPasswd();
         GitOperation gitOperation = new GitOperation(uiTestGitSettings.getUsername(), decode_str,
             uiTestGitSettings.getRemoteUrl() + "/" + gitRepo.getRepoName(),
             gitRepo.getRepoName(), localGitRepo);
         try {
             gitOperation.push();
         } catch (TransportException e) {
-            throw new BizException("401", e.getMessage(), HttpStatus.NOT_FOUND.value());
+            throw new BizException("401", e.getMessage(), HttpStatus.NOT_FOUND.value();
         } catch (Exception e) {
-            throw new BizException("200", e.getMessage(), HttpStatus.FORBIDDEN.value());
+            throw new BizException("200", e.getMessage(), HttpStatus.FORBIDDEN.value();
         }
 
         QueryWrapper<UITestGitRepo> query1 = Wrappers.query();
-        query1.eq("repo_name", gitRepo.getRepoName());
-        query1.eq("project_id", new BigInteger(gitRepo.getProjectId()));
+        query1.eq("repo_name", gitRepo.getRepoName();
+        query1.eq("project_id", new BigInteger(gitRepo.getProjectId();
         Long count = uiTestGitRepoDao.selectCount(query1);
         if (count <= 0) {
             uiTestGitRepoDao.insert(gitRepo);

@@ -24,21 +24,21 @@ public class SwaggerConfig {
             .info(new Info()
                 .title("OneClick API Documentation")
                 .version("1.0.0")
-                .description("OneClick项目接口文档"))
+                .description("OneClick项目接口文档")
             .addSecurityItem(new SecurityRequirement()
-                .addList("Authorization"))
+                .addList("Authorization")
             .addSecurityItem(new SecurityRequirement()
-                .addList("emailId"))
+                .addList("emailId")
             .components(new Components()
                 .addSecuritySchemes("Authorization", new SecurityScheme()
                     .type(SecurityScheme.Type.APIKEY)
                     .in(SecurityScheme.In.HEADER)
                     .name("Authorization")
-                    .description("user Token"))
+                    .description("user Token")
                 .addSecuritySchemes("emailId", new SecurityScheme()
                     .type(SecurityScheme.Type.APIKEY)
                     .in(SecurityScheme.In.HEADER)
                     .name("emailId")
-                    .description("emailId")));
+                    .description("emailId");
     }
 }

@@ -45,10 +45,10 @@ public class BuildJobTask extends QuartzJobBean {
             DateTime curDate = DateUtil.date();
             JobWithDetails job = jenkinsServer.getJob(jobName);
             log.info("Job详情:");
-            log.info(JSONUtil.toJsonStr(job));
+            log.info(JSONUtil.toJsonStr(job);
             // 构建任务 (priortestapi)
             job.build(true);
-            log.info(StrUtil.format("【{}】Job执行成功, 时间:{}", jenkinsJobName, curDate));
+            log.info(StrUtil.format("【{}】Job执行成功, 时间:{}", jenkinsJobName, curDate);
         } catch (IOException | URISyntaxException e) {
             log.error(e.getMessage(), e);
         }
@@ -59,14 +59,14 @@ public class BuildJobTask extends QuartzJobBean {
         // 获取URL
         log.info("获取到的URL:{}", jenkinsJobName);
         String substring = jenkinsJobName.substring(jenkinsJobName.indexOf("//") + 2);
-        String user_token = substring.substring(0, substring.indexOf("@"));
+        String user_token = substring.substring(0, substring.indexOf("@");
         String ip = substring.substring(substring.indexOf("@") + 1);
-        String ip_port = ip.substring(0, ip.indexOf("/"));
-        String job = ip.substring(ip.indexOf("job/") + 4, ip.indexOf("/build"));
-        String user = user_token.substring(0, user_token.indexOf(":"));
+        String ip_port = ip.substring(0, ip.indexOf("/");
+        String job = ip.substring(ip.indexOf("job/") + 4, ip.indexOf("/build");
+        String user = user_token.substring(0, user_token.indexOf(":");
         String token = user_token.substring(user_token.indexOf(":") + 1);
         jobName = job;
-        jenkinsServer = new JenkinsServer(new URI(StrUtil.format("http://{}", ip_port)), user, token);
+        jenkinsServer = new JenkinsServer(new URI(StrUtil.format("http://{}", ip_port), user, token);
     }
 
 }

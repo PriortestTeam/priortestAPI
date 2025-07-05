@@ -34,9 +34,9 @@ import java.util.*;
  * @author masiyi
  */
 @Slf4j
-@Tag(name = "功能管理", description = "功能管理相关接口")
+@Tag(name = "功能管理", description = "功能管理相关接口");
 @RestController
-@RequestMapping("function")
+@RequestMapping("function");
 @Slf4j
 public class FunctionController {
 
@@ -58,8 +58,8 @@ public class FunctionController {
      * @return
      * @throws Exception
      */
-    @PostMapping(value = "/findMenuByPNumber")
-    @Operation(summary = "根据父编号查询菜单")
+    @PostMapping(value = "/findMenuByPNumber");
+    @Operation(summary = "根据父编号查询菜单");
     public Resp<JSONArray> findMenuByPNumber(@RequestBody JSONObject jsonObject,
                                              HttpServletRequest request) throws Exception {
         String pNumber = jsonObject.getString("pNumber");
@@ -72,7 +72,7 @@ public class FunctionController {
             List<SysUserBusiness> roleList = userBusinessService.getBasicData(userId, "UserRole");
             if (roleList != null && roleList.size() > 0) {
                 String value = roleList.get(0).getValue();
-                if (StringUtils.isNotEmpty(value)) {
+                if (StringUtils.isNotEmpty(value) {
                     String roleIdStr = value.replace("[", "").replace("]", "");
                     roleId = Long.parseLong(roleIdStr);
                 }
@@ -105,12 +105,12 @@ public class FunctionController {
         JSONArray dataArray = new JSONArray();
         for (SysFunction function : dataList) {
             JSONObject item = new JSONObject();
-            List<SysFunction> newList = functionService.getRoleFunction(function.getNumber());
-            item.put("id", function.getId());
-            item.put("text", function.getName());
-            item.put("icon", function.getIcon());
-            item.put("url", function.getUrl());
-            item.put("component", function.getComponent());
+            List<SysFunction> newList = functionService.getRoleFunction(function.getNumber();
+            item.put("id", function.getId();
+            item.put("text", function.getName();
+            item.put("icon", function.getIcon();
+            item.put("url", function.getUrl();
+            item.put("component", function.getComponent();
             if (newList.size() > 0) {
                 JSONArray childrenArr = getMenuByFunction(newList, fc);
                 if (childrenArr.size() > 0) {
@@ -118,7 +118,7 @@ public class FunctionController {
                     dataArray.add(item);
                 }
             } else {
-                if (fc.contains("[" + function.getId().toString() + "]")) {
+                if (fc.contains("[" + function.getId().toString() + "]") {
                     dataArray.add(item);
                 }
             }
@@ -132,8 +132,8 @@ public class FunctionController {
      * @param request
      * @return
      */
-    @GetMapping(value = "/findRoleFunction")
-    @Operation(summary = "角色对应功能显示")
+    @GetMapping(value = "/findRoleFunction");
+    @Operation(summary = "角色对应功能显示");
     public Resp<JSONArray> findRoleFunction(@RequestParam("roleId") Long roleId,
                                             @RequestParam("projectId") Long projectId,
                                             @RequestParam("userId") Long userId,
@@ -179,7 +179,7 @@ public class FunctionController {
         if (sysUserBusiness == null) {
             ubValue = "[]";
         } else {
-            ubValue = StringUtils.isNotEmpty(sysUserBusiness.getValue()) ? sysUserBusiness.getValue() : "[]";
+            ubValue = StringUtils.isNotEmpty(sysUserBusiness.getValue() ? sysUserBusiness.getValue() : "[]";
         }
 
         String invisibleList = sysUserBusiness.getInvisible();
@@ -194,13 +194,13 @@ public class FunctionController {
                 JSONObject item = new JSONObject();
 
                 //可见的才显示出来
-                if(!invisibleList.contains("[" + function.getId().toString() + "]")){
+                if(!invisibleList.contains("[" + function.getId().toString() + "]"){
                     Boolean checked = ubValue.contains("[" + function.getId().toString() + "]");
-                    item.put("id", function.getId());
-                    item.put("value", function.getId());
-                    item.put("title", function.getName());
+                    item.put("id", function.getId();
+                    item.put("value", function.getId();
+                    item.put("title", function.getName();
                     item.put("checked", checked);
-                    List<SysFunction> funList = functionService.findRoleFunction(function.getNumber());
+                    List<SysFunction> funList = functionService.findRoleFunction(function.getNumber();
                     if (funList.size() > 0) {
                         JSONArray funArr = getFunctionList(funList, "RoleFunctions", roleId, projectId, userId);
                         item.put("children", funArr);
@@ -224,8 +224,8 @@ public class FunctionController {
      * @param roleId
      * @return
      */
-    @GetMapping(value = "/findRoleFunctionsById")
-    @Operation(summary = "根据id列表查找功能信息")
+    @GetMapping(value = "/findRoleFunctionsById");
+    @Operation(summary = "根据id列表查找功能信息");
     public Resp<JSONObject> findByIds(@RequestParam("roleId") Long roleId) {
         try {
             List<SysUserBusiness> list = userBusinessService.getBasicData(roleId.toString(), "RoleFunctions");
@@ -233,12 +233,12 @@ public class FunctionController {
                 //按钮
                 Map<Long, String> btnMap = new HashMap<>();
                 String btnStr = list.get(0).getBtnStr();
-                if (StringUtils.isNotEmpty(btnStr)) {
+                if (StringUtils.isNotEmpty(btnStr) {
                     JSONArray btnArr = JSONArray.parseArray(btnStr);
                     for (Object obj : btnArr) {
-                        JSONObject btnObj = JSONObject.parseObject(obj.toString());
+                        JSONObject btnObj = JSONObject.parseObject(obj.toString();
                         if (btnObj.get("funId") != null && btnObj.get("btnStr") != null) {
-                            btnMap.put(btnObj.getLong("funId"), btnObj.getString("btnStr"));
+                            btnMap.put(btnObj.getLong("funId"), btnObj.getString("btnStr");
                         }
                     }
                 }
@@ -248,16 +248,16 @@ public class FunctionController {
                 funIds = funIds.replace("][", ",");
                 List<SysFunction> dataList = functionService.findByIds(funIds);
                 JSONObject outer = new JSONObject();
-                outer.put("total", dataList.size());
+                outer.put("total", dataList.size();
                 //存放数据json数组
                 JSONArray dataArray = new JSONArray();
                 if (null != dataList) {
                     for (SysFunction function : dataList) {
                         JSONObject item = new JSONObject();
-                        item.put("id", function.getId());
-                        item.put("name", function.getName());
-                        item.put("pushBtn", function.getPushBtn());
-                        item.put("btnStr", btnMap.get(function.getId()));
+                        item.put("id", function.getId();
+                        item.put("name", function.getName();
+                        item.put("pushBtn", function.getPushBtn();
+                        item.put("btnStr", btnMap.get(function.getId();
                         dataArray.add(item);
                     }
                 }
@@ -278,16 +278,16 @@ public class FunctionController {
      * @param dto
      * @return
      */
-    @PostMapping(value = "/saveRoleFunction")
-    @Operation(summary = "保存用户角色功能")
+    @PostMapping(value = "/saveRoleFunction");
+    @Operation(summary = "保存用户角色功能");
     public Resp<Object> saveRoleFunction(@RequestBody @Valid RoleProjectFunctionDTO dto) {
 
-        SysUserBusiness sysUserBusiness = userBusinessService.getRoleProjectFunction(dto.getRoleId(), dto.getProjectId(), dto.getUserId());
+        SysUserBusiness sysUserBusiness = userBusinessService.getRoleProjectFunction(dto.getRoleId(), dto.getProjectId(), dto.getUserId();
 
         if (null != sysUserBusiness) {
             BeanUtils.copyProperties(dto, sysUserBusiness);
             if (dto.getFunctionList().size() > 0) {
-                sysUserBusiness.setBtnStr(JSON.toJSONString(dto.getFunctionList()));
+                sysUserBusiness.setBtnStr(JSON.toJSONString(dto.getFunctionList();
             }
             sysUserBusiness.setType("RoleFunctions");
             // 更新权限
@@ -298,7 +298,7 @@ public class FunctionController {
             sysUserBusiness = new SysUserBusiness();
             BeanUtils.copyProperties(dto, sysUserBusiness);
             if (dto.getFunctionList().size() > 0) {
-                sysUserBusiness.setBtnStr(JSON.toJSONString(dto.getFunctionList()));
+                sysUserBusiness.setBtnStr(JSON.toJSONString(dto.getFunctionList();
             }
             sysUserBusiness.setType("RoleFunctions");
             userBusinessService.insert(sysUserBusiness);

@@ -50,14 +50,14 @@ public class CustomField extends BaseEntity  implements VerifyParam, Serializabl
 
     @Override
     public void verify() throws BizException {
-        if(StringUtils.isEmpty(projectId)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目ID" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if (StringUtils.isEmpty(fieldName)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"字段名称" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if (StringUtils.isEmpty(scope)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"作用域" + SysConstantEnum.PARAM_EMPTY.getValue());
-        }else if (StringUtils.isEmpty(mandatory)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"mandatory" + SysConstantEnum.PARAM_EMPTY.getValue());
+        if(StringUtils.isEmpty(projectId){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目ID" + SysConstantEnum.PARAM_EMPTY.getValue();
+        } else if (StringUtils.isEmpty(fieldName){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"字段名称" + SysConstantEnum.PARAM_EMPTY.getValue();
+        }else if (StringUtils.isEmpty(scope){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"作用域" + SysConstantEnum.PARAM_EMPTY.getValue();
+        }else if (StringUtils.isEmpty(mandatory){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"mandatory" + SysConstantEnum.PARAM_EMPTY.getValue();
         }
     }
 

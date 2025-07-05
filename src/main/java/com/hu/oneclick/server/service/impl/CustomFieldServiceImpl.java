@@ -60,7 +60,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
     @Override
     public Resp<List<CustomField>> queryCustomList(CustomField customField) {
-        customField.setUserId(jwtUserServiceImpl.getMasterId());
+        customField.setUserId(jwtUserServiceImpl.getMasterId();
 
         List<CustomField> customFields = null;
         try {
@@ -73,72 +73,72 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
     @Override
     public Resp<FieldRadio> queryFieldRadioById(String customFieldId) {
-        FieldRadio fieldRadio = fieldRadioDao.queryFieldRadioById(customFieldId, jwtUserServiceImpl.getMasterId());
+        FieldRadio fieldRadio = fieldRadioDao.queryFieldRadioById(customFieldId, jwtUserServiceImpl.getMasterId();
         return new Resp.Builder<FieldRadio>().setData(fieldRadio).ok();
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> addCustomRadio(FieldRadio fieldRadio) {
         try {
             fieldRadio.subVerify();
             String masterId = jwtUserServiceImpl.getMasterId();
             fieldRadio.setUserId(masterId);
             String projectId = fieldRadio.getProjectId();
-            Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(), projectId), fieldRadio.getFieldName());
+            Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(), projectId), fieldRadio.getFieldName();
 
             addViewDownChildParams(fieldRadio);
             return Result.addResult((customFieldDao.insert(fieldRadio) > 0
                 && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
         } catch (BizException e) {
-            logger.error("class: CustomFieldServiceImpl#addCustomRadio,error []" + e.getMessage());
+            logger.error("class: CustomFieldServiceImpl#addCustomRadio,error []" + e.getMessage();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateCustomRadio(FieldRadio fieldRadio) {
         try {
             fieldRadio.subVerify();
-            fieldRadio.setUserId(jwtUserServiceImpl.getMasterId());
+            fieldRadio.setUserId(jwtUserServiceImpl.getMasterId();
             fieldRadio.setCustomFieldId();
-            Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(), fieldRadio.getProjectId()), fieldRadio.getFieldName());
+            Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(), fieldRadio.getProjectId(), fieldRadio.getFieldName();
             //masiyi 2021年11月27日10:39:52 更新视图字段
             updateViewDownChildParams(fieldRadio);
             return Result.updateResult((customFieldDao.update(fieldRadio) > 0
                 && fieldRadioDao.update(fieldRadio) > 0) ? 1 : 0);
         } catch (BizException e) {
-            logger.error("class: CustomFieldServiceImpl#updateCustomRadio,error []" + e.getMessage());
+            logger.error("class: CustomFieldServiceImpl#updateCustomRadio,error []" + e.getMessage();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteCustomRadio(String id) {
         try {
             String userId = jwtUserServiceImpl.getMasterId();
             return Result.deleteResult((customFieldDao.deleteById(id, userId) > 0
                 && fieldRadioDao.deleteById(id) > 0) ? 1 : 0);
         } catch (BizException e) {
-            logger.error("class: CustomFieldServiceImpl#deleteCustomRadio,error []" + e.getMessage());
+            logger.error("class: CustomFieldServiceImpl#deleteCustomRadio,error []" + e.getMessage();
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
     public Resp<FieldText> queryFieldTextById(String customFieldId) {
-        FieldText fieldText = fieldTextDao.queryFieldTextById(customFieldId, jwtUserServiceImpl.getMasterId());
-        fieldText.setDefaultValues(TwoConstant.convertToList(fieldText.getDefaultValue()));
+        FieldText fieldText = fieldTextDao.queryFieldTextById(customFieldId, jwtUserServiceImpl.getMasterId();
+        fieldText.setDefaultValues(TwoConstant.convertToList(fieldText.getDefaultValue();
         return new Resp.Builder<FieldText>().setData(fieldText).ok();
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> addCustomText(FieldText fieldText) {
         fieldText.subVerify();
         return addCustomText2(fieldText);
@@ -154,21 +154,21 @@ public class CustomFieldServiceImpl implements CustomFieldService {
      */
     private Resp<String> addCustomText2(FieldText fieldText) {
         try {
-            fieldText.setUserId(jwtUserServiceImpl.getMasterId());
-            Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(), fieldText.getProjectId()), fieldText.getFieldName());
+            fieldText.setUserId(jwtUserServiceImpl.getMasterId();
+            Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(), fieldText.getProjectId(), fieldText.getFieldName();
 
             addViewDownChildParams(fieldText);
             return Result.addResult((customFieldDao.insert(fieldText) > 0
                 && fieldTextDao.insert(fieldText) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error("class: CustomFieldServiceImpl#addCustomText2,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: CustomFieldServiceImpl#addCustomText2,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateCustomText(FieldText fieldText) {
         fieldText.subVerify();
         fieldText.setCustomFieldId();
@@ -179,19 +179,19 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
     private Resp<String> updateCustomText2(FieldText fieldText) {
         try {
-            fieldText.setUserId(jwtUserServiceImpl.getMasterId());
-            Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(), fieldText.getProjectId()), fieldText.getFieldName());
+            fieldText.setUserId(jwtUserServiceImpl.getMasterId();
+            Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(), fieldText.getProjectId(), fieldText.getFieldName();
             return Result.updateResult((customFieldDao.update(fieldText) > 0
                 && fieldTextDao.update(fieldText) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error("class: CustomFieldServiceImpl#updateCustomText2,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: CustomFieldServiceImpl#updateCustomText2,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteCustomText(String id) {
         try {
             String userId = jwtUserServiceImpl.getMasterId();
@@ -199,13 +199,13 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                 && fieldTextDao.deleteById(id) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error("class: CustomFieldServiceImpl#deleteCustomText,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: CustomFieldServiceImpl#deleteCustomText,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> addCustomRichText(FieldRichText fieldRichText) {
         fieldRichText.subVerify();
         FieldText fieldText = new FieldText();
@@ -214,7 +214,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateCustomRichText(FieldRichText fieldRichText) {
         fieldRichText.subVerify();
         FieldText fieldText = new FieldText();
@@ -226,49 +226,49 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
     @Override
     public Resp<FieldDropDown> queryFieldDropDownById(String customFieldId) {
-        FieldDropDown fieldDropDown = fieldDropDownDao.queryFieldTextById(customFieldId, jwtUserServiceImpl.getMasterId());
-        fieldDropDown.setDropDowns(TwoConstant.convertToList(fieldDropDown.getDropDownList()));
+        FieldDropDown fieldDropDown = fieldDropDownDao.queryFieldTextById(customFieldId, jwtUserServiceImpl.getMasterId();
+        fieldDropDown.setDropDowns(TwoConstant.convertToList(fieldDropDown.getDropDownList();
         return new Resp.Builder<FieldDropDown>().setData(fieldDropDown).ok();
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> addCustomDropDown(FieldDropDown fieldDropDown) {
         try {
             fieldDropDown.subVerify();
-            fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
-            Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(), fieldDropDown.getProjectId()), fieldDropDown.getFieldName());
+            fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId();
+            Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(), fieldDropDown.getProjectId(), fieldDropDown.getFieldName();
 
             addViewDownChildParams(fieldDropDown);
             return Result.addResult((customFieldDao.insert(fieldDropDown) > 0
                 && fieldDropDownDao.insert(fieldDropDown) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error("class: CustomFieldServiceImpl#addCustomDropDown,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: CustomFieldServiceImpl#addCustomDropDown,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateCustomDropDown(FieldDropDown fieldDropDown) {
         try {
             fieldDropDown.subVerify();
-            fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId());
-            Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(), fieldDropDown.getProjectId()), fieldDropDown.getFieldName());
+            fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId();
+            Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(), fieldDropDown.getProjectId(), fieldDropDown.getFieldName();
             //masiyi 2021年11月27日10:39:52 更新视图字段
             updateViewDownChildParams(fieldDropDown);
             return Result.updateResult((customFieldDao.update(fieldDropDown) > 0
                 && fieldDropDownDao.update(fieldDropDown) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error("class: CustomFieldServiceImpl#updateCustomDropDown,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: CustomFieldServiceImpl#updateCustomDropDown,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteCustomDropDown(String customFieldId) {
         try {
             String userId = jwtUserServiceImpl.getMasterId();
@@ -276,8 +276,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                 && fieldDropDownDao.deleteById(customFieldId) > 0) ? 1 : 0);
         } catch (BizException e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            logger.error("class: CustomFieldServiceImpl#deleteCustomDropDown,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: CustomFieldServiceImpl#deleteCustomDropDown,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
@@ -288,7 +288,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
      * @return
      */
     private Integer queryByFieldName(String fieldName, String projectId) {
-        if (StringUtils.isEmpty(fieldName)) {
+        if (StringUtils.isEmpty(fieldName) {
             return null;
         }
         if (customFieldDao.queryByFieldName(jwtUserService.getMasterId(), fieldName, projectId) > 0) {
@@ -301,7 +301,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     public Resp<List<Object>> getAllCustomField(CustomFieldDto customFieldDto) {
 
         CustomField customField = new CustomField();
-        customField.setProjectId(customFieldDto.getProjectId());
+        customField.setProjectId(customFieldDto.getProjectId();
         Resp<List<CustomField>> listResp = queryCustomList(customField);
         //获取该用户该项目下的用户字段
         List<CustomField> data = listResp.getData();
@@ -309,7 +309,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         List<CustomField> collect = new ArrayList<>();
         //按照scope分数据
         String scope = customFieldDto.getScope();
-        if (StringUtils.isEmpty(scope)) {
+        if (StringUtils.isEmpty(scope) {
             return null;
         }
         switch (scope) {
@@ -317,31 +317,31 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                 collect = data.stream().filter(p -> {
                     String[] split = p.getScope().split(",");
                     return "1".equals(split[0]);
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList();
                 break;
             case FieldConstant.FEATURE:
                 collect = data.stream().filter(p -> {
                     String[] split = p.getScope().split(",");
                     return "1".equals(split[1]);
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList();
                 break;
             case FieldConstant.TESTCASE:
                 collect = data.stream().filter(p -> {
                     String[] split = p.getScope().split(",");
                     return "1".equals(split[2]);
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList();
                 break;
             case FieldConstant.TESTCYCLE:
                 collect = data.stream().filter(p -> {
                     String[] split = p.getScope().split(",");
                     return "1".equals(split[3]);
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList();
                 break;
             case FieldConstant.ISSUE:
                 collect = data.stream().filter(p -> {
                     String[] split = p.getScope().split(",");
                     return "1".equals(split[4]);
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList();
                 break;
             default:
 
@@ -355,19 +355,19 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             String type = field.getType();
             switch (type) {
                 case FieldConstant.type.DROPDOWN:
-                    Resp<FieldDropDown> fieldDropDownResp = this.queryFieldDropDownById(field.getId());
+                    Resp<FieldDropDown> fieldDropDownResp = this.queryFieldDropDownById(field.getId();
                     FieldDropDown data1 = fieldDropDownResp.getData();
                     list.add(data1);
                     break;
                 case FieldConstant.type.RADIO:
-                    Resp<FieldRadio> fieldRadioResp = this.queryFieldRadioById(field.getId());
+                    Resp<FieldRadio> fieldRadioResp = this.queryFieldRadioById(field.getId();
                     FieldRadio data2 = fieldRadioResp.getData();
                     list.add(data2);
                     break;
                 case FieldConstant.type.MEMO:
                     break;
                 case FieldConstant.type.TEXT:
-                    Resp<FieldText> fieldTextResp = this.queryFieldTextById(field.getId());
+                    Resp<FieldText> fieldTextResp = this.queryFieldTextById(field.getId();
                     FieldText data3 = fieldTextResp.getData();
                     list.add(data3);
                     break;
@@ -394,8 +394,8 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         ViewDownChildParams viewDownChildParams = new ViewDownChildParams();
         if (cla instanceof CustomField) {
             CustomField customField = (CustomField) cla;
-            viewDownChildParams.setUserId(customField.getUserId());
-            viewDownChildParams.setProjectId(customField.getProjectId());
+            viewDownChildParams.setUserId(customField.getUserId();
+            viewDownChildParams.setProjectId(customField.getProjectId();
         }
 
 
@@ -408,33 +408,33 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         ViewScopeChildParams viewScopeChildParams1 = new ViewScopeChildParams();
         if (cla instanceof FieldRadio) {
             FieldRadio fieldRadio = (FieldRadio) cla;
-            viewScopeChildParams1.setOptionValue(fieldRadio.getDefaultValue());
-            viewScopeChildParams1.setOptionValueCn(fieldRadio.getFieldName());
-            viewDownChildParams.setScope(fieldRadio.getScope());
+            viewScopeChildParams1.setOptionValue(fieldRadio.getDefaultValue();
+            viewScopeChildParams1.setOptionValueCn(fieldRadio.getFieldName();
+            viewDownChildParams.setScope(fieldRadio.getScope();
         } else if (cla instanceof FieldText) {
             FieldText fieldText = (FieldText) cla;
-            viewScopeChildParams1.setOptionValue(fieldText.getDefaultValue());
-            viewScopeChildParams1.setOptionValueCn(fieldText.getFieldName());
-            viewDownChildParams.setScope(fieldText.getScope());
+            viewScopeChildParams1.setOptionValue(fieldText.getDefaultValue();
+            viewScopeChildParams1.setOptionValueCn(fieldText.getFieldName();
+            viewDownChildParams.setScope(fieldText.getScope();
         } else if (cla instanceof FieldRichText) {
             FieldRichText fieldRichText = (FieldRichText) cla;
-            viewScopeChildParams1.setOptionValue(fieldRichText.getDefaultValue());
-            viewScopeChildParams1.setOptionValueCn(fieldRichText.getFieldName());
-            viewDownChildParams.setScope(fieldRichText.getScope());
+            viewScopeChildParams1.setOptionValue(fieldRichText.getDefaultValue();
+            viewScopeChildParams1.setOptionValueCn(fieldRichText.getFieldName();
+            viewDownChildParams.setScope(fieldRichText.getScope();
         } else if (cla instanceof FieldDropDown) {
             FieldDropDown fieldDropDown = (FieldDropDown) cla;
-            viewScopeChildParams1.setOptionValue(fieldDropDown.getDefaultValue());
-            viewScopeChildParams1.setOptionValueCn(fieldDropDown.getFieldName());
-            viewDownChildParams.setScope(fieldDropDown.getScope());
+            viewScopeChildParams1.setOptionValue(fieldDropDown.getDefaultValue();
+            viewScopeChildParams1.setOptionValueCn(fieldDropDown.getFieldName();
+            viewDownChildParams.setScope(fieldDropDown.getScope();
         }
 
-        if (viewDownChildParams1.isEmpty()) {
+        if (viewDownChildParams1.isEmpty() {
             Date time = new Date();
             viewDownChildParams.setCreateTime(time);
-            viewScopeChildParams.setSelectChild(Collections.singletonList(viewScopeChildParams1));
+            viewScopeChildParams.setSelectChild(Collections.singletonList(viewScopeChildParams1);
             //对应view_down_child_params表
 
-            viewDownChildParams.setDefaultValues(JSON.toJSONString(viewScopeChildParams));
+            viewDownChildParams.setDefaultValues(JSON.toJSONString(viewScopeChildParams);
             viewDownChildParamsDao.insert(viewDownChildParams);
         } else if (viewDownChildParams1.size() == 1) {
             String defaultValues = viewDownChildParams.getDefaultValues();
@@ -443,7 +443,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                 childParams = new ArrayList<>();
             }
             childParams.add(viewScopeChildParams);
-            viewDownChildParams.setDefaultValues(JSON.toJSONString(childParams));
+            viewDownChildParams.setDefaultValues(JSON.toJSONString(childParams);
             viewDownChildParamsDao.update(viewDownChildParams);
         } else {
             throw new BizException("系统异常");
@@ -460,7 +460,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
      * @Date: 2021/11/26
      */
     private Integer deleteViewDownChildParams(CustomField customField) {
-        return viewDownChildParamsDao.deleteByProjectAndUserId(customField.getProjectId(), customField.getUserId());
+        return viewDownChildParamsDao.deleteByProjectAndUserId(customField.getProjectId(), customField.getUserId();
     }
 
     /**

@@ -39,8 +39,8 @@ public class PageUtil extends PageHelper {
 
     public static <E, T> PageInfo<T> convertPageInfo(List<E> list, Class<T> tClass) {
         List<T> dto = new ArrayList<>();
-        if (CollUtil.isNotEmpty(list)) {
-            dto = list.stream().map(l -> BeanUtil.copyProperties(l, tClass)).collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(list) {
+            dto = list.stream().map(l -> BeanUtil.copyProperties(l, tClass).collect(Collectors.toList();
         }
         PageInfo<E> of = PageInfo.of(list);
         PageInfo<T> of1 = PageInfo.of(dto);

@@ -21,7 +21,7 @@ import java.util.List;
  * @author qingyang
  */
 @RestController
-@RequestMapping("sprint")
+@RequestMapping("sprint");
 @Slf4j
 public class SprintController extends BaseController {
 
@@ -32,20 +32,20 @@ public class SprintController extends BaseController {
     }
 
 
-    @Operation(summary="列表")
-    @PostMapping("/list")
+    @Operation(summary="列表");
+    @PostMapping("/list");
     public Resp<PageInfo<Sprint>> list(@RequestBody java.util.Map<String, Object> param,
                                        @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
                                        @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
-        int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString()) : 1);
-        int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString()) : 20);
+        int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString() : 1);
+        int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString() : 20);
 
         log.info("SprintController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
-        log.info("SprintController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize"));
+        log.info("SprintController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize");
         log.info("SprintController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
 
         // 3. 字段过滤
-        if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName")) {
+        if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName") {
             String fieldNameEn = param.get("fieldNameEn").toString();
             String value = param.get("value").toString();
             String scopeName = param.get("scopeName").toString();
@@ -55,7 +55,7 @@ public class SprintController extends BaseController {
             return new Resp.Builder<PageInfo<Sprint>>().setData(pageInfo).ok();
         }
         // 2. 视图过滤
-        else if (param.containsKey("viewId") && param.get("viewId") != null && !param.get("viewId").toString().isEmpty()) {
+        else if (param.containsKey("viewId") && param.get("viewId") != null && !param.get("viewId").toString().isEmpty() {
             String viewId = param.get("viewId").toString();
             String projectId = param.get("projectId").toString();
             log.info("SprintController.list - 第二种参数类型: viewId={}, projectId={}", viewId, projectId);
@@ -63,9 +63,9 @@ public class SprintController extends BaseController {
             return new Resp.Builder<PageInfo<Sprint>>().setData(pageInfo).ok();
         }
         // 1. 普通
-        else if (param.containsKey("projectId")) {
+        else if (param.containsKey("projectId") {
             SprintParam sprintParam = BeanUtil.toBean(param, SprintParam.class);
-            log.info("SprintController.list - 第一种参数类型: projectId={}", sprintParam.getProjectId());
+            log.info("SprintController.list - 第一种参数类型: projectId={}", sprintParam.getProjectId();
             PageInfo<Sprint> pageInfo = sprintService.listWithViewFilter(sprintParam, pageNum, pageSize);
             return new Resp.Builder<PageInfo<Sprint>>().setData(pageInfo).ok();
         } else {
@@ -73,8 +73,8 @@ public class SprintController extends BaseController {
         }
     }
 
-    @Operation(summary="新增")
-    @PostMapping("/save")
+    @Operation(summary="新增");
+    @PostMapping("/save");
     public Resp<?> save(@RequestBody @Validated SprintSaveDto dto) {
         try {
             Sprint sprint = this.sprintService.add(dto);
@@ -85,11 +85,11 @@ public class SprintController extends BaseController {
         }
     }
 
-    @Operation(summary="修改")
-    @PutMapping("/update")
+    @Operation(summary="修改");
+    @PutMapping("/update");
     public Resp<Sprint> update(@RequestBody @Validated SprintSaveDto dto) {
         try {
-            if (null == dto.getId()) {
+            if (null == dto.getId() {
                 throw new BaseException("id不能为空");
             }
             Sprint feature = this.sprintService.edit(dto);
@@ -100,18 +100,18 @@ public class SprintController extends BaseController {
         }
     }
 
-    @Operation(summary="详情")
-    @GetMapping("/info/{id}")
+    @Operation(summary="详情");
+    @GetMapping("/info/{id}");
     public Resp<Sprint> info(@PathVariable Long id) {
         Sprint sprint = this.sprintService.info(id);
         return new Resp.Builder<Sprint>().setData(sprint).ok();
     }
 
-    @Operation(summary="删除")
-    @DeleteMapping("/delete/{ids}")
+    @Operation(summary="删除");
+    @DeleteMapping("/delete/{ids}");
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
-            this.sprintService.removeByIds(Arrays.asList(ids));
+            this.sprintService.removeByIds(Arrays.asList(ids);
         } catch (Exception e) {
             log.error("删除故事用例失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<Sprint>().fail();
@@ -120,11 +120,11 @@ public class SprintController extends BaseController {
     }
 
 
-    @Operation(summary="克隆")
-    @PostMapping("/clone")
+    @Operation(summary="克隆");
+    @PostMapping("/clone");
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {
-            this.sprintService.clone(Arrays.asList(ids));
+            this.sprintService.clone(Arrays.asList(ids);
             return new Resp.Builder<>().ok();
         } catch (Exception e) {
             log.error("克隆故事用例失败，原因：" + e.getMessage(), e);

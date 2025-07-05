@@ -19,8 +19,8 @@ import java.util.List;
  *
  * 超级管理员用户，管理平台用户
  */
-@RestController()
-@RequestMapping("/platformUser")
+@RestController();
+@RequestMapping("/platformUser");
 @PreAuthorize("@ps.backstageManagement()")
 public class PlatformUserController {
 
@@ -33,23 +33,23 @@ public class PlatformUserController {
         this.userService = userService;
     }
 
-    @PostMapping("/queryPlatformUser")
+    @PostMapping("/queryPlatformUser");
     public Resp<List<PlatformUserDto>> queryPlatformUser(@RequestBody PlatformUserDto platformUserDto){
 
         return platformUserService.queryPlatformUsers(platformUserDto);
     }
 
-    @PostMapping("createPlatformUser")
+    @PostMapping("createPlatformUser");
     public Resp<String> createPlatformUser(@RequestBody PlatformUserDto platformUserDto){
         return platformUserService.createPlatformUser(platformUserDto);
     }
 
-    @PostMapping("updatePlatformUser")
+    @PostMapping("updatePlatformUser");
     public Resp<String> updatePlatformUser(@RequestBody PlatformUserDto platformUserDto){
         return platformUserService.updatePlatformUser(platformUserDto);
     }
 
-    @DeleteMapping("deletePlatformUser/{id}")
+    @DeleteMapping("deletePlatformUser/{id}");
     public Resp<String> deletePlatformUser(@PathVariable String id){
         return platformUserService.deletePlatformUserByid(id);
     }

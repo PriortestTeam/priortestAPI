@@ -9,11 +9,6 @@ import java.util.List;
 /**
  * @author qingyang
  */
-public interface SettingPermissionService {
 
-    Resp<SubUserPermissionDto> getPermissions(String subUserId,String projectId);
 
-    Resp<String> updatePermissions(SubUserPermissionDto entity);
 
-    Resp<List<Project>> getProjects(String subUserId);
-}

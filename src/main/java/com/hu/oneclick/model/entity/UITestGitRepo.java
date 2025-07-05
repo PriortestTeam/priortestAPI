@@ -9,7 +9,7 @@ import java.math.BigInteger;
 import java.util.Date;
 
 @Data
-@TableName("uitest_git_repo")
+@TableName("uitest_git_repo");
 public class UITestGitRepo {
 
     @TableId

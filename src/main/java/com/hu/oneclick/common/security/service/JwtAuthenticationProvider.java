@@ -30,7 +30,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		DecodedJWT jwt = ((JwtAuthenticationToken)authentication).getToken();
-		if(jwt.getExpiresAt().before(Calendar.getInstance().getTime())) {
+		if(jwt.getExpiresAt().before(Calendar.getInstance().getTime() {
 			throw new NonceExpiredException("Token expires");
 		}
 		String username = jwt.getSubject();
@@ -44,11 +44,11 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             JWTVerifier verifier = JWT.require(algorithm)
                     .withSubject(username)
                     .build();
-            verifier.verify(jwt.getToken());
+            verifier.verify(jwt.getToken();
         } catch (Exception e) {
             throw new BadCredentialsException("JWT token verify fail", e);
         }
-		return new JwtAuthenticationToken(user, jwt, user.getAuthorities());
+		return new JwtAuthenticationToken(user, jwt, user.getAuthorities();
 	}
 
 	@Override

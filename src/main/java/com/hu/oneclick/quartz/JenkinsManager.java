@@ -27,8 +27,8 @@ public class JenkinsManager {
     @PostConstruct
     public void init() {
         try {
-            jenkinsServer = new JenkinsServer(new URI(jenkinsConfig.getUrl()), jenkinsConfig.getUsername(), jenkinsConfig.getPassword());
-            jenkinsHttpClient = new JenkinsHttpClient(new URI(jenkinsConfig.getUrl()), jenkinsConfig.getUsername(), jenkinsConfig.getPassword());
+            jenkinsServer = new JenkinsServer(new URI(jenkinsConfig.getUrl(), jenkinsConfig.getUsername(), jenkinsConfig.getPassword();
+            jenkinsHttpClient = new JenkinsHttpClient(new URI(jenkinsConfig.getUrl(), jenkinsConfig.getUsername(), jenkinsConfig.getPassword();
         } catch (URISyntaxException e) {
             log.error("jenkins init error", e);
         }

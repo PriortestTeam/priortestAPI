@@ -19,7 +19,7 @@ import java.util.Date;
  * @since 2020-12-07 20:59:50
  */
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper=false);
 public class Project extends BaseEntity implements VerifyParam, Serializable {
     private static final long serialVersionUID = -54866876049537399L;
 
@@ -87,8 +87,8 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
 
     @Override
     public void verify() throws BizException {
-        if (StringUtils.isEmpty(title)) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "项目名称" + SysConstantEnum.PARAM_EMPTY.getValue());
+        if (StringUtils.isEmpty(title) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "项目名称" + SysConstantEnum.PARAM_EMPTY.getValue();
         }
     }
 

@@ -24,12 +24,12 @@ public class MinioUtil {
     public static boolean createRegion(MinioClient client, String bucketName, String region) {
         boolean flag = false;
         try {
-            flag = client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            flag = client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build();
             if (!flag) {
-                client.makeBucket(MakeBucketArgs.builder().bucket(bucketName).region(region).build());
+                client.makeBucket(MakeBucketArgs.builder().bucket(bucketName).region(region).build();
             }
         } catch (Exception ignored) {
-            logger.error("MinioUtil.class#createRegion() error:{}" + ignored.getMessage());
+            logger.error("MinioUtil.class#createRegion() error:{}" + ignored.getMessage();
         }
         return flag;
     }
@@ -44,8 +44,8 @@ public class MinioUtil {
     public static void checkBucket(MinioClient client, String bucketName) throws Exception {
 
         // 如果存储桶不存在 创建存储桶
-        if (!client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
-            client.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+        if (!client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build() {
+            client.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build();
             // 设置隐私权限 公开读
             String builder = "{\n" +
                 "    \"Statement\": [\n" +
@@ -67,7 +67,7 @@ public class MinioUtil {
                 "    ],\n" +
                 "    \"Version\": \"2012-10-17\"\n" +
                 "}\n";
-            client.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(bucketName).config(builder).build());
+            client.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(bucketName).config(builder).build();
         }
     }
 
@@ -81,12 +81,12 @@ public class MinioUtil {
     public static boolean removeBucket(MinioClient client, String bucketName) {
         boolean flag = false;
         try {
-            boolean found = client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            boolean found = client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build();
             if (found)
-                client.removeBucket(RemoveBucketArgs.builder().bucket(bucketName).build());
+                client.removeBucket(RemoveBucketArgs.builder().bucket(bucketName).build();
         } catch (Exception e) {
             flag = false;
-            logger.error("MinioUtil.class#removeBucket() error:{}" + e.getMessage());
+            logger.error("MinioUtil.class#removeBucket() error:{}" + e.getMessage();
         }
         return flag;
     }
@@ -104,11 +104,11 @@ public class MinioUtil {
     public static InputStream getObject(MinioClient client, String bucketName, String objectName, long offset) {
         InputStream stream = null;
         try {
-            client.statObject(StatObjectArgs.builder().bucket(bucketName).object(objectName).build());
-            stream = client.getObject(GetObjectArgs.builder().bucket(bucketName).object(objectName).offset(offset).build());
+            client.statObject(StatObjectArgs.builder().bucket(bucketName).object(objectName).build();
+            stream = client.getObject(GetObjectArgs.builder().bucket(bucketName).object(objectName).offset(offset).build();
             return stream;
         } catch (Exception e) {
-            logger.error("MinioUtil.class#getObject() error:{}" + e.getMessage());
+            logger.error("MinioUtil.class#getObject() error:{}" + e.getMessage();
         }
         return stream;
     }
@@ -134,10 +134,10 @@ public class MinioUtil {
                 .bucket(bucketName)
                 .object(objectName)
                 .stream(stream, file.getSize(), -1)
-                .contentType(file.getContentType())
-                .build());
+                .contentType(file.getContentType()
+                .build();
         } catch (Exception e) {
-            logger.error("MinioUtil.class#putObject() error:{}" + e.getMessage());
+            logger.error("MinioUtil.class#putObject() error:{}" + e.getMessage();
         }
     }
 
@@ -150,9 +150,9 @@ public class MinioUtil {
      */
     public static void rmObject(MinioClient client, String bucketName, String objectName) {
         try {
-            client.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build());
+            client.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectName).build();
         } catch (Exception e) {
-            logger.error("MinioUtil.class#rmObject() error:{}" + e.getMessage());
+            logger.error("MinioUtil.class#rmObject() error:{}" + e.getMessage();
         }
     }
 }

@@ -7,11 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface IssueJoinTestCaseDao extends BaseMapper<IssueJoinTestCase> {
 
 
-    int bindCaseDelete(@Param("issueId") String issueId);
 
-    List<Issue> queryBindCaseList(@Param("issueId") String issueId);
 
-}

@@ -39,11 +39,11 @@ public class JacksonConfig {
         // Add default long -> string serialization
         simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
         simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
-        simpleModule.addSerializer(java.math.BigInteger.class, new LargeNumberSerializer());
+        simpleModule.addSerializer(java.math.BigInteger.class, new LargeNumberSerializer();
 
         // Register custom serializers for Long and BigInteger
-        simpleModule.addSerializer(Long.class, new LargeNumberSerializer());
-        simpleModule.addSerializer(Long.TYPE, new LargeNumberSerializer());
+        simpleModule.addSerializer(Long.class, new LargeNumberSerializer();
+        simpleModule.addSerializer(Long.TYPE, new LargeNumberSerializer();
 
         // Register the module
         objectMapper.registerModule(simpleModule);

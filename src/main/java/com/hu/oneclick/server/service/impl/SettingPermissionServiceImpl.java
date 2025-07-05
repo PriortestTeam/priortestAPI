@@ -58,16 +58,16 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         }
         SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
         SubUserDto subUserDto = null;
-//        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId());
+//        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId();
         if (subUserDto == null) {
             return new Resp.Builder<SubUserPermissionDto>().buildResult("未查询到该用户.");
         }
-        subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail()));
+        subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail();
         String projectIdStr = subUserDto.getProjectIdStr();
         Project project;
 
         boolean flag = subUserDto.getAll().equals(projectIdStr)
-            || (StringUtils.isNotEmpty(projectIdStr) && projectIdStr.contains(projectId));
+            || (StringUtils.isNotEmpty(projectIdStr) && projectIdStr.contains(projectId);
         if (flag) {
             project = projectDao.queryProjectAndPermissionByProjectId(masterUser.getId(), projectId);
         } else {
@@ -84,11 +84,11 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         //没有选中的跳过
 //        if(project.getOperationAuthIds() != null){
 //            //选中的权限id
-//            List<String> selects =  Arrays.asList(project.getOperationAuthIds().split(","));
+//            List<String> selects =  Arrays.asList(project.getOperationAuthIds().split(",");
 //            sysOperationAuthority.forEach(j -> {
 //                //遍历父级
 //                selects.forEach(k -> {
-//                    if (j.getId().equals(k)){
+//                    if (j.getId().equals(k){
 //                        j.setIsSelect("1");
 //                    }
 //                });
@@ -98,7 +98,7 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
 //                if (childList != null){
 //                    childList.forEach(s ->{
 //                        selects.forEach(k -> {
-//                            if (s.getId().equals(k)){
+//                            if (s.getId().equals(k){
 //                                s.setIsSelect("1");
 //                            }
 //                        });
@@ -115,27 +115,27 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class);
     public Resp<String> updatePermissions(SubUserPermissionDto entity) {
         entity.verify();
         try {
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
             SubUserDto subUserDto = null;
-//            SubUserDto subUserDto = sysUserDao.querySubUserInfo(entity.getSubUserDto().getId(),masterUser.getId());
+//            SubUserDto subUserDto = sysUserDao.querySubUserInfo(entity.getSubUserDto().getId(),masterUser.getId();
             if (subUserDto == null) {
                 return new Resp.Builder<String>().fail();
             }
             //删除子用户关联项目权限表并重新添加
-            sysProjectPermissionDao.deleteBySubUserId(subUserDto.getId());
-            if (sysProjectPermissionDao.batchInsert(entity.getProjectPermissions()) > 0) {
+            sysProjectPermissionDao.deleteBySubUserId(subUserDto.getId();
+            if (sysProjectPermissionDao.batchInsert(entity.getProjectPermissions() > 0) {
                 //删除用户，用户必须重新登录
-                deleteSubUserLoginStatus(subUserDto.getEmail());
-                return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue()).ok();
+                deleteSubUserLoginStatus(subUserDto.getEmail();
+                return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue().ok();
             }
-            throw new BizException(SysConstantEnum.UPDATE_SUCCESS.getCode(), SysConstantEnum.UPDATE_SUCCESS.getValue());
+            throw new BizException(SysConstantEnum.UPDATE_SUCCESS.getCode(), SysConstantEnum.UPDATE_SUCCESS.getValue();
         } catch (BizException e) {
-            logger.error("class: SettingPermissionServiceImpl#updatePermissions,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
+            logger.error("class: SettingPermissionServiceImpl#updatePermissions,error []" + e.getMessage();
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
 
@@ -143,15 +143,15 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
     public Resp<List<Project>> getProjects(String subUserId) {
         List<Project> result = null;
 //        SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
-//        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId());
-//        if (subUserDto.getProjectIdStr().equals(subUserDto.getAll())){
-//            result = projectDao.queryAllProjects(masterUser.getId());
-//        }else if(StringUtils.isNotEmpty(subUserDto.getProjectIdStr())){
-//            List<String> ids = Arrays.asList(subUserDto.getProjectIdStr().split(subUserDto.getDelimiter()));
+//        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId();
+//        if (subUserDto.getProjectIdStr().equals(subUserDto.getAll(){
+//            result = projectDao.queryAllProjects(masterUser.getId();
+//        }else if(StringUtils.isNotEmpty(subUserDto.getProjectIdStr(){
+//            List<String> ids = Arrays.asList(subUserDto.getProjectIdStr().split(subUserDto.getDelimiter();
 //            if (ids.size() <= 0){
 //                return new Resp.Builder<List<Project>>().buildResult("该用户未分配项目。");
 //            }
-//            result = projectDao.queryInProjectIdsAndPermission(ids,masterUser.getId());
+//            result = projectDao.queryInProjectIdsAndPermission(ids,masterUser.getId();
 //        }
         return new Resp.Builder<List<Project>>().setData(result).ok();
     }

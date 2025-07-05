@@ -16,27 +16,27 @@ import java.util.Map;
  */
 @Setter
 @Getter
-@Schema(description = "定时任务变更DTO")
+@Schema(description = "定时任务变更DTO");
 public class JobSaveDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;
 
-    @Schema(description = "任务名称")
-    @NotBlank(message = "任务名称不能为空")
+    @Schema(description = "任务名称");
+    @NotBlank(message = "任务名称不能为空");
     private String jobName;
 
-    @Schema(description = "任务实现类")
-    @NotBlank(message = "任务实现类不能为空")
+    @Schema(description = "任务实现类");
+    @NotBlank(message = "任务实现类不能为空");
     private String jobClassName;
 
-    @Schema(description = "任务组名")
+    @Schema(description = "任务组名");
     private String jobGroupName = "DEFAULT";
 
-    @Schema(description = "cron表达式")
-    @NotBlank(message = "cron表达式不能为空")
+    @Schema(description = "cron表达式");
+    @NotBlank(message = "cron表达式不能为空");
     private String cronExpression;
 
-    @Schema(description = "参数")
+    @Schema(description = "参数");
     private Map<String, Object> jobDataMap;
 
 }

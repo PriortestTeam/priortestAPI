@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import cn.hutool.core.convert.Convert;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -13,13 +12,11 @@ import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.CustomFieldService;
 import org.springframework.stereotype.Service;
-
 import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 /**
  * @author MaSiyi
  * @version 1.0.0 2021/12/27
@@ -91,8 +88,8 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
             CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
 
             Long projectId = feature.getProjectId();
-            fieldData.setProjectId(String.valueOf(projectId));
-//            fieldData.setScopeId(feature.getId());
+            fieldData.setProjectId(String.valueOf(projectId);
+//            fieldData.setScopeId(feature.getId();
 //            fieldData.setScope(FieldConstant.FEATURE);
 
             insertFlag = customFieldDataDao.insert(fieldData);
@@ -123,7 +120,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
 //            String projectId = testCycle.getProjectId();
 //            fieldData.setProjectId(projectId);
-//            fieldData.setScopeId(testCycle.getId());
+//            fieldData.setScopeId(testCycle.getId();
 //            fieldData.setScope(FieldConstant.TESTCYCLE);
 
             insertFlag = customFieldDataDao.insert(fieldData);
@@ -150,8 +147,8 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
             CustomFieldData fieldData = this.insertCustomFieldData(sysUser, customFieldData);
             for (TestCase testCase : testCases) {
                 Long projectId = testCase.getProjectId();
-                fieldData.setProjectId(Convert.toStr(projectId));
-                fieldData.setScopeId(Convert.toStr(testCase.getId()));
+                fieldData.setProjectId(Convert.toStr(projectId);
+                fieldData.setScopeId(Convert.toStr(testCase.getId();
                 fieldData.setScope(FieldConstant.TESTCASE);
             }
 
@@ -182,7 +179,7 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
 //            String projectId = issue.getProjectId();
 //            fieldData.setProjectId(projectId);
-//            fieldData.setScopeId(issue.getId());
+//            fieldData.setScopeId(issue.getId();
             fieldData.setScope(FieldConstant.ISSUE);
 
             insertFlag = customFieldDataDao.insert(fieldData);
@@ -274,14 +271,14 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
 
         CustomFieldData fieldData = new CustomFieldData();
 
-        fieldData.setUserId(sysUser.getId());
+        fieldData.setUserId(sysUser.getId();
 
-        fieldData.setCustomFieldId(customFieldDataInsert.getCustomFieldId());
+        fieldData.setCustomFieldId(customFieldDataInsert.getCustomFieldId();
 
-        fieldData.setValueData(customFieldDataInsert.getValueData());
-        fieldData.setCreateTime(new Date());
+        fieldData.setValueData(customFieldDataInsert.getValueData();
+        fieldData.setCreateTime(new Date();
         fieldData.setIsDel(false);
-        fieldData.setCreateUserId(sysUser.getId());
+        fieldData.setCreateUserId(sysUser.getId();
 
         return fieldData;
 
@@ -316,21 +313,21 @@ public class CustomFieldDataServiceImpl implements CustomFieldDataService {
         //获取系统固定字段
         List<SysCustomField> sysCustomFields = sysCustomFieldDao.getAllSysCustomFieldByScope(scope);
         //将字段名称单独拿出来成为一个list
-        List<String> collect = sysCustomFields.stream().map(SysCustomField::getFieldName).collect(Collectors.toList());
+        List<String> collect = sysCustomFields.stream().map(SysCustomField::getFieldName).collect(Collectors.toList();
         //获取用户自己添加的自定义系统字段
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         String userId = sysUser.getId();
         String projectId = sysUser.getUserUseOpenProject().getProjectId();
         List<SysCustomFieldExpand> sysCustomFieldExpands = sysCustomFieldExpandDao.getAllSysCustomFieldExpand(projectId);
         //将拓展表中字段名与系统表中匹配的值拿出来
-        List<SysCustomFieldExpand> filterSysCustomFieldExpand = sysCustomFieldExpands.stream().filter(f -> collect.contains(f.getLinkSysCustomField())).collect(Collectors.toList());
+        List<SysCustomFieldExpand> filterSysCustomFieldExpand = sysCustomFieldExpands.stream().filter(f -> collect.contains(f.getLinkSysCustomField().collect(Collectors.toList();
         //拼装拓展值
         ArrayList<SysCustomField> newSysCustomFields = new ArrayList<>();
         for (SysCustomField sysCustomField : sysCustomFields) {
             for (SysCustomFieldExpand sysCustomFieldExpand : filterSysCustomFieldExpand) {
-                if (sysCustomField.getFieldName().equals(sysCustomFieldExpand.getLinkSysCustomField())) {
+                if (sysCustomField.getFieldName().equals(sysCustomFieldExpand.getLinkSysCustomField() {
 
-                    sysCustomField.setValueList(sysCustomField.getValueList() + "," + sysCustomFieldExpand.getValues());
+                    sysCustomField.setValueList(sysCustomField.getValueList() + "," + sysCustomFieldExpand.getValues();
                 }
             }
             newSysCustomFields.add(sysCustomField);

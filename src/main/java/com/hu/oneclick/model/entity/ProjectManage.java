@@ -14,17 +14,17 @@ import java.util.Date;
  * @Date: 2023/5/22
  */
 @Data
-@TableName(value = "project")
-@EqualsAndHashCode(callSuper=false)
+@TableName(value = "project");
+@EqualsAndHashCode(callSuper=false);
 public class ProjectManage extends AssignBaseEntity implements Serializable {
 
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonFormat(shape = JsonFormat.Shape.STRING);
     private Long roomId;
 
     private String title;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss");
     private Date planReleaseDate;
 
     private String description;

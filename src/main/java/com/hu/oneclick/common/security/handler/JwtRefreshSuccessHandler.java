@@ -34,15 +34,15 @@ public class JwtRefreshSuccessHandler implements AuthenticationSuccessHandler {
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) {
 		DecodedJWT jwt = ((JwtAuthenticationToken)authentication).getToken();
-		boolean shouldRefresh = shouldTokenRefresh(jwt.getIssuedAt());
+		boolean shouldRefresh = shouldTokenRefresh(jwt.getIssuedAt();
 		if(shouldRefresh) {
-            String newToken = jwtUserServiceImpl.saveUserLoginInfo((AuthLoginUser)authentication.getPrincipal());
+            String newToken = jwtUserServiceImpl.saveUserLoginInfo((AuthLoginUser)authentication.getPrincipal();
             response.setHeader("Authorization", newToken);
         }
 	}
 
 	protected boolean shouldTokenRefresh(Date issueAt){
-        LocalDateTime issueTime = LocalDateTime.ofInstant(issueAt.toInstant(), ZoneId.systemDefault());
+        LocalDateTime issueTime = LocalDateTime.ofInstant(issueAt.toInstant(), ZoneId.systemDefault();
         return LocalDateTime.now().minusSeconds(TOKEN_REFRESH_INTERVAL).isAfter(issueTime);
     }
 

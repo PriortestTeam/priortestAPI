@@ -22,9 +22,9 @@ public class JsonLoginConfigurer<T extends JsonLoginConfigurer<T, B>, B extends 
 
     @Override
     public void configure(B http) {
-        authFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class));
-        authFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
-        authFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
+        authFilter.setAuthenticationManager(http.getSharedObject(AuthenticationManager.class);
+        authFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler();
+        authFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy();
 
         MyUsernamePasswordAuthenticationFilter filter = postProcess(authFilter);
         http.addFilterAfter(filter, LogoutFilter.class);

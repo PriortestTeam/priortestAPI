@@ -14,7 +14,7 @@ import java.util.List;
  * @author qingyang
  */
 @RestController
-@RequestMapping("modifyRecord")
+@RequestMapping("modifyRecord");
 public class ModifyRecordsController {
 
     private final ModifyRecordsService modifyRecordsService;
@@ -24,7 +24,7 @@ public class ModifyRecordsController {
     }
 
 
-    @PostMapping("queryList")
+    @PostMapping("queryList");
     private Resp<List<ModifyRecord>> queryList(@RequestBody ModifyRecord modifyRecord){
         return modifyRecordsService.queryList(modifyRecord);
     }

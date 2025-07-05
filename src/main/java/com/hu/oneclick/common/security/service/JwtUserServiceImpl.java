@@ -41,7 +41,7 @@ import org.springframework.stereotype.Service;
 /**
  * @author qingyang
  */
-@Service("jwtUserService")
+@Service("jwtUserService");
 public class JwtUserServiceImpl implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final SysUserDao sysUserDao;
@@ -77,7 +77,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name;
         // 管理员的token
-        if (org.springframework.util.StringUtils.isEmpty(authentication.getPrincipal())) {
+        if (org.springframework.util.StringUtils.isEmpty(authentication.getPrincipal() {
             // 这里的name为tokenname
             ApiToken apiToken = (ApiToken) authentication;
             name = apiToken.getTokenName();
@@ -122,21 +122,21 @@ public class JwtUserServiceImpl implements UserDetailsService {
         Date date = new Date(System.currentTimeMillis() + 3600 * 1000);
         // 创建token，这个是用户信息
         String sign = JWT.create()
-            .withSubject(user.getUsername())
+            .withSubject(user.getUsername()
             .withExpiresAt(date)
-            .withIssuedAt(new Date())
+            .withIssuedAt(new Date()
             .sign(algorithm);
         String s = JSONObject.toJSONString(user);
         RBucket<String> bucket = redisClient.getBucket(
-            OneConstant.REDIS_KEY_PREFIX.LOGIN + user.getUsername());
-        if (bucket.isExists()) {
+            OneConstant.REDIS_KEY_PREFIX.LOGIN + user.getUsername();
+        if (bucket.isExists() {
             bucket.delete();
         }
         bucket.set(s);
         bucket.expire(1, TimeUnit.HOURS);
 
         // 这里添加登陆后用户的token，用于只能有一个设备登陆验证；
-        bucket = redisClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + user.getUsername());
+        bucket = redisClient.getBucket(REDIS_KEY_PREFIX.LOGIN_JWT + user.getUsername();
         bucket.set(sign);
         // 登陆后，如果无操作，最长保存时间
         int loginKeepTime = 30;
@@ -149,8 +149,8 @@ public class JwtUserServiceImpl implements UserDetailsService {
         user.setSysUser(sysUser);
         String s = JSONObject.toJSONString(user);
         RBucket<String> bucket = redisClient.getBucket(
-            OneConstant.REDIS_KEY_PREFIX.LOGIN + sysUser.getEmail());
-        if (bucket.isExists()) {
+            OneConstant.REDIS_KEY_PREFIX.LOGIN + sysUser.getEmail();
+        if (bucket.isExists() {
             bucket.delete();
         }
         bucket.set(s);
@@ -162,32 +162,32 @@ public class JwtUserServiceImpl implements UserDetailsService {
         List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(username);
 
         AuthLoginUser authLoginUser = new AuthLoginUser();
-        if (sysUsers.isEmpty()) {
+        if (sysUsers.isEmpty() {
             throw new RuntimeException();
         }
         SysUser user = sysUsers.get(0);
         // 检查用户试用期是否过期
         checkUserExpireDate(user);
         // 子用户需要查询权限列表,并且需要裁剪邮箱用户名
-        if (user.getManager().equals(OneConstant.USER_TYPE.SUB_USER)) {
-            user.setEmail(TwoConstant.subUserNameCrop(user.getEmail()));
-            authLoginUser.setPermissions(sysProjectPermissionDao.queryBySubUserId(user.getId()));
+        if (user.getManager().equals(OneConstant.USER_TYPE.SUB_USER) {
+            user.setEmail(TwoConstant.subUserNameCrop(user.getEmail();
+            authLoginUser.setPermissions(sysProjectPermissionDao.queryBySubUserId(user.getId();
         }
 
-        Map<String, Object> userDefaultProject = sysUserProjectDao.queryUserDefaultProject(new BigInteger(user.getId()));
+        Map<String, Object> userDefaultProject = sysUserProjectDao.queryUserDefaultProject(new BigInteger(user.getId();
         if (userDefaultProject != null) {
             UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
-            userUseOpenProject.setUserId(user.getId());
-            userUseOpenProject.setProjectId(userDefaultProject.get("project_id").toString());
-            userUseOpenProject.setTitle(userDefaultProject.get("title").toString());
-            userUseOpenProject.setId(userDefaultProject.get("id").toString());
+            userUseOpenProject.setUserId(user.getId();
+            userUseOpenProject.setProjectId(userDefaultProject.get("project_id").toString();
+            userUseOpenProject.setTitle(userDefaultProject.get("title").toString();
+            userUseOpenProject.setId(userDefaultProject.get("id").toString();
             user.setUserUseOpenProject(userUseOpenProject);
             user.setIsUseProject(1);
         }
 
         authLoginUser.setSysUser(user);
         authLoginUser.setUsername(username);
-        authLoginUser.setPassword(user.getPassword());
+        authLoginUser.setPassword(user.getPassword();
         return authLoginUser;
     }
 
@@ -202,7 +202,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
     }
 
     public boolean verifyPassword(String password, SysUser sysUser) {
-        return passwordEncoder.matches(password, sysUser.getPassword());
+        return passwordEncoder.matches(password, sysUser.getPassword();
     }
 
     public void deleteUserLoginInfo(String username) {
@@ -216,9 +216,9 @@ public class JwtUserServiceImpl implements UserDetailsService {
         final Date expireDate = user.getExpireDate();
         final Date now = new Date();
 
-        if (Objects.nonNull(expireDate) && expireDate.before(now)) {
+        if (Objects.nonNull(expireDate) && expireDate.before(now) {
             throw new BizException(SysConstantEnum.USER_EXPIRE_DATE.getCode(),
-                SysConstantEnum.USER_EXPIRE_DATE.getValue(), HttpStatus.BAD_REQUEST.value());
+                SysConstantEnum.USER_EXPIRE_DATE.getValue(), HttpStatus.BAD_REQUEST.value();
         }
     }
 

@@ -28,6 +28,6 @@ public class SysConfigServiceImpl implements SysConfigService {
 
     @Override
     public Resp<List<SysConfig>> listByGroup(String scope) {
-        return new Resp.Builder<List<SysConfig>>().setData(sysConfigDao.selectByGroup(scope)).ok();
+        return new Resp.Builder<List<SysConfig>>().setData(sysConfigDao.selectByGroup(scope).ok();
     }
 }

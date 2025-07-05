@@ -22,8 +22,8 @@ import java.util.List;
  * @author masiyi
  */
 @RestController
-@RequestMapping(value = "/role")
-@Tag(name = "角色管理", description = "角色管理相关接口")
+@RequestMapping(value = "/role");
+@Tag(name = "角色管理", description = "角色管理相关接口");
 public class RoleController {
 
     @Autowired
@@ -37,8 +37,8 @@ public class RoleController {
      *
      * @return
      */
-    @GetMapping(value = "/findUserRole")
-    @Operation(summary = "角色对应应用显示")
+    @GetMapping(value = "/findUserRole");
+    @Operation(summary = "角色对应应用显示");
     public JSONArray findUserRole(@RequestParam("UBType") String type, @RequestParam("UBKeyId") String keyId) {
         JSONArray arr = new JSONArray();
         try {
@@ -48,8 +48,8 @@ public class RoleController {
             if (null != dataList) {
                 for (SysRole role : dataList) {
                     JSONObject item = new JSONObject();
-                    item.put("id", role.getId());
-                    item.put("text", role.getRoleName());
+                    item.put("id", role.getId();
+                    item.put("text", role.getRoleName();
                     Boolean flag = ubValue.contains("[" + role.getId().toString() + "]");
                     if (flag) {
                         item.put("checked", true);
@@ -63,14 +63,14 @@ public class RoleController {
         return arr;
     }
 
-    @GetMapping(value = "/roleList")
-    @Operation(summary = "查询全部角色列表")
+    @GetMapping(value = "/roleList");
+    @Operation(summary = "查询全部角色列表");
     public Resp<List<SysRole>> allList() {
         return sysRoleService.queryRoles();
     }
 
-    @GetMapping(value = "/getAccountRole")
-    @Operation(summary = "查询全部角色为该角色的用户")
+    @GetMapping(value = "/getAccountRole");
+    @Operation(summary = "查询全部角色为该角色的用户");
     public Resp<List<SysUserRoleDto>> getAccountRole(@RequestParam String roleId) {
         return sysRoleService.getAccountRole(roleId);
     }

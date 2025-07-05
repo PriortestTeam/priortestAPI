@@ -37,7 +37,7 @@ public class ServletUtil {
      * 获取Integer参数
      */
     public static Integer getParameterToInt(String name) {
-        return Convert.toInt(getRequest().getParameter(name));
+        return Convert.toInt(getRequest().getParameter(name);
     }
 
     /**
@@ -51,7 +51,7 @@ public class ServletUtil {
      * 获取Boolean参数
      */
     public static Boolean getParameterToBool(String name) {
-        return Convert.toBool(getRequest().getParameter(name));
+        return Convert.toBool(getRequest().getParameter(name);
     }
 
     /**
@@ -111,17 +111,17 @@ public class ServletUtil {
      */
     public static boolean isAjaxRequest(HttpServletRequest request) {
         String accept = request.getHeader("accept");
-        if (accept != null && accept.contains("application/json")) {
+        if (accept != null && accept.contains("application/json") {
             return true;
         }
 
         String xRequestedWith = request.getHeader("X-Requested-With");
-        if (xRequestedWith != null && xRequestedWith.contains("XMLHttpRequest")) {
+        if (xRequestedWith != null && xRequestedWith.contains("XMLHttpRequest") {
             return true;
         }
 
         String uri = request.getRequestURI();
-        if (StrUtil.containsAnyIgnoreCase(uri, ".json", ".xml")) {
+        if (StrUtil.containsAnyIgnoreCase(uri, ".json", ".xml") {
             return true;
         }
 

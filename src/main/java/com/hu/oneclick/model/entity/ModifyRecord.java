@@ -49,10 +49,10 @@ public class ModifyRecord extends BaseEntity implements Serializable, VerifyPara
 
     @Override
     public void verify() throws BizException {
-        if(StringUtils.isEmpty(projectId)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目ID" + SysConstantEnum.PARAM_EMPTY.getValue());
-        } else if(StringUtils.isEmpty(scope)){
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"SCOPE" + SysConstantEnum.PARAM_EMPTY.getValue());
+        if(StringUtils.isEmpty(projectId){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"项目ID" + SysConstantEnum.PARAM_EMPTY.getValue();
+        } else if(StringUtils.isEmpty(scope){
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(),"SCOPE" + SysConstantEnum.PARAM_EMPTY.getValue();
         }
     }
 

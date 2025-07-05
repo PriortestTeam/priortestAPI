@@ -19,7 +19,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 	private final DecodedJWT token;
 
 	public JwtAuthenticationToken(DecodedJWT token) {
-		super(Collections.emptyList());
+		super(Collections.emptyList();
 		this.token = token;
 	}
 

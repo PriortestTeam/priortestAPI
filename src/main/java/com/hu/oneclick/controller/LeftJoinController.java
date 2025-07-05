@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("leftJoin")
+@RequestMapping("leftJoin");
 public class LeftJoinController {
 
     private final SprintService sprintService;
@@ -34,27 +34,27 @@ public class LeftJoinController {
         this.testCycleService = testCycleService;
     }
 
-    @GetMapping("querySprintTitles")
+    @GetMapping("querySprintTitles");
     public Resp<List<LeftJoinDto>> querySprintTitles(@RequestParam String projectId,
                                                      @RequestParam String title){
 //        return sprintService.queryTitles(projectId,title);
         return null;
     }
 
-    @GetMapping("queryFeatureTitles")
+    @GetMapping("queryFeatureTitles");
     public Resp<List<LeftJoinDto>> queryFeatureTitles(@RequestParam String projectId,
                                                             @RequestParam String title){
 //        return featureService.queryTitles(projectId,title);
         return new Resp.Builder<List<LeftJoinDto>>().setData(Collections.EMPTY_LIST).total(0).ok();
     }
 
-    @GetMapping("queryFestCaseTitles")
+    @GetMapping("queryFestCaseTitles");
     public Resp<List<LeftJoinDto>> queryFestCaseTitles(@RequestParam String projectId,
                                                             @RequestParam String title){
         return testCaseService.queryTitles(projectId,title);
     }
 
-    @GetMapping("queryFestCycleTitles")
+    @GetMapping("queryFestCycleTitles");
     public Resp<List<LeftJoinDto>> queryFestCycleTitles(@RequestParam String projectId,
                                                             @RequestParam String title){
         return testCycleService.queryTitles(projectId,title);

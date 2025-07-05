@@ -48,7 +48,7 @@ public class SnowFlakeUtil {
 
     private SnowFlakeUtil(long id) {
         if (id > this.maxWorkerId || id < 0) {
-            throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", this.maxWorkerId));
+            throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", this.maxWorkerId);
         }
         this.id = id;
     }
@@ -67,7 +67,7 @@ public class SnowFlakeUtil {
         }
 
         if (timestamp < this.lastTimestamp) {
-            log.error(String.format("clock moved backwards.Refusing to generate id for %d milliseconds", (this.lastTimestamp - timestamp)));
+            log.error(String.format("clock moved backwards.Refusing to generate id for %d milliseconds", (this.lastTimestamp - timestamp);
             return -1;
         }
 
@@ -101,7 +101,7 @@ public class SnowFlakeUtil {
     public static void main(String[] args) {
         for(int i=0;i<100;i++){
             SnowFlakeUtil snowFlakeUtil = SnowFlakeUtil.getFlowIdInstance();
-            System.out.println(snowFlakeUtil.nextId());
+            System.out.println(snowFlakeUtil.nextId();
         }
     }
 }

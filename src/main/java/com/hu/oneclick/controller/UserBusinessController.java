@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author masiyi
  */
 @RestController
-@RequestMapping(value = "/userBusiness")
-@Tag(name = "用户角色权限模块", description = "用户角色权限模块相关接口")
+@RequestMapping(value = "/userBusiness");
+@Tag(name = "用户角色权限模块", description = "用户角色权限模块相关接口");
 public class UserBusinessController {
 
     @Autowired
@@ -32,8 +32,8 @@ public class UserBusinessController {
      * @return
      * @throws Exception
      */
-    @GetMapping(value = "/checkIsValueExist")
-    @Operation(summary = "校验存在")
+    @GetMapping(value = "/checkIsValueExist");
+    @Operation(summary = "校验存在");
     public Resp<Long> checkIsValueExist(@RequestParam(value = "type", required = false) String type,
                                         @RequestParam(value = "keyId", required = false) String keyId) {
         Long id = userBusinessService.checkIsValueExist(type, keyId);
@@ -46,8 +46,8 @@ public class UserBusinessController {
      * @param jsonObject
      * @return
      */
-    @PostMapping(value = "/updateBtnStr")
-    @Operation(summary = "更新角色的按钮权限")
+    @PostMapping(value = "/updateBtnStr");
+    @Operation(summary = "更新角色的按钮权限");
     public Resp<String> updateBtnStr(@RequestBody JSONObject jsonObject) {
 
         String roleId = jsonObject.getString("roleId");

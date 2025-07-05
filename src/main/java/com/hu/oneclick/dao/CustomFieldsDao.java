@@ -19,31 +19,13 @@ import java.util.Set;
  * @author vince
  * @since 2022-12-13
  */
-public interface CustomFieldsDao extends BaseMapper<CustomFields> {
 
-    int updateByPrimaryKeySelective(CustomFields customFields);
 
-    int deleteBatchByKey(@Param("customFieldIds") Set<Long> customFieldsIds);
 
-    /**
-     * 通过实体作为筛选条件查询
-     *
-     * @param customField 实例对象
-     * @return 对象列表
-     */
-    List<CustomFields> queryCustomList(CustomFields customField);
 
-    List<CustomFileldLinkVo> getAllCustomList(@Param("customFieldDto") CustomFieldDto customFieldDto);
 
-    List<String> getFieldTypeByProjectId(@Param("projectId") Long projectId);
 
-    List<CustomFileldLinkVo> getDropDownBox(@Param("customFieldDto") CustomFieldDto customFieldDto);
 
-    int updateValueDropDownBox(@Param("customFieldsDto") CustomFieldsDto customFieldsDto);
 
-    CustomFields getByCustomFieldId(@Param("customFieldId") Long customFieldId);
 
-    List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId);
 
-   List<CustomFieldPossBileDto> getPossBile(String fieldName);
-}

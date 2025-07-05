@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
@@ -13,13 +12,11 @@ import com.hu.oneclick.server.user.SysUserReferenceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 /**
  * @author MaSiyi
  * @version 1.0.0 2021/10/14
@@ -54,7 +51,7 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         String normalDiscountFlag = systemConfigService.getDateForKeyAndGroup("NormalDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         //如果基础折扣开关为打开
         BigDecimal normalDiscount;
-        if (OneConstant.SystemConfigStatus.ON.equals(normalDiscountFlag)) {
+        if (OneConstant.SystemConfigStatus.ON.equals(normalDiscountFlag) {
             normalDiscount = sysOrderDiscountDao.getNormalDiscount(sysOrderDiscountDto);
         } else {
             normalDiscount = BigDecimal.ZERO;
@@ -67,40 +64,40 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         //原始价格
         BigDecimal allPrice = dataApPriceBd.add(dataStPriceBd);
         BigDecimal currentPrice ;
-        currentPrice = allPrice.subtract(allPrice.multiply(normalDiscount));
+        currentPrice = allPrice.subtract(allPrice.multiply(normalDiscount);
         //根据推荐表里面获取当前的推荐人折扣
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        Date[] monthLimit = DateUtil.getMonthLimit(new Date());
+        Date[] monthLimit = DateUtil.getMonthLimit(new Date();
 
         BigDecimal allReferenceDiscount = this.getReferenceDiscount(sysUser, monthLimit[0], monthLimit[1]);
-        currentPrice = currentPrice.subtract(currentPrice.multiply(allReferenceDiscount));
+        currentPrice = currentPrice.subtract(currentPrice.multiply(allReferenceDiscount);
 
         //如果特别折扣开关为打开
         String specialDiscount = systemConfigService.getDateForKeyAndGroup("SpecialDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
-        if (OneConstant.SystemConfigStatus.ON.equals(specialDiscount)) {
+        if (OneConstant.SystemConfigStatus.ON.equals(specialDiscount) {
             String specialDiscountNu = systemConfigService.getDateForKeyAndGroup(sysUser.getEmail(), OneConstant.SystemConfigGroup.SPECICALDISCOUNT);
-            if (StringUtils.isNotEmpty(specialDiscountNu)) {
-                currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(specialDiscountNu)));
+            if (StringUtils.isNotEmpty(specialDiscountNu) {
+                currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(specialDiscountNu);
             }
         }
         //如果VIP开关为打开
         String vip = systemConfigService.getDateForKeyAndGroup("VIP", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
-        if (OneConstant.SystemConfigStatus.ON.equals(vip)) {
-            if ("VIP".equals(sysUser.getUserClass())) {
+        if (OneConstant.SystemConfigStatus.ON.equals(vip) {
+            if ("VIP".equals(sysUser.getUserClass() {
                 //vip折扣力度
                 String vipNu = systemConfigService.getDateForKeyAndGroup("VIP", OneConstant.SystemConfigGroup.VIP);
-                currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(vipNu)));
+                currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(vipNu);
             }
         }
         //如果节假日折扣开关为打开
         String flashDiscount = systemConfigService.getDateForKeyAndGroup("FlashDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
-        if (OneConstant.SystemConfigStatus.ON.equals(flashDiscount)) {
+        if (OneConstant.SystemConfigStatus.ON.equals(flashDiscount) {
             String flashDiscountNu = systemConfigService.getDateForKeyAndGroup("FlashDiscount", OneConstant.SystemConfigGroup.FLASHDISCOUNT);
-            currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(flashDiscountNu)));
+            currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(flashDiscountNu);
         }
         Map<String, BigDecimal> map = new HashMap<>(3);
         map.put("originalPrice", allPrice);
-        map.put("currentPrice",currentPrice.setScale(2, RoundingMode.HALF_UP));
+        map.put("currentPrice",currentPrice.setScale(2, RoundingMode.HALF_UP);
         return new Resp.Builder<Map<String, BigDecimal>>().setData(map).ok();
     }
     /** 计算推荐折扣
@@ -115,7 +112,7 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         //如果推荐开关为打开
         String referencedTime = systemConfigService.getDateForKeyAndGroup("ReferencedTime", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         BigDecimal referenceTimeCountDiscountGg;
-        if (OneConstant.SystemConfigStatus.ON.equals(referencedTime)) {
+        if (OneConstant.SystemConfigStatus.ON.equals(referencedTime) {
 
             int referenceTimeCount = sysUserReferenceService.getReferenceTime(sysUser,startTime,endTime);
             String referenceTimeCountDiscount = systemConfigService
@@ -127,7 +124,7 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         //如果引用开关为打开
         String referencePersonNo = systemConfigService.getDateForKeyAndGroup("ReferencePersonNo", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         BigDecimal referencePersonNoCountDiscountBg;
-        if (OneConstant.SystemConfigStatus.ON.equals(referencePersonNo)) {
+        if (OneConstant.SystemConfigStatus.ON.equals(referencePersonNo) {
             int referencePersonNoCount = sysUserReferenceService.getReferencePersonNo(sysUser,startTime,endTime);
             String referencePersonNoCountDiscount = systemConfigService
                     .getDateForKeyAndGroup(String.valueOf(referencePersonNoCount), OneConstant.SystemConfigGroup.REFERENCEPERSONNO);

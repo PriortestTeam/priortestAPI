@@ -32,7 +32,7 @@ public class ViewFilterServiceImpl implements ViewFilterService {
 
     @Override
     public Map<String, Object> getFilterParamsByViewId(String viewId, String projectId) {
-        if (StrUtil.isBlank(viewId)) {
+        if (StrUtil.isBlank(viewId) {
             return null;
         }
 
@@ -60,7 +60,7 @@ public class ViewFilterServiceImpl implements ViewFilterService {
 
     @Override
     public Map<String, Object> buildQueryParams(List<List<OneFilter>> filterList, String projectId) {
-        if (CollUtil.isEmpty(filterList)) {
+        if (CollUtil.isEmpty(filterList) {
             return null;
         }
 
@@ -74,7 +74,7 @@ public class ViewFilterServiceImpl implements ViewFilterService {
 
         int j = 0;
         for (List<OneFilter> oneFilters : filterList) {
-            if (CollUtil.isEmpty(oneFilters)) {
+            if (CollUtil.isEmpty(oneFilters) {
                 continue;
             }
             
@@ -86,8 +86,8 @@ public class ViewFilterServiceImpl implements ViewFilterService {
                 }
                 
                 String fieldName = StrUtil.format("A_{}_{}", j, i);
-                params.put(StrUtil.format("{}.{}", fieldName, filter.getFieldNameEn()), filter.getSourceVal());
-                params.put(StrUtil.format("{}.{}-op", fieldName, filter.getFieldNameEn()), filter.getCondition());
+                params.put(StrUtil.format("{}.{}", fieldName, filter.getFieldNameEn(), filter.getSourceVal();
+                params.put(StrUtil.format("{}.{}-op", fieldName, filter.getFieldNameEn(), filter.getCondition();
                 
                 if (i == 0) {
                     gexpr.append(fieldName);
@@ -100,7 +100,7 @@ public class ViewFilterServiceImpl implements ViewFilterService {
             j++;
         }
         
-        params.put("gexpr", gexpr.toString());
+        params.put("gexpr", gexpr.toString();
         return params;
     }
 
@@ -118,14 +118,14 @@ public class ViewFilterServiceImpl implements ViewFilterService {
         }
 
         // 如果有父视图，先处理父视图
-        if (StringUtils.isNotEmpty(view.getParentId()) && view.getLevel() > 0) {
-            View parentView = viewService.getById(view.getParentId());
+        if (StringUtils.isNotEmpty(view.getParentId() && view.getLevel() > 0) {
+            View parentView = viewService.getById(view.getParentId();
             processAllFilterRecursive(parentView, filterList);
         }
 
         // 添加当前视图的过滤条件
         List<OneFilter> oneFilters = view.getOneFilters();
-        if (CollUtil.isNotEmpty(oneFilters)) {
+        if (CollUtil.isNotEmpty(oneFilters) {
             filterList.add(oneFilters);
         }
     }

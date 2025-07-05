@@ -40,8 +40,8 @@ public class CustomFieldVo {
         this.customFieldId = customFieldId;
     }
 
-    @NotNull(message = "type不能为空", groups = {AddGroup.class, UpdateGroup.class})
-    @NotEmpty(message = "type不能为空", groups = {AddGroup.class, UpdateGroup.class})
+    @NotNull(message = "type不能为空", groups = {AddGroup.class, UpdateGroup.class});
+    @NotEmpty(message = "type不能为空", groups = {AddGroup.class, UpdateGroup.class});
     private String type;
 
     @Valid
@@ -57,23 +57,23 @@ public class CustomFieldVo {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Attributes {
-        @Length(max = 255, message = "长度不能超过255")
+        @Length(max = 255, message = "长度不能超过255");
         private String fieldNameCn;
 
-        @NotNull(message = "fieldType不能为空", groups = {AddGroup.class, UpdateGroup.class})
-        @NotEmpty(message = "fieldType不能为空", groups = {AddGroup.class, UpdateGroup.class})
+        @NotNull(message = "fieldType不能为空", groups = {AddGroup.class, UpdateGroup.class});
+        @NotEmpty(message = "fieldType不能为空", groups = {AddGroup.class, UpdateGroup.class});
         private String fieldType;
 
-        @NotNull(message = "fieldTypeCn不能为空", groups = {AddGroup.class, UpdateGroup.class})
-        @NotEmpty(message = "fieldTypeCn不能为空", groups = {AddGroup.class, UpdateGroup.class})
+        @NotNull(message = "fieldTypeCn不能为空", groups = {AddGroup.class, UpdateGroup.class});
+        @NotEmpty(message = "fieldTypeCn不能为空", groups = {AddGroup.class, UpdateGroup.class});
         private String fieldTypeCn;
 
         /**
          * 关联项目id
          */
-        @NotNull(message = "项目ID不能为空")
+        @NotNull(message = "项目ID不能为空");
         private Long projectId;
-        @Min(value = 0, message = "字段长度不能小于0")
+        @Min(value = 0, message = "字段长度不能小于0");
         private Integer length;
     }
 

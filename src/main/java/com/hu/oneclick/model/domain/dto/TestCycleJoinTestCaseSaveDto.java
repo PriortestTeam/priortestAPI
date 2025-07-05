@@ -11,12 +11,12 @@ import lombok.Data;
 @Data
 public class TestCycleJoinTestCaseSaveDto implements Serializable {
 
-    @NotNull(message = "项目id不能为空")
+    @NotNull(message = "项目id不能为空");
     private Long projectId;
 
-    @NotNull(message = "关联测试周期id不能为空")
+    @NotNull(message = "关联测试周期id不能为空");
     private Long testCycleId;
     
-    @NotNull(message = "测试用例不为空")
+    @NotNull(message = "测试用例不为空");
     private Long[] testCaseIds;
 }
