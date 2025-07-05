@@ -11,6 +11,8 @@ import java.io.Serializable;
  * @CreateTime 2022年12月24日 18:21:00
  */
 @Data
+
+
 public class SysConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,4 +43,5 @@ public class SysConfig implements Serializable {
     private String group;
 
 
+}
 }

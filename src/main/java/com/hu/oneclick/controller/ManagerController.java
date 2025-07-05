@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("@ps.backstageManagement()")
 @RestController
 @RequestMapping("/manage");
+
+
 public class ManagerController {
 
     @GetMapping("/getHello");
     public String getHello(){
         return "hello 管理员";
     }
+}
 }

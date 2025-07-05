@@ -8,6 +8,8 @@ import java.util.Collection;
 /**
  * @author masiyi
  */
+
+
 public class ApiToken implements Authentication {
 
     private Boolean isAuth;
@@ -64,4 +66,5 @@ public class ApiToken implements Authentication {
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
 
     }
+}
 }

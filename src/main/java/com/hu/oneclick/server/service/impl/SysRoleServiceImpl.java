@@ -28,15 +28,15 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public Resp<List<SysRole>> queryRoles() {
-        List<SysRole> sysRoles = sysRoleDao.queryAll(null);
-        return new Resp.Builder<List<SysRole>>().setData(sysRoles).totalSize(sysRoles.size().ok();
+    public Resp<List&lt;SysRole>> queryRoles() {
+        List&lt;SysRole> sysRoles = sysRoleDao.queryAll(null);
+        return new Resp.Builder<List&lt;SysRole>>().setData(sysRoles).totalSize(sysRoles.size().ok();
     }
 
 
     @Override
-    public List<SysRole> findUserRole() {
-        Resp<List<SysRole>> listResp = queryRoles();
+    public List&lt;SysRole> findUserRole() {
+        Resp<List&lt;SysRole>> listResp = queryRoles();
         return listResp.getData();
     }
 
@@ -47,10 +47,11 @@ public class SysRoleServiceImpl implements SysRoleService {
      * @Date: 2022/1/3
      */
     @Override
-    public Resp<List<SysUserRoleDto>> getAccountRole(String roleId) {
+    public Resp<List&lt;SysUserRoleDto>> getAccountRole(String roleId) {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         String roomId = sysUser.getRoomId().toString();
-        List<SysUserRoleDto> accountRole = sysUserDao.getAccountRole(roomId, roleId);
-        return new Resp.Builder<List<SysUserRoleDto>>().setData(accountRole).ok();
+        List&lt;SysUserRoleDto> accountRole = sysUserDao.getAccountRole(roomId, roleId);
+        return new Resp.Builder<List&lt;SysUserRoleDto>>().setData(accountRole).ok();
     }
+}
 }

@@ -5,6 +5,8 @@ import com.hu.oneclick.model.base.BaseEntity;
 import java.io.Serializable;
 import java.util.Date;
 
+
+
 public class TestCaseExcution extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 114802398790239711L;
 
@@ -108,4 +110,5 @@ public class TestCaseExcution extends BaseEntity implements Serializable {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+}
 }

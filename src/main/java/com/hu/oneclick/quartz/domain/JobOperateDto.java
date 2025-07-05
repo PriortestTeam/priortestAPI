@@ -16,6 +16,8 @@ import java.io.Serializable;
 @Setter
 @Getter
 @Schema(description = "定时任务操作DTO");
+
+
 public class JobOperateDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;
@@ -27,4 +29,5 @@ public class JobOperateDto implements Serializable {
     @Schema(description = "任务组名");
     private String jobGroupName = "DEFAULT";
 
+}
 }

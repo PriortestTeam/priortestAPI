@@ -12,6 +12,8 @@ import java.util.Date;
  * @author 
  */
 @Data
+
+
 public class SysUserOrder implements Serializable {
     /**
      * 订单表id
@@ -110,4 +112,5 @@ public class SysUserOrder implements Serializable {
 
 
     private static final long serialVersionUID = 14587454654354644L;
+}
 }

@@ -19,6 +19,8 @@ import java.util.Calendar;
  * @author qingyang
  */
 @Component
+
+
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
 	private final JwtUserServiceImpl userService;
@@ -56,4 +58,5 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 		return JwtAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 
+}
 }

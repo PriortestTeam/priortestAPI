@@ -11,6 +11,8 @@ import java.util.Date;
  * @author makejava
  * @since 2020-11-20 10:32:50
  */
+
+
 public class SysProjectPermission extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 344033102544943132L;
     /**
@@ -69,4 +71,5 @@ public class SysProjectPermission extends BaseEntity implements Serializable {
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
+}
 }

@@ -15,6 +15,7 @@ public class TestCycleDto extends TestCycle {
 
     private String filter;
 
-    private List<TestCase> testCases;
+    private List&lt;TestCase> testCases;
 
+}
 }

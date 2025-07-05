@@ -14,6 +14,8 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @Date: 2023/5/16
  */
 @Data
+
+
 public class SprintSaveDto {
 
 
@@ -72,4 +74,5 @@ public class SprintSaveDto {
      */
     @Schema(description = "自定义字段值");
     private JSONObject customFieldDatas;
+}
 }

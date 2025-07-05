@@ -14,6 +14,8 @@ import java.util.Date;
  */
 @Schema(description = "com.hu.oneclick.model.domain.SysUserOrderRecord订单记录表");
 @Data
+
+
 public class SysUserOrderRecord implements Serializable {
     /**
      * id
@@ -124,4 +126,5 @@ public class SysUserOrderRecord implements Serializable {
     private Boolean invoice;
 
     private static final long serialVersionUID = 1L;
+}
 }

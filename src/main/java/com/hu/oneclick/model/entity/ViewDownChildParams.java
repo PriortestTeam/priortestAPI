@@ -12,6 +12,8 @@ import java.util.Date;
  * @since 2021-04-16 16:25:20
  */
 @Data
+
+
 public class ViewDownChildParams implements Serializable {
     private static final long serialVersionUID = 848798611045855488L;
 
@@ -38,4 +40,5 @@ public class ViewDownChildParams implements Serializable {
 
 
 
+}
 }

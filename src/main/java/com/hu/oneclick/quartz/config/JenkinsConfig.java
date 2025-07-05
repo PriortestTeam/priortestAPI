@@ -7,8 +7,11 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties(prefix = "jenkins");
+
+
 public class JenkinsConfig {
     private String url;
     private String username;
     private String password;
+}
 }

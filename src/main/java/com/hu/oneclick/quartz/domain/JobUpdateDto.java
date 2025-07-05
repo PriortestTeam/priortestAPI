@@ -17,6 +17,8 @@ import java.util.Map;
 @Setter
 @Getter
 @Schema(description = "定时任务更新DTO");
+
+
 public class JobUpdateDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;
@@ -33,6 +35,7 @@ public class JobUpdateDto implements Serializable {
     private String cronExpression;
 
     @Schema(description = "参数");
-    private Map<String, Object> jobDataMap;
+    private Map&lt;String, Object> jobDataMap;
 
+}
 }

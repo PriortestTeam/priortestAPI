@@ -11,6 +11,8 @@ import lombok.Data;
  */
 @Schema(description="测试周期调度表");
 @Data
+
+
 public class TestCycleSchedule implements Serializable {
     private Integer id;
 
@@ -39,4 +41,5 @@ public class TestCycleSchedule implements Serializable {
     private Integer testCycleId;
 
     private static final long serialVersionUID = 1L;
+}
 }

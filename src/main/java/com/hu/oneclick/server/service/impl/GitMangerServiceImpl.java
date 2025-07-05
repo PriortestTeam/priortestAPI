@@ -20,6 +20,8 @@ import java.util.Base64;
 import java.util.List;
 
 @Service
+
+
 public class GitMangerServiceImpl implements GitMangerService {
     private final UITestGitSettingsDao uiTestGitSettingsDao;
     private final UITestGitRepoDao uiTestGitRepoDao;
@@ -33,7 +35,7 @@ public class GitMangerServiceImpl implements GitMangerService {
     }
 
     @Override
-    public List<UITestGitSettings> getWithRoomId(String roomId) {
+    public List&lt;UITestGitSettings> getWithRoomId(String roomId) {
         QueryWrapper<UITestGitSettings> query = Wrappers.query();
         query.eq("room_id", new BigInteger(roomId);
 
@@ -122,4 +124,5 @@ public class GitMangerServiceImpl implements GitMangerService {
             uiTestGitRepoDao.insert(gitRepo);
         }
     }
+}
 }

@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+
+
 public class PdfGenerateServiceImpl implements PdfGenerateService {
     private final static Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
@@ -58,7 +60,7 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
 
         Project project = projectDao.queryById(signOffParam.getProjectId();
 
-        Map<String, Object> cond = new HashMap<>();
+        Map&lt;String, Object> cond = new HashMap&lt;>();
 
         if (signOffParam.getCurrentRelease() <= 0) {
             String ids = signOffParam.getTestCycle().stream().map(e -> e.get("testCycleId").collect(Collectors.joining(",");
@@ -70,7 +72,7 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
             cond.put("current_release", signOffParam.getCurrentRelease();
         }
 
-        List<Map<String, Object>> cycles = testCycleDao.queryTestCyclesWithCasesByConditions(cond);
+        List&lt;Map&lt;String, Object>> cycles = testCycleDao.queryTestCyclesWithCasesByConditions(cond);
         if (cycles.isEmpty() {
 //            return new Resp.Builder<String>().setData(SysConstantEnum.TEST_CASE_NOT_EXIST.getValue().fail();
             var resp = new Resp.Builder<String>().buildResult("404", SysConstantEnum.FAILED.getValue(), HttpStatus.NOT_FOUND.value();
@@ -80,7 +82,7 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
 
         int cycle_instance = cycles.stream().collect(Collectors.collectingAndThen(
             Collectors.toMap(k -> k.get("test_cycle_id"), v -> v.get("test_cycle_instance"), (oldValue, newValue) -> oldValue),
-            map -> new ArrayList<>(map.values()
+            map -> new ArrayList&lt;>(map.values()
         ).stream().mapToInt(v -> Integer.parseInt(v.toString().sum();
 
         var allures = cycles.stream().filter(v -> !v.get("allure_report_url").toString().isEmpty().map(v -> v.get("allure_report_url").toString()
@@ -117,7 +119,7 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
 
         //测试覆盖报告
         int idx = 0;
-        Map<String, List<Map<String, Object>>> modules = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_case_module").toString();
+        Map&lt;String, List&lt;Map&lt;String, Object>>> modules = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_case_module").toString();
         String[][] coverageReportTable = new String[modules.keySet().size()][];
         for (var m : modules.keySet() {
             coverageReportTable[idx] = new String[]{m, ""};
@@ -149,7 +151,7 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
 
         //测试平台
         idx = 0;
-        Map<String, List<Map<String, Object>>> platforms = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_platform").toString();
+        Map&lt;String, List&lt;Map&lt;String, Object>>> platforms = cycles.stream().collect(Collectors.groupingBy(arg -> arg.get("test_platform").toString();
         String[][] platformReportTable = new String[platforms.keySet().size()][];
         for (var item : platforms.keySet() {
             platformReportTable[idx] = new String[]{item, ""};
@@ -224,4 +226,5 @@ public class PdfGenerateServiceImpl implements PdfGenerateService {
         }
         return new Resp.Builder<String>().ok();
     }
+}
 }

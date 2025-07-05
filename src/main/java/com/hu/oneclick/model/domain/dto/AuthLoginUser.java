@@ -11,6 +11,8 @@ import java.util.List;
 /**
  * @author qingyang
  */
+
+
 public class AuthLoginUser implements UserDetails {
     /**
      * 登录用户的邮箱
@@ -36,7 +38,7 @@ public class AuthLoginUser implements UserDetails {
     /**
      * 子用户权限列表
      */
-    private List<SysProjectPermissionDto> permissions;
+    private List&lt;SysProjectPermissionDto> permissions;
 
     private SysUser sysUser;
 
@@ -100,11 +102,11 @@ public class AuthLoginUser implements UserDetails {
         this.sysUser =  user;
     }
 
-    public List<SysProjectPermissionDto> getPermissions() {
+    public List&lt;SysProjectPermissionDto> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<SysProjectPermissionDto> permissions) {
+    public void setPermissions(List&lt;SysProjectPermissionDto> permissions) {
         this.permissions = permissions;
     }
 
@@ -115,4 +117,5 @@ public class AuthLoginUser implements UserDetails {
     public void setMasterIdentifier(String masterIdentifier) {
         this.masterIdentifier = masterIdentifier;
     }
+}
 }

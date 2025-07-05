@@ -42,12 +42,14 @@ import com.hu.oneclick.model.entity.SysUser;
  * 1. Bearer Token: 用户登录后生成的JWT token，用于前端应用
  * 2. API Token: 用户生成的token，用于API访问，格式：emailId + token
  */
+
+
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
-    private List<RequestMatcher> permissiveRequestMatchers = new ArrayList<>();
+    private List&lt;RequestMatcher> permissiveRequestMatchers = new ArrayList&lt;>();
 
     @Autowired
     private UserService userService;
@@ -240,7 +242,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             // 通过emailId查询用户
-            List<SysUser> users = sysUserDao.queryByLikeEmail(emailId);
+            List&lt;SysUser> users = sysUserDao.queryByLikeEmail(emailId);
             if (users.isEmpty() {
                 throw new BadCredentialsException("User not found: " + emailId);
             }
@@ -249,7 +251,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println(">>> 找到用户: " + user.getEmail() + ", ID: " + user.getId();
 
             // 查询用户的API Token
-            List<SysUserToken> userTokens = sysUserTokenDao.selectByUserIdAndToken(user.getId(), tokenValue);
+            List&lt;SysUserToken> userTokens = sysUserTokenDao.selectByUserIdAndToken(user.getId(), tokenValue);
             if (userTokens.isEmpty() {
                 throw new BadCredentialsException("Invalid API token for user: " + emailId);
             }
@@ -282,7 +284,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 创建认证对象
             UsernamePasswordAuthenticationToken authToken = 
-                new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList<>();
+                new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList&lt;>();
 
             return authToken;
 
@@ -316,7 +318,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 创建简单的认证对象
             UsernamePasswordAuthenticationToken authToken = 
-                new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList<>();
+                new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList&lt;>();
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
             System.out.println(">>> 认证信息已设置到SecurityContext");

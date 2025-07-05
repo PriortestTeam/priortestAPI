@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(description = "关系查询参数");
+
+
 public class RelationParam {
 
     /** 对象id */
@@ -21,4 +23,5 @@ public class RelationParam {
     @Schema(description = "分类 - com.hu.oneclick.relation.enums.RelationCategoryEnum");
     private String category;
 
+}
 }

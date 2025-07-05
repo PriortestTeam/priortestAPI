@@ -72,3 +72,4 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
     }
 
 }
+}

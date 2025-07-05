@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
  * @author qingyang
  */
 @Configuration
+
+
 public class RedisConfig {
 
     private final RedisProperties redisProperties;

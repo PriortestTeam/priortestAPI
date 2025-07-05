@@ -13,6 +13,8 @@ import java.io.Serializable;
  * @author makejava
  * @since 2021-03-16 09:53:28
  */
+
+
 public class FeatureJoinSprint implements VerifyParam, Serializable {
     private static final long serialVersionUID = -98473243422555529L;
 
@@ -45,4 +47,5 @@ public class FeatureJoinSprint implements VerifyParam, Serializable {
     }
 
 
+}
 }

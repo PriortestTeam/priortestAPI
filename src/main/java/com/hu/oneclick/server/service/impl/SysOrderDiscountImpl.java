@@ -44,7 +44,7 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
      * @Date: 2021/10/14
      */
     @Override
-    public Resp<Map<String, BigDecimal>> calculateOrderPrice(SysOrderDiscountDto sysOrderDiscountDto) {
+    public Resp<Map&lt;String, BigDecimal>> calculateOrderPrice(SysOrderDiscountDto sysOrderDiscountDto) {
 
         sysOrderDiscountDto.verify();
         //根据所选的选出折扣表里面的基础折扣
@@ -95,10 +95,10 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
             String flashDiscountNu = systemConfigService.getDateForKeyAndGroup("FlashDiscount", OneConstant.SystemConfigGroup.FLASHDISCOUNT);
             currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(flashDiscountNu);
         }
-        Map<String, BigDecimal> map = new HashMap<>(3);
+        Map&lt;String, BigDecimal> map = new HashMap&lt;>(3);
         map.put("originalPrice", allPrice);
         map.put("currentPrice",currentPrice.setScale(2, RoundingMode.HALF_UP);
-        return new Resp.Builder<Map<String, BigDecimal>>().setData(map).ok();
+        return new Resp.Builder<Map&lt;String, BigDecimal>>().setData(map).ok();
     }
     /** 计算推荐折扣
      * @Param:
@@ -134,4 +134,5 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         }
         return referenceTimeCountDiscountGg.add(referencePersonNoCountDiscountBg);
     }
+}
 }

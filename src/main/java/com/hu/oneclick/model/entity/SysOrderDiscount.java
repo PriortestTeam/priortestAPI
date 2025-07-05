@@ -13,6 +13,8 @@ import lombok.Data;
  */
 @Schema(description="订单折扣表");
 @Data
+
+
 public class SysOrderDiscount implements Serializable {
     /**
      * 折扣表id
@@ -60,3 +62,4 @@ public class SysOrderDiscount implements Serializable {
 }
 
 
+}

@@ -15,6 +15,8 @@ import java.io.Serializable;
  */
 @Data
 @EqualsAndHashCode(callSuper=false);
+
+
 public class CustomFileldLinkVo extends CustomFileldLink implements Serializable {
 
     private static final long serialVersionUID = 870331260917684971L;

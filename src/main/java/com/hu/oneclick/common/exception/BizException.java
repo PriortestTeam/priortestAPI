@@ -3,6 +3,8 @@ package com.hu.oneclick.common.exception;
 /**
  * @author qingyang
  */
+
+
 public class BizException extends BaseException {
 
     public BizException() {
@@ -27,4 +29,5 @@ public class BizException extends BaseException {
         this.httpCode = httpCode;
     }
 
+}
 }

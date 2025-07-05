@@ -18,6 +18,8 @@ import java.util.List;
 @Setter
 @Getter
 @Schema(description = "测试用例步骤DTO");
+
+
 public class TestCaseStepSaveDto implements Serializable {
 
     private static final long serialVersionUID = 2326317164248935852L;
@@ -29,6 +31,7 @@ public class TestCaseStepSaveDto implements Serializable {
 
     @Schema(description = "用例步骤集合");
 //    @Size(min = 1, max = 100, message = "用例步骤集合不能为空");
-    private List<TestCaseStepSaveSubDto> steps;
+    private List&lt;TestCaseStepSaveSubDto> steps;
 
+}
 }

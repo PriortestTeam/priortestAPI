@@ -25,6 +25,8 @@ import java.util.List;
 @RequestMapping("projectManage");
 @Tag(name = "项目", description = "项目相关接口");
 @Slf4j
+
+
 public class ProjectManageController extends BaseController {
 
     private final ProjectManageService projectManageService;
@@ -40,7 +42,7 @@ public class ProjectManageController extends BaseController {
             param = new ProjectManageParam();
         }
         startPage();
-        List<ProjectManage> dataList = this.projectManageService.listAll(param);
+        List&lt;ProjectManage> dataList = this.projectManageService.listAll(param);
         return new Resp.Builder<PageInfo<ProjectManage>>().setData(PageInfo.of(dataList).ok();
     }
 

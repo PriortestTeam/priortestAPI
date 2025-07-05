@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
+
+
 public class VersionRequestDto {
 
     /**
@@ -39,4 +41,5 @@ public class VersionRequestDto {
      * 版本id
      */
    private Long id;
+}
 }

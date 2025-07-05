@@ -18,6 +18,8 @@ import java.util.Date;
  * @author qingyang
  */
 @Component
+
+
 public class JwtRefreshSuccessHandler implements AuthenticationSuccessHandler {
 	/**
 	 * 刷新间隔5分钟
@@ -46,4 +48,5 @@ public class JwtRefreshSuccessHandler implements AuthenticationSuccessHandler {
         return LocalDateTime.now().minusSeconds(TOKEN_REFRESH_INTERVAL).isAfter(issueTime);
     }
 
+}
 }

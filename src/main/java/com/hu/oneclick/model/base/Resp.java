@@ -9,6 +9,8 @@ import java.util.List;
 /**
  * @author qingyang
  */
+
+
 public class Resp<T> {
 
     private String code;
@@ -97,7 +99,7 @@ public class Resp<T> {
         }
 
         public Builder<T> total(Object obj){
-            List<T> list = (List<T>) obj;
+            List&lt;T> list = (List&lt;T>) obj;
             this.total =  new PageInfo(list).getTotal();
             return this;
         }
@@ -163,4 +165,5 @@ public class Resp<T> {
     public void setHttpCode(int httpCode) {
         this.httpCode = httpCode;
     }
+}
 }

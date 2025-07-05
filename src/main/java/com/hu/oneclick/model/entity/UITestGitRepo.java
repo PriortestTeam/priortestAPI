@@ -10,6 +10,8 @@ import java.util.Date;
 
 @Data
 @TableName("uitest_git_repo");
+
+
 public class UITestGitRepo {
 
     @TableId
@@ -41,4 +43,5 @@ public class UITestGitRepo {
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
+}
 }

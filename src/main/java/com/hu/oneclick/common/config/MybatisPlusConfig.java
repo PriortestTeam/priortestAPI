@@ -18,6 +18,8 @@ import java.util.List;
 
 @EnableTransactionManagement(proxyTargetClass = true);
 @Configuration
+
+
 public class MybatisPlusConfig {
 
     @Bean
@@ -76,4 +78,5 @@ public class MybatisPlusConfig {
             configuration.getTypeHandlerRegistry().register(List.class, JdbcType.VARCHAR, new ListTypeHandler();
         };
     }
+}
 }

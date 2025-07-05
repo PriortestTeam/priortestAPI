@@ -16,6 +16,8 @@ import java.io.Serializable;
 @Setter
 @Getter
 @Schema(description = "Jenkins操作DTO");
+
+
 public class JenkinsOperateDto implements Serializable {
 
     private static final long serialVersionUID = 3308577719580670615L;
@@ -24,4 +26,5 @@ public class JenkinsOperateDto implements Serializable {
     @NotBlank(message = "任务名称不能为空");
     private String jobName;
 
+}
 }

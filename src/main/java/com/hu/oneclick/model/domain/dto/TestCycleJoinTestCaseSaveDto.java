@@ -9,6 +9,8 @@ import lombok.Data;
  * @Date: 2023/7/8
  */
 @Data
+
+
 public class TestCycleJoinTestCaseSaveDto implements Serializable {
 
     @NotNull(message = "项目id不能为空");
@@ -19,4 +21,5 @@ public class TestCycleJoinTestCaseSaveDto implements Serializable {
     
     @NotNull(message = "测试用例不为空");
     private Long[] testCaseIds;
+}
 }

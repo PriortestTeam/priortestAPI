@@ -11,6 +11,8 @@ import java.io.Serializable;
  * @since 2020-12-09 21:23:07
  */
 @Data
+
+
 public class SubUserProject implements Serializable {
     private static final long serialVersionUID = 133628657690892064L;
 
@@ -28,4 +30,5 @@ public class SubUserProject implements Serializable {
      */
     private String openProjectByDefaultId;
 
+}
 }

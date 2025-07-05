@@ -12,6 +12,8 @@ import java.util.Date;
  */
 @Schema(description = "com.hu.oneclick.model.entity.ProjectSignOff");
 @Data
+
+
 public class ProjectSignOff implements Serializable {
     private String id;
 
@@ -28,4 +30,5 @@ public class ProjectSignOff implements Serializable {
     private String createUser;
 
     private static final long serialVersionUID = 1L;
+}
 }

@@ -1,5 +1,7 @@
 package com.hu.oneclick.common.constant;
 
+
+
 public class RoleConstant {
 
     /**
@@ -22,4 +24,5 @@ public class RoleConstant {
      */
     public static final int ADMIN_PLAT = 4;
 
+}
 }

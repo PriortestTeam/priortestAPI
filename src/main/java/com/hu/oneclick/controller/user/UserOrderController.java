@@ -21,6 +21,8 @@ import java.util.List;
 @RestController
 @RequestMapping("userOrder");
 @Tag(name = "订单模块", description = "订单模块相关接口");
+
+
 public class UserOrderController {
 
     @Autowired
@@ -40,8 +42,9 @@ public class UserOrderController {
 
     @Operation(summary = "查询付款方式");
     @PostMapping("getPaymentMethod");
-    public Resp<List<String>> getPaymentMethod() {
+    public Resp<List&lt;String>> getPaymentMethod() {
         return userOrderService.getPaymentMethod();
     }
 
+}
 }

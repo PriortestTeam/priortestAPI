@@ -5,6 +5,8 @@ import com.hu.oneclick.model.entity.Sprint;
 /**
  * @author qingyang
  */
+
+
 public class SprintDto extends Sprint {
 
     private ViewTreeDto viewTreeDto;
@@ -27,4 +29,5 @@ public class SprintDto extends Sprint {
         this.viewTreeDto = viewTreeDto;
     }
 
+}
 }

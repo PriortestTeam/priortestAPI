@@ -20,6 +20,8 @@ import jakarta.validation.constraints.NotBlank;
 @Setter
 @TableName("relation");
 @Schema(description = "关系实体");
+
+
 public class Relation {
 
     /**
@@ -60,4 +62,5 @@ public class Relation {
     @Schema(description = "标题");
     private String title;
 
+}
 }

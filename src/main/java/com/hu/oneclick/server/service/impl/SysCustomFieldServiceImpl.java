@@ -34,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 import com.alibaba.fastjson2.JSON;
 
 @Service
+
+
 public class SysCustomFieldServiceImpl implements SysCustomFieldService {
 
     private final static Logger logger = LoggerFactory.getLogger(SysCustomFieldServiceImpl.class);
@@ -55,26 +57,26 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
 
 
     @Override
-    public Resp<List<SysCustomFieldVo>> querySysCustomFields() {
+    public Resp<List&lt;SysCustomFieldVo>> querySysCustomFields() {
         try {
             String masterId = jwtUserService.getMasterId();
             String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
             String redisKey = OneConstant.REDIS_KEY_PREFIX.SYS_CUSTOM_FIELDS + "-" + masterId + "-" + projectId;
-            List<SysCustomFieldVo> result;
+            List&lt;SysCustomFieldVo> result;
             //先查缓存
             RBucket<String> bucket = redisClient.getBucket(redisKey);
             String s = bucket.get();
             if (s != null) {
                 result = JSON.parseArray(s, SysCustomFieldVo.class);
-                return new Resp.Builder<List<SysCustomFieldVo>>().setData(result).totalSize(result.size().ok();
+                return new Resp.Builder<List&lt;SysCustomFieldVo>>().setData(result).totalSize(result.size().ok();
             }
             //缓存没有查数据库
-            List<SysCustomFieldVo> sysCustomFieldVos = queryAll(masterId, projectId);
+            List&lt;SysCustomFieldVo> sysCustomFieldVos = queryAll(masterId, projectId);
             bucket.set(JSONObject.toJSONString(sysCustomFieldVos), 24, TimeUnit.HOURS);
-            return new Resp.Builder<List<SysCustomFieldVo>>().setData(sysCustomFieldVos).totalSize(sysCustomFieldVos.size().ok();
+            return new Resp.Builder<List&lt;SysCustomFieldVo>>().setData(sysCustomFieldVos).totalSize(sysCustomFieldVos.size().ok();
         } catch (BizException e) {
             logger.error("class: SysCustomFieldServiceImpl#querySysCustomFields,error []" + e.getMessage();
-            return new Resp.Builder<List<SysCustomFieldVo>>().buildResult("查询失败");
+            return new Resp.Builder<List&lt;SysCustomFieldVo>>().buildResult("查询失败");
         }
     }
 
@@ -83,8 +85,8 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
     public Resp<String> updateSysCustomFields(SysCustomFieldVo sysCustomFieldVo) {
         try {
             sysCustomFieldVo.verify();
-            List<String> requestValues = sysCustomFieldVo.getMergeValues();
-            List<String> saveValues = new ArrayList<>();
+            List&lt;String> requestValues = sysCustomFieldVo.getMergeValues();
+            List&lt;String> saveValues = new ArrayList&lt;>();
             if (requestValues == null || requestValues.size() <= 0) {
                 return new Resp.Builder<String>().buildResult("请填写值后再更新");
             }
@@ -94,7 +96,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             SysCustomField querySysCustomField = sysCustomFieldDao.queryByFieldName(sysCustomField.getFieldName();
             String defaultValues = StringUtils.isEmpty(querySysCustomField.getDefaultValues() ? "" : querySysCustomField.getDefaultValues();
 
-            List<String> sysDefaultValues = StringUtils.isEmpty(defaultValues) ? null : Arrays.asList(defaultValues.split(",");
+            List&lt;String> sysDefaultValues = StringUtils.isEmpty(defaultValues) ? null : Arrays.asList(defaultValues.split(",");
 
             if (sysDefaultValues == null) {
                 saveValues.addAll(requestValues);
@@ -164,7 +166,7 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             if (!StringUtils.isEmpty(fieldName) {
                 fieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
             }
-            List<SysCustomFieldVo> result;
+            List&lt;SysCustomFieldVo> result;
             String masterId = jwtUserService.getMasterId();
             String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
             String redisKey = OneConstant.REDIS_KEY_PREFIX.SYS_CUSTOM_FIELDS + "-" + masterId + "-" + projectId;
@@ -191,16 +193,16 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
     }
 
 
-    private List<SysCustomFieldVo> queryAll(String masterId, String projectId) {
+    private List&lt;SysCustomFieldVo> queryAll(String masterId, String projectId) {
         //查询系统字段
-        List<SysCustomField> sysCustomFields = sysCustomFieldDao.queryAll();
+        List&lt;SysCustomField> sysCustomFields = sysCustomFieldDao.queryAll();
         //查询当前项目所使用所有字段
         SysCustomFieldExpand sysCustomFieldExpand = new SysCustomFieldExpand();
         sysCustomFieldExpand.setUserId(masterId);
         sysCustomFieldExpand.setProjectId(projectId);
-        List<SysCustomFieldExpand> sysCustomFieldExpands = sysCustomFieldExpandDao.queryList(sysCustomFieldExpand);
+        List&lt;SysCustomFieldExpand> sysCustomFieldExpands = sysCustomFieldExpandDao.queryList(sysCustomFieldExpand);
         //组装 SysCustomFieldExpand
-        List<SysCustomFieldVo> result = new ArrayList<>(sysCustomFields.size();
+        List&lt;SysCustomFieldVo> result = new ArrayList&lt;>(sysCustomFields.size();
         for (SysCustomField customField : sysCustomFields) {
             SysCustomFieldVo sysCustomFieldVo = new SysCustomFieldVo();
             //如果相等了，先取出系统默认值，在取出扩展合并
@@ -224,9 +226,9 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
             }
             //置位空
             customField.setDefaultValues("");
-            List<String> mergeValues;
+            List&lt;String> mergeValues;
 
-            mergeValues = StringUtils.isEmpty(defaultValues.toString() ? new ArrayList<>()
+            mergeValues = StringUtils.isEmpty(defaultValues.toString() ? new ArrayList&lt;>()
                     : Arrays.asList(defaultValues.toString().split(",");
 
             sysCustomFieldVo.setSysCustomField(customField);
@@ -246,8 +248,8 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
      * @Date: 2021/12/15
      */
     @Override
-    public Resp<List<String>> getThePersonInCharge() {
-        List<String> list = new ArrayList<>();
+    public Resp<List&lt;String>> getThePersonInCharge() {
+        List&lt;String> list = new ArrayList&lt;>();
         //系统字段
         SysCustomField report_name = sysCustomFieldDao.queryByFieldName("report_name");
         String defaultValues = report_name.getDefaultValues();
@@ -259,10 +261,10 @@ public class SysCustomFieldServiceImpl implements SysCustomFieldService {
         }
         //主账户和子账户
         String masterId = jwtUserService.getMasterId();
-        List<SysUser> listPsn = userService.queryByUserIdAndParentId(masterId);
+        List&lt;SysUser> listPsn = userService.queryByUserIdAndParentId(masterId);
         for (SysUser sysUser : listPsn) {
             list.add(sysUser.getUserName();
         }
-        return new Resp.Builder<List<String>>().setData(list).ok();
+        return new Resp.Builder<List&lt;String>>().setData(list).ok();
     }
 }

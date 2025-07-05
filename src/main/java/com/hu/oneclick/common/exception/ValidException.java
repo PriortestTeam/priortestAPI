@@ -3,6 +3,8 @@ package com.hu.oneclick.common.exception;
 /**
  * @author qingyang
  */
+
+
 public class ValidException extends BaseException{
 
     public ValidException() {
@@ -19,4 +21,5 @@ public class ValidException extends BaseException{
         this.msg=msg;
         this.code=code;
     }
+}
 }

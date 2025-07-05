@@ -8,6 +8,8 @@ import java.io.Serializable;
  * @author makejava
  * @since 2021-02-18 14:15:05
  */
+
+
 public class IssueJoinTestCase implements Serializable {
     private static final long serialVersionUID = 948868735634832580L;
 
@@ -32,4 +34,5 @@ public class IssueJoinTestCase implements Serializable {
         this.testCaseId = testCaseId;
     }
 
+}
 }

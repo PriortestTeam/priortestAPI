@@ -21,6 +21,8 @@ import java.util.List;
  * @CreateTime 2022年12月13日 22:00:00
  */
 @Data
+
+
 public class CustomFieldVo {
 
 
@@ -50,7 +52,7 @@ public class CustomFieldVo {
     private String possibleValue;
 
 
-    private List<ComponentAttributesVo> componentAttributes;
+    private List&lt;ComponentAttributesVo> componentAttributes;
 
 
     @Data

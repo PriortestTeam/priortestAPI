@@ -14,6 +14,8 @@ import java.util.Date;
  * @Date: 2023/5/22
  */
 @Data
+
+
 public class ProjectManageSaveDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING);
@@ -48,4 +50,5 @@ public class ProjectManageSaveDto {
      */
     @Schema(description = "自定义字段值");
     private JSONObject customFieldDatas;
+}
 }

@@ -22,6 +22,8 @@ import java.util.List;
  * @date 2021/8/4 22:18
  */
 @Service
+
+
 public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonService {
 
     private final static Logger logger = LoggerFactory.getLogger(TestCaseStepServiceImpl.class);
@@ -65,10 +67,10 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
     }
 
     @Override
-    public Resp<List<TestCaseTemplateJson>> queryListByUserId() {
+    public Resp<List&lt;TestCaseTemplateJson>> queryListByUserId() {
         String masterId = jwtUserService.getMasterId();
-        List<TestCaseTemplateJson> testCaseTemplateJsons = testCaseTemplateJsonDAO.queryByUserId(masterId);
-        return new Resp.Builder<List<TestCaseTemplateJson>>().setData(testCaseTemplateJsons).total(testCaseTemplateJsons).ok();
+        List&lt;TestCaseTemplateJson> testCaseTemplateJsons = testCaseTemplateJsonDAO.queryByUserId(masterId);
+        return new Resp.Builder<List&lt;TestCaseTemplateJson>>().setData(testCaseTemplateJsons).total(testCaseTemplateJsons).ok();
     }
 
     @Override
@@ -89,4 +91,5 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
     public Resp<TestCaseTemplateJson> queryById(String id) {
         return new Resp.Builder<TestCaseTemplateJson>().setData(testCaseTemplateJsonDAO.selectByPrimaryKey(id).ok();
     }
+}
 }

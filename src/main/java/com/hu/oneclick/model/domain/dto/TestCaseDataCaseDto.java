@@ -9,18 +9,20 @@ import java.util.Date;
 @Data
 @Component
 @Schema(description = "测试用例数据DTO");
+
+
 public class TestCaseDataCaseDto {
 
-    @Schema(description = "ID");
+    @Schema(description = "ID")
     private Long id;
 
-    @Schema(description = "项目ID");
+    @Schema(description = "项目ID")
     private Long projectId;
 
-    @Schema(description = "标题");
+    @Schema(description = "标题")
     private String title;
 
-    @Schema(description = "优先级");
+    @Schema(description = "优先级")
     private String priority;
 
     @Schema(description = "特性");

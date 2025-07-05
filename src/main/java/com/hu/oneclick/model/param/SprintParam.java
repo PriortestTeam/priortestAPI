@@ -17,6 +17,8 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Schema(description = "迭代Param");
+
+
 public class SprintParam implements Serializable {
     @Schema(description = "名称");
     private String title;
@@ -35,4 +37,5 @@ public class SprintParam implements Serializable {
         queryWrapper.orderByDesc(Sprint::getCreateTime);
         return queryWrapper;
     }
+}
 }

@@ -16,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/release/versionManagement");
 @Tag(name = "版本api", description = "版本api相关接口");
+
+
 public class VersionController extends BaseController {
 
     @Autowired
@@ -45,10 +47,11 @@ public class VersionController extends BaseController {
 
     @Operation(summary="列表查询");
     @PostMapping("getVersionList");
-    public Resp<List<VersionDto>> getVersionList(@RequestBody VersionRequestDto releaseModification) {
-        List<VersionDto> versionDto = versionService.getVersionList(releaseModification);
+    public Resp<List&lt;VersionDto>> getVersionList(@RequestBody VersionRequestDto releaseModification) {
+        List&lt;VersionDto> versionDto = versionService.getVersionList(releaseModification);
         return new Resp.Builder().setData(versionDto).ok();
     }
 
 
+}
 }

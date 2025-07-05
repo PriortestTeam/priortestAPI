@@ -12,6 +12,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @date 2023/03/02
  */
 @Configuration
+
+
 public class ResourcesConfig implements WebMvcConfigurer {
 
     @Override
@@ -23,4 +25,5 @@ public class ResourcesConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
+}
 }

@@ -27,6 +27,8 @@ import java.util.Collections;
  * @author qingyang
  * 登录 login
  */
+
+
 public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     public MyUsernamePasswordAuthenticationFilter() {
@@ -108,4 +110,5 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
         
         return auth;
     }
+}
 }

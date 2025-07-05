@@ -10,6 +10,8 @@ import lombok.Data;
  * @since 2021年11月17日14:33:40
  */
 @Data
+
+
 public class CustomFieldDto {
 
     /**
@@ -55,4 +57,5 @@ public class CustomFieldDto {
     public void setType(String type) {
         this.type = type;
     }
+}
 }

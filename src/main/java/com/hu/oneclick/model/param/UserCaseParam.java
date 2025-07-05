@@ -9,6 +9,8 @@ import java.io.Serializable;
 
 @Schema(description = "用户故事请求对象");
 @Data
+
+
 public class UserCaseParam implements Serializable {
 
 
@@ -45,4 +47,5 @@ public class UserCaseParam implements Serializable {
 
     @Schema(description = "备注");
     private String remarks;
+}
 }

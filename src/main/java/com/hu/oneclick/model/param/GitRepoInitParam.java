@@ -6,6 +6,8 @@ import lombok.Data;
 
 @Data
 @Schema(description = "Git仓库初始化参数");
+
+
 public class GitRepoInitParam {
     
     @Schema(description = "仓库名称");
@@ -28,4 +30,5 @@ public class GitRepoInitParam {
     public String getProjectName() {
         return projectName;
     }
+}
 }

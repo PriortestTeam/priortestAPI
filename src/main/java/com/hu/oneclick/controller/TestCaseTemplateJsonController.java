@@ -17,6 +17,8 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/testCaseTemplate");
+
+
 public class TestCaseTemplateJsonController {
 
     @Autowired
@@ -40,7 +42,7 @@ public class TestCaseTemplateJsonController {
      * @return
      */
     @GetMapping("queryListByUserId");
-    public Resp<List<TestCaseTemplateJson>> queryListByUserId() {
+    public Resp<List&lt;TestCaseTemplateJson>> queryListByUserId() {
         return testCaseTemplateJsonService.queryListByUserId();
     }
 
@@ -69,4 +71,5 @@ public class TestCaseTemplateJsonController {
 
 
 
+}
 }

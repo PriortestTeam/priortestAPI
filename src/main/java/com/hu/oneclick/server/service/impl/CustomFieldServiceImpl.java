@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
  * @author qingyang
  */
 @Service
+
+
 public class CustomFieldServiceImpl implements CustomFieldService {
 
     private final static Logger logger = LoggerFactory.getLogger(CustomFieldServiceImpl.class);
@@ -59,16 +61,16 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     }
 
     @Override
-    public Resp<List<CustomField>> queryCustomList(CustomField customField) {
+    public Resp<List&lt;CustomField>> queryCustomList(CustomField customField) {
         customField.setUserId(jwtUserServiceImpl.getMasterId();
 
-        List<CustomField> customFields = null;
+        List&lt;CustomField> customFields = null;
         try {
             customFields = customFieldDao.queryAll(customField);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new Resp.Builder<List<CustomField>>().setData(customFields).total(customFields).ok();
+        return new Resp.Builder<List&lt;CustomField>>().setData(customFields).total(customFields).ok();
     }
 
     @Override
@@ -298,15 +300,15 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     }
 
     @Override
-    public Resp<List<Object>> getAllCustomField(CustomFieldDto customFieldDto) {
+    public Resp<List&lt;Object>> getAllCustomField(CustomFieldDto customFieldDto) {
 
         CustomField customField = new CustomField();
         customField.setProjectId(customFieldDto.getProjectId();
-        Resp<List<CustomField>> listResp = queryCustomList(customField);
+        Resp<List&lt;CustomField>> listResp = queryCustomList(customField);
         //获取该用户该项目下的用户字段
-        List<CustomField> data = listResp.getData();
+        List&lt;CustomField> data = listResp.getData();
         //过滤的list
-        List<CustomField> collect = new ArrayList<>();
+        List&lt;CustomField> collect = new ArrayList&lt;>();
         //按照scope分数据
         String scope = customFieldDto.getScope();
         if (StringUtils.isEmpty(scope) {
@@ -347,7 +349,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
 
         }
         //存储
-        List<Object> list = new ArrayList<>();
+        List&lt;Object> list = new ArrayList&lt;>();
 
         //获取对应scope下的字段类型
         for (CustomField field : collect) {
@@ -378,7 +380,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         }
 
 
-        return new Resp.Builder<List<Object>>().setData(list).ok();
+        return new Resp.Builder<List&lt;Object>>().setData(list).ok();
     }
 
     /**
@@ -399,7 +401,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         }
 
 
-        List<ViewDownChildParams> viewDownChildParams1 = viewDownChildParamsDao.queryList(viewDownChildParams);
+        List&lt;ViewDownChildParams> viewDownChildParams1 = viewDownChildParamsDao.queryList(viewDownChildParams);
 
         // 设置DefaultValues
         ViewScopeChildParams viewScopeChildParams = new ViewScopeChildParams();
@@ -438,9 +440,9 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             viewDownChildParamsDao.insert(viewDownChildParams);
         } else if (viewDownChildParams1.size() == 1) {
             String defaultValues = viewDownChildParams.getDefaultValues();
-            List<ViewScopeChildParams> childParams = JSON.parseArray(defaultValues, ViewScopeChildParams.class);
+            List&lt;ViewScopeChildParams> childParams = JSON.parseArray(defaultValues, ViewScopeChildParams.class);
             if (childParams == null) {
-                childParams = new ArrayList<>();
+                childParams = new ArrayList&lt;>();
             }
             childParams.add(viewScopeChildParams);
             viewDownChildParams.setDefaultValues(JSON.toJSONString(childParams);
@@ -481,4 +483,5 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         }
     }
 
+}
 }

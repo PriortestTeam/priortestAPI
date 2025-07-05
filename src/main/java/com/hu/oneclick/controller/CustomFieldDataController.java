@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Tag(name = "用户自定义字段存储值", description = "用户自定义字段存储值相关接口");
 @RequestMapping("CustomFieldData");
+
+
 public class CustomFieldDataController {
 
     @Autowired
@@ -34,7 +36,7 @@ public class CustomFieldDataController {
      */
     @PostMapping("getAllCustomField");
     @Operation(summary = "新建时获取所有用户字段");
-    public Resp<List<Object>> getAllCustomField(@RequestBody CustomFieldDto customFieldDto) {
+    public Resp<List&lt;Object>> getAllCustomField(@RequestBody CustomFieldDto customFieldDto) {
         return customFieldDataService.getAllCustomField(customFieldDto);
     }
 
@@ -49,9 +51,10 @@ public class CustomFieldDataController {
      */
     @GetMapping("getAllSysCustomField");
     @Operation(summary = "新建时获取所有系统字段");
-    public Resp<List<SysCustomField>> getAllSysCustomField(@RequestParam String scope) {
+    public Resp<List&lt;SysCustomField>> getAllSysCustomField(@RequestParam String scope) {
         return customFieldDataService.getAllSysCustomField(scope);
     }
 
 
+}
 }

@@ -8,6 +8,8 @@ import java.util.Date;
 
 @Schema(description = "版本Dto");
 @Data
+
+
 public class VersionDto implements Serializable {
     /**
      * 项目id
@@ -35,4 +37,5 @@ public class VersionDto implements Serializable {
     private Long id;
 
     private String version;
+}
 }

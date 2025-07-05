@@ -38,6 +38,8 @@ import java.util.Map;
 @RequestMapping("/bean/search");
 @Tag(name = "复杂查询统一管理", description = "复杂查询统一管理相关接口");
 @Slf4j
+
+
 public class BeanSearchController {
 
     private static final Logger log = LoggerFactory.getLogger(BeanSearchController.class);
@@ -82,7 +84,7 @@ public class BeanSearchController {
             return new Resp.Builder<PageInfo<?>>().ok();
         }
 
-        List<List<OneFilter>> lst = new ArrayList<>();
+        List&lt;List&lt;OneFilter>> lst = new ArrayList&lt;>();
 
         // 查询视图
         View view1 = viewService.getById(viewId);
@@ -92,15 +94,15 @@ public class BeanSearchController {
         if (CollUtil.isEmpty(lst) {
             return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(mapSearcher.searchAll(scopeClass, MapUtils.builder().build().ok();
         }
-        Map<String, Object> params = this.processParam(lst, projectId);
+        Map&lt;String, Object> params = this.processParam(lst, projectId);
 
-        List<Map<String, Object>> list = mapSearcher.searchAll(scopeClass, params);
+        List&lt;Map&lt;String, Object>> list = mapSearcher.searchAll(scopeClass, params);
         // 物理分页
         return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(list).ok();
     }
 
-    private Map<String, Object> processParam(List<List<OneFilter>> lst, String projectId){
-        Map<String, Object> params = new LinkedHashMap<>();
+    private Map&lt;String, Object> processParam(List&lt;List&lt;OneFilter>> lst, String projectId){
+        Map&lt;String, Object> params = new LinkedHashMap&lt;>();
         params.put("P0.projectId", projectId);
         params.put("P0.projectId-op", "eq");
 
@@ -109,7 +111,7 @@ public class BeanSearchController {
         gexpr.append("P0");
 
         int j =0;
-        for(List<OneFilter> oneFilters : lst){
+        for(List&lt;OneFilter> oneFilters : lst){
             gexpr.append("&(");
             for (int i = 0; i < oneFilters.size(); i++) {
                 String fieldName = StrUtil.format("A_{}_{}", j, i);
@@ -129,7 +131,7 @@ public class BeanSearchController {
 
         return params;
     }
-    private void processAllFilter(View view, List<List<OneFilter>> lst){
+    private void processAllFilter(View view, List&lt;List&lt;OneFilter>> lst){
         if(StringUtils.isNotEmpty(view.getParentId() && view.getLevel() > 0){
             View tempView = viewService.getById(view.getParentId();
             this.processAllFilter(tempView, lst);

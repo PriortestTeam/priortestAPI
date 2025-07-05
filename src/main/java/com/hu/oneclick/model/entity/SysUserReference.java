@@ -11,6 +11,8 @@ import lombok.Data;
  */
 @Schema(description="用户推荐表");
 @Data
+
+
 public class SysUserReference implements Serializable {
     /**
      * id
@@ -49,4 +51,5 @@ public class SysUserReference implements Serializable {
     private Boolean is_del;
 
     private static final long serialVersionUID = 1L;
+}
 }

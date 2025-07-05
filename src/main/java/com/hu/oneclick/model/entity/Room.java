@@ -10,6 +10,8 @@ import java.util.Date;
  */
 
 @Data
+
+
 public class Room implements Serializable {
     private static final long serialVersionUID = 870331260917684967L;
     /**
@@ -63,4 +65,5 @@ public class Room implements Serializable {
     private Boolean deleteFlag;
 
 
+}
 }

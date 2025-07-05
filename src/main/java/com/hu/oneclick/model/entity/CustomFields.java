@@ -15,6 +15,8 @@ import java.util.Date;
  */
 @Data
 @TableName("custom_fields");
+
+
 public class CustomFields implements Serializable {
     private static final long serialVersionUID = 870331260917684968L;
     /**
@@ -86,4 +88,5 @@ public class CustomFields implements Serializable {
 
     private Long linkedCustomFieldId;
 
+}
 }

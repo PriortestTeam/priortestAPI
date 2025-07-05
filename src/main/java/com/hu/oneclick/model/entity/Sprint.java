@@ -17,6 +17,8 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper=false);
+
+
 public class Sprint extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = -33132559253115264L;
 
@@ -64,4 +66,5 @@ public class Sprint extends AssignBaseEntity implements Serializable {
     @Schema(description = "扩展数据");
     private String sprintExpand;
 
+}
 }

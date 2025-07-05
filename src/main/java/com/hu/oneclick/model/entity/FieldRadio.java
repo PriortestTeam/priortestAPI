@@ -11,6 +11,8 @@ import java.io.Serializable;
  * @author makejava
  * @since 2020-12-04 15:38:40
  */
+
+
 public class FieldRadio extends CustomField implements Serializable {
     private static final long serialVersionUID = -46014189887598954L;
 
@@ -57,4 +59,5 @@ public class FieldRadio extends CustomField implements Serializable {
         this.defaultValue = defaultValue;
     }
 
+}
 }

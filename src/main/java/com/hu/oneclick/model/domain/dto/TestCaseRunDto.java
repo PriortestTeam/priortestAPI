@@ -13,6 +13,8 @@ import java.util.Date;
  */
 @Data
 @Component
+
+
 public class TestCaseRunDto {
     private Long testCaseId;
     private Long testCycleId;
@@ -24,4 +26,5 @@ public class TestCaseRunDto {
     private Long caseTotalPeriod;
     private Date stepUpdateTime;
     private int runFlag;
+}
 }

@@ -7,6 +7,8 @@ import java.io.Serializable;
 /**
  * @author qingyang
  */
+
+
 public class UserUseOpenProject extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4060874610596261708L;
 
@@ -37,4 +39,5 @@ public class UserUseOpenProject extends BaseEntity implements Serializable {
     public void setProjectId(String projectId) {
         this.projectId = projectId;
     }
+}
 }

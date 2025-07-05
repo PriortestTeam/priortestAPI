@@ -23,6 +23,8 @@ import java.util.List;
  * @since JDK 1.8.0
  */
 @Service
+
+
 public class SysUserOrderRecordImpl implements SysUserOrderRecordService {
 
     @Autowired
@@ -64,16 +66,16 @@ public class SysUserOrderRecordImpl implements SysUserOrderRecordService {
      * @Date: 2021/10/22
      */
     @Override
-    public Resp<List<SysUserOrderRecord>> getUserOrderRecord() {
+    public Resp<List&lt;SysUserOrderRecord>> getUserOrderRecord() {
 
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        List<SysUserOrder> sysUserOrders = userOrderService.listOrder(sysUser.getId();
+        List&lt;SysUserOrder> sysUserOrders = userOrderService.listOrder(sysUser.getId();
         for (SysUserOrder sysUserOrder : sysUserOrders) {
             calculateThisMonthSDiscount(sysUserOrder.getOrderId(), sysUser);
         }
-        List<SysUserOrderRecord> sysUserOrderRecords = sysUserOrderRecordDao.getUserOrderRecord(sysUser.getId();
+        List&lt;SysUserOrderRecord> sysUserOrderRecords = sysUserOrderRecordDao.getUserOrderRecord(sysUser.getId();
 
-        return new Resp.Builder<List<SysUserOrderRecord>>().setData(sysUserOrderRecords).ok();
+        return new Resp.Builder<List&lt;SysUserOrderRecord>>().setData(sysUserOrderRecords).ok();
     }
 
     /**
@@ -105,4 +107,5 @@ public class SysUserOrderRecordImpl implements SysUserOrderRecordService {
         sysUserOrderRecordDao.updateByPrimaryKeySelective(sysUserOrderRecord);
     }
 
+}
 }

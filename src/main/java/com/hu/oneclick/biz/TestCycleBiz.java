@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
+
+
 public class TestCycleBiz {
     @Autowired
     TestCycleDao testCycleDao;
@@ -48,8 +50,8 @@ public class TestCycleBiz {
         testCycleDao.update(new TestCycle(), updateWrapper);
     }
 
-    public List<Long> deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
-        List<Long> testCasesIds = new ArrayList<>();
+    public List&lt;Long> deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
+        List&lt;Long> testCasesIds = new ArrayList&lt;>();
 
         for (Long testCaseId : dto.getTestCaseIds() {
             // 删除关联的test_cycle_join_test_case表
@@ -69,4 +71,5 @@ public class TestCycleBiz {
 
         return testCasesIds;
     }
+}
 }

@@ -38,6 +38,8 @@ import java.util.*;
 @RestController
 @RequestMapping("function");
 @Slf4j
+
+
 public class FunctionController {
 
     @Autowired
@@ -69,7 +71,7 @@ public class FunctionController {
         try {
             Long roleId = 0L;
             String fc = "";
-            List<SysUserBusiness> roleList = userBusinessService.getBasicData(userId, "UserRole");
+            List&lt;SysUserBusiness> roleList = userBusinessService.getBasicData(userId, "UserRole");
             if (roleList != null && roleList.size() > 0) {
                 String value = roleList.get(0).getValue();
                 if (StringUtils.isNotEmpty(value) {
@@ -78,11 +80,11 @@ public class FunctionController {
                 }
             }
             //当前用户所拥有的功能列表，格式如：[1][2][5]
-            List<SysUserBusiness> funList = userBusinessService.getBasicData(roleId.toString(), "RoleFunctions");
+            List&lt;SysUserBusiness> funList = userBusinessService.getBasicData(roleId.toString(), "RoleFunctions");
             if (funList != null && funList.size() > 0) {
                 fc = funList.get(0).getValue();
             }
-            List<SysFunction> dataList = functionService.getRoleFunction(pNumber);
+            List&lt;SysFunction> dataList = functionService.getRoleFunction(pNumber);
             if (dataList.size() != 0) {
                 dataArray = getMenuByFunction(dataList, fc);
                 //增加首页菜单项
@@ -101,11 +103,11 @@ public class FunctionController {
         return new Resp.Builder<JSONArray>().setData(dataArray).ok();
     }
 
-    public JSONArray getMenuByFunction(List<SysFunction> dataList, String fc) throws Exception {
+    public JSONArray getMenuByFunction(List&lt;SysFunction> dataList, String fc) throws Exception {
         JSONArray dataArray = new JSONArray();
         for (SysFunction function : dataList) {
             JSONObject item = new JSONObject();
-            List<SysFunction> newList = functionService.getRoleFunction(function.getNumber();
+            List&lt;SysFunction> newList = functionService.getRoleFunction(function.getNumber();
             item.put("id", function.getId();
             item.put("text", function.getName();
             item.put("icon", function.getIcon();
@@ -140,7 +142,7 @@ public class FunctionController {
                                             HttpServletRequest request) throws Exception {
         JSONArray arr = new JSONArray();
         try {
-            List<SysFunction> dataListFun = functionService.findRoleFunction("0");
+            List&lt;SysFunction> dataListFun = functionService.findRoleFunction("0");
             //开始拼接json数据
             JSONObject outer = new JSONObject();
             outer.put("id", 0);
@@ -152,7 +154,7 @@ public class FunctionController {
             JSONArray dataArray = new JSONArray();
             if (null != dataListFun) {
                 //根据条件从列表里面移除"系统管理"
-                List<SysFunction> dataList = new ArrayList<>();
+                List&lt;SysFunction> dataList = new ArrayList&lt;>();
                 for (SysFunction fun : dataListFun) {
                     SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
                     dataList.add(fun);
@@ -167,7 +169,7 @@ public class FunctionController {
         return new Resp.Builder<JSONArray>().setData(arr).ok();
     }
 
-    public JSONArray getFunctionList(List<SysFunction> dataList,
+    public JSONArray getFunctionList(List&lt;SysFunction> dataList,
                                      String type,
                                      Long roleId,
                                      Long projectId,
@@ -200,7 +202,7 @@ public class FunctionController {
                     item.put("value", function.getId();
                     item.put("title", function.getName();
                     item.put("checked", checked);
-                    List<SysFunction> funList = functionService.findRoleFunction(function.getNumber();
+                    List&lt;SysFunction> funList = functionService.findRoleFunction(function.getNumber();
                     if (funList.size() > 0) {
                         JSONArray funArr = getFunctionList(funList, "RoleFunctions", roleId, projectId, userId);
                         item.put("children", funArr);
@@ -228,10 +230,10 @@ public class FunctionController {
     @Operation(summary = "根据id列表查找功能信息");
     public Resp<JSONObject> findByIds(@RequestParam("roleId") Long roleId) {
         try {
-            List<SysUserBusiness> list = userBusinessService.getBasicData(roleId.toString(), "RoleFunctions");
+            List&lt;SysUserBusiness> list = userBusinessService.getBasicData(roleId.toString(), "RoleFunctions");
             if (null != list && list.size() > 0) {
                 //按钮
-                Map<Long, String> btnMap = new HashMap<>();
+                Map&lt;Long, String> btnMap = new HashMap&lt;>();
                 String btnStr = list.get(0).getBtnStr();
                 if (StringUtils.isNotEmpty(btnStr) {
                     JSONArray btnArr = JSONArray.parseArray(btnStr);
@@ -246,7 +248,7 @@ public class FunctionController {
                 String funIds = list.get(0).getValue();
                 funIds = funIds.substring(1, funIds.length() - 1);
                 funIds = funIds.replace("][", ",");
-                List<SysFunction> dataList = functionService.findByIds(funIds);
+                List&lt;SysFunction> dataList = functionService.findByIds(funIds);
                 JSONObject outer = new JSONObject();
                 outer.put("total", dataList.size();
                 //存放数据json数组

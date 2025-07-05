@@ -13,6 +13,8 @@ import java.io.Serializable;
 @Data
 @Schema(description = "权限设置DTO");
 @JsonIgnoreProperties(ignoreUnknown = true);
+
+
 public class FunctionModelDTO  implements Serializable {
 
     @Schema(description = "模块id");
@@ -22,4 +24,5 @@ public class FunctionModelDTO  implements Serializable {
     private String btnStr;
 
 
+}
 }

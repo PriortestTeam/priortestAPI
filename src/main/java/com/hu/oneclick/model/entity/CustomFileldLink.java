@@ -21,6 +21,8 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
+
 public class CustomFileldLink implements Serializable {
 
     private static final long serialVersionUID = 870331260917684970L;

@@ -23,6 +23,8 @@ import java.util.List;
  * 管理平台用户
  */
 @Service
+
+
 public class PlatformUserServiceImpl implements PlatformUserService {
 
     private final static Logger logger = LoggerFactory.getLogger(SubUserServiceImpl.class);
@@ -59,7 +61,7 @@ public class PlatformUserServiceImpl implements PlatformUserService {
             platformUserDto.setManager(OneConstant.PLATEFORM_USER_TYPE.ORDINARY);
 
             if (sysUserDao.insert(platformUserDto) > 0){
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_PLATFORM_USER_SUCCESS.getCode(),
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_PLATFORM_USER_SUCCESS.getCode(),;
                         SysConstantEnum.CREATE_PLATFORM_USER_SUCCESS.getValue();
             }
             throw new BizException(SysConstantEnum.CREATE_PLATFORM_USER_FAILED.getCode(),
@@ -71,10 +73,10 @@ public class PlatformUserServiceImpl implements PlatformUserService {
     }
 
     @Override
-    public Resp<List<PlatformUserDto>> queryPlatformUsers(PlatformUserDto platformUserDto) {
-        List<PlatformUserDto>  list= sysUserDao.queryPlatformUsers(platformUserDto);
+    public Resp<List&lt;PlatformUserDto>> queryPlatformUsers(PlatformUserDto platformUserDto) {
+        List&lt;PlatformUserDto>  list= sysUserDao.queryPlatformUsers(platformUserDto);
 
-        return new Resp.Builder<List<PlatformUserDto>>().setData(list).total(list).ok();
+        return new Resp.Builder<List&lt;PlatformUserDto>>().setData(list).total(list).ok();
     }
 
     @Override
@@ -117,4 +119,5 @@ public class PlatformUserServiceImpl implements PlatformUserService {
             throw new BizException(SysConstantEnum.SUB_USERNAME_ERROR.getCode(),SysConstantEnum.SUB_USERNAME_ERROR.getValue();
         }
     }
+}
 }

@@ -8,6 +8,8 @@ import com.hu.oneclick.common.util.ServletUtils;
  *
  * @author snail
  */
+
+
 public class TableSupport {
     /**
      * 当前记录起始索引
@@ -39,4 +41,5 @@ public class TableSupport {
         pageDomain.setPageSize(Convert.toInt(ServletUtils.getParameter(PAGE_SIZE), 20);
         return pageDomain;
     }
+}
 }

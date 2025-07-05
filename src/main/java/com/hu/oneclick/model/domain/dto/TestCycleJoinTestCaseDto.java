@@ -15,6 +15,8 @@ import java.io.Serializable;
  * @Version 1.0
  */
 @Data
+
+
 public class TestCycleJoinTestCaseDto implements Serializable {
 
     private Long projectId;
@@ -39,4 +41,5 @@ public class TestCycleJoinTestCaseDto implements Serializable {
 
     private Boolean addedOn;
 
+}
 }

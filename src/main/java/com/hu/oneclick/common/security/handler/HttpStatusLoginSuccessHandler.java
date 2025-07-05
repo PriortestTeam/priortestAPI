@@ -13,6 +13,8 @@ import java.io.IOException;
  * @author qingyang
  */
 @Component
+
+
 public class HttpStatusLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
@@ -22,4 +24,5 @@ public class HttpStatusLoginSuccessHandler implements AuthenticationSuccessHandl
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write("{\"msg\":\"Login successful\"}");
     }
+}
 }

@@ -11,6 +11,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
+
+
 public class ExecuteTestCaseDto {
     private Long testCaseId;
     private Long testCycleId;
@@ -31,4 +33,5 @@ public class ExecuteTestCaseDto {
     private Date stepUpdateTime;
     private long caseRunDuration;
     private long caseTotalPeriod;
+}
 }

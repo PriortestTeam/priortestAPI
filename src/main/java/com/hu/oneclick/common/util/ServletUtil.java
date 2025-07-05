@@ -17,6 +17,8 @@ import java.io.IOException;
  * @author xiaohai
  * @date 2023/03/06
  */
+
+
 public class ServletUtil {
 
     /**
@@ -128,4 +130,5 @@ public class ServletUtil {
         String ajax = request.getParameter("__ajax");
         return StrUtil.containsAnyIgnoreCase(ajax, "json", "xml");
     }
+}
 }

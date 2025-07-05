@@ -10,6 +10,8 @@ import lombok.Data;
  */
 @Schema(description = "功能模块表");
 @Data
+
+
 public class SysFunction implements Serializable {
     /**
      * 主键

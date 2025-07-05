@@ -13,6 +13,8 @@ import java.util.List;
 /**
  * @author qingyang
  */
+
+
 public class SubUserPermissionDto implements VerifyParam,Serializable {
 
     private static final long serialVersionUID = -4201137787088714363L;
@@ -30,7 +32,7 @@ public class SubUserPermissionDto implements VerifyParam,Serializable {
     /**
      * 添加使用
      */
-    private List<SysProjectPermission> projectPermissions;
+    private List&lt;SysProjectPermission> projectPermissions;
 
     @Override
     public void verify() throws BizException {
@@ -57,11 +59,12 @@ public class SubUserPermissionDto implements VerifyParam,Serializable {
         this.project = project;
     }
 
-    public List<SysProjectPermission> getProjectPermissions() {
+    public List&lt;SysProjectPermission> getProjectPermissions() {
         return projectPermissions;
     }
 
-    public void setProjectPermissions(List<SysProjectPermission> projectPermissions) {
+    public void setProjectPermissions(List&lt;SysProjectPermission> projectPermissions) {
         this.projectPermissions = projectPermissions;
     }
+}
 }

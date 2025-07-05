@@ -12,6 +12,8 @@ import java.util.Date;
  */
 @Schema(description="系统配置表");
 @Data
+
+
 public class SystemConfig implements Serializable {
     /**
      * id
@@ -64,4 +66,5 @@ public class SystemConfig implements Serializable {
 
 
     private static final long serialVersionUID = 1L;
+}
 }

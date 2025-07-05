@@ -16,6 +16,8 @@ import java.io.Serializable;
 @Setter
 @Getter
 @Schema(description = "测试周期Param");
+
+
 public class TestCycleParam implements Serializable {
 
     private static final long serialVersionUID = 5856652375484820133L;
@@ -30,4 +32,5 @@ public class TestCycleParam implements Serializable {
     @Schema(description = "项目周期ID");
     private Long testCycleId;
 
+}
 }

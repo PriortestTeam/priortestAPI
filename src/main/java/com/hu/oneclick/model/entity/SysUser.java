@@ -15,6 +15,8 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper=false);
+
+
 public class SysUser extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -67242942971294342L;
 

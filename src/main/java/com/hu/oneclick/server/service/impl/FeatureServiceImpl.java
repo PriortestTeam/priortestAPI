@@ -38,6 +38,8 @@ import cn.zhxu.bs.MapSearcher;
  * @author qingyang
  */
 @Service
+
+
 public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> implements FeatureService {
 
     private final static Logger logger = LoggerFactory.getLogger(FeatureServiceImpl.class);
@@ -64,7 +66,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
     private ViewFilterService viewFilterService;
 
     @Override
-    public List<Feature> list(FeatureParam param) {
+    public List&lt;Feature> list(FeatureParam param) {
         return this.list(param.getQueryCondition();
     }
 
@@ -116,8 +118,8 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
     }
 
     @Override
-    public void clone(List<Long> ids) {
-        List<Feature> featureList = new ArrayList<>();
+    public void clone(List&lt;Long> ids) {
+        List&lt;Feature> featureList = new ArrayList&lt;>();
         for (Long id : ids) {
             Feature feature = baseMapper.selectById(id);
             if (feature == null) {
@@ -134,16 +136,16 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
     }
 
     @Override
-    public List<Map<String, String>> getFeatureByTitle(String title, Long projectId) {
+    public List&lt;Map&lt;String, String>> getFeatureByTitle(String title, Long projectId) {
         QueryWrapper<Feature> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .like(Feature::getTitle, title)
                 .eq(Feature::getProjectId, projectId);
-        List<Feature> features = baseMapper.selectList(queryWrapper);
+        List&lt;Feature> features = baseMapper.selectList(queryWrapper);
 
         return features.stream()
                 .map(feature -> {
-                    Map<String, String> map = new HashMap<>();
+                    Map&lt;String, String> map = new HashMap&lt;>();
                     map.put("id", feature.getId().toString();
                     map.put("title", feature.getTitle();
                     return map;
@@ -152,9 +154,9 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
     }
 
     //    @Override
-//    public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
-//        List<LeftJoinDto> select = featureDao.queryTitles(projectId, title, jwtUserService.getMasterId();
-//        return new Resp.Builder<List<LeftJoinDto>>().setData(select).totalSize(select.size().ok();
+//    public Resp<List&lt;LeftJoinDto>> queryTitles(String projectId, String title) {
+//        List&lt;LeftJoinDto> select = featureDao.queryTitles(projectId, title, jwtUserService.getMasterId();
+//        return new Resp.Builder<List&lt;LeftJoinDto>>().setData(select).totalSize(select.size().ok();
 //    }
 
 
@@ -172,17 +174,17 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //        Feature feature = featureDao.queryById(id, masterId);
 
 //        //查询自定义数据
-//        List<CustomFieldData> customFieldData = customFieldDataService.featureRenderingCustom(id);
-//        List<Sprint> sprints = queryBindSprintList(id);
+//        List&lt;CustomFieldData> customFieldData = customFieldDataService.featureRenderingCustom(id);
+//        List&lt;Sprint> sprints = queryBindSprintList(id);
 //        feature.setSprints(sprints);
 //        feature.setStatus(analysisStatus(sprints);
 //        feature.setCustomFieldDatas(customFieldData);
 //        return new Resp.Builder<Feature>().setData(feature).ok();
 //    }
 
-//    private Integer analysisStatus(List<Sprint> sprints) {
+//    private Integer analysisStatus(List&lt;Sprint> sprints) {
 //        Date date = new Date();
-//        if (sprints == null
+//        if (sprints == null) {
 //                || sprints.size() <= 0) {
 //            return 0;
 //        }
@@ -214,7 +216,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //            }
 //        }
 
-//        if (beginDate == null
+//        if (beginDate == null) {
 //                || endDate == null
 //                || !DateUtil.compareDate(endDate, date) {
 //            //关闭状态：结束日期< 当前日期
@@ -233,20 +235,20 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //    }
 
 //    @Override
-//    public Resp<List<Feature>> queryList(FeatureDto feature) {
+//    public Resp<List&lt;Feature>> queryList(FeatureDto feature) {
 //        feature.queryListVerify();
 //        String masterId = jwtUserService.getMasterId();
 //        feature.setUserId(masterId);
 
 //        feature.setFilter(queryFilterService.mysqlFilterProcess(feature.getViewTreeDto(), masterId);
 
-//        List<Feature> select = featureDao.queryList(feature);
+//        List&lt;Feature> select = featureDao.queryList(feature);
 //        select.forEach(this::accept);
-//        return new Resp.Builder<List<Feature>>().setData(select).total(select).ok();
+//        return new Resp.Builder<List&lt;Feature>>().setData(select).total(select).ok();
 //    }
 
 //    private void accept(Feature feature) {
-//        List<Sprint> sprints = queryBindSprintList(feature.getId();
+//        List&lt;Sprint> sprints = queryBindSprintList(feature.getId();
 //        feature.setSprints(sprints);
 //        feature.setStatus(analysisStatus(sprints);
 //    }
@@ -293,7 +295,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 
 
 ////            if (insertFlag > 0) {
-////                List<CustomFieldData> customFieldDatas = feature.getCustomFieldDatas();
+////                List&lt;CustomFieldData> customFieldDatas = feature.getCustomFieldDatas();
 ////                insertFlag = customFieldDataService.insertFeatureCustomData(customFieldDatas, feature);
 ////            }
 
@@ -334,8 +336,8 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //            return;
 //        }
 
-//        List<Sprint> sprints = feature.getSprints();
-//        List<FeatureJoinSprint> featureJoinSprints = new ArrayList<>(sprints.size();
+//        List&lt;Sprint> sprints = feature.getSprints();
+//        List&lt;FeatureJoinSprint> featureJoinSprints = new ArrayList&lt;>(sprints.size();
 
 //        Set<String> strings = new HashSet<>(sprints.size();
 //        for (Sprint sprint : sprints) {
@@ -387,12 +389,12 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //    }
 
 //    @Override
-//    public Resp<List<Sprint>> queryBindSprints(String featureId) {
-//        List<Sprint> sprints = queryBindSprintList(featureId);
-//        return new Resp.Builder<List<Sprint>>().setData(sprints).total(sprints.size().ok();
+//    public Resp<List&lt;Sprint>> queryBindSprints(String featureId) {
+//        List&lt;Sprint> sprints = queryBindSprintList(featureId);
+//        return new Resp.Builder<List&lt;Sprint>>().setData(sprints).total(sprints.size().ok();
 //    }
 
-//    private List<Sprint> queryBindSprintList(String featureId) {
+//    private List&lt;Sprint> queryBindSprintList(String featureId) {
 //        return featureJoinSprintDao.queryBindSprints(featureId);
 //    }
 
@@ -421,10 +423,10 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //    }
 
 //    @Override
-//    public Resp<List<Sprint>> querySprintList(String title) {
+//    public Resp<List&lt;Sprint>> querySprintList(String title) {
 //        String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
-//        List<Sprint> selects = sprintDao.querySprintList(title, projectId);
-//        return new Resp.Builder<List<Sprint>>().setData(selects).totalSize(selects.size().ok();
+//        List&lt;Sprint> selects = sprintDao.querySprintList(title, projectId);
+//        return new Resp.Builder<List&lt;Sprint>>().setData(selects).totalSize(selects.size().ok();
 //    }
 
 //    /**
@@ -444,7 +446,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //    }
 
 //    @Override
-//    public List<Feature> findAllByFeature(Feature feature) {
+//    public List&lt;Feature> findAllByFeature(Feature feature) {
 //        return featureDao.findAllByFeature(feature);
 //    }
 
@@ -464,21 +466,21 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
     public PageInfo<Feature> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize) {
         try {
             // 获取视图过滤参数
-            Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
+            Map&lt;String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
             
             if (filterParams == null) {
                 // 如果没有过滤条件，返回空分页结果
-                return new PageInfo<>(new ArrayList<>();
+                return new PageInfo<>(new ArrayList&lt;>();
             }
             
             // 使用BeanSearcher进行查询，使用feature作为查询类
             Class<?> featureClass = Class.forName("com.hu.oneclick.model.entity.Feature");
             
             // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
-            List<Map<String, Object>> result = mapSearcher.searchAll(featureClass, filterParams);
+            List&lt;Map&lt;String, Object>> result = mapSearcher.searchAll(featureClass, filterParams);
             
             // 转换为 Feature 对象
-            List<Feature> featureList = result.stream()
+            List&lt;Feature> featureList = result.stream()
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Feature.class)
                 .collect(Collectors.toList();
             
@@ -486,7 +488,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
             return PageUtil.manualPaging(featureList);
         } catch (Exception e) {
             logger.error("使用BeanSearcher查询故事失败，viewId: {}, projectId: {}", viewId, projectId, e);
-            return new PageInfo<>(new ArrayList<>();
+            return new PageInfo<>(new ArrayList&lt;>();
         }
     }
 
@@ -512,7 +514,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
         logger.info("queryByFieldAndValue - 查询参数: tableName={}, fieldNameEn={}, value={}, projectId={}", tableName, fieldNameEn, value, projectId);
         
         // 4. 使用 DAO 方法查询数据
-        List<Map<String, Object>> result = viewDao.queryRecordsByScope(
+        List&lt;Map&lt;String, Object>> result = viewDao.queryRecordsByScope(
             tableName,
             fieldNameEn,
             value,
@@ -539,7 +541,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
         logger.info("queryByFieldAndValue - 总记录数: {}", total);
         
         // 6. 转 bean
-        List<Feature> featureList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Feature.class).collect(Collectors.toList();
+        List&lt;Feature> featureList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Feature.class).collect(Collectors.toList();
         
         // 7. 构造 PageInfo
         PageInfo<Feature> pageInfo = new PageInfo<>(featureList);
@@ -564,7 +566,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
     private PageInfo<Feature> listWithViewFilterLogic(FeatureParam param, int pageNum, int pageSize) {
         try {
             // 获取视图过滤参数
-            Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
+            Map&lt;String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
                 param.getViewId(), param.getProjectId().toString();
             
             if (filterParams == null) {
@@ -575,10 +577,10 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 
             // 使用BeanSearcher进行查询
             Class<?> featureClass = Class.forName("com.hu.oneclick.model.entity.Feature");
-            List<Map<String, Object>> result = mapSearcher.searchAll(featureClass, filterParams);
+            List&lt;Map&lt;String, Object>> result = mapSearcher.searchAll(featureClass, filterParams);
             
             // 转换为 Feature 对象
-            List<Feature> featureList = result.stream()
+            List&lt;Feature> featureList = result.stream()
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Feature.class)
                 .collect(Collectors.toList();
             
@@ -587,7 +589,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
             int startIndex = (pageNum - 1) * pageSize;
             int endIndex = Math.min(startIndex + pageSize, total);
             
-            List<Feature> pageData = new ArrayList<>();
+            List&lt;Feature> pageData = new ArrayList&lt;>();
             if (startIndex < total) {
                 pageData = featureList.subList(startIndex, endIndex);
             }
@@ -610,7 +612,8 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
     private PageInfo<Feature> list(FeatureParam param, int pageNum, int pageSize) {
         // 手动设置分页参数
         PageUtil.startPage(pageNum, pageSize);
-        List<Feature> dataList = this.list(param);
+        List&lt;Feature> dataList = this.list(param);
         return PageInfo.of(dataList);
     }
+}
 }

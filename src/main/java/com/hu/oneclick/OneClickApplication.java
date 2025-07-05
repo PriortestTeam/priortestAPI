@@ -13,9 +13,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @MapperScan("com.hu.oneclick.**.dao");
 @EnableScheduling
 @EnableSpringUtil
+
+
 public class OneClickApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(OneClickApplication.class, args);
     }
+}
 }

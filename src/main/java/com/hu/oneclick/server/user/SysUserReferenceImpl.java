@@ -13,6 +13,8 @@ import java.util.Date;
  * @since JDK 1.8.0
  */
 @Service
+
+
 public class SysUserReferenceImpl implements SysUserReferenceService {
 
     @Autowired
@@ -51,4 +53,5 @@ public class SysUserReferenceImpl implements SysUserReferenceService {
         return sysUserReferenceDao.getReferencePersonNo(sysUser.getId(),startTime,endTime);
 
     }
+}
 }

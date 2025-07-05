@@ -13,6 +13,8 @@ import java.sql.Date;
 @Setter
 @Data
 @TableName("uitest_git_settings");
+
+
 public class UITestGitSettings {
 
     @TableId

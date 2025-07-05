@@ -5,6 +5,8 @@ import com.hu.oneclick.model.entity.TestCase;
 /**
  * @author qingyang
  */
+
+
 public class TestCaseDto extends TestCase {
     private ViewTreeDto viewTreeDto;
 
@@ -25,4 +27,5 @@ public class TestCaseDto extends TestCase {
     public void setViewTreeDto(ViewTreeDto viewTreeDto) {
         this.viewTreeDto = viewTreeDto;
     }
+}
 }

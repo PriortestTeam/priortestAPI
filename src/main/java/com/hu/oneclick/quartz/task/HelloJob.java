@@ -10,6 +10,8 @@ import jakarta.annotation.Resource;
 import java.util.Date;
 
 @Slf4j
+
+
 public class HelloJob extends QuartzJobBean {
 
     @Resource
@@ -28,4 +30,5 @@ public class HelloJob extends QuartzJobBean {
         log.info("成功");
     }
 
+}
 }

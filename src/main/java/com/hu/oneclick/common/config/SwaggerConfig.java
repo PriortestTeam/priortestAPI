@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Configuration;
  * @date 2023/03/02
  */
 @Configuration
+
+
 public class SwaggerConfig {
 
     @Bean
@@ -41,4 +43,5 @@ public class SwaggerConfig {
                     .name("emailId")
                     .description("emailId");
     }
+}
 }

@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
+
+
 public class AssignBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -1025285783773774055L;
@@ -54,4 +56,5 @@ public class AssignBaseEntity implements Serializable {
     //@Schema(description = "逻辑删除");
     //private Integer isDelete;
 
+}
 }

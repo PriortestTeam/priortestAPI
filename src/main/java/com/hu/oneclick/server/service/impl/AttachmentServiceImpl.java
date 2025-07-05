@@ -56,16 +56,16 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Resp<List<Attachment>> list(String type, String linkId) {
+    public Resp<List&lt;Attachment>> list(String type, String linkId) {
         if (StringUtils.isEmpty(type) || StringUtils.isEmpty(linkId) {
-            return new Resp.Builder<List<Attachment>>().buildResult("参数不能为空！");
+            return new Resp.Builder<List&lt;Attachment>>().buildResult("参数不能为空！");
         }
         Attachment attachment = new Attachment();
         attachment.setAreaType(type);
         attachment.setUserId(jwtUserService.getMasterId();
         attachment.setLinkId(linkId);
-        List<Attachment> attachments = attachmentDao.queryAll(attachment);
-        return new Resp.Builder<List<Attachment>>().setData(attachments).total(attachments).ok();
+        List&lt;Attachment> attachments = attachmentDao.queryAll(attachment);
+        return new Resp.Builder<List&lt;Attachment>>().setData(attachments).total(attachments).ok();
     }
 
     @Override
@@ -208,16 +208,16 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Resp<List<Map<String, Object>>> getUserAttachment() {
+    public Resp<List&lt;Map&lt;String, Object>>> getUserAttachment() {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        List<Map<String, Object>> list = attachmentDao.getUserAttachment(sysUser.getId(), OneConstant.AREA_TYPE.SIGNOFFSIGN);
-        for (Map<String, Object> map : list) {
+        List&lt;Map&lt;String, Object>> list = attachmentDao.getUserAttachment(sysUser.getId(), OneConstant.AREA_TYPE.SIGNOFFSIGN);
+        for (Map&lt;String, Object> map : list) {
             String id = String.valueOf(map.get("id");
             map.put("id", id);
         }
 
 
-        return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
+        return new Resp.Builder<List&lt;Map&lt;String, Object>>>().setData(list).ok();
     }
 
     @Override
@@ -226,4 +226,5 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
 
+}
 }

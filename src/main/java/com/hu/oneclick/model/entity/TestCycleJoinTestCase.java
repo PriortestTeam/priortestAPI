@@ -11,6 +11,8 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true);
 @Data
 @Component
+
+
 public class TestCycleJoinTestCase extends AssignBaseEntity implements Serializable {
 
 
@@ -35,4 +37,5 @@ public class TestCycleJoinTestCase extends AssignBaseEntity implements Serializa
     private JSONObject testCaseContent;
 
     private long caseTotalPeriod;
+}
 }

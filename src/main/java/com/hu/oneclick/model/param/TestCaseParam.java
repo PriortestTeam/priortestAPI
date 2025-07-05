@@ -17,6 +17,8 @@ import java.util.List;
 @Setter
 @Getter
 @Schema(description = "测试用例Param");
+
+
 public class TestCaseParam implements Serializable {
 
     private static final long serialVersionUID = -3732091770605587614L;
@@ -28,9 +30,10 @@ public class TestCaseParam implements Serializable {
     @NotNull(message = "项目ID不能为空");
     private Long projectId;
 
-    private List<Long> testCaseIdList;
+    private List&lt;Long> testCaseIdList;
 
     @Schema(description = "视图ID，用于复杂查询过滤");
     private String viewId;
 
+}
 }

@@ -12,6 +12,8 @@ import java.io.Serializable;
  * @Date: 2023/5/22
  */
 @Data
+
+
 public class ProjectManageParam implements Serializable {
 
     private Long roomId;
@@ -24,4 +26,5 @@ public class ProjectManageParam implements Serializable {
 
         return queryWrapper;
     }
+}
 }

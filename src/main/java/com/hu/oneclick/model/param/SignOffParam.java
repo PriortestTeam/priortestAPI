@@ -10,6 +10,8 @@ import java.util.Map;
 
 @Data
 @Schema(description = "签收参数");
+
+
 public class SignOffParam {
     @Schema(description = "项目id", example = "1234567890");
     @NotNull
@@ -25,7 +27,7 @@ public class SignOffParam {
 
     @Schema(description = "测试周期的标题", example = "[{testcycleId:'',testcycleTitle:''}]");
     @NotNull
-    private List<Map<String, String>> testCycle;
+    private List&lt;Map&lt;String, String>> testCycle;
 
     @Schema(description = "缺陷的状态", example = "修改中,关闭");
     @NotNull
@@ -42,4 +44,5 @@ public class SignOffParam {
     @Schema(description = "当前发布");
     @NotNull
     private int currentRelease;
+}
 }

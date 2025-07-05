@@ -10,7 +10,10 @@ import java.util.Date;
  * @since JDK 1.8.0
  */
 @Data
+
+
 public class SysUserTokenDto {
     private Date expirationTime;
     private String tokenName;
+}
 }

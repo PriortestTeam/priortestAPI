@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+
+
 public class RoleFunctionServiceImpl implements RoleFunctionService {
 
     private final static Logger logger = LoggerFactory.getLogger(RoleFunctionServiceImpl.class);
@@ -31,4 +33,5 @@ public class RoleFunctionServiceImpl implements RoleFunctionService {
     }
 
 
+}
 }

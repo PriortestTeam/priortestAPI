@@ -24,6 +24,8 @@ import java.util.List;
 @Tag(name = "系统配置", description = "系统配置相关接口");
 @RestController
 @RequestMapping("systemConfig");
+
+
 public class SystemConfigController {
 
     @Autowired
@@ -65,9 +67,10 @@ public class SystemConfigController {
 
     @GetMapping("getAllUi");
     @Operation(summary = "查所有ui");
-    public Resp<List<SystemConfig>> getAllUi() {
-        List<SystemConfig> data = systemConfigService.getAllUi();
-        return new Resp.Builder<List<SystemConfig>>().setData(data).ok();
+    public Resp<List&lt;SystemConfig>> getAllUi() {
+        List&lt;SystemConfig> data = systemConfigService.getAllUi();
+        return new Resp.Builder<List&lt;SystemConfig>>().setData(data).ok();
     }
 
+}
 }

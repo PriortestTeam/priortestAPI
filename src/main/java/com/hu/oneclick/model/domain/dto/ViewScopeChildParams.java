@@ -17,9 +17,10 @@ public class ViewScopeChildParams implements Serializable {
     /**
      * 下边几个参数，下拉选项框使用
      */
-    private List<ViewScopeChildParams> selectChild;
+    private List&lt;ViewScopeChildParams> selectChild;
     private String optionValue;
     private String optionValueCn;
 
 
+}
 }

@@ -7,6 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
+
+
 public class RegisterBody {
   /**
    * 邮箱
@@ -34,4 +36,5 @@ public class RegisterBody {
    * 行业
    */
   private String industry;
+}
 }

@@ -48,6 +48,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+
+
 public class CustomFieldsServiceImpl implements CustomFieldsService {
 
     @NonNull
@@ -58,20 +60,20 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     private final JwtUserServiceImpl jwtUserServiceImpl;
 
     @Override
-    public Resp<List<CustomFieldVo>> queryCustomList(CustomFieldDto customFieldDto) {
+    public Resp<List&lt;CustomFieldVo>> queryCustomList(CustomFieldDto customFieldDto) {
         CustomFields customField = new CustomFields();
         customField.setProjectId(NumberUtils.toLong(customFieldDto.getProjectId();
-        List<CustomFields> customFields = customFieldsDao.queryCustomList(customField);
+        List&lt;CustomFields> customFields = customFieldsDao.queryCustomList(customField);
 //        PageInfo<CustomFields> pageInfo = new PageInfo<>(customFields);
         Set<Long> customFieldIds = customFields.stream().map(CustomFields::getCustomFieldId).collect(Collectors.toSet();
-        List<CustomFileldLink> customFileldLinkList = Lists.newArrayList();
-        Map<Long, List<CustomFileldLink>> listMap = Maps.newHashMap();
+        List&lt;CustomFileldLink> customFileldLinkList = Lists.newArrayList();
+        Map&lt;Long, List&lt;CustomFileldLink>> listMap = Maps.newHashMap();
         if (!ObjectUtils.isEmpty(customFieldIds) {
             customFileldLinkList = customFileldLinkDao.findByCustomFieldIds(customFieldIds);
             listMap = customFileldLinkList.stream().collect(Collectors.groupingBy(CustomFileldLink::getCustomFieldId);
         }
 
-        List<CustomFieldVo> resList = Lists.newArrayList();
+        List&lt;CustomFieldVo> resList = Lists.newArrayList();
         for (CustomFields field : customFields) {
             CustomFieldVo customFieldVo = new CustomFieldVo();
             BeanUtils.copyProperties(field, customFieldVo);
@@ -80,9 +82,9 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             BeanUtils.copyProperties(field, attributes);
             customFieldVo.setAttributes(attributes);
 
-            List<ComponentAttributesVo> componentAttributes = Lists.newArrayList();
+            List&lt;ComponentAttributesVo> componentAttributes = Lists.newArrayList();
 
-            List<CustomFileldLink> fileldLinks = listMap.get(field.getCustomFieldId();
+            List&lt;CustomFileldLink> fileldLinks = listMap.get(field.getCustomFieldId();
             if (!ObjectUtils.isEmpty(fileldLinks) {
                 for (CustomFileldLink fileldLink : fileldLinks) {
                     ComponentAttributesVo componentAttributesVo = new ComponentAttributesVo();
@@ -95,7 +97,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             resList.add(customFieldVo);
         }
 
-        return new Resp.Builder<List<CustomFieldVo>>().setData(resList).total(customFields).ok();
+        return new Resp.Builder<List&lt;CustomFieldVo>>().setData(resList).total(customFields).ok();
     }
 
 
@@ -112,7 +114,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         customField.setCustomFieldId(SnowFlakeUtil.getFlowIdInstance().nextId();
         int insertSelective = customFieldsDao.insert(customField);
         if (insertSelective > 0) {
-            List<CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
+            List&lt;CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
             int insertBatch = customFileldLinkDao.insertBatch(customFileldLinkList);
             insertSelective += insertBatch;
         }
@@ -138,7 +140,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         int row = customFieldsDao.updateByPrimaryKeySelective(customField);
 
         if (row > 0) {
-            List<CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
+            List&lt;CustomFileldLink> customFileldLinkList = getCustomFileldLinkList(customFieldVo, customField);
             // 先根据customFieldsId删除数据再新增
             customFileldLinkDao.delete(new LambdaQueryWrapper<CustomFileldLink>().eq(CustomFileldLink::getCustomFieldId, customField.getCustomFieldId();
             int insertBatch = customFileldLinkDao.insertBatch(customFileldLinkList);
@@ -156,18 +158,18 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     }
 
     @Override
-    public Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
-        List<CustomFileldLinkVo> list = customFieldsDao.getAllCustomList(customFieldDto);
-        List<CustomFileldLinkVo> fields = list.stream().filter(obj -> !obj.getType().equals("sCustom").collect(Collectors.toList();
-        List<CustomFileldLinkVo> field_lnk = list.stream().filter(obj -> obj.getType().equals("sCustom").collect(Collectors.toList();
+    public Resp<List&lt;CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
+        List&lt;CustomFileldLinkVo> list = customFieldsDao.getAllCustomList(customFieldDto);
+        List&lt;CustomFileldLinkVo> fields = list.stream().filter(obj -> !obj.getType().equals("sCustom").collect(Collectors.toList();
+        List&lt;CustomFileldLinkVo> field_lnk = list.stream().filter(obj -> obj.getType().equals("sCustom").collect(Collectors.toList();
 
         for (var field : fields) {
-            List<CustomFileldLinkVo> vos = field_lnk.stream().filter(obj -> obj.getCustomFieldLinkId().compareTo(field.getCustomFieldLinkId() == 0)
+            List&lt;CustomFileldLinkVo> vos = field_lnk.stream().filter(obj -> obj.getCustomFieldLinkId().compareTo(field.getCustomFieldLinkId() == 0)
                 .collect(Collectors.toList();
             if (!vos.isEmpty() {
-                List<Map<String, String>> child = new ArrayList<>();
+                List&lt;Map&lt;String, String>> child = new ArrayList&lt;>();
                 for (CustomFileldLinkVo vo : vos) {
-                    child.add(new HashMap<>() {{
+                    child.add(new HashMap&lt;>() {{
                         put("customFieldId", vo.getCustomFieldId().toString();
                         put("projectId", vo.getProjectId().toString();
                         put("type", vo.getType();
@@ -180,7 +182,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
 
         // 特殊处理：当 scopeId=7000001 时，将 version 字段拆分成两个字段
         if (customFieldDto.getScopeId() != null && customFieldDto.getScopeId() == 7000001L) {
-            List<CustomFileldLinkVo> processedFields = new ArrayList<>();
+            List&lt;CustomFileldLinkVo> processedFields = new ArrayList&lt;>();
             
             for (CustomFileldLinkVo field : fields) {
                 // 检查是否是 version 字段
@@ -203,10 +205,10 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                 }
             }
             
-            return new Resp.Builder<List<CustomFileldLinkVo>>().setData(processedFields).ok();
+            return new Resp.Builder<List&lt;CustomFileldLinkVo>>().setData(processedFields).ok();
         }
 
-        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(fields).ok();
+        return new Resp.Builder<List&lt;CustomFileldLinkVo>>().setData(fields).ok();
     }
     
     /**
@@ -235,40 +237,40 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     }
 
     @Override
-    public List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId) {
+    public List&lt;CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId) {
 
         return customFieldsDao.getAllCustomListByScopeId(scopeId);
     }
 
     @Override
-    public Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName) {
-        List<CustomFieldPossBileDto> list = customFieldsDao.getPossBile(fieldName);
-        return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(list).ok();
+    public Resp<List&lt;CustomFieldPossBileDto>> getPossBile(String fieldName) {
+        List&lt;CustomFieldPossBileDto> list = customFieldsDao.getPossBile(fieldName);
+        return new Resp.Builder<List&lt;CustomFieldPossBileDto>>().setData(list).ok();
     }
 
     @Override
-    public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
-        List<CustomFileldLinkVo> dropDownBox = customFieldsDao.getDropDownBox(customFieldDto);
+    public Resp<List&lt;CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
+        List&lt;CustomFileldLinkVo> dropDownBox = customFieldsDao.getDropDownBox(customFieldDto);
 
-        List<CustomFileldLinkVo> fieldes = dropDownBox.stream().filter(v -> new BigInteger(v.getCustomFieldLinkId().toString()
+        List&lt;CustomFileldLinkVo> fieldes = dropDownBox.stream().filter(v -> new BigInteger(v.getCustomFieldLinkId().toString()
             .compareTo(BigInteger.ZERO) == 0).collect(Collectors.toList();
         for (var vo : fieldes) {
             dropDownBox.stream().filter(vo1 -> Objects.compare(new BigInteger(vo1.getCustomFieldLinkId().toString(),
                     new BigInteger(vo.getCustomFieldId().toString(), BigInteger::compareTo) == 0)
-                .findFirst().ifPresent(vo2 -> vo.setChild(new HashMap<>() {{
+                .findFirst().ifPresent(vo2 -> vo.setChild(new HashMap&lt;>() {{
                     put("type", vo2.getType();
                     put("possibleValue", vo2.getPossibleValue();
                     put("projectId", vo2.getProjectId();
                 }});
         }
 
-        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(fieldes).ok();
-//        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(dropDownBox).ok();
+        return new Resp.Builder<List&lt;CustomFileldLinkVo>>().setData(fieldes).ok();
+//        return new Resp.Builder<List&lt;CustomFileldLinkVo>>().setData(dropDownBox).ok();
     }
 
 
-    private List<CustomFileldLink> getCustomFileldLinkList(CustomFieldVo customFieldVo, CustomFields customField) {
-        List<CustomFileldLink> customFileldLinkList = Optional.ofNullable(customFieldVo.getComponentAttributes()
+    private List&lt;CustomFileldLink> getCustomFileldLinkList(CustomFieldVo customFieldVo, CustomFields customField) {
+        List&lt;CustomFileldLink> customFileldLinkList = Optional.ofNullable(customFieldVo.getComponentAttributes()
             .orElse(Lists.newArrayList().stream().map(item ->
                 new CustomFileldLink(SnowFlakeUtil.getFlowIdInstance().nextId(),
                     customField.getCustomFieldId(),
@@ -361,4 +363,5 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             }
         }
     }
+}
 }

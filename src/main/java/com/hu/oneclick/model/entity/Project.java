@@ -20,6 +20,8 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper=false);
+
+
 public class Project extends BaseEntity implements VerifyParam, Serializable {
     private static final long serialVersionUID = -54866876049537399L;
 
@@ -78,12 +80,12 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
      */
 //    private String operationAuthIds;
 
-//    List<SysOperationAuthority> sysOperationAuthorities;
+//    List&lt;SysOperationAuthority> sysOperationAuthorities;
 
     /**
      * 自定义字段值
      */
-//    private List<CustomFieldData> customFieldDatas;
+//    private List&lt;CustomFieldData> customFieldDatas;
 
     @Override
     public void verify() throws BizException {
@@ -94,4 +96,5 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
 
 
 
+}
 }

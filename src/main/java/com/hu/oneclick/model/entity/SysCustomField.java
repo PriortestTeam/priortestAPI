@@ -11,6 +11,8 @@ import java.io.Serializable;
  * @since 2021-04-11 14:40:13
  */
 @Data
+
+
 public class SysCustomField implements Serializable {
     private static final long serialVersionUID = 680119388243867579L;
 
@@ -59,4 +61,5 @@ public class SysCustomField implements Serializable {
     private int allowAddedValue;
     private int sort;
 
+}
 }

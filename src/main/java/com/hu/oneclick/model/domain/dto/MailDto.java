@@ -10,6 +10,8 @@ import java.util.Map;
  *  邮件接收参数
  */
 @Data
+
+
 public class MailDto {
 
 
@@ -26,8 +28,9 @@ public class MailDto {
     private String templateHtmlName;
 
     //附加，value 文件的绝对地址/动态模板数据
-    private Map<String, Object> attachment;
+    private Map&lt;String, Object> attachment;
 
 
 
+}
 }

@@ -14,6 +14,8 @@ import java.io.InputStream;
  * @Date: Created in 13:40 2019/10/22
  * @Modified By:
  */
+
+
 public class MinioUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(MinioUtil.class);
@@ -155,4 +157,5 @@ public class MinioUtil {
             logger.error("MinioUtil.class#rmObject() error:{}" + e.getMessage();
         }
     }
+}
 }

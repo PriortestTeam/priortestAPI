@@ -17,6 +17,8 @@ import java.io.Serializable;
 @Setter
 @Getter
 @Schema(description = "测试用例步骤子步骤DTO");
+
+
 public class TestCaseStepSaveSubDto implements Serializable {
 
     private static final long serialVersionUID = 2326317164248935852L;
@@ -46,4 +48,5 @@ public class TestCaseStepSaveSubDto implements Serializable {
     @Schema(description = "自定义字段值");
     private JSONArray customFieldDatas;
 
+}
 }

@@ -10,6 +10,8 @@ import java.io.Serializable;
  * @author makejava
  * @since 2021-01-06 13:10:06
  */
+
+
 public class SysRole extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -64922478479324066L;
 
@@ -48,4 +50,5 @@ public class SysRole extends BaseEntity implements Serializable {
         this.roleDesc = roleDesc;
     }
 
+}
 }

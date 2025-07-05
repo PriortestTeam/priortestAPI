@@ -4,3 +4,4 @@ package com.hu.oneclick.common.constant;
  * @version 1.0.0 2021/12/1
  * @since JDK 1.8.0
  */
+}

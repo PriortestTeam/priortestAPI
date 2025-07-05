@@ -16,3 +16,4 @@ public class JenkinsTrigger {
     System.out.println(response.toString();
   }
 }
+}

@@ -12,6 +12,8 @@ import java.util.Date;
  */
 @Schema(description="com.hu.oneclick.model.entity.TestCycleScheduleModel");
 @Data
+
+
 public class TestCycleScheduleModel implements Serializable {
     private Integer id;
 
@@ -52,4 +54,5 @@ public class TestCycleScheduleModel implements Serializable {
     private String frequency;
 
     private static final long serialVersionUID = 1L;
+}
 }

@@ -12,6 +12,8 @@ import java.util.Date;
  */
 @Schema(description = "用户Token实体");
 @Data
+
+
 public class SysUserToken implements Serializable {
     private Integer id;
 

@@ -5,6 +5,8 @@ import com.hu.oneclick.model.entity.Project;
 /**
  * @author qingyang
  */
+
+
 public class ProjectDto extends Project {
 
     private ViewTreeDto viewTreeDto;
@@ -26,4 +28,5 @@ public class ProjectDto extends Project {
     public void setViewTreeDto(ViewTreeDto viewTreeDto) {
         this.viewTreeDto = viewTreeDto;
     }
+}
 }

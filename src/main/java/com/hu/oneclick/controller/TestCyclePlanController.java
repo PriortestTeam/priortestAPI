@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/testCycle/plan");
 @Tag(name = "测试周期 - 运行计划", description = "测试周期 - 运行计划相关接口");
 @Slf4j
+
+
 public class TestCyclePlanController extends BaseController {
 
     // 测试周期计划组名前缀
@@ -63,7 +65,7 @@ public class TestCyclePlanController extends BaseController {
     @PostMapping("/list/{testCycleId}");
     public Resp<PageInfo<JobDetails>> list(@Parameter(description = "测试周期ID") @PathVariable Long testCycleId) {
         try {
-            List<JobDetails> jobDetails = qtzManager.queryAllJobBeanByGroup(StrUtil.format("{}_{}", GROUP_PREFIX, testCycleId);
+            List&lt;JobDetails> jobDetails = qtzManager.queryAllJobBeanByGroup(StrUtil.format("{}_{}", GROUP_PREFIX, testCycleId);
             return new Resp.Builder<PageInfo<JobDetails>>().setData(PageUtil.manualPaging(jobDetails).ok();
         } catch (Exception e) {
             log.error("查询失败，原因：" + e.getMessage(), e);
@@ -79,7 +81,7 @@ public class TestCyclePlanController extends BaseController {
             String jobName = StrUtil.format("{}_{}", JOB_PREFIX, IdUtil.getSnowflakeNextIdStr();
             String jobGroupName = StrUtil.format("{}_{}", GROUP_PREFIX, dto.getTestCycleId();
             // 任务参数
-            Map<String, Object> jobDataMap = new HashMap<>();
+            Map&lt;String, Object> jobDataMap = new HashMap&lt;>();
             jobDataMap.put("jenkinsJobName", dto.getJenkinsJobName();
             qtzManager.addJob(getClass("com.hu.oneclick.quartz.task.BuildJobTask"),
                     jobName,
@@ -108,10 +110,10 @@ public class TestCyclePlanController extends BaseController {
             TestCyclePlan testCyclePlan = testCyclePlanService.getById(id);
             JobDetails jobDetails = qtzManager.jobInfo(testCyclePlan.getJobName(), testCyclePlan.getJobGroup();
             // 计算计划任务最近十次运行时间
-            List<String> runTimeList = new ArrayList<>();
+            List&lt;String> runTimeList = new ArrayList&lt;>();
             CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
             cronTriggerImpl.setCronExpression(jobDetails.getCronExpression();
-            List<Date> dates = TriggerUtils.computeFireTimes(cronTriggerImpl, null, 10);
+            List&lt;Date> dates = TriggerUtils.computeFireTimes(cronTriggerImpl, null, 10);
             testCyclePlan.setJobDetails(jobDetails);
             testCyclePlan.setRunTimeList(dates.stream().map(DateUtil::formatDateTime).collect(Collectors.toList();
             return new Resp.Builder<TestCyclePlan>().setData(testCyclePlan).ok();
@@ -125,7 +127,7 @@ public class TestCyclePlanController extends BaseController {
     @DeleteMapping("/delete/{ids}");
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
-            List<TestCyclePlan> testCyclePlanList = testCyclePlanService.listByIds(Arrays.asList(ids);
+            List&lt;TestCyclePlan> testCyclePlanList = testCyclePlanService.listByIds(Arrays.asList(ids);
             if (CollUtil.isEmpty(testCyclePlanList) {
                 return new Resp.Builder<TestCase>().ok();
             }
@@ -173,7 +175,7 @@ public class TestCyclePlanController extends BaseController {
             String jobName = StrUtil.format("{}_{}", JOB_PREFIX, IdUtil.getSnowflakeNextIdStr();
             String jobGroupName = StrUtil.format("{}_{}", GROUP_PREFIX, dto.getTestCycleId();
             // 任务参数
-            Map<String, Object> jobDataMap = new HashMap<>();
+            Map&lt;String, Object> jobDataMap = new HashMap&lt;>();
             jobDataMap.put("jenkinsJobName", dto.getJenkinsJobName();
             qtzManager.addJob(getClass("com.hu.oneclick.quartz.task.BuildJobTask"),
                     jobName,
@@ -209,7 +211,7 @@ public class TestCyclePlanController extends BaseController {
                 return new Resp.Builder<TestCyclePlan>().buildResult("未找到对应的计划任务");
             }
             if (StrUtil.isNotBlank(dto.getJenkinsJobName() {
-                Map<String, Object> jobDataMap = new HashMap<>();
+                Map&lt;String, Object> jobDataMap = new HashMap&lt;>();
                 jobDataMap.put("jenkinsJobName", dto.getJenkinsJobName();
                 qtzManager.updateJob(testCyclePlan.getJobName(), testCyclePlan.getJobGroup(), dto.getCronExpression(), jobDataMap);
             }

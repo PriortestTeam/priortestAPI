@@ -6,6 +6,8 @@ package com.hu.oneclick.model.domain.dto;
  * @since JDK 1.8.0
  */
 
+
+
 public class ActivateAccountDto {
     public String email;
     public String password;
@@ -34,4 +36,5 @@ public class ActivateAccountDto {
     public void setRePassword(String rePassword) {
         this.rePassword = rePassword;
     }
+}
 }

@@ -47,3 +47,4 @@ public class SysUserRoleDto implements Serializable {
     private String roleDesc;
     private String roomId;
 }
+}

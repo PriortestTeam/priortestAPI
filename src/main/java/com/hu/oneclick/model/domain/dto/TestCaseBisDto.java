@@ -7,6 +7,8 @@ import java.math.BigInteger;
 import java.util.Date;
 
 @Data
+
+
 public class TestCaseBisDto {
 
     TestCaseDataRunDto testCaseRun;
@@ -51,4 +53,5 @@ public class TestCaseBisDto {
         testCase.setTestcaseExpand(testcaseExpand);
         testCase.setRemarks(remarks);
     }
+}
 }

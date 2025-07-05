@@ -16,6 +16,8 @@ import java.util.Date;
 @Data
 @TableName(value = "project");
 @EqualsAndHashCode(callSuper=false);
+
+
 public class ProjectManage extends AssignBaseEntity implements Serializable {
 
 
@@ -44,4 +46,5 @@ public class ProjectManage extends AssignBaseEntity implements Serializable {
     private String remarks;
 
     private String repoName;
+}
 }

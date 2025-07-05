@@ -40,6 +40,8 @@ import java.util.stream.Collectors;
  * @author qingyang
  */
 @Service
+
+
 public class ProjectServiceImpl implements ProjectService {
     private final static Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
@@ -99,7 +101,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Resp<Project> queryById(String id) {
         Project project = projectDao.queryById(id);
-//        List<CustomFieldData> customFieldData = customFieldDataService.projectRenderingCustom(project.getId();
+//        List&lt;CustomFieldData> customFieldData = customFieldDataService.projectRenderingCustom(project.getId();
 //        project.setCustomFieldDatas(customFieldData);
         return new Resp.Builder<Project>().setData(project).ok();
     }
@@ -115,9 +117,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Resp<List<Project>> queryForProjects(ProjectDto project) {
+    public Resp<List&lt;Project>> queryForProjects(ProjectDto project) {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        List<Project> projects = new ArrayList<>();
+        List&lt;Project> projects = new ArrayList&lt;>();
         String sysUserId = sysUser.getId();
         if (ObjectUtil.isNotNull(sysUser.getSysRoleId() && sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT) {
             projects = projectDao.queryAllProjects(sysUserId);
@@ -135,16 +137,16 @@ public class ProjectServiceImpl implements ProjectService {
 
 //        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto(), masterId);
 
-//        List<Project> projects = projectDao.queryAll(project);
-        return new Resp.Builder<List<Project>>().setData(projects).total(projects).ok();
+//        List&lt;Project> projects = projectDao.queryAll(project);
+        return new Resp.Builder<List&lt;Project>>().setData(projects).total(projects).ok();
     }
 
     @Override
-    public Resp<List<Project>> queryForProjects() {
+    public Resp<List&lt;Project>> queryForProjects() {
         SysUser masterUser = jwtUserService.getUserLoginInfo().getSysUser();
         Long roomId = masterUser.getRoomId();
-        List<Project> projects = projectDao.queryAllProjects(String.valueOf(roomId);
-        return new Resp.Builder<List<Project>>().setData(projects).totalSize(projects.size().ok();
+        List&lt;Project> projects = projectDao.queryAllProjects(String.valueOf(roomId);
+        return new Resp.Builder<List&lt;Project>>().setData(projects).totalSize(projects.size().ok();
     }
 
     /**
@@ -166,7 +168,7 @@ public class ProjectServiceImpl implements ProjectService {
             int insert = projectDao.insert(project);
             if (insert > 0) {
                 //插入用户自定义值
-//                List<CustomFieldData> customFieldDatas = project.getCustomFieldDatas();
+//                List&lt;CustomFieldData> customFieldDatas = project.getCustomFieldDatas();
 //                insert = customFieldDataService.insertProjectCustomData(customFieldDatas, project);
             }
             return Result.addResult(insert);
@@ -300,7 +302,7 @@ public class ProjectServiceImpl implements ProjectService {
         String projectId = signOffDto.getProjectId();
         Project project = this.queryById(projectId).getData();
 
-        List<Map<String, Object>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
+        List&lt;Map&lt;String, Object>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
         int value = allTestCycle.size();
         long count = allTestCycle.stream().filter(f -> String.valueOf(f.get("execute_status").equals(String.valueOf(1).count();
         float testEx = (float) count / value;
@@ -319,8 +321,8 @@ public class ProjectServiceImpl implements ProjectService {
         };
 
         //功能测试结果
-        Map<String, List<Map<String, Object>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category").toString();
-        List<Map<String, Object>> function = caseCategory.get("功能") == null ? new ArrayList<>() : caseCategory.get("功能");
+        Map&lt;String, List&lt;Map&lt;String, Object>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category").toString();
+        List&lt;Map&lt;String, Object>> function = caseCategory.get("功能") == null ? new ArrayList&lt;>() : caseCategory.get("功能");
         long runStatusPass = function.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(1).count();
         long runStatusFail = function.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(2).count();
 
@@ -332,7 +334,7 @@ public class ProjectServiceImpl implements ProjectService {
         };
 
         //性能测试结果
-        List<Map<String, Object>> performance = caseCategory.get("性能") == null ? new ArrayList<>() : caseCategory.get("性能");
+        List&lt;Map&lt;String, Object>> performance = caseCategory.get("性能") == null ? new ArrayList&lt;>() : caseCategory.get("性能");
         long runStatusPassCs = performance.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(1).count();
         long runStatusFailCs = performance.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(2).count();
 
@@ -344,18 +346,18 @@ public class ProjectServiceImpl implements ProjectService {
         };
 
         //测试覆盖
-        Map<String, List<Map<String, Object>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module").toString();
+        Map&lt;String, List&lt;Map&lt;String, Object>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module").toString();
         String[][] coverageReportTable = new String[feature.keySet().size()][];
         int index = 0;
         for (String featureId : feature.keySet() {
-            List<Map<String, Object>> maps = feature.get(featureId);
+            List&lt;Map&lt;String, Object>> maps = feature.get(featureId);
             coverageReportTable[index] = new String[]{featureId, String.valueOf(maps.size()};
             index++;
         }
 
         //新缺陷
-        ArrayList<Issue> issuesList = new ArrayList<>();
-        for (Map<String, Object> map : allTestCycle) {
+        ArrayList&lt;Issue> issuesList = new ArrayList&lt;>();
+        for (Map&lt;String, Object> map : allTestCycle) {
             String testCaseId = map.get("test_case_id").toString();
             String testCycleId = map.get("test_cycle_id").toString();
             Issue issue = issueDao.queryCycleAndTest(testCaseId, testCycleId);
@@ -374,7 +376,7 @@ public class ProjectServiceImpl implements ProjectService {
         };
 
         //已知缺陷
-        List<Issue> allIssue = issueDao.findAll();
+        List&lt;Issue> allIssue = issueDao.findAll();
         allIssue.removeAll(issuesList);
         long haveUrgent = allIssue.stream().filter(f -> "高".equals(f.getPriority().count();
         long haveImportant = allIssue.stream().filter(f -> "中".equals(f.getPriority().count();
@@ -389,7 +391,7 @@ public class ProjectServiceImpl implements ProjectService {
         //测试周期列表
         String testCycle = signOffDto.getTestCycle();
         testCycle = testCycle.substring(testCycle.lastIndexOf("=") + 1);
-        List<String> testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, signOffDto.getEnv(), testCycle);
+        List&lt;String> testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, signOffDto.getEnv(), testCycle);
         if (testCycleName.isEmpty() {
             return new Resp.Builder<String>().buildResult("没有查询到当前发布版本的测试周期");
         }
@@ -401,11 +403,11 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         //测试平台/设备
-        Map<String, List<Map<String, Object>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform").toString();
+        Map&lt;String, List&lt;Map&lt;String, Object>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform").toString();
         String[][] platformReportTable = new String[platforms.keySet().size()][];
         index = 0;
         for (String platForm : platforms.keySet() {
-            List<Map<String, Object>> maps = platforms.get(platForm);
+            List&lt;Map&lt;String, Object>> maps = platforms.get(platForm);
             platformReportTable[index] = new String[]{platForm, String.valueOf(maps.size()};
         }
 
@@ -506,7 +508,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Resp<String> upload(MultipartFile file) {
         if (cheakUserSignFile() {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.UPDATE_FILE_OUT_COUNT.getCode()
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.UPDATE_FILE_OUT_COUNT.getCode();
                 , SysConstantEnum.UPDATE_FILE_OUT_COUNT.getValue();
         }
         String realPath = dirPath;
@@ -548,7 +550,7 @@ public class ProjectServiceImpl implements ProjectService {
      * @Date: 2021/10/18
      */
     private Boolean cheakUserSignFile() {
-        List<Map<String, Object>> data = attachmentService.getUserAttachment().getData();
+        List&lt;Map&lt;String, Object>> data = attachmentService.getUserAttachment().getData();
         return data.size() >= 3;
     }
 
@@ -586,13 +588,14 @@ public class ProjectServiceImpl implements ProjectService {
      *
      * @param project
      * @Param: [project]
-     * @return: java.util.List<com.hu.oneclick.model.entity.Project>
+     * @return: java.util.List&lt;com.hu.oneclick.model.entity.Project>
      * @Author: MaSiyi
      * @Date: 2021/12/31
      */
     @Override
-    public List<Project> findAllByProject(Project project) {
+    public List&lt;Project> findAllByProject(Project project) {
 
         return projectDao.findAllByProject(project);
     }
+}
 }

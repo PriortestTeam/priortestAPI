@@ -27,6 +27,8 @@ import java.util.Map;
 @Data
 @Schema(description = "视图实体");
 @TableName("view");
+
+
 public class View extends AssignBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2648094842570049550L;
@@ -65,10 +67,10 @@ public class View extends AssignBaseEntity implements Serializable {
     private Integer viewType;
 
     @TableField(exist = false);
-    private List<OneFilter> oneFilters;
+    private List&lt;OneFilter> oneFilters;
 
     @TableField(exist = false);
-    private List<Map> autoFilter;
+    private List&lt;Map> autoFilter;
 
     /**
      * 修改人
@@ -102,20 +104,20 @@ public class View extends AssignBaseEntity implements Serializable {
     private Integer isAuto;
 
     @TableField(exist = false);
-    private List<String> autoViewChild;
+    private List&lt;String> autoViewChild;
 
     /**
      * 手动赋值的意义在于，DB插入的时候需要filter，但是api返回的时候不需要filter
      * DB插入或更新前在filter的set方法里调用此方法
      */
-    public String getFilterByManual(List<OneFilter> oneFilters2) {
+    public String getFilterByManual(List&lt;OneFilter> oneFilters2) {
         if (CollUtil.isNotEmpty(oneFilters2) {
             return JSON.toJSONString(oneFilters2);
         }
         return filter;
     }
 
-    public List<OneFilter> getOneFilters() {
+    public List&lt;OneFilter> getOneFilters() {
         if (StrUtil.isNotBlank(filter) {
             return JSON.parseArray(filter, OneFilter.class);
         }

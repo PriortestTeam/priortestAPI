@@ -15,6 +15,8 @@ import jakarta.annotation.Resource;
  * @author cheng
  */
 @Service
+
+
 public class RetrieveTestCycleAsTitleServiceImpl implements RetrieveTestCycleAsTitleService {
 
     @NonNull
@@ -26,10 +28,11 @@ public class RetrieveTestCycleAsTitleServiceImpl implements RetrieveTestCycleAsT
         Long id = testCycleDao.getIdByTitle(title, projectId);
         TestCycleVo testCycleVo = new TestCycleVo();
         if (id == null) {
-            return new Resp.Builder<TestCycleVo>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode(),
+            return new Resp.Builder<TestCycleVo>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode(),;
                     SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value();
         }
         testCycleVo.setId(String.valueOf(id);
         return new Resp.Builder<TestCycleVo>().setData(testCycleVo).ok();
     }
+}
 }

@@ -5,6 +5,8 @@ import com.hu.oneclick.model.entity.SysProjectPermission;
 /**
  * @author qingyang
  */
+
+
 public class SysProjectPermissionDto extends SysProjectPermission {
 
     /**
@@ -33,4 +35,5 @@ public class SysProjectPermissionDto extends SysProjectPermission {
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }
+}
 }

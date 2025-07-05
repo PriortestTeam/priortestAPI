@@ -31,6 +31,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
  * @author qingyang
  */
 @RestControllerAdvice
+
+
 public class GlobalExceptionHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -47,7 +49,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST);
     public Resp<String> handleConstraintViolationException(Exception e) {
         logger.error("class: GlobalExceptionHandler#handleConstraintViolationException 请求参数校验异常ERROR==>：" + e);
-        List<ObjectError> allErrors = Lists.newArrayList();
+        List&lt;ObjectError> allErrors = Lists.newArrayList();
         if (e instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException ex = (MethodArgumentNotValidException)e;
             allErrors = ex.getBindingResult().getAllErrors();
@@ -56,7 +58,7 @@ public class GlobalExceptionHandler {
             allErrors = ex.getAllErrors();
         }
         if (!ObjectUtils.isEmpty(allErrors) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.PARAM_EMPTY.getCode(),
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.PARAM_EMPTY.getCode(),;
                 allErrors.get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST.value();
         }
         return new Resp.Builder<String>().httpBadRequest().buildResult(SysConstantEnum.SYS_ERROR.getValue(), HttpStatus.BAD_REQUEST.value();
@@ -74,7 +76,7 @@ public class GlobalExceptionHandler {
             httpStatus = e1.getHttpCode() > 0 ? e1.getHttpCode() : HttpStatus.INTERNAL_SERVER_ERROR.value();
             bizCode = e1.getCode();
             msg = e1.getMsg();
-        } else if (e instanceof MissingServletRequestParameterException
+        } else if (e instanceof MissingServletRequestParameterException) {
             || e instanceof MethodArgumentTypeMismatchException
             || e instanceof ValidException
             || e instanceof DataIntegrityViolationException
@@ -97,4 +99,5 @@ public class GlobalExceptionHandler {
         return resp;
     }
 
+}
 }

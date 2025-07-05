@@ -13,6 +13,8 @@ import java.io.IOException;
  * @author qingyang
  */
 @Component
+
+
 public class HttpStatusLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
@@ -22,4 +24,5 @@ public class HttpStatusLogoutSuccessHandler implements LogoutSuccessHandler {
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write("{\"msg\":\"Logout successful\"}");
     }
+}
 }

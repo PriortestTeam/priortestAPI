@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
  * @author qingyang
  */
 @Service
+
+
 public class SubUserServiceImpl implements SubUserService {
 
     private final static Logger logger = LoggerFactory.getLogger(SubUserServiceImpl.class);
@@ -74,32 +76,32 @@ public class SubUserServiceImpl implements SubUserService {
     }
 
     @Override
-    public Resp<List<Map<String, Object>>> querySubUsers(int pageNum, int pageSize) {
+    public Resp<List&lt;Map&lt;String, Object>>> querySubUsers(int pageNum, int pageSize) {
         SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
         Long roomId = sysUser.getRoomId();
 
-        List<Map<String, Object>> sysUsers = sysUserDao.queryUsersByRoomId(new BigInteger(roomId.toString(), pageNum, pageSize);
+        List&lt;Map&lt;String, Object>> sysUsers = sysUserDao.queryUsersByRoomId(new BigInteger(roomId.toString(), pageNum, pageSize);
 
-        List<BigInteger> ids = sysUsers.stream().map(obj -> new BigInteger(obj.get("id").toString().collect(Collectors.toList();
-        List<Map<String, Object>> projects = sysUserProjectDao.queryProjectWithUsers(ids);
+        List&lt;BigInteger> ids = sysUsers.stream().map(obj -> new BigInteger(obj.get("id").toString().collect(Collectors.toList();
+        List&lt;Map&lt;String, Object>> projects = sysUserProjectDao.queryProjectWithUsers(ids);
 
-        List<SysRole> sysRoles = sysRoleDao.queryAll(null);
+        List&lt;SysRole> sysRoles = sysRoleDao.queryAll(null);
 
-        for (Map<String, Object> map : sysUsers) {
+        for (Map&lt;String, Object> map : sysUsers) {
             BigInteger userid = new BigInteger(map.get("id").toString();
 
             String roleName = sysRoles.stream().filter(obj -> obj.getId().equals(map.get("sysRoleId").toString()
                 .map(SysRole::getRoleName).findFirst().orElse(null);
             map.put("sysRoleName", roleName);
 
-            Optional<Map<String, Object>> first = projects.stream().filter(m -> new BigInteger(m.get("userId").toString().equals(userid)
+            Optional<Map&lt;String, Object>> first = projects.stream().filter(m -> new BigInteger(m.get("userId").toString().equals(userid)
                 && Integer.parseInt(m.get("is_default").toString() == 1).findFirst();
             map.put("openProjectByDefaultId", first.map(obj -> obj.get("projectId").toString().orElse(null);
             map.put("openProjectByDefaultName", first.map(obj -> obj.get("title").toString().orElse(null);
 
-            List<Map<String, Object>> linkedProject = projects.stream().filter(m -> new BigInteger(m.get("userId").toString().equals(userid)
+            List&lt;Map&lt;String, Object>> linkedProject = projects.stream().filter(m -> new BigInteger(m.get("userId").toString().equals(userid)
                 .map(m -> {
-                    Map<String, Object> linkedMap = new HashMap<>();
+                    Map&lt;String, Object> linkedMap = new HashMap&lt;>();
                     linkedMap.put("projectId", m.get("projectId").toString();
                     linkedMap.put("title", m.get("title").toString();
                     return linkedMap;
@@ -108,10 +110,10 @@ public class SubUserServiceImpl implements SubUserService {
             map.put("projectIdStr", linkedProject);
         }
 
-        return new Resp.Builder<List<Map<String, Object>>>().setData(sysUsers).total(sysUsers).ok();
+        return new Resp.Builder<List&lt;Map&lt;String, Object>>>().setData(sysUsers).total(sysUsers).ok();
     }
 
-    private void accept(SubUserDto subUserDto, List<Project> projects) {
+    private void accept(SubUserDto subUserDto, List&lt;Project> projects) {
         //用户名裁剪
         subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail();
         //整合关联的项目
@@ -123,8 +125,8 @@ public class SubUserServiceImpl implements SubUserService {
      *
      * @param subUserDto
      */
-    private void queryLikeProjectNames(SubUserDto subUserDto, List<Project> projects) {
-        List<String> lists = new ArrayList<>(projects.size();
+    private void queryLikeProjectNames(SubUserDto subUserDto, List&lt;Project> projects) {
+        List&lt;String> lists = new ArrayList&lt;>(projects.size();
         String projectIdStr = subUserDto.getProjectIdStr();
         if (StringUtils.isEmpty(projectIdStr) {
             return;
@@ -155,7 +157,7 @@ public class SubUserServiceImpl implements SubUserService {
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
             //拼接成员用户邮箱
             String oldEmail = sysUser.getEmail();
-            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(oldEmail);
+            List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(oldEmail);
             if (!sysUsers.isEmpty() {
                 throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), "邮箱" + SysConstantEnum.DATE_EXIST.getValue();
             }
@@ -215,7 +217,7 @@ public class SubUserServiceImpl implements SubUserService {
                 }
 
 
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),;
                     SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue();
             }
 
@@ -240,16 +242,16 @@ public class SubUserServiceImpl implements SubUserService {
 
         QueryWrapper<SysUserProject> query = Wrappers.query();
         query.eq("user_id", new BigInteger(subUserDto.getId();
-        List<SysUserProject> userProjects = sysUserProjectDao.selectList(query);
+        List&lt;SysUserProject> userProjects = sysUserProjectDao.selectList(query);
 
         String defaultProject = userProjects.stream().filter(obj -> obj.getIsDefault() == 1).map(obj -> obj.getProjectId().toString()
             .findFirst().orElse(null);
 
-        List<String> projectIdsBefore = userProjects.stream().map(arg -> arg.getProjectId().toString().collect(Collectors.toList();
+        List&lt;String> projectIdsBefore = userProjects.stream().map(arg -> arg.getProjectId().toString().collect(Collectors.toList();
 
-        List<String> incomingIds = new ArrayList<>(List.of(subUserDto.getProjectIdStr().split(",");
+        List&lt;String> incomingIds = new ArrayList&lt;>(List.of(subUserDto.getProjectIdStr().split(",");
 
-        List<String> deletedIds = new ArrayList<>(projectIdsBefore);
+        List&lt;String> deletedIds = new ArrayList&lt;>(projectIdsBefore);
         deletedIds.removeAll(incomingIds);
 
         if (!deletedIds.isEmpty() {
@@ -323,9 +325,9 @@ public class SubUserServiceImpl implements SubUserService {
                 sysUserBusinessDao.insertSelective(sysUserBusiness);
             }
         } else {
-            List<String> addProjectIds = new ArrayList<>();
+            List&lt;String> addProjectIds = new ArrayList&lt;>();
 
-            List<String> projectIds = Arrays.asList(subUserDto.getProjectIdStr().split(",");
+            List&lt;String> projectIds = Arrays.asList(subUserDto.getProjectIdStr().split(",");
             for (int i = 0; i < projectIdsBefore.size(); i++) {
                 //原来的不在现在的，则是要删除的
                 if (!projectIds.contains(projectIdsBefore.get(i) {
@@ -428,16 +430,17 @@ public class SubUserServiceImpl implements SubUserService {
     }
 
     @Override
-    public Resp<List<Project>> getProjectByUserId() {
+    public Resp<List&lt;Project>> getProjectByUserId() {
         SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
         String userId = sysUser.getId();
 
         QueryWrapper<SysUserProject> query = Wrappers.query();
         query.eq("user_id", new BigInteger(userId);
-        List<String> projectIdList = sysUserProjectDao.selectList(query).stream().map(obj -> obj.getProjectId().toString().collect(Collectors.toList();
+        List&lt;String> projectIdList = sysUserProjectDao.selectList(query).stream().map(obj -> obj.getProjectId().toString().collect(Collectors.toList();
 
-        List<Project> projectList = projectDao.queryAllByIds(projectIdList);
+        List&lt;Project> projectList = projectDao.queryAllByIds(projectIdList);
 
-        return new Resp.Builder<List<Project>>().setData(projectList).total(projectList).ok();
+        return new Resp.Builder<List&lt;Project>>().setData(projectList).total(projectList).ok();
     }
+}
 }

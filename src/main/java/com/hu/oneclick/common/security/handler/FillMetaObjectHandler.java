@@ -12,6 +12,8 @@ import java.time.ZoneId;
 import java.util.Date;
 
 @Component
+
+
 public class FillMetaObjectHandler implements MetaObjectHandler {
 
     @Resource
@@ -35,4 +37,5 @@ public class FillMetaObjectHandler implements MetaObjectHandler {
         //this.setFieldValByName("updateUserName", SecurityUtils.getUserNameOrDefault(), metaObject);
         this.setFieldValByName("updateTime", Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault().toInstant(), metaObject);
     }
+}
 }

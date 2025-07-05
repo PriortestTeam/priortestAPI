@@ -7,6 +7,8 @@ import java.math.BigInteger;
 import java.util.Date;
 
 @Data
+
+
 public class TestCaseDataDto {
     /**
      * id
@@ -143,4 +145,5 @@ public class TestCaseDataDto {
     private BigInteger caseRunDuration;
 
     private BigInteger caseTotalPeriod;
+}
 }

@@ -7,6 +7,8 @@ import cn.hutool.core.util.StrUtil;
  *
  * @author xiaohai
  */
+
+
 public class Convert {
 
     /**
@@ -82,4 +84,5 @@ public class Convert {
         return toInt(value, null);
     }
 
+}
 }

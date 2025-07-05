@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 /**
  * @author qingyang
  */
+
+
 public class DateUtil {
 
 
@@ -467,8 +469,8 @@ public class DateUtil {
      * @param date
      * @return
      */
-    public static List<Date> getDayListAfter(Date date, int dayCnt) {
-        List<Date> list = new ArrayList<Date> ( );
+    public static List&lt;Date> getDayListAfter(Date date, int dayCnt) {
+        List&lt;Date> list = new ArrayList&lt;Date> ( );
         GregorianCalendar cal = new GregorianCalendar ( );
         for (int i = 1; i <= dayCnt; i++) {
             cal.setTime (date);
@@ -1634,4 +1636,5 @@ public class DateUtil {
 
         return calendar.getTime();
     }
+}
 }

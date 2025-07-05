@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @TableName(value = "use_case");
 @EqualsAndHashCode(callSuper=false);
+
+
 public class UserCaseDto extends AssignBaseEntity {
     private static final long serialVersionUID = 43132559253115264L;
     private String title;
@@ -31,4 +33,5 @@ public class UserCaseDto extends AssignBaseEntity {
 
     private String remarks;
 
+}
 }

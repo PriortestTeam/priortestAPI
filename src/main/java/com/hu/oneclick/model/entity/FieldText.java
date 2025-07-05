@@ -14,6 +14,8 @@ import java.util.List;
  * @author qingyang
  * @since 2020-12-05 20:02:02
  */
+
+
 public class FieldText extends CustomField implements Serializable {
     private static final long serialVersionUID = 613936107743960355L;
 
@@ -27,7 +29,7 @@ public class FieldText extends CustomField implements Serializable {
      */
     private Integer length = 30;
 
-    private List<String> defaultValues;
+    private List&lt;String> defaultValues;
 
     @Override
     public void subVerify(){
@@ -94,11 +96,12 @@ public class FieldText extends CustomField implements Serializable {
         this.length = length;
     }
 
-    public List<String> getDefaultValues() {
+    public List&lt;String> getDefaultValues() {
         return defaultValues;
     }
 
-    public void setDefaultValues(List<String> defaultValues) {
+    public void setDefaultValues(List&lt;String> defaultValues) {
         this.defaultValues = defaultValues;
     }
+}
 }

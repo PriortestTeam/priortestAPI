@@ -12,6 +12,8 @@ import java.util.List;
  * @author qingyang
  * @since 2020-12-05 21:49:12
  */
+
+
 public class FieldDropDown extends CustomField implements Serializable {
     private static final long serialVersionUID = 668370284822611568L;
 
@@ -28,7 +30,7 @@ public class FieldDropDown extends CustomField implements Serializable {
     /**
      * 用于判断用户输入的参数
      */
-    private List<String> dropDowns;
+    private List&lt;String> dropDowns;
     /**
      * 数组中字符串长度,默认10
      */
@@ -80,11 +82,11 @@ public class FieldDropDown extends CustomField implements Serializable {
         this.dropDownList = dropDownList;
     }
 
-    public List<String> getDropDowns() {
+    public List&lt;String> getDropDowns() {
         return dropDowns;
     }
 
-    public void setDropDowns(List<String> dropDowns) {
+    public void setDropDowns(List&lt;String> dropDowns) {
         this.dropDowns = dropDowns;
     }
 
@@ -95,4 +97,5 @@ public class FieldDropDown extends CustomField implements Serializable {
     public void setLength(Integer length) {
         this.length = length;
     }
+}
 }

@@ -2,6 +2,8 @@ package com.hu.oneclick.model.domain.vo;
 
 import lombok.Data;
 @Data
+
+
 public class IssueVo {
 
     private Long id;
@@ -10,4 +12,5 @@ public class IssueVo {
 
     private String issueStatus;
 
+}
 }

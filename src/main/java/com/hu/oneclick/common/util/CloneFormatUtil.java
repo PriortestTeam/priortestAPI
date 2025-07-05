@@ -7,6 +7,8 @@ package com.hu.oneclick.common.util;
  * @Date 4:09 PM 2024/5/28
  * @Version 1.0
  **/
+
+
 public class CloneFormatUtil {
 
     /**
@@ -23,4 +25,5 @@ public class CloneFormatUtil {
     public static String getCloneTitle(String title) {
         return String.format(CLONE_TITLE_FORMAT, title);
     }
+}
 }

@@ -21,6 +21,8 @@ import java.util.Date;
 @Setter
 @Getter
 @Schema(description = "测试周期DTO");
+
+
 public class TestCycleSaveDto implements Serializable {
 
     private static final long serialVersionUID = 3621834190197699211L;
@@ -156,4 +158,5 @@ public class TestCycleSaveDto implements Serializable {
     @Schema(description = "自定义字段值");
     private JSONObject customFieldDatas;
 
+}
 }

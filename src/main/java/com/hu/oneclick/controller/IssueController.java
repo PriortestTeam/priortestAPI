@@ -23,6 +23,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("issue");
 @Slf4j
+
+
 public class IssueController extends BaseController {
 
     private final IssueService issueService;
@@ -33,7 +35,7 @@ public class IssueController extends BaseController {
 
     @Operation(summary = "列表", description = "获取问题列表");
     @PostMapping("/list");
-    public Resp<PageInfo<Issue>> list(@RequestBody Map<String, Object> param,
+    public Resp<PageInfo<Issue>> list(@RequestBody Map&lt;String, Object> param,
                                      @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
                                      @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
         // 优先使用 URL 参数，如果没有则使用请求体参数

@@ -12,6 +12,8 @@ import java.io.Serializable;
  * @since 2022-10-31 20:58:43
  */
 @Data
+
+
 public class RoleFunction implements Serializable {
     private static final long serialVersionUID = 418948698502600249L;
     /**
@@ -35,4 +37,5 @@ public class RoleFunction implements Serializable {
      */
     private String invisibleFunctionId;
 
+}
 }

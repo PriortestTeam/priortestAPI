@@ -21,6 +21,8 @@ import java.util.List;
 
 @Service
 @Slf4j
+
+
 public class VersionServiceImpl implements VersionService {
 
     @Autowired
@@ -34,7 +36,7 @@ public class VersionServiceImpl implements VersionService {
             queryWrapper.eq(ReleaseManagement::getVersion, releaseCreationDto.getVersion()
                 .eq(ReleaseManagement::getProjectId, releaseCreationDto.getProjectId();
         }
-        List<ReleaseManagement> list = versionDao.selectList(queryWrapper);
+        List&lt;ReleaseManagement> list = versionDao.selectList(queryWrapper);
         if (CollectionUtil.isNotEmpty(list) {
             throw new BizException(SysConstantEnum.VERSION_HAVE_EXIST.getCode(),
                 SysConstantEnum.VERSION_HAVE_EXIST.getValue(), HttpStatus.OK.value();
@@ -97,12 +99,13 @@ public class VersionServiceImpl implements VersionService {
     }
 
     @Override
-    public List<VersionDto> getVersionList(VersionRequestDto versionRequestDto) {
+    public List&lt;VersionDto> getVersionList(VersionRequestDto versionRequestDto) {
         LambdaQueryWrapper<ReleaseManagement> queryWrapper = new LambdaQueryWrapper<>();
         if (versionRequestDto.getProjectId() != null) {
             queryWrapper.eq(ReleaseManagement::getProjectId, versionRequestDto.getProjectId();
         }
-        List<ReleaseManagement> list = versionDao.selectList(queryWrapper);
+        List&lt;ReleaseManagement> list = versionDao.selectList(queryWrapper);
         return BeanUtil.copyToList(list, VersionDto.class);
     }
+}
 }

@@ -17,6 +17,8 @@ import java.util.List;
  */
 @Data
 @Schema(description = "特性保存DTO");
+
+
 public class FeatureSaveDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING);
@@ -77,7 +79,7 @@ public class FeatureSaveDto {
      * 关联的自定义字段
      */
     @Schema(description = "关联的自定义字段");
-    private List<CustomFieldData> customFieldDataList;
+    private List&lt;CustomFieldData> customFieldDataList;
     // 手动添加getId方法以解决编译错误
     public Long getId() {
         return id;

@@ -9,6 +9,8 @@ import java.util.Date;
  * @author makejava
  * @since 2021-04-11 15:04:59
  */
+
+
 public class SysCustomFieldExpand implements Serializable {
     private static final long serialVersionUID = -66541877898615659L;
 
@@ -91,4 +93,5 @@ public class SysCustomFieldExpand implements Serializable {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+}
 }

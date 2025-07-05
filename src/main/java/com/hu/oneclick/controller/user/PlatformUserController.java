@@ -22,6 +22,8 @@ import java.util.List;
 @RestController();
 @RequestMapping("/platformUser");
 @PreAuthorize("@ps.backstageManagement()")
+
+
 public class PlatformUserController {
 
     private final PlatformUserService platformUserService;
@@ -34,7 +36,7 @@ public class PlatformUserController {
     }
 
     @PostMapping("/queryPlatformUser");
-    public Resp<List<PlatformUserDto>> queryPlatformUser(@RequestBody PlatformUserDto platformUserDto){
+    public Resp<List&lt;PlatformUserDto>> queryPlatformUser(@RequestBody PlatformUserDto platformUserDto){
 
         return platformUserService.queryPlatformUsers(platformUserDto);
     }
@@ -55,4 +57,5 @@ public class PlatformUserController {
     }
 
 
+}
 }

@@ -42,6 +42,8 @@ import org.springframework.stereotype.Service;
  * @author qingyang
  */
 @Service("jwtUserService");
+
+
 public class JwtUserServiceImpl implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final SysUserDao sysUserDao;
@@ -159,7 +161,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
     @Override
     public AuthLoginUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(username);
+        List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(username);
 
         AuthLoginUser authLoginUser = new AuthLoginUser();
         if (sysUsers.isEmpty() {
@@ -174,7 +176,7 @@ public class JwtUserServiceImpl implements UserDetailsService {
             authLoginUser.setPermissions(sysProjectPermissionDao.queryBySubUserId(user.getId();
         }
 
-        Map<String, Object> userDefaultProject = sysUserProjectDao.queryUserDefaultProject(new BigInteger(user.getId();
+        Map&lt;String, Object> userDefaultProject = sysUserProjectDao.queryUserDefaultProject(new BigInteger(user.getId();
         if (userDefaultProject != null) {
             UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
             userUseOpenProject.setUserId(user.getId();

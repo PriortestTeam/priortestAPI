@@ -27,6 +27,8 @@ import java.util.List;
 @RequestMapping("/relation");
 @Slf4j
 @Tag(name = "通用关系关联", description = "通用关系关联相关接口");
+
+
 public class RelationController extends BaseController {
 
     @Resource
@@ -37,7 +39,7 @@ public class RelationController extends BaseController {
     @PostMapping("/object/list");
     public Resp<PageInfo<Relation>> objectList(@RequestBody RelationParam param) {
         startPage();
-        List<Relation> list = relationService.getRelationListWithTitleByObjectIdAndCategory(param.getObjectId(), param.getCategory();
+        List&lt;Relation> list = relationService.getRelationListWithTitleByObjectIdAndCategory(param.getObjectId(), param.getCategory();
         return new Resp.Builder<PageInfo<Relation>>().setData(PageInfo.of(list).ok();
     }
 
@@ -45,7 +47,7 @@ public class RelationController extends BaseController {
     @PostMapping("/target/list");
     public Resp<PageInfo<Relation>> targetList(@RequestBody RelationParam param) {
         startPage();
-        List<Relation> list = relationService.getRelationListByTargetIdAndCategory(param.getTargetId(), param.getCategory();
+        List&lt;Relation> list = relationService.getRelationListByTargetIdAndCategory(param.getTargetId(), param.getCategory();
         return new Resp.Builder<PageInfo<Relation>>().setData(PageInfo.of(list).ok();
     }
 
@@ -72,4 +74,5 @@ public class RelationController extends BaseController {
             return new Resp.Builder<TestCaseStep>().fail();
         }
     }
+}
 }

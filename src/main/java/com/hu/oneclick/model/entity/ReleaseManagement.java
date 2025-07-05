@@ -12,6 +12,8 @@ import java.util.Date;
 @Data
 @TableName("release_management");
 @EqualsAndHashCode(callSuper=false);
+
+
 public class ReleaseManagement extends AssignBaseEntity implements Serializable {
 
     /**
@@ -36,4 +38,5 @@ public class ReleaseManagement extends AssignBaseEntity implements Serializable 
 
     private String version;
 
+}
 }

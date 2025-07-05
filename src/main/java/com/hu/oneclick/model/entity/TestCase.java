@@ -24,6 +24,8 @@ import java.util.List;
 @Data
 @Schema(description = "测试用例");
 @TableName("test_case");
+
+
 public class TestCase extends AssignBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 114802398790239711L;
@@ -178,6 +180,7 @@ public class TestCase extends AssignBaseEntity implements Serializable {
     @Schema(description = "测试用例步骤集合");
     @TableField(exist = false);
     @DbIgnore
-    private List<TestCaseStep> testCaseStepList;
+    private List&lt;TestCaseStep> testCaseStepList;
 
+}
 }

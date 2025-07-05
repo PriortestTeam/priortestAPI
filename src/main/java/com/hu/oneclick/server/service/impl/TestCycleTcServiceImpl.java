@@ -31,6 +31,8 @@ import static com.hu.oneclick.common.util.PageUtil.startPage;
  * @author Johnson
  */
 @Service
+
+
 public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     @Resource
@@ -73,14 +75,14 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     @Override
     public Resp<PageInfo<Object>> runExecuteTestCase(ExecuteTestCaseRunDto executeTestCaseRunDto) {
 
-        List<ExecuteTestCaseDto> execute = testCycleTcDao.queryList(executeTestCaseRunDto);
+        List&lt;ExecuteTestCaseDto> execute = testCycleTcDao.queryList(executeTestCaseRunDto);
         int currentCount = !execute.isEmpty() ? execute.get(0).getRunCount() : 0;
-        ArrayList<Object> retList = new ArrayList<>();
+        ArrayList&lt;Object> retList = new ArrayList&lt;>();
         if (executeTestCaseRunDto.isRunCountIndicator() {
             // 为true 先查询是否存在execute记录，有则查询runCount当前最大值，没有则直接插入，然后将插入的内容返回
             currentCount++;
             testCaseStep.setTestCaseId(executeTestCaseRunDto.getTestCaseId();
-            List<TestCaseStep> testCaseSteps = testCaseStepDao.queryList(testCaseStep);
+            List&lt;TestCaseStep> testCaseSteps = testCaseStepDao.queryList(testCaseStep);
             //获取用户id
             String userId = jwtUserService.getUserLoginInfo().getSysUser().getId();
             if (testCaseSteps.isEmpty() {
@@ -142,7 +144,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         ExecuteTestCaseDto latestExe = testCycleTcDao.getLatest(testCaseRunDto);
 
         // 获取当前运行run count：
-        List<ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
+        List&lt;ExecuteTestCaseDto> execute = getExecuteTestCaseList(testCaseRunDto);
         int runCount = execute.stream().findFirst().isPresent() ? execute.stream().findFirst().get().getRunCount() : 0;
         System.out.println("max runCount " + runCount);
 
@@ -312,14 +314,14 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
 
     }
 
-    private List<ExecuteTestCaseDto> getExecuteTestCaseList(TestCaseRunDto testCaseRunDto) {
+    private List&lt;ExecuteTestCaseDto> getExecuteTestCaseList(TestCaseRunDto testCaseRunDto) {
         executeTestCaseRunDto.setTestCycleId(testCaseRunDto.getTestCycleId();
         executeTestCaseRunDto.setTestCaseId(testCaseRunDto.getTestCaseId();
         executeTestCaseRunDto.setProjectId(testCaseRunDto.getProjectId();
         return testCycleTcDao.queryList(executeTestCaseRunDto);
     }
 
-    private byte calculateStatusCode(byte runCode, List<ExecuteTestCaseDto> execute) {
+    private byte calculateStatusCode(byte runCode, List&lt;ExecuteTestCaseDto> execute) {
         if (!Objects.equals(runCode, StatusCode.FAIL.getValue() {
             //初始化 成功、无效、跳过 的次数
             byte passNum = 0, invalidNum = 0, skipNum = 0;
@@ -392,11 +394,11 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
      *
      * @param startDate startDate
      * @param endDate   endDate
-     * @return java.util.List<java.util.Date>
+     * @return java.util.List&lt;java.util.Date>
      * @author Johnson
      */
-    private List<Date> getDatesBetween(Date startDate, Date endDate) {
-        List<Date> dates = new ArrayList<>();
+    private List&lt;Date> getDatesBetween(Date startDate, Date endDate) {
+        List&lt;Date> dates = new ArrayList&lt;>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
         while (calendar.getTime().before(endDate) {
@@ -414,7 +416,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
      * @return int
      * @author Johnson
      */
-    private int countWeekends(List<Date> dates) {
+    private int countWeekends(List&lt;Date> dates) {
         int count = 0;
         for (Date date : dates) {
             Calendar calendar = Calendar.getInstance();
@@ -438,7 +440,7 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
     private long filterWeekends(Date startDate, Date endDate) {
         // 该时间段的总毫秒数
         long totalTime = Math.subtractExact(endDate.getTime(), startDate.getTime();
-        List<Date> dates = getDatesBetween(startDate, endDate);
+        List&lt;Date> dates = getDatesBetween(startDate, endDate);
         // 统计周末出现的天数
         int weekends = countWeekends(dates);
         // 获取一天的毫秒数
@@ -607,4 +609,5 @@ public class TestCycleTcServiceImpl implements TestCycleTcService {
         return Math.subtractExact(time.getTime(), simpleDateFormat.parse(simpleDateFormat.format(latestExe.getRerunTime().getTime();
     }
 
+}
 }

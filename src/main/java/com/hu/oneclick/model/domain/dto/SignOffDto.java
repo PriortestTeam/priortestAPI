@@ -9,6 +9,8 @@ import lombok.Data;
  * @since JDK 1.8.0
  */
 @Data
+
+
 public class SignOffDto {
     /**
      *项目
@@ -47,4 +49,5 @@ public class SignOffDto {
     @Schema(description = "以字符串的形式传递'false','ture'", example = "false");
     private String auto;
 
+}
 }

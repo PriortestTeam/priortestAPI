@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.www.NonceExpiredException
 /**
  * @author qingyang
  */
+
+
 public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandler {
 
 	@Override
@@ -38,7 +40,7 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		} else if (exception instanceof BadCredentialsException || exception instanceof InternalAuthenticationServiceException) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value();
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.LOGIN_FAILED.getValue().fail();
-		} else if (exception instanceof InsufficientAuthenticationException
+		} else if (exception instanceof InsufficientAuthenticationException) {
 				|| exception instanceof  NonceExpiredException) {
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue().fail();
 		} else if (exception instanceof UsernameNotFoundException) {

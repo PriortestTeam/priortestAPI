@@ -20,6 +20,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("userOrderdisCount");
 @Tag(name = "订单折扣模块", description = "订单折扣模块相关接口");
+
+
 public class SysOrderDiscountController {
 
     @Autowired
@@ -27,9 +29,10 @@ public class SysOrderDiscountController {
 
     @Operation(summary="计算订单价格");
     @PostMapping("calculateOrderPrice");
-    public Resp<Map<String, BigDecimal>> calculateOrderPrice(@RequestBody SysOrderDiscountDto sysOrderDiscountDto) {
+    public Resp<Map&lt;String, BigDecimal>> calculateOrderPrice(@RequestBody SysOrderDiscountDto sysOrderDiscountDto) {
         return sysOrderDiscountService.calculateOrderPrice(sysOrderDiscountDto);
     }
 
 
+}
 }

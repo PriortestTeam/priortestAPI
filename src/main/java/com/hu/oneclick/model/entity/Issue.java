@@ -22,6 +22,8 @@ import java.util.List;
 @TableName(autoResultMap = true);
 @Data
 @EqualsAndHashCode(callSuper=false);
+
+
 public class Issue extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = 418948698502600149L;
 
@@ -103,7 +105,7 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @Schema(description = "修复分类");
     @JsonFormat(shape = JsonFormat.Shape.STRING);
     @TableField(typeHandler = ListTypeHandler.class);
-    private List<String> fixCategory;
+    private List&lt;String> fixCategory;
 
     /**
      * 发生频率，描述问题发生的频率，如每天、每周等
@@ -135,7 +137,7 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @Schema(description = "根因分类");
     @JsonFormat(shape = JsonFormat.Shape.STRING);
     @TableField(typeHandler = ListTypeHandler.class);
-    private List<String> rootcauseCategory;
+    private List&lt;String> rootcauseCategory;
 
     /**
      * 期间
@@ -143,4 +145,5 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @Schema(description = "期间");
     private String duration;
 
+}
 }

@@ -20,6 +20,8 @@ import java.util.List;
 @RestController
 @RequestMapping("userOrderRecord");
 @Tag(name = "订单详情模块", description = "订单详情模块相关接口");
+
+
 public class SysUserOrderRecordController {
 
     @Autowired
@@ -33,7 +35,8 @@ public class SysUserOrderRecordController {
 
     @Operation(summary = "获取用户订单详细");
     @GetMapping("getUserOrderRecord");
-    public Resp<List<SysUserOrderRecord>> getUserOrderRecord() {
+    public Resp<List&lt;SysUserOrderRecord>> getUserOrderRecord() {
         return sysUserOrderRecordService.getUserOrderRecord();
     }
+}
 }

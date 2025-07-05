@@ -11,6 +11,8 @@ import java.io.Serializable;
 
 @Setter
 @Getter
+
+
 public class AssignIdEntity implements Serializable {
 
     private static final long serialVersionUID = -1025285783773774055L;
@@ -21,4 +23,5 @@ public class AssignIdEntity implements Serializable {
     @TableId(type = IdType.ASSIGN_ID);
     private Long id;
 
+}
 }

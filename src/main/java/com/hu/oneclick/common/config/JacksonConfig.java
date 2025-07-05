@@ -19,6 +19,8 @@ import java.io.IOException;
  * @author qingyang
  */
 @Configuration
+
+
 public class JacksonConfig {
 
     @Bean
@@ -51,4 +53,5 @@ public class JacksonConfig {
         return objectMapper;
 
     }
+}
 }

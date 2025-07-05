@@ -3,6 +3,8 @@ package com.hu.oneclick.common.exception;
 /**
  * @author qingyang
  */
+
+
 public class BaseException extends RuntimeException {
     protected String code;
     protected String msg;
@@ -46,4 +48,5 @@ public class BaseException extends RuntimeException {
     public void setHttpCode(int httpCode) {
         this.httpCode = httpCode;
     }
+}
 }

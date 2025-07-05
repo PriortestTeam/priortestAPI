@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
  * @author qingyang
  */
 @Configuration
+
+
 public class MinioConfig {
 
     @Value("${onclick.minioConfig.endpoint}");
@@ -32,4 +34,5 @@ public class MinioConfig {
                 .region(source)
                 .build();
     }
+}
 }

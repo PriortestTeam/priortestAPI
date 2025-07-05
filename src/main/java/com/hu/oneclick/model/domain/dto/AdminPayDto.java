@@ -8,6 +8,8 @@ import lombok.Data;
  * @since JDK 1.8.0
  */
 @Data
+
+
 public class AdminPayDto {
     /**
      * 支付方式
@@ -30,4 +32,5 @@ public class AdminPayDto {
      */
     private Integer subScription;
 
+}
 }

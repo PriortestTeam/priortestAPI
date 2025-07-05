@@ -17,6 +17,8 @@ import java.util.Map;
 
 @Component
 @Slf4j
+
+
 public class JenkinsManager {
 
     private static final JenkinsConfig jenkinsConfig = SpringUtil.getBean(JenkinsConfig.class);
@@ -69,7 +71,7 @@ public class JenkinsManager {
     /**
      * 获取 Job 列表
      */
-    public Map<String, Job> getJobList() throws IOException {
+    public Map&lt;String, Job> getJobList() throws IOException {
         return jenkinsServer.getJobs();
     }
 
@@ -87,7 +89,7 @@ public class JenkinsManager {
      *
      * @param jobName Job名称
      */
-    public void buildParamJob(String jobName, Map<String, String> param) throws IOException {
+    public void buildParamJob(String jobName, Map&lt;String, String> param) throws IOException {
         jenkinsServer.getJob(jobName).build(param, true);
     }
 
@@ -112,4 +114,5 @@ public class JenkinsManager {
         jenkinsServer.deleteJob(jobName, true);
     }
 
+}
 }

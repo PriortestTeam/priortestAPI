@@ -23,6 +23,8 @@ import java.util.Map;
 @RequestMapping(value = "/job");
 @Tag(name = "定时任务调度管理", description = "定时任务调度管理相关接口");
 @Slf4j
+
+
 public class JobController {
 
     @Resource
@@ -112,8 +114,8 @@ public class JobController {
     @GetMapping(value = "/queryJob");
     public Resp<?> queryJob() {
         try {
-            List<JobDetails> jobAndTrigger = qtzManager.queryAllJobBean();
-            Map<String, Object> map = new HashMap<String, Object>();
+            List&lt;JobDetails> jobAndTrigger = qtzManager.queryAllJobBean();
+            Map&lt;String, Object> map = new HashMap&lt;String, Object>();
             map.put("number", jobAndTrigger.size();
             map.put("JobAndTrigger", PageUtil.manualPaging(jobAndTrigger);
             return new Resp.Builder<>().setData(map).ok();
@@ -123,4 +125,5 @@ public class JobController {
         }
     }
 
+}
 }

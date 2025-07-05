@@ -14,13 +14,15 @@ import java.util.List;
  * @since JDK 1.8.0
  */
 @Service
+
+
 public class UserBusinessServiceImpl implements UserBusinessService {
 
     @Autowired
     private SysUserBusinessDao sysUserBusinessDao;
 
     @Override
-    public List<SysUserBusiness> getBasicData(String userId, String type) {
+    public List&lt;SysUserBusiness> getBasicData(String userId, String type) {
 
 
         return sysUserBusinessDao.checkIsValueExist(type, userId);
@@ -29,7 +31,7 @@ public class UserBusinessServiceImpl implements UserBusinessService {
     @Override
     public String getUBValueByTypeAndKeyId(String type, String keyId) {
         String ubValue = "";
-        List<SysUserBusiness> ubList = getBasicData(keyId, type);
+        List&lt;SysUserBusiness> ubList = getBasicData(keyId, type);
         if(ubList!=null && ubList.size()>0) {
             ubValue = ubList.get(0).getValue();
         }
@@ -40,7 +42,7 @@ public class UserBusinessServiceImpl implements UserBusinessService {
     public Long checkIsValueExist(String type, String keyId) {
 
 
-        List<SysUserBusiness> userBusinesses = sysUserBusinessDao.checkIsValueExist(type, keyId);
+        List&lt;SysUserBusiness> userBusinesses = sysUserBusinessDao.checkIsValueExist(type, keyId);
 
 
         Long id = null;
@@ -73,4 +75,5 @@ public class UserBusinessServiceImpl implements UserBusinessService {
     }
 
 
+}
 }
