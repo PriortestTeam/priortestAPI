@@ -19,9 +19,6 @@ import java.util.List;
 @Schema(description = "特性保存DTO")
 public class FeatureSaveDto {
 
-    @Schema(description = "ID")
-    private Long id;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Schema(description = "主键id")
     private Long id;
@@ -81,4 +78,12 @@ public class FeatureSaveDto {
      */
     @Schema(description = "关联的自定义字段")
     private List<CustomFieldData> customFieldDataList;
+    // 手动添加getId方法以解决编译错误
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

@@ -140,5 +140,13 @@ public class IssueSaveDto implements Serializable {
     @Schema(description = "备注信息")
     private String duration;
 
+    // 手动添加getId方法以解决编译错误
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
 }

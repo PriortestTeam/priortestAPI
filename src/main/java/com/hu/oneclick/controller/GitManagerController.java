@@ -8,6 +8,7 @@ import com.hu.oneclick.model.param.GitSettingsParam;
 import com.hu.oneclick.server.service.GitMangerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigInteger;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Tag(name = "Git管理", description = "Git管理相关接口")
 @RestController
 @RequestMapping("gitManager")

@@ -89,12 +89,36 @@ public class SysUserBusiness implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // 手动添加缺少的方法
-    public void setBtnStr(String btnStr) {
-        this.btnStr = btnStr;
+    // 手动添加所有缺失的 getter/setter 方法
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public String getBtnStr() {
         return btnStr;
+    }
+
+    public void setBtnStr(String btnStr) {
+        this.btnStr = btnStr;
+    }
+
+    public String getInvisible() {
+        return invisible;
+    }
+
+    public void setInvisible(String invisible) {
+        this.invisible = invisible;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
