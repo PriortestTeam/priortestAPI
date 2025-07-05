@@ -176,6 +176,14 @@ public class WebSecurityConfig {
                 protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
                         throws ServletException, IOException {
                     String path = request.getRequestURI();
+                    String method = request.getMethod();
+                    String authHeader = request.getHeader("Authorization");
+                    
+                    System.out.println(">>> ========== WebSecurityConfig 过滤器 ==========");
+                    System.out.println(">>> 请求路径: " + path);
+                    System.out.println(">>> 请求方法: " + method);
+                    System.out.println(">>> Authorization头: " + (authHeader != null ? authHeader.substring(0, Math.min(20, authHeader.length())) + "..." : "null"));
+                    
                     // 如果是登录请求、API token请求或Swagger UI请求，跳过JWT过滤器
                     if (path.equals("/api/login") || path.equals("/login") || 
                         path.startsWith("/api/swagger-ui/") ||
@@ -188,8 +196,11 @@ public class WebSecurityConfig {
                         filterChain.doFilter(request, response);
                         return;
                     }
+                    
+                    System.out.println(">>> 使用JWT过滤器处理请求: " + path);
                     // 否则，使用JWT过滤器处理
                     jwtAuthFilter.doFilter(request, response, filterChain);
+                    System.out.println(">>> JWT过滤器处理完成，响应状态: " + response.getStatus());
                 }
             }, UsernamePasswordAuthenticationFilter.class)
             .logout(logout -> logout
