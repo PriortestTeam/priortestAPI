@@ -20,4 +20,22 @@ public class GitSettingsParam {
 
     @Schema(description = "远程仓库地址")
     private String remoteUrl;
+
+    private static final long serialVersionUID = 1L;
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getRemoteUrl() {
+        return remoteUrl;
+    }
 }

@@ -18,6 +18,9 @@ import java.util.List;
 @Data
 public class FeatureSaveDto {
 
+    @Schema(description = "ID")
+    private String id;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Schema(description = "主键id")
     private Long id;

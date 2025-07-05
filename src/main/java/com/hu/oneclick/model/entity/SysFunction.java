@@ -90,4 +90,32 @@ public class SysFunction implements Serializable {
     private String deleteFlag;
 
     private static final long serialVersionUID = 1L;
+
+    public String getNumber() {
+        return number;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getComponent() {
+        return component;
+    }
+
+    public String getPushBtn() {
+        return pushBtn;
+    }
 }

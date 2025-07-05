@@ -70,4 +70,13 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
         return super.getCustomFieldId();
     }
 
+    private static final long serialVersionUID = 1L;
+
+    public String getFieldNameEn() {
+        return fieldNameEn;
+    }
+
+    public String getCustomFieldId() {
+        return super.getCustomFieldId();
+    }
 }

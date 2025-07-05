@@ -15,10 +15,21 @@ import java.util.List;
  * @author houaixia
  * 权限设置DTO
  */
+@Schema(description = "角色项目功能DTO")
 @Data
-@Schema(description = "权限设置DTO")
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class RoleProjectFunctionDTO implements Serializable {
+public class RoleProjectFunctionDTO {
+
+    @Schema(description = "角色ID")
+    private Long roleId;
+
+    @Schema(description = "项目ID")
+    private Long projectId;
+
+    @Schema(description = "用户ID")
+    private Long userId;
+
+    @Schema(description = "功能列表")
+    private java.util.List<String> functionList;
 
     @NotNull(message = "角色id不能为空")
     @Schema(description = "角色id")
