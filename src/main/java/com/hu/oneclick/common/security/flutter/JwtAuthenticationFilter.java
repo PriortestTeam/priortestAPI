@@ -101,40 +101,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            // 获取Authorization头
+            // 检查Authorization头是否存在
             String authHeader = request.getHeader("Authorization");
             System.out.println(">>> ========== 开始请求处理 ==========");
             System.out.println(">>> 请求路径: " + path);
             System.out.println(">>> 请求方法: " + request.getMethod());
-            System.out.println(">>> 原始Authorization头: " + (authHeader != null ? authHeader : "null"));
+            System.out.println(">>> 原始Authorization头: " + authHeader);
+            System.out.println(">>> Authorization头长度: " + (authHeader != null ? authHeader.length() : 0));
+            System.out.println(">>> Authorization头前缀: " + (authHeader != null ? authHeader.substring(0, Math.min(20, authHeader.length())) + "..." : "null"));
 
             if (authHeader == null || authHeader.trim().isEmpty()) {
-                System.out.println(">>> 没有Authorization头，继续过滤链");
-                filterChain.doFilter(request, response);
+                System.out.println(">>> Authorization头为空，返回401");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\":\"Authorization header is missing\"}");
                 return;
             }
 
-            System.out.println(">>> Authorization头长度: " + authHeader.length());
-            System.out.println(">>> Authorization头前缀: " + authHeader.substring(0, Math.min(20, authHeader.length())) + "...");
+            Authentication authentication = null;
 
-            Authentication authentication;
+            try {
+                // 首先尝试JWT验证
+                if (authHeader.startsWith("Bearer ")) {
+                    System.out.println(">>> 检测到Bearer token，尝试JWT验证");
+                    authentication = authenticateBearerToken(authHeader.substring(7).trim());
+                } else {
+                    System.out.println(">>> 检测到非Bearer token，当作API token处理");
+                    // 直接将整个authHeader作为API token处理
+                    authentication = authenticateApiToken(authHeader.trim());
+                }
 
-            // 判断是 Bearer Token 还是 API Token
-            if (authHeader.startsWith("Bearer ")) {
-                System.out.println(">>> 检测到Bearer Token，使用JWT验证");
-                authentication = authenticateBearerToken(authHeader.substring(7).trim());
-            } else if (path.startsWith("/api/apiAdapter/")) {
-                System.out.println(">>> 检测到API Token访问 apiAdapter 接口，使用API Token验证");
-                System.out.println(">>> 即将调用 authenticateApiToken 方法");
-                authentication = authenticateApiToken(authHeader);
-            } else {
-                System.out.println(">>> 无法识别的token类型或路径组合:");
-                System.out.println(">>>   - 路径: " + path);
-                System.out.println(">>>   - Authorization头格式: " + (authHeader.length() > 0 ? authHeader.substring(0, Math.min(10, authHeader.length())) + "..." : "空"));
-                System.out.println(">>> 继续过滤链");
-                filterChain.doFilter(request, response);
-                return;
-            }
+                if (authentication == null) {
+                    System.out.println(">>> 认证失败，token无效");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write("{\"error\":\"Invalid token\"}");
+                    return;
+                }
 
             System.out.println(">>> 认证成功，继续处理请求");
             System.out.println(">>> 认证对象类型: " + authentication.getClass().getSimpleName());
@@ -144,19 +147,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println(">>> 过滤链处理完成，响应状态: " + response.getStatus());
 
         } catch (Exception e) {
-            System.out.println(">>> ========== JWT验证异常 ==========");
-            System.out.println(">>> 异常类型: " + e.getClass().getSimpleName());
-            System.out.println(">>> 异常消息: " + e.getMessage());
-            System.out.println(">>> 请求路径: " + path);
-            System.out.println(">>> 设置响应状态为401");
-            if (e.getCause() != null) {
-                System.out.println(">>> 根本异常: " + e.getCause().getMessage());
-            }
-            e.printStackTrace();
-
+            System.out.println(">>> Token验证失败:");
+            System.out.println(">>>   - 路径: " + path);
+            System.out.println(">>>   - Authorization头格式: " + (authHeader.length() > 10 ? authHeader.substring(0, 10) + "..." : authHeader));
+            System.out.println(">>>   - 错误信息: " + e.getMessage());
+            System.out.println(">>> 返回401未授权");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"error\":\"Authentication failed\",\"message\":\"" + e.getMessage() + "\"}");
+            return;
         }
     }
 
@@ -222,13 +221,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private Authentication authenticateApiToken(String authHeader) {
+    private Authentication authenticateApiToken(String apiToken) {
         try {
             System.out.println(">>> ========== 开始API Token验证 ==========");
-            System.out.println(">>> 接收到的完整Authorization头: " + authHeader);
+            System.out.println(">>> 接收到的API Token: " + apiToken);
+            System.out.println(">>> API Token长度: " + apiToken.length());
 
             // API Token格式: emailId + token，用空格分隔
-            String[] parts = authHeader.split(" ", 2);
+            String[] parts = apiToken.split(" ", 2);
             System.out.println(">>> 分割后的部分数量: " + parts.length);
 
             if (parts.length != 2) {
