@@ -12,7 +12,6 @@ import com.hu.oneclick.model.param.FeatureParam;
 import com.hu.oneclick.server.service.FeatureService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +23,10 @@ import java.util.Map;
 /**
  * @author qingyang
  */
-@Slf4j
 @Tag(name = "故事", description = "故事相关接口")
 @RestController
 @RequestMapping("feature")
+@Slf4j
 public class FeatureController extends BaseController {
 
     private final FeatureService featureService;

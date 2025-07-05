@@ -29,10 +29,10 @@ import java.util.Set;
  * @author vince
  * @since 2022-12-13
  */
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/customFields")
+@Slf4j
 public class CustomFieldsController {
 
     @NonNull

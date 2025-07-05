@@ -76,6 +76,9 @@ public class Feature extends AssignBaseEntity implements Serializable {
     @Schema(description = "更新时间")
     private Date updateTime;
 
+    @Schema(description = "迭代ID")
+    private String sprintId;
+
     public String getTitle() {
         return title;
     }

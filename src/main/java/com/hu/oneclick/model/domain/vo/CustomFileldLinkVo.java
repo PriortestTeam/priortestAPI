@@ -76,8 +76,16 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
         return fieldNameEn;
     }
 
-    public String getCustomFieldId() {
+    @Override
+    public Long getCustomFieldId() {
         return super.getCustomFieldId();
+    }
+
+    private CustomFileldLink entity;
+    private String fieldName;
+
+    public CustomFileldLinkVo() {
+        this.entity = new CustomFileldLink(null);
     }
     public void setEntity(CustomFileldLink customFileldLink) {
         CustomFileldLink entity = new CustomFileldLink();
@@ -125,6 +133,13 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
         this.fieldName = fieldName;
         if (this.entity != null) {
             // 移除错误的方法调用
+        }
+    }
+    public void setCustomFieldId(Long customFieldId) {
+        super.setCustomFieldId(customFieldId);
+        this.entity = new CustomFileldLink(null);
+        if (entity != null) {
+            entity.setCustomFieldId(customFieldId);
         }
     }
 }
