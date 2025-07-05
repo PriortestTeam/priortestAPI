@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hu.oneclick.dao.SysUserTokenDao;
-import com.hu.oneclick.model.domain.SysUserToken;
+import com.hu.oneclick.model.entity.SysUserToken;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.server.user.UserService;
 import org.apache.commons.lang3.StringUtils;
