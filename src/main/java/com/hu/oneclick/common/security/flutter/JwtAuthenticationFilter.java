@@ -273,28 +273,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new BadCredentialsException("EmailId or token is empty");
             }
 
-            // 实现数据库验证逻辑
+            // 实现真正的数据库验证逻辑
             System.out.println(">>> 开始数据库验证流程");
 
             try {
-                // 注入UserService进行验证（这里需要通过ApplicationContext获取）
-                ApplicationContext context = ApplicationContextHolder.getApplicationContext();
-                if (context != null) {
-                    System.out.println(">>> 获取ApplicationContext成功");
-
-                    // 这里需要获取相应的服务来验证用户和Token
-                    // 由于我们没有看到具体的API Token验证服务，我们先记录需要验证的步骤
-                    System.out.println(">>> 需要验证的步骤:");
-                    System.out.println(">>>   1. 验证用户是否存在: " + emailId);
-                    System.out.println(">>>   2. 验证Token是否有效: " + token.substring(0, Math.min(10, token.length())) + "...");
-                    System.out.println(">>>   3. 验证Token是否过期");
-                    System.out.println(">>>   4. 验证用户权限");
-
-                    // TODO: 实际的数据库验证逻辑
-                    System.out.println(">>> 警告: 数据库验证逻辑尚未完全实现，当前直接通过");
-                } else {
-                    System.out.println(">>> 警告: 无法获取ApplicationContext，跳过数据库验证");
+                // 使用已注入的UserService进行验证
+                System.out.println(">>> 调用UserService.getUserAccountInfo进行验证");
+                Boolean isValid = userService.getUserAccountInfo(emailId, token);
+                
+                if (!isValid) {
+                    System.out.println(">>> 验证失败: emailId或token无效");
+                    throw new BadCredentialsException("Invalid emailId or token");
                 }
+                
+                System.out.println(">>> 数据库验证成功: 用户和token都有效");
+                
             } catch (Exception dbException) {
                 System.out.println(">>> 数据库验证过程中发生异常: " + dbException.getMessage());
                 dbException.printStackTrace();
