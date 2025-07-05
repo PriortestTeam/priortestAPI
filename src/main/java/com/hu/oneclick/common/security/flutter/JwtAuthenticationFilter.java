@@ -220,12 +220,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             // 解析JWT token
             DecodedJWT jwt = JWT.decode(token);
-            String username = jwt.getSubject();
-            System.out.println(">>> JWT Token解析成功，用户: " + username);
+            String subject = jwt.getSubject();
+            System.out.println(">>> JWT Subject (emailId): " + subject);
 
-            // JWT token验证不需要查询数据库，直接使用JWT provider验证
-            JwtAuthenticationToken authToken = new JwtAuthenticationToken(jwt, token);
-            return authenticationManager.authenticate(authToken);
+            // 验证Token是否包含必要信息
+            if (subject == null || subject.trim().isEmpty()) {
+                throw new BadCredentialsException("JWT subject is empty");
+            }
+
+            // 验证JWT token是否过期
+            Date expiresAt = jwt.getExpiresAt();
+            if (expiresAt != null && expiresAt.before(new Date())) {
+                throw new BadCredentialsException("JWT token has expired");
+            }
+
+            System.out.println(">>> JWT Token验证成功，用户: " + subject);
+
+            // 创建简单的认证对象，不查询数据库
+            UsernamePasswordAuthenticationToken authToken = 
+                new UsernamePasswordAuthenticationToken(subject, null, new ArrayList<>());
+
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+            System.out.println(">>> 认证信息已设置到SecurityContext");
+
+            return authToken;
 
         } catch (Exception e) {
             System.out.println(">>> JWT Token验证失败: " + e.getMessage());
