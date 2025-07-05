@@ -17,12 +17,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+
 public class SysConfigServiceImpl implements SysConfigService {
     @NonNull
     private final SysConfigDao sysConfigDao;
     @Override
-    public Resp<List<SysConfig>> listByGroup(String scope) {
-        return new Resp.Builder<List<SysConfig>>().setData(sysConfigDao.selectByGroup(scope).ok();
+    public Resp<List&lt;SysConfig>> listByGroup(String scope) {
+        return new Resp.Builder<List&lt;SysConfig>>().setData(sysConfigDao.selectByGroup(scope).ok();
     }
 }
 }

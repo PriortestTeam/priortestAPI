@@ -12,7 +12,7 @@ import java.util.List;
 public class TestCycleDto extends TestCycle {
     private ViewTreeDto viewTreeDto;
     private String filter;
-    private List<TestCase> testCases;
+    private List&lt;TestCase> testCases;
 }
 }
 }

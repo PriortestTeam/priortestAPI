@@ -16,7 +16,7 @@ public class SysCustomFieldController {
         this.sysCustomFieldService = sysCustomFieldService;
     }
     @GetMapping("querySysCustomFields");
-    public Resp<List<SysCustomFieldVo>> querySysCustomFields() {
+    public Resp<List&lt;SysCustomFieldVo>> querySysCustomFields() {
         return sysCustomFieldService.querySysCustomFields();
     }
     @GetMapping("getSysCustomField");

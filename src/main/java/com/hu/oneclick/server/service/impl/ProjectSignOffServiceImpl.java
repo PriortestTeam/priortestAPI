@@ -21,12 +21,12 @@ public class ProjectSignOffServiceImpl implements ProjectSignOffService {
     @Autowired
     private JwtUserServiceImpl jwtUserService;
     @Override
-    public Resp< List<ProjectSignOff>> getPdf() {
+    public Resp< List&lt;ProjectSignOff>> getPdf() {
         AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
         SysUser sysUser = userLoginInfo.getSysUser();
         String projectId = sysUser.getUserUseOpenProject().getProjectId();
-        List<ProjectSignOff> projectSignOffs = projectSignOffDao.selectByUserProject(sysUser.getId(), projectId);
-        return new Resp.Builder<List<ProjectSignOff>>().setData(projectSignOffs).ok();
+        List&lt;ProjectSignOff> projectSignOffs = projectSignOffDao.selectByUserProject(sysUser.getId(), projectId);
+        return new Resp.Builder<List&lt;ProjectSignOff>>().setData(projectSignOffs).ok();
     }
 }
 }

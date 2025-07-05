@@ -3,36 +3,36 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.util.List;
 @Data
-@Schema(description = "角色项目功能DTO");
+@Schema(description = "角色项目功能DTO")
 
 public class RoleProjectFunctionDTO {
-    @Schema(description = "角色ID");
+    @Schema(description = "角色ID")
     private Long roleId;
-    @Schema(description = "项目ID");
+    @Schema(description = "项目ID")
     private Long projectId;
-    @Schema(description = "用户ID");
+    @Schema(description = "用户ID")
     private Long userId;
-    @Schema(description = "功能列表");
-    private List<FunctionModelDTO> functionList;
-    @Schema(description = "角色id");
+    @Schema(description = "功能列表")
+    private List&lt;FunctionModelDTO> functionList;
+    @Schema(description = "角色id")
     private Long  roleId;
-    @Schema(description = "角色名称");
+    @Schema(description = "角色名称")
     private String roleName;
-    @Schema(description = "项目id");
+    @Schema(description = "项目id")
     private Long projectId;
-    @Schema(description = "项目名称");
+    @Schema(description = "项目名称")
     private String projectName;
-    @Schema(description = "用户id");
+    @Schema(description = "用户id")
     private Long userId;
-    @Schema(description = "用户名称");
+    @Schema(description = "用户名称")
     private String userName;
-    @Schema(description = "功能id格式[1][2]");
+    @Schema(description = "功能id格式[1][2]")
     private String value;
-    @Schema(description = "功能权限");
-    private List<FunctionModelDTO> functionList;
-    @Schema(description = "角色ID");
+    @Schema(description = "功能权限")
+    private List&lt;FunctionModelDTO> functionList;
+    @Schema(description = "角色ID")
     private String roleIdStr;
-    @Schema(description = "项目ID");
+    @Schema(description = "项目ID")
     private String projectIdStr;
     public Long getRoleId() {
         return roleId;
@@ -44,7 +44,7 @@ public class RoleProjectFunctionDTO {
         return userId;
     }
     // 修复类型匹配问题
-    public List<FunctionModelDTO> getFunctionList() {
+    public List&lt;FunctionModelDTO> getFunctionList() {
         return functionList;
     }
     public String getRoleName() {
@@ -74,7 +74,7 @@ public class RoleProjectFunctionDTO {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
-    public void setFunctionList(List<FunctionModelDTO> functionList) {
+    public void setFunctionList(List&lt;FunctionModelDTO> functionList) {
         this.functionList = functionList;
     }
     public void setRoleName(String roleName) {
@@ -95,10 +95,10 @@ public class RoleProjectFunctionDTO {
     public void setProjectIdStr(String projectIdStr) {
         this.projectIdStr = projectIdStr;
     }
-    public List<FunctionModelDTO> getFunctionList1() {
+    public List&lt;FunctionModelDTO> getFunctionList1() {
         return functionList;
     }
-    public void setFunctionList1(List<FunctionModelDTO> functionList) {
+    public void setFunctionList1(List&lt;FunctionModelDTO> functionList) {
         this.functionList = functionList;
     }
 }

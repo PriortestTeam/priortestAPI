@@ -50,7 +50,7 @@ public class ProjectController {
         return projectService.queryById(id);
     }
     @PostMapping("queryForProjects");
-    private Resp<List<Project>> queryForProjects(@RequestBody ProjectDto project) {
+    private Resp<List&lt;Project>> queryForProjects(@RequestBody ProjectDto project) {
         return projectService.queryForProjects(project);
     }
     @PostMapping("addProject");
@@ -76,7 +76,7 @@ public class ProjectController {
     }
     @GetMapping("getThePersonInCharge");
     @Operation(summary="获取负责人");
-    public Resp<List<String>> getThePersonInCharge() {
+    public Resp<List&lt;String>> getThePersonInCharge() {
         return sysCustomFieldService.getThePersonInCharge();
     }
 }

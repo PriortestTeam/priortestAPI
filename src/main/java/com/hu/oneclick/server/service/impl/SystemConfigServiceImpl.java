@@ -102,7 +102,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
      * @Date: 2021/10/21
      */
     @Override
-    public List<String> getKeyForGroup(String group) {
+    public List&lt;String> getKeyForGroup(String group) {
         return systemConfigDao.getKeyForGroup(group);
     }
     /** 查UI
@@ -119,12 +119,12 @@ public class SystemConfigServiceImpl implements SystemConfigService {
      * 查所有ui
      *
      * @Param: []
-     * @return: java.util.List<com.hu.oneclick.model.entity.SystemConfig>
+     * @return: java.util.List&lt;com.hu.oneclick.model.entity.SystemConfig>
      * @Author: MaSiyi
      * @Date: 2021/12/27
      */
     @Override
-    public List<SystemConfig> getAllUi() {
+    public List&lt;SystemConfig> getAllUi() {
         return systemConfigDao.getAllUi();
     }
 }

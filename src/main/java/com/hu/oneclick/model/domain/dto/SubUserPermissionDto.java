@@ -24,7 +24,7 @@ public class SubUserPermissionDto implements VerifyParam,Serializable {
     /**
      * 添加使用
      */
-    private List<SysProjectPermission> projectPermissions;
+    private List&lt;SysProjectPermission> projectPermissions;
     @Override
     public void verify() throws BizException {
         if (StringUtils.isEmpty(subUserDto.getId(){
@@ -45,10 +45,10 @@ public class SubUserPermissionDto implements VerifyParam,Serializable {
     public void setProject(Project project) {
         this.project = project;
     }
-    public List<SysProjectPermission> getProjectPermissions() {
+    public List&lt;SysProjectPermission> getProjectPermissions() {
         return projectPermissions;
     }
-    public void setProjectPermissions(List<SysProjectPermission> projectPermissions) {
+    public void setProjectPermissions(List&lt;SysProjectPermission> projectPermissions) {
         this.projectPermissions = projectPermissions;
     }
 }

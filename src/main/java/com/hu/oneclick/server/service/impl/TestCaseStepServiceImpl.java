@@ -23,11 +23,12 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
+
 public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCaseStep> implements TestCaseStepService {
     @Resource
     private RelationService relationService;
     @Override
-    public List<TestCaseStep> list(TestCaseStepParam param) {
+    public List&lt;TestCaseStep> list(TestCaseStepParam param) {
         return this.lambdaQuery()
                 .eq(param.getTestCaseId() != null, TestCaseStep::getTestCaseId, param.getTestCaseId()
                 .like(StrUtil.isNotBlank(param.getTestStep(), TestCaseStep::getTestStep, param.getTestStep()
@@ -37,7 +38,7 @@ public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCa
     }
     @Override
     public void save(TestCaseStepSaveDto dto) {
-        List<TestCaseStep> testCaseStepList = new ArrayList<>();
+        List&lt;TestCaseStep> testCaseStepList = new ArrayList&lt;>();
         for (TestCaseStepSaveSubDto step : dto.getSteps() {
             TestCaseStep testCaseStep = new TestCaseStep();
             BeanUtil.copyProperties(step, testCaseStep);
@@ -53,7 +54,7 @@ public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCa
         // 更新的测试用例步骤
         this.saveOrUpdateBatch(testCaseStepList);
         // 更新绑定关系
-        List<String> testCaseStepIdList = testCaseStepList.stream().map(TestCaseStep::getId).map(String::valueOf).collect(Collectors.toList();
+        List&lt;String> testCaseStepIdList = testCaseStepList.stream().map(TestCaseStep::getId).map(String::valueOf).collect(Collectors.toList();
         relationService.saveRelationBatchWithClear(dto.getTestCaseId().toString(), testCaseStepIdList, RelationCategoryEnum.TEST_CASE_TO_STEP.getValue();
 //        if (CollUtil.isEmpty(testCaseStepIdList) {
 //            // 如果为空,说明需要删除该测试用例下的所有步骤
@@ -64,7 +65,7 @@ public class TestCaseStepServiceImpl extends ServiceImpl<TestCaseStepDao, TestCa
     }
     @Override
     public void update(TestCaseStepSaveDto dto) {
-        List<TestCaseStep> testCaseStepList = new ArrayList<>();
+        List&lt;TestCaseStep> testCaseStepList = new ArrayList&lt;>();
         for (TestCaseStepSaveSubDto step : dto.getSteps() {
             TestCaseStep testCaseStep = new TestCaseStep();
             BeanUtil.copyProperties(step, testCaseStep);

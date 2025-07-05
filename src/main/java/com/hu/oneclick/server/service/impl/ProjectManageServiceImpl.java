@@ -25,6 +25,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
+
 public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, ProjectManage> implements ProjectManageService {
     private final JwtUserServiceImpl jwtUserService;
     private final SysUserProjectDao sysUserProjectDao;
@@ -33,7 +34,7 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
         this.sysUserProjectDao = sysUserProjectDao;
     }
     @Override
-    public List<ProjectManage> listAll(ProjectManageParam param) {
+    public List&lt;ProjectManage> listAll(ProjectManageParam param) {
         param.setRoomId(jwtUserService.getUserLoginInfo().getSysUser().getRoomId();
         return this.list(param.getQueryCondition();
     }
@@ -70,8 +71,8 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
         return projectManage;
     }
     @Override
-    public void clone(List<Long> ids) {
-        List<ProjectManage> projectManageList = new ArrayList<>();
+    public void clone(List&lt;Long> ids) {
+        List&lt;ProjectManage> projectManageList = new ArrayList&lt;>();
         for (Long id : ids) {
             ProjectManage projectManage = baseMapper.selectById(id);
             if (projectManage == null) {

@@ -18,7 +18,7 @@ public class MailDto {
     //html模板名称，在项目templates/mailtpl/下
     private String templateHtmlName;
     //附加，value 文件的绝对地址/动态模板数据
-    private Map<String, Object> attachment;
+    private Map&lt;String, Object> attachment;
 }
 }
 }

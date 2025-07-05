@@ -18,6 +18,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
+
 public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> implements UserCaseService {
     @Override
     public boolean insertUserCase(UserCaseParam userCaseParam) {
@@ -42,7 +43,7 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
         return false;
     }
     @Override
-    public List<UserCaseVo> listData(UserCaseParam userCaseParam) {
+    public List&lt;UserCaseVo> listData(UserCaseParam userCaseParam) {
         LambdaQueryWrapper<UserCaseDto> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.like(StrUtil.isNotBlank(userCaseParam.getTitle(), UserCaseDto::getTitle, userCaseParam.getTitle()
                 .eq(StrUtil.isNotBlank(userCaseParam.getUseCategory(), UserCaseDto::getUseCategory, userCaseParam.getUseCategory()
@@ -50,8 +51,8 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
                 //.eq(StrUtil.isNotEmpty(userCaseParam.getLevel(), UserCaseDto::getLevel, userCaseParam.getLevel()
                 //.eq(StrUtil.isNotBlank(userCaseParam.getFeatureId(), UserCaseDto::getFeatureId, userCaseParam.getFeatureId();
                 .eq(StrUtil.isNotBlank(Long.toString(userCaseParam.getFeatureId(), UserCaseDto::getFeatureId, userCaseParam.getFeatureId();
-        List<UserCaseDto> list = this.baseMapper.selectList(queryWrapper);
-        List<UserCaseVo> resultList = BeanUtil.copyToList(list, UserCaseVo.class);
+        List&lt;UserCaseDto> list = this.baseMapper.selectList(queryWrapper);
+        List&lt;UserCaseVo> resultList = BeanUtil.copyToList(list, UserCaseVo.class);
         resultList.forEach(obj -> {
             //obj.setCustomFieldDatas(obj.getUsecaseExpand();
             obj.getUsecaseExpand();

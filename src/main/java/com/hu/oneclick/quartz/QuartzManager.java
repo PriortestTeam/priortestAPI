@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import jakarta.annotation.Resource;
 import java.util.*;
 @Component
+
 public class QuartzManager {
     @Resource
     private Scheduler scheduler;
@@ -18,7 +19,7 @@ public class QuartzManager {
      * @param jobGroupName 任务组名称
      * @param jobCron      cron表达式
      */
-    public void addOrUpdateJob(Class<? extends QuartzJobBean> jobClass, String jobName, String jobGroupName, String jobCron, Map<String, Object> jobDataMap) {
+    public void addOrUpdateJob(Class<? extends QuartzJobBean> jobClass, String jobName, String jobGroupName, String jobCron, Map&lt;String, Object> jobDataMap) {
         try {
             TriggerKey triggerKey = TriggerKey.triggerKey(jobName, jobGroupName);
             CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
@@ -42,7 +43,7 @@ public class QuartzManager {
      * @param jobGroupName 任务组名
      * @param jobCron      cron表达式(如：0/5 * * * * ? )
      */
-    public void addJob(Class<? extends QuartzJobBean> jobClass, String jobName, String jobGroupName, String jobCron, Map<String, Object> jobDataMap) throws SchedulerException {
+    public void addJob(Class<? extends QuartzJobBean> jobClass, String jobName, String jobGroupName, String jobCron, Map&lt;String, Object> jobDataMap) throws SchedulerException {
         JobDetail jobDetail = JobBuilder.newJob(jobClass).withIdentity(jobName, jobGroupName).setJobData(new JobDataMap(jobDataMap).build();
         Trigger trigger = TriggerBuilder.newTrigger().withIdentity(jobName, jobGroupName).usingJobData(new JobDataMap(jobDataMap)
                 .startAt(DateBuilder.futureDate(1, DateBuilder.IntervalUnit.SECOND)
@@ -85,7 +86,7 @@ public class QuartzManager {
             e.printStackTrace();
         }
     }
-    public void updateJob(String jobName, String jobGroupName, String jobTime, Map<String, Object> jobDataMap) throws SchedulerException {
+    public void updateJob(String jobName, String jobGroupName, String jobTime, Map&lt;String, Object> jobDataMap) throws SchedulerException {
         TriggerKey triggerKey = TriggerKey.triggerKey(jobName, jobGroupName);
         CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
         trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).usingJobData(new JobDataMap(jobDataMap)
@@ -134,12 +135,12 @@ public class QuartzManager {
         JobKey jobKey = JobKey.jobKey(jobName, jobGroupName);
         scheduler.triggerJob(jobKey);
     }
-    public List<JobDetails> queryAllJobBean() throws SchedulerException {
+    public List&lt;JobDetails> queryAllJobBean() throws SchedulerException {
         GroupMatcher<JobKey> matcher = GroupMatcher.anyJobGroup();
         Set<JobKey> jobKeys = scheduler.getJobKeys(matcher);
-        List<JobDetails> jobList = new ArrayList<>();
+        List&lt;JobDetails> jobList = new ArrayList&lt;>();
         for (JobKey jobKey : jobKeys) {
-            List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+            List&lt;? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
             for (Trigger trigger : triggers) {
                 JobDetails jobDetails = new JobDetails();
                 if (trigger instanceof CronTrigger) {
@@ -162,12 +163,12 @@ public class QuartzManager {
         }
         return jobList;
     }
-    public List<JobDetails> queryAllJobBeanByGroup(String groupName) throws SchedulerException {
+    public List&lt;JobDetails> queryAllJobBeanByGroup(String groupName) throws SchedulerException {
         GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals(groupName);
         Set<JobKey> jobKeys = scheduler.getJobKeys(matcher);
-        List<JobDetails> jobList = new ArrayList<>();
+        List&lt;JobDetails> jobList = new ArrayList&lt;>();
         for (JobKey jobKey : jobKeys) {
-            List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+            List&lt;? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
             for (Trigger trigger : triggers) {
                 JobDetails jobDetails = new JobDetails();
                 if (trigger instanceof CronTrigger) {
@@ -194,7 +195,7 @@ public class QuartzManager {
         JobDetails jobDetails = new JobDetails();
         try {
             JobKey jobKey = JobKey.jobKey(jobName, jobGroupName);
-            List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+            List&lt;? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
             for (Trigger trigger : triggers) {
                 if (trigger instanceof CronTrigger) {
                     CronTrigger cronTrigger = (CronTrigger) trigger;
@@ -222,16 +223,16 @@ public class QuartzManager {
      *
      * @return
      */
-    public List<Map<String, Object>> queryAllJob() {
-        List<Map<String, Object>> jobList = null;
+    public List&lt;Map&lt;String, Object>> queryAllJob() {
+        List&lt;Map&lt;String, Object>> jobList = null;
         try {
             GroupMatcher<JobKey> matcher = GroupMatcher.anyJobGroup();
             Set<JobKey> jobKeys = scheduler.getJobKeys(matcher);
-            jobList = new ArrayList<>();
+            jobList = new ArrayList&lt;>();
             for (JobKey jobKey : jobKeys) {
-                List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+                List&lt;? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
                 for (Trigger trigger : triggers) {
-                    Map<String, Object> map = new HashMap<>();
+                    Map&lt;String, Object> map = new HashMap&lt;>();
                     map.put("jobName", jobKey.getName();
                     map.put("jobGroupName", jobKey.getGroup();
                     map.put("description", "trigger:" + trigger.getKey();
@@ -255,13 +256,13 @@ public class QuartzManager {
      *
      * @return
      */
-    public List<Map<String, Object>> queryRunJon() {
-        List<Map<String, Object>> jobList = null;
+    public List&lt;Map&lt;String, Object>> queryRunJon() {
+        List&lt;Map&lt;String, Object>> jobList = null;
         try {
-            List<JobExecutionContext> executingJobs = scheduler.getCurrentlyExecutingJobs();
-            jobList = new ArrayList<>(executingJobs.size();
+            List&lt;JobExecutionContext> executingJobs = scheduler.getCurrentlyExecutingJobs();
+            jobList = new ArrayList&lt;>(executingJobs.size();
             for (JobExecutionContext executingJob : executingJobs) {
-                Map<String, Object> map = new HashMap<>();
+                Map&lt;String, Object> map = new HashMap&lt;>();
                 JobDetail jobDetail = executingJob.getJobDetail();
                 JobKey jobKey = jobDetail.getKey();
                 Trigger trigger = executingJob.getTrigger();

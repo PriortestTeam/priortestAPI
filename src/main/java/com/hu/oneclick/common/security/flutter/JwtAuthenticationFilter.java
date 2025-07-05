@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
-    private List<RequestMatcher> permissiveRequestMatchers = new ArrayList<>();
+    private List&lt;RequestMatcher> permissiveRequestMatchers = new ArrayList&lt;>();
     @Autowired
     private UserService userService;
     @Autowired
@@ -203,14 +203,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new BadCredentialsException("EmailId or token is empty");
             }
             // 通过emailId查询用户
-            List<SysUser> users = sysUserDao.queryByLikeEmail(emailId);
+            List&lt;SysUser> users = sysUserDao.queryByLikeEmail(emailId);
             if (users.isEmpty() {
                 throw new BadCredentialsException("User not found: " + emailId);
             }
             SysUser user = users.get(0);
             System.out.println(">>> 找到用户: " + user.getEmail() + ", ID: " + user.getId();
             // 查询用户的API Token
-            List<SysUserToken> userTokens = sysUserTokenDao.selectByUserIdAndToken(user.getId(), tokenValue);
+            List&lt;SysUserToken> userTokens = sysUserTokenDao.selectByUserIdAndToken(user.getId(), tokenValue);
             if (userTokens.isEmpty() {
                 throw new BadCredentialsException("Invalid API token for user: " + emailId);
             }
@@ -236,7 +236,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             // 创建认证对象
             UsernamePasswordAuthenticationToken authToken = 
-                new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList<>();
+                new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList&lt;>();
             return authToken;
         } catch (Exception e) {
             System.out.println(">>> API Token验证失败: " + e.getMessage();
@@ -261,7 +261,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println(">>> API Token验证成功，用户: " + emailId);
             // 创建简单的认证对象
             UsernamePasswordAuthenticationToken authToken = 
-                new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList<>();
+                new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList&lt;>();
             SecurityContextHolder.getContext().setAuthentication(authToken);
             System.out.println(">>> 认证信息已设置到SecurityContext");
             return authToken;

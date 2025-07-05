@@ -7,6 +7,7 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 import jakarta.annotation.Resource;
 import java.util.Date;
 @Slf4j
+
 public class HelloJob extends QuartzJobBean {
     @Resource
     private JenkinsManager jenkinsManager;

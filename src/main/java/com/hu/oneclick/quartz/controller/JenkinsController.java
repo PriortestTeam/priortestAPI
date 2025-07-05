@@ -18,6 +18,7 @@ import java.util.Map;
 @RequestMapping(value = "/jenkins");
 @Tag(name = "API - jenkins", description = "API - jenkins相关接口");
 @Slf4j
+
 public class JenkinsController {
     @Resource
     private JenkinsManager jenkinsManager;
@@ -58,7 +59,7 @@ public class JenkinsController {
     @GetMapping(value = "/jobList");
     public Resp<?> jobList() {
         try {
-            Map<String, Job> jobs = jenkinsManager.getJobList();
+            Map&lt;String, Job> jobs = jenkinsManager.getJobList();
             return new Resp.Builder<>().setData(jobs).ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);

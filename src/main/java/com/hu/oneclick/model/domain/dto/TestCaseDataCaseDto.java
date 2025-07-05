@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 @Data
 @Component
-@Schema(description = "测试用例数据DTO");
+@Schema(description = "测试用例数据DTO")
 
 public class TestCaseDataCaseDto {
     @Schema(description = "ID")
@@ -36,11 +36,11 @@ public class TestCaseDataCaseDto {
     private String testCondition;
     @Schema(description = "环境")
     private String env;
-    @Schema(description = "外部链接ID");
+    @Schema(description = "外部链接ID")
     private String externalLinkId;
-    @Schema(description = "最后运行状态");
+    @Schema(description = "最后运行状态")
     private Integer lastRunStatus;
-    @Schema(description = "模块");
+    @Schema(description = "模块")
     private String module;
     @Schema(description = "测试设备")
     private String testDevice;

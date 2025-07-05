@@ -10,9 +10,9 @@ import java.util.List;
 @Data
 
 public class ImportTestCaseDto  implements Serializable {
-    private List<Object> error;
-    private List<Object> warning;
-    private List<Object> success;
+    private List&lt;Object> error;
+    private List&lt;Object> warning;
+    private List&lt;Object> success;
 }
 }
 }

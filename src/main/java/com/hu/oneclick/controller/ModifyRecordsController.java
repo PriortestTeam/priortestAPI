@@ -19,7 +19,7 @@ public class ModifyRecordsController {
         this.modifyRecordsService = modifyRecordsService;
     }
     @PostMapping("queryList");
-    private Resp<List<ModifyRecord>> queryList(@RequestBody ModifyRecord modifyRecord){
+    private Resp<List&lt;ModifyRecord>> queryList(@RequestBody ModifyRecord modifyRecord){
         return modifyRecordsService.queryList(modifyRecord);
     }
 }

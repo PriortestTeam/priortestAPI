@@ -62,11 +62,11 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
      * 项目绑定的权限
      */
 //    private String operationAuthIds;
-//    List<SysOperationAuthority> sysOperationAuthorities;
+//    List&lt;SysOperationAuthority> sysOperationAuthorities;
     /**
      * 自定义字段值
      */
-//    private List<CustomFieldData> customFieldDatas;
+//    private List&lt;CustomFieldData> customFieldDatas;
     @Override
     public void verify() throws BizException {
         if (StringUtils.isEmpty(title) {

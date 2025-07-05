@@ -27,10 +27,10 @@ public class JsonLoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException {
         String token = jwtUserServiceImpl.saveUserLoginInfo((AuthLoginUser) authentication.getPrincipal();
         response.setContentType("application/json;charset=UTF-8");
-        Map<String,String> result = new HashMap<>(2);
+        Map&lt;String,String> result = new HashMap&lt;>(2);
         result.put("token",token);
         result.put("msg",SysConstantEnum.LOGIN_SUCCESS.getValue();
-        Resp<Map<String,String>> ok = new Resp.Builder<Map<String,String>>().setData(result).ok();
+        Resp<Map&lt;String,String>> ok = new Resp.Builder<Map&lt;String,String>>().setData(result).ok();
         String s = JSON.toJSONString(ok);
         response.getWriter().write(s);
     }

@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
  * @date 2023/07/11
  */
 @Slf4j
+
 public class BuildJobTask extends QuartzJobBean {
     @Resource
     private JenkinsManager jenkinsManager;
@@ -32,7 +33,7 @@ public class BuildJobTask extends QuartzJobBean {
             // 获取参数列表
             JobDataMap jobDataMap = context.getMergedJobDataMap();
             String jenkinsJobName = jobDataMap.getString("jenkinsJobName");
-//            Map<String, Object> jenkinsParams = (Map<String, Object>) jobDataMap.get("jenkinsParams");
+//            Map&lt;String, Object> jenkinsParams = (Map&lt;String, Object>) jobDataMap.get("jenkinsParams");
             // 初始化 Jenkins 服务
             initJenkinsServer(jenkinsJobName);
             // 当前时间

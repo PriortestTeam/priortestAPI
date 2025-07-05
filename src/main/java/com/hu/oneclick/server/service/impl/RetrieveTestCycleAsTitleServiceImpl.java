@@ -12,6 +12,7 @@ import jakarta.annotation.Resource;
  * @author cheng
  */
 @Service
+
 public class RetrieveTestCycleAsTitleServiceImpl implements RetrieveTestCycleAsTitleService {
     @NonNull
     @Resource

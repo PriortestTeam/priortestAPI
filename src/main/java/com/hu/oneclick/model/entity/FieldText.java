@@ -21,7 +21,7 @@ public class FieldText extends CustomField implements Serializable {
      * 设定字符的长度
      */
     private Integer length = 30;
-    private List<String> defaultValues;
+    private List&lt;String> defaultValues;
     @Override
     public void subVerify(){
         super.verify();
@@ -73,10 +73,10 @@ public class FieldText extends CustomField implements Serializable {
     public void setLength(Integer length) {
         this.length = length;
     }
-    public List<String> getDefaultValues() {
+    public List&lt;String> getDefaultValues() {
         return defaultValues;
     }
-    public void setDefaultValues(List<String> defaultValues) {
+    public void setDefaultValues(List&lt;String> defaultValues) {
         this.defaultValues = defaultValues;
     }
 }

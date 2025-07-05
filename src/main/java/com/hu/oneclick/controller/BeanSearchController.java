@@ -76,27 +76,27 @@ public class BeanSearchController {
             log.error("获取项目异常");
             return new Resp.Builder<PageInfo<?>>().ok();
         }
-        List<List<OneFilter>> lst = new ArrayList<>();
+        List&lt;List&lt;OneFilter>> lst = new ArrayList&lt;>();
         // 查询视图
         View view1 = viewService.getById(viewId);
         this.processAllFilter(view1, lst);
         if (CollUtil.isEmpty(lst) {
             return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(mapSearcher.searchAll(scopeClass, MapUtils.builder().build().ok();
         }
-        Map<String, Object> params = this.processParam(lst, projectId);
-        List<Map<String, Object>> list = mapSearcher.searchAll(scopeClass, params);
+        Map&lt;String, Object> params = this.processParam(lst, projectId);
+        List&lt;Map&lt;String, Object>> list = mapSearcher.searchAll(scopeClass, params);
         // 物理分页
         return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(list).ok();
     }
-    private Map<String, Object> processParam(List<List<OneFilter>> lst, String projectId){
-        Map<String, Object> params = new LinkedHashMap<>();
+    private Map&lt;String, Object> processParam(List&lt;List&lt;OneFilter>> lst, String projectId){
+        Map&lt;String, Object> params = new LinkedHashMap&lt;>();
         params.put("P0.projectId", projectId);
         params.put("P0.projectId-op", "eq");
         // 参数增加逻辑关系
         StringBuilder gexpr = new StringBuilder();
         gexpr.append("P0");
         int j =0;
-        for(List<OneFilter> oneFilters : lst){
+        for(List&lt;OneFilter> oneFilters : lst){
             gexpr.append("&(");
             for (int i = 0; i < oneFilters.size(); i++) {
                 String fieldName = StrUtil.format("A_{}_{}", j, i);
@@ -115,7 +115,7 @@ public class BeanSearchController {
         params.put("gexpr", gexpr.toString();
         return params;
     }
-    private void processAllFilter(View view, List<List<OneFilter>> lst){
+    private void processAllFilter(View view, List&lt;List&lt;OneFilter>> lst){
         if(StringUtils.isNotEmpty(view.getParentId() && view.getLevel() > 0){
             View tempView = viewService.getById(view.getParentId();
             this.processAllFilter(tempView, lst);

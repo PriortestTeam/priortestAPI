@@ -16,7 +16,7 @@ public class CustomFieldController {
     }
     //custom begin
     @PostMapping("queryCustomList")
-    public Resp<List<CustomField>> queryCustomList(@RequestBody CustomField customField){
+    public Resp<List&lt;CustomField>> queryCustomList(@RequestBody CustomField customField){
         return customFieldService.queryCustomList(customField);
     }
     //custom end

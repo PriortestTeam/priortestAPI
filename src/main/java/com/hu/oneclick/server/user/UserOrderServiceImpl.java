@@ -179,12 +179,12 @@ public class UserOrderServiceImpl implements UserOrderService {
      * @Date: 2021/10/21
      */
     @Override
-    public Resp<List<String>> getPaymentMethod() {
-        List<String> keyForGroup = systemConfigService.getKeyForGroup(OneConstant.SystemConfigGroup.PAYMENTTYPE);
-        return new Resp.Builder<List<String>>().setData(keyForGroup).ok();
+    public Resp<List&lt;String>> getPaymentMethod() {
+        List&lt;String> keyForGroup = systemConfigService.getKeyForGroup(OneConstant.SystemConfigGroup.PAYMENTTYPE);
+        return new Resp.Builder<List&lt;String>>().setData(keyForGroup).ok();
     }
     @Override
-    public List<SysUserOrder> listOrder(String userId) {
+    public List&lt;SysUserOrder> listOrder(String userId) {
         return sysUserOrderDao.listOrder(userId);
     }
 }

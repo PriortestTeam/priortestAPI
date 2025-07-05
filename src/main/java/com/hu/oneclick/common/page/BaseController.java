@@ -19,7 +19,7 @@ public class BaseController {
     /**
      * 转换分页数据
      */
-    protected <E, T> PageInfo<T> convertPageInfo(List<E> list, Class<T> tClass) {
+    protected <E, T> PageInfo<T> convertPageInfo(List&lt;E> list, Class<T> tClass) {
         return PageUtil.convertPageInfo(list, tClass);
     }
     /**

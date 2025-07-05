@@ -39,7 +39,7 @@ public class CustomFieldVo {
     @Valid
     private Attributes attributes;
     private String possibleValue;
-    private List<ComponentAttributesVo> componentAttributes;
+    private List&lt;ComponentAttributesVo> componentAttributes;
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

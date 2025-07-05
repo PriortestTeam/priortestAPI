@@ -33,7 +33,7 @@ public class UserOrderController {
     }
     @Operation(summary = "查询付款方式");
     @PostMapping("getPaymentMethod");
-    public Resp<List<String>> getPaymentMethod() {
+    public Resp<List&lt;String>> getPaymentMethod() {
         return userOrderService.getPaymentMethod();
     }
 }

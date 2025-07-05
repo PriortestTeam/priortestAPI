@@ -12,7 +12,7 @@ public class SysCustomFieldVo implements VerifyParam {
     /**
      *   返回使用，下拉框数据
      */
-    private List<String> mergeValues;
+    private List&lt;String> mergeValues;
     @Override
     public void verify() throws BizException {
         if(StringUtils.isEmpty(sysCustomField.getId(){
@@ -38,10 +38,10 @@ public class SysCustomFieldVo implements VerifyParam {
     public void setSysCustomFieldExpand(SysCustomFieldExpand sysCustomFieldExpand) {
         this.sysCustomFieldExpand = sysCustomFieldExpand;
     }
-    public List<String> getMergeValues() {
+    public List&lt;String> getMergeValues() {
         return mergeValues;
     }
-    public void setMergeValues(List<String> mergeValues) {
+    public void setMergeValues(List&lt;String> mergeValues) {
         this.mergeValues = mergeValues;
     }
 }

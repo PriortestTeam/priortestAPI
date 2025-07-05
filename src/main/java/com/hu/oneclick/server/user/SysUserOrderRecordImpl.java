@@ -19,6 +19,7 @@ import java.util.List;
  * @since JDK 1.8.0
  */
 @Service
+
 public class SysUserOrderRecordImpl implements SysUserOrderRecordService {
     @Autowired
     private SysUserOrderRecordDao sysUserOrderRecordDao;
@@ -55,14 +56,14 @@ public class SysUserOrderRecordImpl implements SysUserOrderRecordService {
      * @Date: 2021/10/22
      */
     @Override
-    public Resp<List<SysUserOrderRecord>> getUserOrderRecord() {
+    public Resp<List&lt;SysUserOrderRecord>> getUserOrderRecord() {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        List<SysUserOrder> sysUserOrders = userOrderService.listOrder(sysUser.getId();
+        List&lt;SysUserOrder> sysUserOrders = userOrderService.listOrder(sysUser.getId();
         for (SysUserOrder sysUserOrder : sysUserOrders) {
             calculateThisMonthSDiscount(sysUserOrder.getOrderId(), sysUser);
         }
-        List<SysUserOrderRecord> sysUserOrderRecords = sysUserOrderRecordDao.getUserOrderRecord(sysUser.getId();
-        return new Resp.Builder<List<SysUserOrderRecord>>().setData(sysUserOrderRecords).ok();
+        List&lt;SysUserOrderRecord> sysUserOrderRecords = sysUserOrderRecordDao.getUserOrderRecord(sysUser.getId();
+        return new Resp.Builder<List&lt;SysUserOrderRecord>>().setData(sysUserOrderRecords).ok();
     }
     /**
      * 计算本月折扣

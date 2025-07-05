@@ -6,33 +6,34 @@ import lombok.Data;
  * sys_function
  * @author 
  */
-@Schema(description = "功能模块表");
+@Schema(description = "功能模块表")
 @Data
+
 public class SysFunction implements Serializable {
     /**
      * 主键
      */
-    @Schema(description = "主键");
+    @Schema(description = "主键")
     private Long id;
     /**
      * 编号
      */
-    @Schema(description = "编号");
+    @Schema(description = "编号")
     private String number;
     /**
      * 名称
      */
-    @Schema(description = "名称");
+    @Schema(description = "名称")
     private String name;
     /**
      * 上级编号
      */
-    @Schema(description = "上级编号");
+    @Schema(description = "上级编号")
     private String parentNumber;
     /**
      * 链接
      */
-    @Schema(description = "链接");
+    @Schema(description = "链接")
     private String url;
     /**
      * 组件

@@ -16,7 +16,7 @@ public class AttachmentController {
         this.attachmentService = attachmentService;
     }
     @GetMapping("list")
-    public Resp<List<Attachment>> list(@RequestParam String type, @RequestParam String linkId){
+    public Resp<List&lt;Attachment>> list(@RequestParam String type, @RequestParam String linkId){
         return attachmentService.list(type,linkId);
     }
     @PostMapping("addAttachment")

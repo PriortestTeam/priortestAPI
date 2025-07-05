@@ -28,7 +28,7 @@ public class SprintController extends BaseController {
     }
     @Operation(summary="列表");
     @PostMapping("/list");
-    public Resp<PageInfo<Sprint>> list(@RequestBody java.util.Map<String, Object> param,
+    public Resp<PageInfo<Sprint>> list(@RequestBody java.util.Map&lt;String, Object> param,
                                        @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
                                        @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
         int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString() : 1);

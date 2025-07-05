@@ -15,6 +15,7 @@ import java.util.List;
  * @author qingyang
  */
 @Service
+
 public class QueryFilterServiceImpl implements QueryFilterService {
     private final ViewDao viewDao;
     public QueryFilterServiceImpl(ViewDao viewDao) {
@@ -25,16 +26,16 @@ public class QueryFilterServiceImpl implements QueryFilterService {
         if (viewTr == null){
             return null;
         }
-        List<ViewTreeDto> viewTreeDtoList = viewDao.queryViewTreeById(masterId, viewTr.getId().toString();
+        List&lt;ViewTreeDto> viewTreeDtoList = viewDao.queryViewTreeById(masterId, viewTr.getId().toString();
         if (viewTreeDtoList == null || viewTreeDtoList.size() <= 0){
             return null;
         }
         StringBuilder rs = new StringBuilder();
         //1 找出自己及所有后代的Filter
-        List<View> listView = antiRecursion(viewTreeDtoList.get(0),null);
+        List&lt;View> listView = antiRecursion(viewTreeDtoList.get(0),null);
         //2 取 对象
         for (View view : listView) {
-            List<OneFilter> oneFilters = TwoConstant.convertToList(view.getFilter(), OneFilter.class);
+            List&lt;OneFilter> oneFilters = TwoConstant.convertToList(view.getFilter(), OneFilter.class);
             //3 根据字段类型进行sql 拼接
             rs.append(antiOneFilter(oneFilters);
             rs.append(" ");
@@ -44,7 +45,7 @@ public class QueryFilterServiceImpl implements QueryFilterService {
     /**
      * 反解oneFilters
      */
-    private String antiOneFilter(List<OneFilter> oneFilters){
+    private String antiOneFilter(List&lt;OneFilter> oneFilters){
         StringBuilder rs = new StringBuilder();
         if (oneFilters == null || oneFilters.size() <=0){
             return "";
@@ -92,18 +93,18 @@ public class QueryFilterServiceImpl implements QueryFilterService {
      * @param listView
      * @return
      */
-    private List<View> antiRecursion(ViewTreeDto viewTr, List<View> listView){
+    private List&lt;View> antiRecursion(ViewTreeDto viewTr, List&lt;View> listView){
         if (viewTr == null){return null;}
         if (listView == null){
-            listView = new ArrayList<>();
+            listView = new ArrayList&lt;>();
         }
         View view = new View();
         BeanUtils.copyProperties(viewTr,view);
         listView.add(0,view);
-        List<ViewTreeDto> childViews = viewTr.getChildViews();
+        List&lt;ViewTreeDto> childViews = viewTr.getChildViews();
         if(childViews != null){
             for (ViewTreeDto childView : childViews) {
-                List<View> resultViews = antiRecursion(childView, listView);
+                List&lt;View> resultViews = antiRecursion(childView, listView);
             }
         }
         return listView;

@@ -26,6 +26,7 @@ import java.util.List;
  * @author qingyang
  */
 @Service
+
 public class SettingPermissionServiceImpl implements SettingPermissionService {
     private final static Logger logger = LoggerFactory.getLogger(SettingPermissionServiceImpl.class);
     private final JwtUserServiceImpl jwtUserServiceImpl;
@@ -66,11 +67,11 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         }
         //设置权限
         //获取权限
-//        List<SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
+//        List&lt;SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
         //没有选中的跳过
 //        if(project.getOperationAuthIds() != null){
 //            //选中的权限id
-//            List<String> selects =  Arrays.asList(project.getOperationAuthIds().split(",");
+//            List&lt;String> selects =  Arrays.asList(project.getOperationAuthIds().split(",");
 //            sysOperationAuthority.forEach(j -> {
 //                //遍历父级
 //                selects.forEach(k -> {
@@ -79,7 +80,7 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
 //                    }
 //                });
 //                //遍历子级
-//                List<SysOperationAuthority> childList = j.getChildList();
+//                List&lt;SysOperationAuthority> childList = j.getChildList();
 //                if (childList != null){
 //                    childList.forEach(s ->{
 //                        selects.forEach(k -> {
@@ -122,20 +123,20 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         }
     }
     @Override
-    public Resp<List<Project>> getProjects(String subUserId) {
-        List<Project> result = null;
+    public Resp<List&lt;Project>> getProjects(String subUserId) {
+        List&lt;Project> result = null;
 //        SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
 //        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId();
 //        if (subUserDto.getProjectIdStr().equals(subUserDto.getAll(){
 //            result = projectDao.queryAllProjects(masterUser.getId();
 //        }else if(StringUtils.isNotEmpty(subUserDto.getProjectIdStr(){
-//            List<String> ids = Arrays.asList(subUserDto.getProjectIdStr().split(subUserDto.getDelimiter();
+//            List&lt;String> ids = Arrays.asList(subUserDto.getProjectIdStr().split(subUserDto.getDelimiter();
 //            if (ids.size() <= 0){
-//                return new Resp.Builder<List<Project>>().buildResult("该用户未分配项目。");
+//                return new Resp.Builder<List&lt;Project>>().buildResult("该用户未分配项目。");
 //            }
 //            result = projectDao.queryInProjectIdsAndPermission(ids,masterUser.getId();
 //        }
-        return new Resp.Builder<List<Project>>().setData(result).ok();
+        return new Resp.Builder<List&lt;Project>>().setData(result).ok();
     }
     /**
      * 更新用户的缓存（权限列表）信息

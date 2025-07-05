@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Data
 @EqualsAndHashCode(callSuper=false);
+
 public class TestCaseTemplateJson extends BaseEntity implements VerifyParam , Serializable {
     private static final long serialVersionUID = 1L;
     /**

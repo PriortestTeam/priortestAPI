@@ -22,11 +22,12 @@ import java.util.Map;
  */
 @Service
 @Slf4j
+
 public class ViewFilterServiceImpl implements ViewFilterService {
     @Resource
     private ViewService viewService;
     @Override
-    public Map<String, Object> getFilterParamsByViewId(String viewId, String projectId) {
+    public Map&lt;String, Object> getFilterParamsByViewId(String viewId, String projectId) {
         if (StrUtil.isBlank(viewId) {
             return null;
         }
@@ -36,7 +37,7 @@ public class ViewFilterServiceImpl implements ViewFilterService {
                 log.warn("视图不存在，viewId: {}", viewId);
                 return null;
             }
-            List<List<OneFilter>> filterList = processAllFilters(view);
+            List&lt;List&lt;OneFilter>> filterList = processAllFilters(view);
             return buildQueryParams(filterList, projectId);
         } catch (Exception e) {
             log.error("获取视图过滤参数失败，viewId: {}, projectId: {}", viewId, projectId, e);
@@ -44,24 +45,24 @@ public class ViewFilterServiceImpl implements ViewFilterService {
         }
     }
     @Override
-    public List<List<OneFilter>> processAllFilters(View view) {
-        List<List<OneFilter>> filterList = new ArrayList<>();
+    public List&lt;List&lt;OneFilter>> processAllFilters(View view) {
+        List&lt;List&lt;OneFilter>> filterList = new ArrayList&lt;>();
         processAllFilterRecursive(view, filterList);
         return filterList;
     }
     @Override
-    public Map<String, Object> buildQueryParams(List<List<OneFilter>> filterList, String projectId) {
+    public Map&lt;String, Object> buildQueryParams(List&lt;List&lt;OneFilter>> filterList, String projectId) {
         if (CollUtil.isEmpty(filterList) {
             return null;
         }
-        Map<String, Object> params = new LinkedHashMap<>();
+        Map&lt;String, Object> params = new LinkedHashMap&lt;>();
         params.put("P0.projectId", projectId);
         params.put("P0.projectId-op", "eq");
         // 参数增加逻辑关系
         StringBuilder gexpr = new StringBuilder();
         gexpr.append("P0");
         int j = 0;
-        for (List<OneFilter> oneFilters : filterList) {
+        for (List&lt;OneFilter> oneFilters : filterList) {
             if (CollUtil.isEmpty(oneFilters) {
                 continue;
             }
@@ -94,7 +95,7 @@ public class ViewFilterServiceImpl implements ViewFilterService {
     /**
      * 递归处理所有过滤条件（包括父视图）
      */
-    private void processAllFilterRecursive(View view, List<List<OneFilter>> filterList) {
+    private void processAllFilterRecursive(View view, List&lt;List&lt;OneFilter>> filterList) {
         if (view == null) {
             return;
         }
@@ -104,10 +105,11 @@ public class ViewFilterServiceImpl implements ViewFilterService {
             processAllFilterRecursive(parentView, filterList);
         }
         // 添加当前视图的过滤条件
-        List<OneFilter> oneFilters = view.getOneFilters();
+        List&lt;OneFilter> oneFilters = view.getOneFilters();
         if (CollUtil.isNotEmpty(oneFilters) {
             filterList.add(oneFilters);
         }
     }
 } }
+}
 }

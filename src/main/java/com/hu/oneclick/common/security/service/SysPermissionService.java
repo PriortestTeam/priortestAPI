@@ -43,7 +43,7 @@ public class SysPermissionService {
         if (manage.equals(OneConstant.PLATEFORM_USER_TYPE.ORDINARY) || manage.equals(OneConstant.PLATEFORM_USER_TYPE.MANAGER){
             return;
         }
-        List<SysProjectPermissionDto> permissions = userLoginInfo.getPermissions();
+        List&lt;SysProjectPermissionDto> permissions = userLoginInfo.getPermissions();
         if (permissions == null || permissions.size() <= 0){
             throw new BizException(SysConstantEnum.NOT_PERMISSION.getCode(),SysConstantEnum.NOT_PERMISSION.getValue();
         }
@@ -56,7 +56,7 @@ public class SysPermissionService {
     /**
      * 验证是否有父级权限
      */
-    private void verifyParentPermission(List<SysProjectPermissionDto> permissions,String parent, String projectId){
+    private void verifyParentPermission(List&lt;SysProjectPermissionDto> permissions,String parent, String projectId){
         for (SysProjectPermissionDto permission : permissions) {
             if (permission.getProjectId().equals(projectId) &&
                     permission.getMarkName().equals(parent) && "0".equals(permission.getParentId(){
@@ -68,7 +68,7 @@ public class SysPermissionService {
     /**
      * 验证是否有子级权限
      */
-    private void verifySubPermission(List<SysProjectPermissionDto> permissions,String sub, String projectId){
+    private void verifySubPermission(List&lt;SysProjectPermissionDto> permissions,String sub, String projectId){
         if (sub == null){
             return;
         }

@@ -25,7 +25,7 @@ public class SysConfigController {
     @NonNull
     private final SysConfigService sysConfigService;
     @GetMapping("/listByGroup/{scope}");
-    public Resp<List<SysConfig>> listByGroup(@PathVariable("scope") String scope) {
+    public Resp<List&lt;SysConfig>> listByGroup(@PathVariable("scope") String scope) {
         return sysConfigService.listByGroup(scope);
     }
 }

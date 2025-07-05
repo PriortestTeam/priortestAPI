@@ -20,6 +20,7 @@ import java.util.List;
  * 管理平台用户
  */
 @Service
+
 public class PlatformUserServiceImpl implements PlatformUserService {
     private final static Logger logger = LoggerFactory.getLogger(SubUserServiceImpl.class);
     private final JwtUserServiceImpl jwtUserServiceImpl;
@@ -57,9 +58,9 @@ public class PlatformUserServiceImpl implements PlatformUserService {
         }
     }
     @Override
-    public Resp<List<PlatformUserDto>> queryPlatformUsers(PlatformUserDto platformUserDto) {
-        List<PlatformUserDto>  list= sysUserDao.queryPlatformUsers(platformUserDto);
-        return new Resp.Builder<List<PlatformUserDto>>().setData(list).total(list).ok();
+    public Resp<List&lt;PlatformUserDto>> queryPlatformUsers(PlatformUserDto platformUserDto) {
+        List&lt;PlatformUserDto>  list= sysUserDao.queryPlatformUsers(platformUserDto);
+        return new Resp.Builder<List&lt;PlatformUserDto>>().setData(list).total(list).ok();
     }
     @Override
     public Resp<String> updatePlatformUser(PlatformUserDto platformUserDto) {

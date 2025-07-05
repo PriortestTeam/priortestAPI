@@ -27,6 +27,7 @@ import static com.hu.oneclick.common.util.PageUtil.startPage;
  * @author Johnson
  */
 @Service
+
 public class TestCycleTcServiceImpl implements TestCycleTcService {
     @Resource
     JwtUserServiceImpl jwtUserService;

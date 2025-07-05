@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
  * @author qingyang
  */
 @Service
+
 public class UserServiceImpl implements UserService {
     private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final SysUserDao sysUserDao;
@@ -102,7 +103,7 @@ public class UserServiceImpl implements UserService {
             SysUser user = new SysUser();
             BeanUtils.copyProperties(registerUser, user);
             //检查数据库是否已存在用户
-            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+            List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
             if (!CollUtil.isEmpty(sysUsers) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue();
             }
@@ -158,7 +159,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class);
-    public Resp<String> modifyPassword(Map<String, String> args) {
+    public Resp<String> modifyPassword(Map&lt;String, String> args) {
         try {
             SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
             String oldPassword = args.get("oldPassword");
@@ -178,7 +179,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Transactional(rollbackFor = Exception.class);
-    public Resp<String> resetPassword(Map<String, String> args) {
+    public Resp<String> resetPassword(Map&lt;String, String> args) {
         try {
             String newPassword = args.get("newPassword");
             String verificationCode = args.get("verificationCode");
@@ -229,15 +230,15 @@ public class UserServiceImpl implements UserService {
         return new Resp.Builder<SysUser>().setData(sysUser).ok();
     }
     @Override
-    public Resp<List<SysProjectPermissionDto>> queryUserPermissions() {
+    public Resp<List&lt;SysProjectPermissionDto>> queryUserPermissions() {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
-        return new Resp.Builder<List<SysProjectPermissionDto>>().setData(userLoginInfo.getPermissions().ok();
+        return new Resp.Builder<List&lt;SysProjectPermissionDto>>().setData(userLoginInfo.getPermissions().ok();
     }
     @Override
-    public Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName) {
-        List<SubUserDto> subUserDtos = CollUtil.newArrayList();
-//        List<SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
-        return new Resp.Builder<List<SubUserDto>>().setData(subUserDtos).totalSize(subUserDtos.size().ok();
+    public Resp<List&lt;SubUserDto>> queryByNameSubUsers(String subUserName) {
+        List&lt;SubUserDto> subUserDtos = CollUtil.newArrayList();
+//        List&lt;SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
+        return new Resp.Builder<List&lt;SubUserDto>>().setData(subUserDtos).totalSize(subUserDtos.size().ok();
     }
     @Override
     public Resp<String> deleteUserById(String id) {
@@ -302,7 +303,7 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue();
         }
         //检查数据库是否已存在用户
-        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail();
+        List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail();
         if (sysUsers.isEmpty() {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue();
         }
@@ -331,7 +332,7 @@ public class UserServiceImpl implements UserService {
 //            if (subUserProject == null || StringUtils.isEmpty(subUserProject.getOpenProjectByDefaultId() {
             QueryWrapper<SysUserProject> query = Wrappers.query();
             query.eq("user_id", userId);
-            List<SysUserProject> userProjects = sysUserProjectDao.selectList(query);
+            List&lt;SysUserProject> userProjects = sysUserProjectDao.selectList(query);
             if (userProjects.isEmpty() {
 //                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
 //                userUseOpenProject.setProjectId(project.getId();
@@ -422,7 +423,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public Resp<String> forgetThePassword(String email) {
-        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+        List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
         if (sysUsers.isEmpty() {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue();
         }
@@ -514,10 +515,10 @@ public class UserServiceImpl implements UserService {
      * @Date: 2021/11/10
      */
     @Override
-    public Resp<List<SysUserToken>> listTokens() {
+    public Resp<List&lt;SysUserToken>> listTokens() {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
-        List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(userLoginInfo.getSysUser().getId();
-        return new Resp.Builder<List<SysUserToken>>().setData(sysUserTokens).ok();
+        List&lt;SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(userLoginInfo.getSysUser().getId();
+        return new Resp.Builder<List&lt;SysUserToken>>().setData(sysUserTokens).ok();
     }
     /**
      * 删除token
@@ -544,7 +545,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Boolean getUserAccountInfo(String emailId, String token) {
-        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(emailId);
+        List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(emailId);
         SysUser sysUser;
         if (sysUsers.isEmpty() {
             return false;
@@ -554,7 +555,7 @@ public class UserServiceImpl implements UserService {
         /*if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT) {
             //查询是否有权限
             SysUser parentUser = sysUserDao.queryById(sysUser.getParentId().toString();
-            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId();
+            List&lt;SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId();
             if (sysUserTokens.isEmpty() {
                 return false;
             }
@@ -567,7 +568,7 @@ public class UserServiceImpl implements UserService {
         } else */
         {
             //主账号
-            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
+            List&lt;SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
             if (sysUserTokens.isEmpty() {
                 return false;
             }
@@ -594,12 +595,12 @@ public class UserServiceImpl implements UserService {
      *
      * @param masterId
      * @Param: [masterId]
-     * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>
+     * @return: java.util.List&lt;com.hu.oneclick.model.entity.SysUser>
      * @Author: MaSiyi
      * @Date: 2021/12/15
      */
     @Override
-    public List<SysUser> queryByUserIdAndParentId(String masterId) {
+    public List&lt;SysUser> queryByUserIdAndParentId(String masterId) {
         SysUser sysUser = new SysUser();
         sysUser.setId(masterId);
 //        sysUser.setParentId(Long.valueOf(masterId);
@@ -627,8 +628,8 @@ public class UserServiceImpl implements UserService {
      * @createTime 2022/12/24 19:56
      */
     @Override
-    public Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId) {
-        List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
-        return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
+    public Resp<List&lt;Map&lt;String, Object>>> listUserByProjectId(Long projectId) {
+        List&lt;Map&lt;String, Object>> list = sysUserDao.listUserByProjectId(projectId);
+        return new Resp.Builder<List&lt;Map&lt;String, Object>>>().setData(list).ok();
     }
 }

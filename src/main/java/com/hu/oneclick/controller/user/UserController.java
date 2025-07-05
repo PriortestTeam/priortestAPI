@@ -37,11 +37,11 @@ public class UserController {
         return userService.register(registerBody);
     }
     @PostMapping("modifyPassword")
-    public Resp<String> modifyPassword(@RequestBody Map<String, String> args) {
+    public Resp<String> modifyPassword(@RequestBody Map&lt;String, String> args) {
         return userService.modifyPassword(args);
     }
     @PostMapping("resetPassword")
-    public Resp<String> resetPassword(@RequestBody Map<String, String> args) {
+    public Resp<String> resetPassword(@RequestBody Map&lt;String, String> args) {
         return userService.resetPassword(args);
     }
     @GetMapping("queryEmailDoesItExist")
@@ -57,7 +57,7 @@ public class UserController {
         return userService.queryUserInfo();
     }
     @GetMapping("queryUserPermissions")
-    public Resp<List<SysProjectPermissionDto>> queryUserPermissions() {
+    public Resp<List&lt;SysProjectPermissionDto>> queryUserPermissions() {
         return userService.queryUserPermissions();
     }
     /**
@@ -67,7 +67,7 @@ public class UserController {
      * @return
      */
     @PostMapping("queryByNameSubUsers")
-    public Resp<List<SubUserDto>> queryByNameSubUsers(@RequestParam(required = false) String subUserName) {
+    public Resp<List&lt;SubUserDto>> queryByNameSubUsers(@RequestParam(required = false) String subUserName) {
         return userService.queryByNameSubUsers(subUserName);
     }
     @Operation(summary = "激活账户")
@@ -107,7 +107,7 @@ public class UserController {
     }
     @Operation(summary = "获取生成的token列表")
     @PostMapping("listTokens")
-    public Resp<List<SysUserToken>> listTokens() {
+    public Resp<List&lt;SysUserToken>> listTokens() {
         return userService.listTokens();
     }
     @Operation(summary="删除token")
@@ -122,7 +122,7 @@ public class UserController {
     }
     @Operation(summary="通过项目Id获取用户列表")
     @GetMapping("/listUserByProjectId/{projectId}")
-    public Resp<List<Map<String, Object>>> listUserByProjectId(@PathVariable("projectId") Long projectId) {
+    public Resp<List&lt;Map&lt;String, Object>>> listUserByProjectId(@PathVariable("projectId") Long projectId) {
         return userService.listUserByProjectId(projectId);
     }
 }

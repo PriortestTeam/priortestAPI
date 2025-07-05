@@ -18,6 +18,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class CustomFileldLink implements Serializable {
     private static final long serialVersionUID = 870331260917684970L;
     /**
@@ -49,7 +50,7 @@ public class CustomFileldLink implements Serializable {
     public CustomFileldLink(Long customFieldId) {
         this.customFieldId = customFieldId;
     }
-    @Schema(description = "删除标识");
+    @Schema(description = "删除标识")
     private Integer delFlag;
     // 手动添加getCustomFieldId方法
     public Long getCustomFieldId() {

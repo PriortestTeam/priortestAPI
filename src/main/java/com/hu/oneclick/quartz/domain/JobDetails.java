@@ -3,6 +3,7 @@ import lombok.Data;
 import java.util.Date;
 import java.util.Map;
 @Data
+
 public class JobDetails {
     private String cronExpression;
     private String jobClassName;
@@ -15,7 +16,7 @@ public class JobDetails {
     private Date startTime;
     private String timeZone;
     private String status;
-    private Map<String, Object> jobDataMap;
+    private Map&lt;String, Object> jobDataMap;
 }
 }
 }

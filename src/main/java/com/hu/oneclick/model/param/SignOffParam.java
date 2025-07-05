@@ -5,7 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 @Data
-@Schema(description = "签收参数");
+@Schema(description = "签收参数")
+
 public class SignOffParam {
     @Schema(description = "项目id", example = "1234567890");
     @NotNull
@@ -18,7 +19,7 @@ public class SignOffParam {
     private String version;
     @Schema(description = "测试周期的标题", example = "[{testcycleId:'',testcycleTitle:''}]");
     @NotNull
-    private List<Map<String, String>> testCycle;
+    private List&lt;Map&lt;String, String>> testCycle;
     @Schema(description = "缺陷的状态", example = "修改中,关闭");
     @NotNull
     private String issue;
@@ -28,7 +29,7 @@ public class SignOffParam {
     @Schema(description = "是主动触发还是远程调用触发false|true", example = "false");
     @NotNull
     private boolean autoGenerate;
-    @Schema(description = "当前发布");
+    @Schema(description = "当前发布")
     @NotNull
     private int currentRelease;
 }

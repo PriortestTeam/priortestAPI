@@ -8,6 +8,7 @@ import java.util.Date;
 @Data
 @TableName("release_management");
 @EqualsAndHashCode(callSuper=false);
+
 public class ReleaseManagement extends AssignBaseEntity implements Serializable {
     /**
      * 项目id

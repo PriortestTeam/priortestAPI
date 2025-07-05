@@ -5,22 +5,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigInteger;
 import java.util.Date;
 @Data
-@Schema(description = "测试用例运行数据DTO");
+@Schema(description = "测试用例运行数据DTO")
 
 public class TestCaseDataRunDto {
-    @Schema(description = "运行次数");
+    @Schema(description = "运行次数")
     private Integer runCount;
-    @Schema(description = "运行状态");
+    @Schema(description = "运行状态")
     private Integer runStatus;
-    @Schema(description = "更新时间");
+    @Schema(description = "更新时间")
     private java.util.Date updateTime;
-    @Schema(description = "创建用户ID");
+    @Schema(description = "创建用户ID")
     private java.math.BigInteger createUserId;
-    @Schema(description = "更新用户ID");
+    @Schema(description = "更新用户ID")
     private java.math.BigInteger updateUserId;
-    @Schema(description = "用例运行时长");
+    @Schema(description = "用例运行时长")
     private java.math.BigInteger caseRunDuration;
-    @Schema(description = "用例总周期");
+    @Schema(description = "用例总周期")
     private java.math.BigInteger caseTotalPeriod;
     // 手动添加setter方法
     public void setRunCount(int runCount) {

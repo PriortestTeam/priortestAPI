@@ -9,7 +9,7 @@ public class CustomFieldsDto {
     /**
      * fieldType 为集合中的任何一项，则 possibleValue 中不能包含 parentListId 值
      */
-    public static final List<String> NOT_PARENT_LIST_ID = new ArrayList<String>() {{
+    public static final List&lt;String> NOT_PARENT_LIST_ID = new ArrayList&lt;String>() {{
         this.add("multiList");
         this.add("dropDown");
         this.add("userList");
@@ -18,7 +18,7 @@ public class CustomFieldsDto {
     /**
      * fieldType 为集合中的任何一项，则 possibleValue 中必须包含 parentListId 值
      */
-    public static final List<String> NEED_PARENT_LIST_ID = new ArrayList<String>() {{
+    public static final List&lt;String> NEED_PARENT_LIST_ID = new ArrayList&lt;String>() {{
         this.add("linkedDropDown");
     }};
     private Long customFieldId;

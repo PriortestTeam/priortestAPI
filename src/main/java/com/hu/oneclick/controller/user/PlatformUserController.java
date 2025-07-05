@@ -28,7 +28,7 @@ public class PlatformUserController {
         this.userService = userService;
     }
     @PostMapping("/queryPlatformUser");
-    public Resp<List<PlatformUserDto>> queryPlatformUser(@RequestBody PlatformUserDto platformUserDto){
+    public Resp<List&lt;PlatformUserDto>> queryPlatformUser(@RequestBody PlatformUserDto platformUserDto){
         return platformUserService.queryPlatformUsers(platformUserDto);
     }
     @PostMapping("createPlatformUser");

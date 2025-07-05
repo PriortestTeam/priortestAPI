@@ -13,26 +13,26 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@Schema(description = "测试用例步骤子步骤DTO");
+@Schema(description = "测试用例步骤子步骤DTO")
 
 public class TestCaseStepSaveSubDto implements Serializable {
     private static final long serialVersionUID = 2326317164248935852L;
     @JsonFormat(shape = JsonFormat.Shape.STRING);
-    @Schema(description = "主键id");
+    @Schema(description = "主键id")
     private Long id;
-    @Schema(description = "步骤");
+    @Schema(description = "步骤")
     private String testStep;
-    @Schema(description = "预期结果");
+    @Schema(description = "预期结果")
     private String expectedResult;
-    @Schema(description = "测试数据");
+    @Schema(description = "测试数据")
     private String testData;
-    @Schema(description = "remarks");
+    @Schema(description = "remarks")
     private String remarks;
-    @Schema(description = "test_step_id");
+    @Schema(description = "test_step_id")
     private Long testStepId;
-    @Schema(description = "执行条件");
+    @Schema(description = "执行条件")
     private String teststepCondition;
-    @Schema(description = "自定义字段值");
+    @Schema(description = "自定义字段值")
     private JSONArray customFieldDatas;
 }
 }

@@ -28,7 +28,7 @@ public class TestCycleScheduleServiceImpl implements TestCycleScheduleService {
     private TestCycleScheduleModelDao testCycleScheduleModelDao;
 //    @Scheduled(fixedDelay = 1000 * 60)
     public void jenkinsSchedule() {
-        List<TestCycleSchedule> testCycleSchedules = testCycleScheduleDao.selectAllByRuntime(new Date();
+        List&lt;TestCycleSchedule> testCycleSchedules = testCycleScheduleDao.selectAllByRuntime(new Date();
         for (TestCycleSchedule testCycleSchedule : testCycleSchedules) {
             //当前时间
             Date date = new Date();

@@ -33,7 +33,7 @@ public class TestCaseTemplateJsonController {
      * @return
      */
     @GetMapping("queryListByUserId");
-    public Resp<List<TestCaseTemplateJson>> queryListByUserId() {
+    public Resp<List&lt;TestCaseTemplateJson>> queryListByUserId() {
         return testCaseTemplateJsonService.queryListByUserId();
     }
     @DeleteMapping("delete/{id}");

@@ -42,8 +42,8 @@ public class TestCycleBiz {
         updateWrapper.setSql(sql);
         testCycleDao.update(new TestCycle(), updateWrapper);
     }
-    public List<Long> deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
-        List<Long> testCasesIds = new ArrayList<>();
+    public List&lt;Long> deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
+        List&lt;Long> testCasesIds = new ArrayList&lt;>();
         for (Long testCaseId : dto.getTestCaseIds() {
             // 删除关联的test_cycle_join_test_case表
             this.testCycleJoinTestCaseDao.deleteByParam(dto.getProjectId(), dto.getTestCycleId(),

@@ -32,7 +32,7 @@ public class AuthLoginUser implements UserDetails {
     /**
      * 子用户权限列表
      */
-    private List<SysProjectPermissionDto> permissions;
+    private List&lt;SysProjectPermissionDto> permissions;
     private SysUser sysUser;
     @Override
     public String getPassword() {
@@ -80,10 +80,10 @@ public class AuthLoginUser implements UserDetails {
     public void setSysUser(SysUser user) {
         this.sysUser =  user;
     }
-    public List<SysProjectPermissionDto> getPermissions() {
+    public List&lt;SysProjectPermissionDto> getPermissions() {
         return permissions;
     }
-    public void setPermissions(List<SysProjectPermissionDto> permissions) {
+    public void setPermissions(List&lt;SysProjectPermissionDto> permissions) {
         this.permissions = permissions;
     }
     public String getMasterIdentifier() {

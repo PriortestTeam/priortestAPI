@@ -84,7 +84,7 @@ public class Resp<T> {
             return this;
         }
         public Builder<T> total(Object obj){
-            List<T> list = (List<T>) obj;
+            List&lt;T> list = (List&lt;T>) obj;
             this.total =  new PageInfo(list).getTotal();
             return this;
         }

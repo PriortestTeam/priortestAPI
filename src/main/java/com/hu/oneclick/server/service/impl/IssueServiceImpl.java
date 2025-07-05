@@ -55,7 +55,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         this.viewFilterService = viewFilterService;
     }
     @Override
-    public List<Issue> list(IssueParam param) {
+    public List&lt;Issue> list(IssueParam param) {
         return this.list(param.getQueryCondition();
     }
     @Override
@@ -113,8 +113,8 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         return baseMapper.updateById(issue);
     }
     @Override
-    public void clone(List<Long> ids) {
-        List<Issue> issueList = new ArrayList<>();
+    public void clone(List&lt;Long> ids) {
+        List&lt;Issue> issueList = new ArrayList&lt;>();
         for (Long id : ids) {
             Issue issue = baseMapper.selectById(id);
             if (issue == null) {
@@ -148,24 +148,24 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     public PageInfo<Issue> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize) {
         try {
             // 获取视图过滤参数
-            Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
+            Map&lt;String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
             if (filterParams == null) {
                 // 如果没有过滤条件，返回空分页结果
-                return new PageInfo<>(new ArrayList<>();
+                return new PageInfo<>(new ArrayList&lt;>();
             }
             // 使用BeanSearcher进行查询，使用issue作为查询类
             Class<?> issueClass = Class.forName("com.hu.oneclick.model.entity.Issue");
             // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
-            List<Map<String, Object>> result = mapSearcher.searchAll(issueClass, filterParams);
+            List&lt;Map&lt;String, Object>> result = mapSearcher.searchAll(issueClass, filterParams);
             // 转换为 Issue 对象
-            List<Issue> issueList = result.stream()
+            List&lt;Issue> issueList = result.stream()
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class)
                 .collect(Collectors.toList();
             // 使用与 BeanSearchController 相同的分页处理方式
             return PageUtil.manualPaging(issueList);
         } catch (Exception e) {
             logger.error("使用BeanSearcher查询缺陷失败，viewId: {}, projectId: {}", viewId, projectId, e);
-            return new PageInfo<>(new ArrayList<>();
+            return new PageInfo<>(new ArrayList&lt;>();
         }
     }
     @Override
@@ -187,7 +187,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         logger.info("queryByFieldAndValue - 分页参数: pageNum={}, pageSize={}, offset={}", pageNum, pageSize, offset);
         logger.info("queryByFieldAndValue - 查询参数: tableName={}, fieldNameEn={}, value={}, projectId={}", tableName, fieldNameEn, value, projectId);
         // 4. 使用 DAO 方法查询数据
-        List<Map<String, Object>> result = viewDao.queryRecordsByScope(
+        List&lt;Map&lt;String, Object>> result = viewDao.queryRecordsByScope(
             tableName,
             fieldNameEn,
             value,
@@ -210,7 +210,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         );
         logger.info("queryByFieldAndValue - 总记录数: {}", total);
         // 6. 转 bean
-        List<Issue> issueList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class).collect(Collectors.toList();
+        List&lt;Issue> issueList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class).collect(Collectors.toList();
         // 7. 构造 PageInfo
         PageInfo<Issue> pageInfo = new PageInfo<>(issueList);
         pageInfo.setPageNum(pageNum);
@@ -231,7 +231,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     private PageInfo<Issue> listWithViewFilterLogic(IssueParam param, int pageNum, int pageSize) {
         try {
             // 获取视图过滤参数
-            Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
+            Map&lt;String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
                 param.getViewId(), param.getProjectId().toString();
             if (filterParams == null) {
                 // 如果获取过滤参数失败，回退到简单查询
@@ -240,16 +240,16 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             }
             // 使用BeanSearcher进行查询
             Class<?> issueClass = Class.forName("com.hu.oneclick.model.entity.Issue");
-            List<Map<String, Object>> result = mapSearcher.searchAll(issueClass, filterParams);
+            List&lt;Map&lt;String, Object>> result = mapSearcher.searchAll(issueClass, filterParams);
             // 转换为 Issue 对象
-            List<Issue> issueList = result.stream()
+            List&lt;Issue> issueList = result.stream()
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class)
                 .collect(Collectors.toList();
             // 手动分页处理
             int total = issueList.size();
             int startIndex = (pageNum - 1) * pageSize;
             int endIndex = Math.min(startIndex + pageSize, total);
-            List<Issue> pageData = new ArrayList<>();
+            List&lt;Issue> pageData = new ArrayList&lt;>();
             if (startIndex < total) {
                 pageData = issueList.subList(startIndex, endIndex);
             }
@@ -270,7 +270,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     private PageInfo<Issue> list(IssueParam param, int pageNum, int pageSize) {
         // 手动设置分页参数
         PageUtil.startPage(pageNum, pageSize);
-        List<Issue> dataList = this.list(param);
+        List&lt;Issue> dataList = this.list(param);
         return PageInfo.of(dataList);
     }
 }

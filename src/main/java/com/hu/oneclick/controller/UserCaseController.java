@@ -23,12 +23,12 @@ public class UserCaseController extends BaseController {
     private UserCaseService userCaseService;
     @PostMapping(value = "list");
     @Operation(summary="列表");
-    public Resp<List<UserCaseVo>> listData(@RequestBody UserCaseParam reqEntity) {
+    public Resp<List&lt;UserCaseVo>> listData(@RequestBody UserCaseParam reqEntity) {
         if (ObjectUtil.isEmpty(reqEntity) {
             reqEntity = new UserCaseParam();
         }
-        List<UserCaseVo> resultList = this.userCaseService.listData(reqEntity);
-        return new Resp.Builder<List<UserCaseVo>>().setData(resultList).ok();
+        List&lt;UserCaseVo> resultList = this.userCaseService.listData(reqEntity);
+        return new Resp.Builder<List&lt;UserCaseVo>>().setData(resultList).ok();
     }
     @PostMapping(value = "getUseCaseListByFeature");
     @Operation(summary = "分页列表");
@@ -37,7 +37,7 @@ public class UserCaseController extends BaseController {
             reqEntity = new UserCaseParam();
         }
         startPage();
-        List<UserCaseVo> resultList = this.userCaseService.listData(reqEntity);
+        List&lt;UserCaseVo> resultList = this.userCaseService.listData(reqEntity);
         return new Resp.Builder<PageInfo<UserCaseVo>>().setData(PageInfo.of(resultList).ok();
     }
     @GetMapping(value = "getUseCaseListByFeature");
@@ -46,7 +46,7 @@ public class UserCaseController extends BaseController {
         UserCaseParam reqEntity = new UserCaseParam();
         reqEntity.setFeatureId(featureId); // Set the featureId in the request entity
         startPage();
-        List<UserCaseVo> resultList = this.userCaseService.listData(reqEntity);
+        List&lt;UserCaseVo> resultList = this.userCaseService.listData(reqEntity);
         return new Resp.Builder<PageInfo<UserCaseVo>>().setData(PageInfo.of(resultList).ok();
     }
     @GetMapping (value = "getUseCaseById")
@@ -77,7 +77,7 @@ public class UserCaseController extends BaseController {
     @DeleteMapping(value = "deleteUseCaseById");
     @Operation(summary = "根据ID删除故事用例");
     // Assuming the request body contains a JSON object with the user case ID
-    public Resp<Boolean>  deleteUseCaseById(@RequestBody Map<String, Object> requestBody) {
+    public Resp<Boolean>  deleteUseCaseById(@RequestBody Map&lt;String, Object> requestBody) {
         // Extract the ID from the request body
         long id = Long.parseLong(requestBody.get("id").toString();
         // Proceed with removing the use case by ID
