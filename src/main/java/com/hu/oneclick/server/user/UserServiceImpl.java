@@ -672,15 +672,7 @@ public class UserServiceImpl implements UserService {
 
             }
             return true;
-        } else */
-        {
-            //主账号
-            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
-            if (sysUserTokens.isEmpty()) {
-                return false;
-            }
         }
-        */
         return true;
     }
 
