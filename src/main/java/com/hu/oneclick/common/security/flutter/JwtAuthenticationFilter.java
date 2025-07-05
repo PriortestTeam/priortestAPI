@@ -4,10 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.dao.SysUserTokenDao;
+import com.hu.oneclick.model.domain.SysUserToken;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
-import com.hu.oneclick.model.entity.SysUserToken;
 import com.hu.oneclick.server.user.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
@@ -17,7 +16,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -39,32 +37,33 @@ import java.util.List;
  * @author qingyang
  * JWT认证过滤器，支持两种Token认证方式：
  * 1. Bearer Token: 用户登录后生成的JWT token，用于前端应用访问
- * 2. API Token: 用户生成的token，包含emailId和Authorization，用于访问/api/apiAdpater路径
+ * 2. API Token: 用户生成的token，用于API访问，格式：emailId + token
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final RequestMatcher requiresAuthenticationRequestMatcher;
-    private List<RequestMatcher> permissiveRequestMatchers;
     private AuthenticationManager authenticationManager;
+    private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+    private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
+    private List<RequestMatcher> permissiveRequestMatchers = new ArrayList<>();
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private SysUserTokenDao sysUserTokenDao;
-    @Autowired
-    private RedissonClient redisClient;
-    @Autowired
-    private UserDetailsService userDetailsService;
 
-    private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-    private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
+    @Autowired
+    private RedissonClient redissonClient;
 
     public JwtAuthenticationFilter() {
-        // 默认不处理任何请求
-        this.requiresAuthenticationRequestMatcher = request -> false;
-        // 初始化白名单，添加登录接口和Swagger相关接口
-        this.permissiveRequestMatchers = new ArrayList<>();
-        setPermissiveUrl("/login", "/register", "/logout", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**");
+        // 设置默认的白名单URL
+        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/login"));
+        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/register"));
+        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/logout"));
+        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/swagger-ui/**"));
+        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/v3/api-docs/**"));
+        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/swagger-resources/**"));
+        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/webjars/**"));
         System.out.println(">>> 初始化JwtAuthenticationFilter，白名单URLs: " + permissiveRequestMatchers);
     }
 
@@ -93,173 +92,103 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 检查是否是白名单URL
         for (RequestMatcher matcher : permissiveRequestMatchers) {
             if (matcher.matches(request)) {
-                System.out.println(">>> 是白名单URL，直接放行: " + request.getRequestURI());
+                System.out.println(">>> 是白名单URL，直接放行: " + path);
                 filterChain.doFilter(request, response);
                 return;
             }
         }
 
-		// 第二种认证方式：emailId + token (用户生成的token)
-		String emailId = request.getHeader("emailId");
-		String token = request.getHeader("Authorization");
-
-		if (StringUtils.isNotBlank(emailId) && StringUtils.isNotBlank(token)) {
-			System.out.println(">>> 检测到emailId和token认证方式");
-
-			// 获取数据库中的token记录
-			List<SysUserToken> userTokens = sysUserTokenDao.selectUserToken(emailId);
-			if (userTokens == null || userTokens.isEmpty()) {
-				System.out.println(">>> 用户token不存在");
-				throw new BadCredentialsException("Token not found");
-			}
-
-			SysUserToken sysUserToken = userTokens.get(0);
-
-			// 验证用户账号和token
-			Boolean isValid = userService.getUserAccountInfo(emailId, token);
-			if (isValid == null || !isValid) {
-				System.out.println(">>> 用户登录信息不存在或token无效");
-				throw new BadCredentialsException("User not found or invalid token");
-			}
-
-				// 创建认证token并设置到SecurityContext
-				org.springframework.security.authentication.UsernamePasswordAuthenticationToken authToken =
-					new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(emailId, token, null);
-				SecurityContextHolder.getContext().setAuthentication(authToken);
-
-				filterChain.doFilter(request, response);
-				return;
-			}
-			System.out.println(">>> Token验证失败，返回401错误");
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			response.getWriter().write("Invalid token");
-			return;
-		}
-
-		System.out.println(">>> 不是白名单URL，继续处理...");
-
-		try {
-			Authentication authResult = attemptAuthentication(request, response, filterChain);
-			if(authResult != null) {
-				successfulAuthentication(request, response, filterChain, authResult);
-			} else {
-				unsuccessfulAuthentication(request, response, new BadCredentialsException("Authentication failed"));
-			}
-		} catch (AuthenticationException e) {
-			System.out.println(">>> JWT认证失败: " + e.getMessage());
-			unsuccessfulAuthentication(request, response, e);
-		}
-		filterChain.doFilter(request, response);
-	}
-
-	private boolean isApiAdapterRequest(String requestURI) {
-		return requestURI != null && requestURI.contains("/api/apiAdapter");
-	}
-
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException, IOException, ServletException {
-		String requestURI = request.getRequestURI();
-		System.out.println(">>> 尝试认证URL: " + requestURI);
-
-		// 针对/api/apiAdapter路径的特殊处理
-		if (isApiAdapterRequest(requestURI)) {
-			String emailId = request.getHeader("emailId");
-			String token = request.getHeader("Authorization");
-
-			if (StringUtils.isNotBlank(emailId) && StringUtils.isNotBlank(token)) {
-				// 获取数据库中的token记录
-				List<SysUserToken> userTokens = sysUserTokenDao.selectUserToken(emailId);
-				if (userTokens == null || userTokens.isEmpty()) {
-					System.out.println(">>> 用户token不存在");
-					throw new BadCredentialsException("Token not found");
-				}
-
-				SysUserToken sysUserToken = userTokens.get(0);
-
-				// 验证用户账号和token
-				Boolean isValid = userService.getUserAccountInfo(emailId, token);
-				if (isValid == null || !isValid) {
-					System.out.println(">>> 用户登录信息不存在或token无效");
-					throw new BadCredentialsException("User not found or invalid token");
-				}
-				// 创建认证token
-				return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(emailId, token);
-			}
-			throw new BadCredentialsException("Invalid emailId or token for API adapter");
-		}
-
-        // 检查是否是需要跳过JWT验证的路径
+        try {
+            Authentication authentication = attemptAuthentication(request, response, filterChain);
+            if (authentication != null) {
+                System.out.println(">>> 认证成功，设置SecurityContext");
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                successHandler.onAuthenticationSuccess(request, response, authentication);
+            }
+            filterChain.doFilter(request, response);
+        } catch (AuthenticationException e) {
+            System.out.println(">>> 认证失败: " + e.getMessage());
+            SecurityContextHolder.clearContext();
+            failureHandler.onAuthenticationFailure(request, response, e);
+        }
     }
 
-    /**
-     * 检查是否是需要跳过JWT验证的路径
-     */
     private boolean isPermissivePath(String path) {
-        return path.equals("/api/login") || path.equals("/login") ||
-               path.startsWith("/api/swagger-ui/") ||
-               path.startsWith("/api/v3/api-docs") ||
-               path.equals("/api/swagger-ui.html") ||
-               path.startsWith("/swagger-ui/") ||
+        return path.equals("/api/login") || 
+               path.equals("/api/register") || 
+               path.equals("/api/logout") ||
+               path.startsWith("/swagger-ui") ||
                path.startsWith("/v3/api-docs") ||
-               path.equals("/swagger-ui.html") ||
-               path.startsWith("/api/swagger-resources/") ||
-               path.startsWith("/api/webjars/") ||
-               path.startsWith("/swagger-resources/") ||
-               path.startsWith("/webjars/");
+               path.startsWith("/swagger-resources") ||
+               path.startsWith("/webjars");
     }
 
     /**
-     * API Token认证 - 用于 /api/apiAdpater 路径
-     * 需要同时验证 emailId 和 Authorization 头
+     * 尝试进行认证，支持两种Token方式
      */
-    private Authentication attemptApiTokenAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws AuthenticationException, IOException {
 
+        String path = request.getRequestURI();
+        System.out.println(">>> 开始认证，请求路径: " + path);
+
+        // 检查是否是API适配器路径 - 使用emailId:token认证方式
+        if (path.contains("/api/apiAdapter")) {
+            System.out.println(">>> 检测到API适配器路径，使用emailId:token认证");
+            return attemptApiTokenAuthentication(request);
+        } else {
+            // 其他路径使用Bearer Token认证
+            System.out.println(">>> 使用Bearer Token认证");
+            return attemptBearerTokenAuthentication(request);
+        }
+    }
+
+    /**
+     * API Token认证 (emailId:token格式)
+     */
+    private Authentication attemptApiTokenAuthentication(HttpServletRequest request) throws AuthenticationException {
         String emailId = request.getHeader("emailId");
-        String authorization = request.getHeader("Authorization");
+        String token = request.getHeader("Authorization");
 
-        System.out.println(">>> API Token认证 - emailId: " + emailId);
-        System.out.println(">>> API Token认证 - Authorization: " + authorization);
+        if (StringUtils.isNotBlank(emailId) && StringUtils.isNotBlank(token)) {
+            System.out.println(">>> 检测到emailId和token认证方式");
 
-        if (StringUtils.isBlank(emailId) || StringUtils.isBlank(authorization)) {
-            throw new BadCredentialsException("API Token认证失败：缺少emailId或Authorization头");
+            // 获取数据库中的token记录
+            List<SysUserToken> userTokens = sysUserTokenDao.selectUserToken(emailId);
+            if (userTokens == null || userTokens.isEmpty()) {
+                System.out.println(">>> 用户token不存在");
+                throw new BadCredentialsException("Token not found");
+            }
+
+            SysUserToken sysUserToken = userTokens.get(0);
+
+            // 验证用户账号和token
+            Boolean isValid = userService.getUserAccountInfo(emailId, token);
+            if (isValid == null || !isValid) {
+                System.out.println(">>> 用户登录信息不存在或token无效");
+                throw new BadCredentialsException("User not found or invalid token");
+            }
+
+            // 创建认证token
+            return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(emailId, token);
         }
-
-        // 验证API Token
-        SysUserToken userToken = sysUserTokenDao.selectByUserIdAndToken(emailId, authorization);
-        if (userToken == null) {
-            throw new BadCredentialsException("API Token认证失败：无效的token");
-        }
-
-        // 获取用户信息
-        AuthLoginUser user = userService.getUserAccountInfo(emailId, authorization);
-        if (user == null) {
-            throw new BadCredentialsException("API Token认证失败：用户不存在");
-        }
-
-        System.out.println(">>> API Token认证成功，用户: " + emailId);
-        return new JwtAuthenticationToken(user, null, user.getAuthorities());
+        throw new BadCredentialsException("Invalid emailId or token for API adapter");
     }
 
     /**
-     * Bearer Token认证 - 用于普通前端应用访问
-     * 验证JWT Bearer token
+     * Bearer Token认证 (JWT)
      */
-    private Authentication attemptBearerTokenAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException {
-
-        String authorization = request.getHeader("Authorization");
-        System.out.println(">>> Bearer Token认证 - Authorization: " + authorization);
-
-        if (StringUtils.isBlank(authorization) || !authorization.startsWith("Bearer ")) {
-            throw new BadCredentialsException("Bearer Token认证失败：缺少或格式错误的Authorization头");
+    private Authentication attemptBearerTokenAuthentication(HttpServletRequest request) throws AuthenticationException {
+        String header = request.getHeader("Authorization");
+        if (StringUtils.isBlank(header) || !header.startsWith("Bearer ")) {
+            throw new BadCredentialsException("Authorization header is missing or invalid");
         }
-
-        String token = authorization.substring(7); // 移除 "Bearer " 前缀
 
         try {
-            // 解码JWT token
+            String token = header.substring(7); // 移除 "Bearer " 前缀
+            System.out.println(">>> 解析Bearer Token: " + token.substring(0, Math.min(20, token.length())) + "...");
+
+            // 解析JWT Token
             DecodedJWT jwt = JWT.decode(token);
             String username = jwt.getSubject();
 
@@ -268,11 +197,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             // 验证JWT Token并获取用户信息 - 使用emailId作为用户标识
-				Boolean isValidUser = userService.getUserAccountInfo(username, null);
-				if (isValidUser == null || !isValidUser) {
-					System.out.println(">>> 无法获取用户登录信息");
-					throw new BadCredentialsException("User not found");
-				}
+            Boolean isValidUser = userService.getUserAccountInfo(username, null);
+            if (isValidUser == null || !isValidUser) {
+                System.out.println(">>> 无法获取用户登录信息");
+                throw new BadCredentialsException("User not found");
+            }
 
             // 获取用户信息用于验证
             AuthLoginUser user = userService.getUserLoginInfo(username);
@@ -289,71 +218,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             verifier.verify(token);
 
             System.out.println(">>> Bearer Token认证成功，用户: " + username);
-            return new JwtAuthenticationToken(user, jwt, user.getAuthorities());
+            return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
 
         } catch (Exception e) {
             throw new BadCredentialsException("Bearer Token认证失败：" + e.getMessage(), e);
         }
     }
 
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws AuthenticationException, IOException, ServletException {
-
-        String path = request.getRequestURI();
-        if (path.startsWith("/api/apiAdpater")) {
-            return attemptApiTokenAuthentication(request, response);
-        } else {
-            return attemptBearerTokenAuthentication(request, response);
-        }
-    }
-
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
-            throws IOException, ServletException {
-        SecurityContextHolder.getContext().setAuthentication(authResult);
-        successHandler.onAuthenticationSuccess(request, response, authResult);
-    }
-
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
-            throws IOException, ServletException {
-        SecurityContextHolder.clearContext();
-        failureHandler.onAuthenticationFailure(request, response, failed);
-    }
-
-    public void setPermissiveUrl(String... urls) {
-        List<RequestMatcher> requestMatchers = new ArrayList<>();
-        for (String url : urls) {
-            requestMatchers.add(new AntPathRequestMatcher(url));
-        }
-        setPermissiveRequestMatchers(requestMatchers);
-    }
-
-    public void setPermissiveRequestMatchers(List<RequestMatcher> requestMatchers) {
-        this.permissiveRequestMatchers = requestMatchers;
-    }
-
+    // Getter and Setter methods
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
 
     public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler successHandler) {
-        Assert.notNull(successHandler, "successHandler cannot be null");
         this.successHandler = successHandler;
     }
 
     public void setAuthenticationFailureHandler(AuthenticationFailureHandler failureHandler) {
-        Assert.notNull(failureHandler, "failureHandler cannot be null");
         this.failureHandler = failureHandler;
     }
 
-    protected AuthenticationManager getAuthenticationManager() {
-        return authenticationManager;
-    }
-
-    protected AuthenticationSuccessHandler getSuccessHandler() {
-        return successHandler;
-    }
-
-    protected AuthenticationFailureHandler getFailureHandler() {
-        return failureHandler;
+    public void setPermissiveUrl(String... urls) {
+        List<RequestMatcher> matchers = new ArrayList<>();
+        for (String url : urls) {
+            matchers.add(new AntPathRequestMatcher(url));
+        }
+        this.permissiveRequestMatchers = matchers;
     }
 }
