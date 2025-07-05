@@ -106,10 +106,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (StringUtils.isNotBlank(emailId) && StringUtils.isNotBlank(token)) {
 			System.out.println(">>> 检测到emailId和token认证方式");
 
+			// 获取数据库中的token记录
+			List<SysUserToken> userTokens = sysUserTokenDao.selectUserToken(emailId);
+			if (userTokens == null || userTokens.isEmpty()) {
+				System.out.println(">>> 用户token不存在");
+				throw new BadCredentialsException("Token not found");
+			}
+
+			SysUserToken sysUserToken = userTokens.get(0);
+
 			// 验证用户账号和token
 			Boolean isValid = userService.getUserAccountInfo(emailId, token);
-			if (isValid != null && isValid) {
-				System.out.println(">>> Token验证成功，设置认证信息");
+			if (isValid == null || !isValid) {
+				System.out.println(">>> 用户登录信息不存在或token无效");
+				throw new BadCredentialsException("User not found or invalid token");
+			}
 
 				// 创建认证token并设置到SecurityContext
 				org.springframework.security.authentication.UsernamePasswordAuthenticationToken authToken =
@@ -157,12 +168,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			String token = request.getHeader("Authorization");
 
 			if (StringUtils.isNotBlank(emailId) && StringUtils.isNotBlank(token)) {
+				// 获取数据库中的token记录
+				List<SysUserToken> userTokens = sysUserTokenDao.selectUserToken(emailId);
+				if (userTokens == null || userTokens.isEmpty()) {
+					System.out.println(">>> 用户token不存在");
+					throw new BadCredentialsException("Token not found");
+				}
+
+				SysUserToken sysUserToken = userTokens.get(0);
+
 				// 验证用户账号和token
 				Boolean isValid = userService.getUserAccountInfo(emailId, token);
-				if (isValid != null && isValid) {
-					// 创建认证token
-					return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(emailId, token);
+				if (isValid == null || !isValid) {
+					System.out.println(">>> 用户登录信息不存在或token无效");
+					throw new BadCredentialsException("User not found or invalid token");
 				}
+				// 创建认证token
+				return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(emailId, token);
 			}
 			throw new BadCredentialsException("Invalid emailId or token for API adapter");
 		}
@@ -244,6 +266,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.isBlank(username)) {
                 throw new BadCredentialsException("Bearer Token认证失败：token中缺少用户信息");
             }
+
+            // 验证JWT Token并获取用户信息 - 使用emailId作为用户标识
+				Boolean isValidUser = userService.getUserAccountInfo(username, null);
+				if (isValidUser == null || !isValidUser) {
+					System.out.println(">>> 无法获取用户登录信息");
+					throw new BadCredentialsException("User not found");
+				}
 
             // 获取用户信息用于验证
             AuthLoginUser user = userService.getUserLoginInfo(username);
