@@ -1,22 +1,21 @@
+
 package com.hu.oneclick.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import jakarta.validation.constraints.NotEmpty;
-
-@Data
-@Schema(description = "Git仓库初始化")
+@Getter
+@Setter
+@Schema(description = "Git仓库初始化参数")
 public class GitRepoInitParam {
-    @Schema(description = "仓库名称", required = true)
-    @NotEmpty(message = "仓库名称不可为空")
+    
+    @Schema(description = "仓库名称")
     private String repoName;
-
-    @Schema(description = "项目ID", required = true)
-    @NotEmpty(message = "项目ID不可为空")
+    
+    @Schema(description = "项目ID")
     private String projectId;
-
-    @Schema(description = "项目名称", required = true)
-    @NotEmpty(message = "项目名称不可为空")
+    
+    @Schema(description = "项目名称")
     private String projectName;
 }

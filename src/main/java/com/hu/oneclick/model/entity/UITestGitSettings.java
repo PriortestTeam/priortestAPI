@@ -5,10 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigInteger;
 import java.sql.Date;
 
+@Getter
+@Setter
 @Data
 @TableName("uitest_git_settings")
 public class UITestGitSettings {
