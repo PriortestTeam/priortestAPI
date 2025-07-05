@@ -718,4 +718,39 @@ public class UserServiceImpl implements UserService {
         List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
         return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
     }
+
+	@Override
+    public SysUser getUserByApiToken(String token) {
+        System.out.println(">>> ===== UserServiceImpl.getUserByApiToken() 开始 =====");
+        System.out.println(">>> 1. 接收到的token: " + token);
+        System.out.println(">>> 2. Token长度: " + token.length());
+        System.out.println(">>> 3. 准备调用 sysUserTokenDao.selectByToken()...");
+
+        try {
+            SysUser user = sysUserTokenDao.selectByToken(token);
+
+            System.out.println(">>> 4. 数据库查询完成");
+            if (user == null) {
+                System.out.println(">>> 5. 查询结果: null (未找到匹配的用户)");
+                System.out.println(">>> 6. 可能原因: token不存在于数据库中或已过期");
+            } else {
+                System.out.println(">>> 5. 查询结果: 找到用户");
+                System.out.println(">>> 6. 用户ID: " + user.getId());
+                System.out.println(">>> 7. 用户Email: " + user.getEmail());
+                System.out.println(">>> 8. 用户用户名: " + user.getUsername());
+                System.out.println(">>> 9. 用户状态: " + user.getStatus());
+                System.out.println(">>> 10. 用户创建时间: " + user.getCreateTime());
+            }
+
+            System.out.println(">>> ===== UserServiceImpl.getUserByApiToken() 结束 =====");
+            return user;
+
+        } catch (Exception e) {
+            System.out.println(">>> ERROR: 数据库查询过程中发生异常");
+            System.out.println(">>> 异常类型: " + e.getClass().getName());
+            System.out.println(">>> 异常消息: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
 }
