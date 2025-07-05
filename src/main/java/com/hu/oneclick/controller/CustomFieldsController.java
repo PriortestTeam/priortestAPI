@@ -1,6 +1,6 @@
 package com.hu.oneclick.controller;
 
-
+import lombok.extern.slf4j.Slf4j;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -14,7 +14,6 @@ import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 import com.hu.oneclick.server.service.CustomFieldsService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,5 +1,6 @@
 package com.hu.oneclick.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import cn.hutool.core.bean.BeanUtil;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
@@ -27,7 +28,6 @@ import java.util.Map;
 @Tag(name = "故事", description = "故事相关接口")
 @RestController
 @RequestMapping("feature")
-@Slf4j
 public class FeatureController extends BaseController {
 
     private final FeatureService featureService;
