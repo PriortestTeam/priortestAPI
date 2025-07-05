@@ -76,15 +76,18 @@ public class JwtUserServiceImpl implements UserDetailsService {
     public AuthLoginUser getUserLoginInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name;
-        // 管理员的token
-        if (org.springframework.util.StringUtils.isEmpty(authentication.getPrincipal())) {
-            // 这里的name为tokenname
+        
+        // 根据Authentication的实际类型进行处理
+        if (authentication instanceof ApiToken) {
+            // API Token认证
             ApiToken apiToken = (ApiToken) authentication;
             name = apiToken.getTokenName();
-        } else {
+        } else if (authentication instanceof JwtAuthenticationToken) {
+            // JWT认证
             DecodedJWT token = ((JwtAuthenticationToken) authentication).getToken();
-            // 这里的name为username
             name = token.getSubject();
+        } else {
+            throw new InsufficientAuthenticationException("Unsupported authentication type: " + authentication.getClass().getSimpleName());
         }
         // 将salt放到password字段返回
         RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + name);
