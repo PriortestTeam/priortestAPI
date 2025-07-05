@@ -233,32 +233,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private Authentication authenticateBearerToken(String token) {
+    private Authentication authenticateJwtToken(String token) {
         try {
-            System.out.println(">>> 开始验证Bearer Token (JWT)");
+            System.out.println(">>> 开始验证JWT Token");
+            System.out.println(">>> Token内容: " + token.substring(0, Math.min(20, token.length())) + "...");
 
-            // 解析JWT Token
+            // 查找用户token记录
+            SysUserToken userToken = sysUserTokenDao.queryByTokenInfo(token);
+            if (userToken == null) {
+                System.out.println(">>> Token不存在或已失效");
+                throw new BadCredentialsException("Token not found or expired");
+            }
+
+            System.out.println(">>> 找到用户Token记录，用户ID: " + userToken.getUserId());
+
+            // 验证token是否过期
+            if (userToken.getExpireTime().before(new Date())) {
+                System.out.println(">>> Token已过期");
+                throw new BadCredentialsException("Token has expired");
+            }
+
+            System.out.println(">>> Token验证成功，用户ID: " + userToken.getUserId());
+
+            // 解析JWT
             DecodedJWT jwt = JWT.decode(token);
-            String subject = jwt.getSubject();
-            System.out.println(">>> JWT Subject (emailId): " + subject);
 
-            // 直接验证JWT token而不查询数据库
-            // JWT token应该包含所有必要的信息，不需要查询数据库
-            if (subject == null || subject.trim().isEmpty()) {
-                throw new BadCredentialsException("JWT subject is empty");
-            }
-
-            // 验证JWT token是否过期
-            Date expiresAt = jwt.getExpiresAt();
-            if (expiresAt != null && expiresAt.before(new Date())) {
-                throw new BadCredentialsException("JWT token has expired");
-            }
-
-            System.out.println(">>> JWT Token验证成功，用户: " + subject);
-
-            // 创建简单的认证对象（不需要查询数据库）
+            // 创建简单的认证对象
             UsernamePasswordAuthenticationToken authToken = 
-                new UsernamePasswordAuthenticationToken(subject, null, new ArrayList<>());
+                new UsernamePasswordAuthenticationToken(userToken.getUserId(), null, new ArrayList<>());
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
@@ -266,7 +268,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return authToken;
         } catch (Exception e) {
             System.out.println(">>> JWT Token验证失败: " + e.getMessage());
-            throw new BadCredentialsException("JWT Token verification failed: " + e.getMessage());
+            throw new BadCredentialsException("JWT token verification failed: " + e.getMessage());
         }
     }
 
