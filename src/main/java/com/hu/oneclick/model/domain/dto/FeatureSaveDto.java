@@ -64,3 +64,24 @@ public class FeatureSaveDto {
     @Schema(description = "自定义字段值")
     private JSONObject customFieldDatas;
 }
+package com.hu.oneclick.model.domain.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class FeatureSaveDto {
+    
+    private Long id;
+    
+    private String title;
+    
+    private Long projectId;
+    
+    private String description;
+    
+    public Long getId() {
+        return id;
+    }
+}

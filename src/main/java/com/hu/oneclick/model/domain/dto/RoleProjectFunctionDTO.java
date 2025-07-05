@@ -49,3 +49,37 @@ public class RoleProjectFunctionDTO implements Serializable {
     private List<FunctionModelDTO> functionList;
 
 }
+package com.hu.oneclick.model.domain.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+import java.util.List;
+
+@Getter
+@Setter
+public class RoleProjectFunctionDTO {
+    
+    private Long roleId;
+    
+    private Long projectId;
+    
+    private Long userId;
+    
+    private List<Long> functionList;
+    
+    public Long getRoleId() {
+        return roleId;
+    }
+    
+    public Long getProjectId() {
+        return projectId;
+    }
+    
+    public Long getUserId() {
+        return userId;
+    }
+    
+    public List<Long> getFunctionList() {
+        return functionList;
+    }
+}

@@ -79,3 +79,38 @@ public class SysUserBusiness implements Serializable {
 
     private static final long serialVersionUID = 1L;
 }
+package com.hu.oneclick.model.entity;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class SysUserBusiness {
+    
+    private Long id;
+    
+    private String value;
+    
+    private String btnStr;
+    
+    private String type;
+    
+    private Boolean invisible;
+    
+    public String getValue() {
+        return value;
+    }
+    
+    public String getBtnStr() {
+        return btnStr;
+    }
+    
+    public Boolean getInvisible() {
+        return invisible;
+    }
+    
+    public void setType(String type) {
+        this.type = type;
+    }
+}

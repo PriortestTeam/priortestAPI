@@ -64,3 +64,35 @@ public class Feature extends AssignBaseEntity implements Serializable {
     @Schema(description = "扩展数据")
     private String featureExpand;
 }
+package com.hu.oneclick.model.entity;
+
+import lombok.Getter;
+import lombok.Setter;
+import java.util.Date;
+
+@Getter
+@Setter
+public class Feature {
+    
+    private Long id;
+    
+    private String title;
+    
+    private Long projectId;
+    
+    private Date createTime;
+    
+    private String description;
+    
+    public String getTitle() {
+        return title;
+    }
+    
+    public Long getProjectId() {
+        return projectId;
+    }
+    
+    public Date getCreateTime() {
+        return createTime;
+    }
+}

@@ -36,3 +36,33 @@ public class FeatureParam implements Serializable {
         return queryWrapper;
     }
 }
+package com.hu.oneclick.model.param;
+
+import lombok.Getter;
+import lombok.Setter;
+import java.util.Date;
+
+@Getter
+@Setter
+public class FeatureParam {
+    
+    private Long id;
+    
+    private String title;
+    
+    private Long projectId;
+    
+    private Date createTime;
+    
+    public String getTitle() {
+        return title;
+    }
+    
+    public Long getProjectId() {
+        return projectId;
+    }
+    
+    public Date getCreateTime() {
+        return createTime;
+    }
+}
