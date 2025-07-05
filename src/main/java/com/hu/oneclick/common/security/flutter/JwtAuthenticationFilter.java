@@ -183,6 +183,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     private Authentication attemptBearerTokenAuthentication(HttpServletRequest request) throws AuthenticationException {
         String header = request.getHeader("Authorization");
+
         if (StringUtils.isBlank(header) || !header.startsWith("Bearer ")) {
             throw new BadCredentialsException("Authorization header is missing or invalid");
         }
@@ -199,14 +200,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new BadCredentialsException("Bearer Token认证失败：token中缺少用户信息");
             }
 
+            System.out.println(">>> JWT Token解析成功，用户: " + username);
+
+            // 验证JWT Token的过期时间
+            if (jwt.getExpiresAt() != null && jwt.getExpiresAt().before(new Date())) {
+                throw new BadCredentialsException("JWT Token已过期");
+            }
+
             // 验证用户是否存在
             Boolean isValidUser = userService.getUserAccountInfo(username, null);
             if (isValidUser == null || !isValidUser) {
-                System.out.println(">>> 无法获取用户登录信息");
-                throw new BadCredentialsException("User not found");
+                System.out.println(">>> 用户不存在: " + username);
+                throw new BadCredentialsException("User not found: " + username);
             }
 
-            System.out.println(">>> Bearer Token JWT验证成功，用户: " + username);
+            System.out.println(">>> JWT Token验证成功，用户: " + username);
 
             // 创建认证token
             org.springframework.security.authentication.UsernamePasswordAuthenticationToken authToken =
@@ -214,8 +222,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             return authToken;
         } catch (Exception e) {
-            System.out.println(">>> Bearer Token验证失败: " + e.getMessage());
-            throw new BadCredentialsException("Bearer Token verification failed: " + e.getMessage());
+            System.out.println(">>> JWT Token验证失败: " + e.getMessage());
+            throw new BadCredentialsException("JWT Token verification failed: " + e.getMessage());
         }
     }
 
