@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -26,10 +27,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
+import com.hu.oneclick.dao.SysUserDao;
+import com.hu.oneclick.model.entity.SysUser;
 
 /**
  * @author qingyang
@@ -52,7 +57,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private RedissonClient redissonClient;
+    
+    @Autowired
+    private SysUserDao sysUserDao;
 
+    private AuthenticationSuccessHandler authenticationSuccessHandler;
     public JwtAuthenticationFilter() {
         // 设置默认的白名单URL
         this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/login"));
@@ -93,6 +102,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (matcher.matches(request)) {
                 System.out.println(">>> 匹配白名单URL，跳过JWT验证: " + path);
                 filterChain.doFilter(request, response);
+                return;
+            }
+        }
+
+        // 检查是否为API适配器路径，如果是则使用API Token验证
+        if (request.getRequestURI().contains("/api/apiAdpater/")) {
+            System.out.println(">>> API适配器路径，开始API Token验证: " + request.getRequestURI());
+            try {
+                Authentication authResult = attemptApiTokenAuthentication(request);
+                if (authResult != null) {
+                    SecurityContextHolder.getContext().setAuthentication(authResult);
+                    System.out.println(">>> API Token验证成功，继续处理请求");
+                    if (authenticationSuccessHandler != null) {
+                        authenticationSuccessHandler.onAuthenticationSuccess(request, response, authResult);
+                    }
+                    filterChain.doFilter(request, response);
+                    return;
+                } else {
+                    System.out.println(">>> API Token验证失败");
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("API Token verification failed");
+                    return;
+                }
+            } catch (Exception e) {
+                System.out.println(">>> API Token验证异常: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getWriter().write("API Token verification error: " + e.getMessage());
                 return;
             }
         }
@@ -140,7 +176,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean isPermissivePath(String path) {
         return path.equals("/api/login") || 
                path.equals("/login") || 
-               path.startsWith("/api/apiAdpater/") ||
                path.startsWith("/api/swagger-ui/") ||
                path.startsWith("/api/v3/api-docs") ||
                path.equals("/api/swagger-ui.html") ||
@@ -183,6 +218,77 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             System.out.println(">>> JWT Token验证失败: " + e.getMessage());
             throw new BadCredentialsException("JWT token verification failed: " + e.getMessage());
+        }
+    }
+
+    private Authentication attemptApiTokenAuthentication(HttpServletRequest request) throws AuthenticationException {
+        try {
+            // 从Header中获取Authorization和emailId
+            String tokenValue = request.getHeader("Authorization");
+            String emailId = request.getHeader("emailId");
+
+            if (tokenValue == null || emailId == null) {
+                throw new BadCredentialsException("Missing Authorization header or emailId");
+            }
+
+            System.out.println(">>> API Token验证 - EmailId: " + emailId);
+            System.out.println(">>> API Token验证 - Token: " + tokenValue);
+
+            // 验证token和emailId不为空
+            if (emailId.trim().isEmpty() || tokenValue.trim().isEmpty()) {
+                throw new BadCredentialsException("EmailId or token is empty");
+            }
+
+            // 通过emailId查询用户
+            List<SysUser> users = sysUserDao.queryByLikeEmail(emailId);
+            if (users.isEmpty()) {
+                throw new BadCredentialsException("User not found: " + emailId);
+            }
+
+            SysUser user = users.get(0);
+            System.out.println(">>> 找到用户: " + user.getEmail() + ", ID: " + user.getId());
+
+            // 查询用户的API Token
+            List<SysUserToken> userTokens = sysUserTokenDao.selectByUserIdAndToken(user.getId(), tokenValue);
+            if (userTokens.isEmpty()) {
+                throw new BadCredentialsException("Invalid API token for user: " + emailId);
+            }
+
+            SysUserToken userToken = userTokens.get(0);
+            System.out.println(">>> 找到API Token: " + userToken.getTokenName());
+
+            // 检查token是否过期
+            if (userToken.getExpirationTime() != null && userToken.getExpirationTime().before(new Date())) {
+                throw new BadCredentialsException("API token expired");
+            }
+
+            // 检查token状态
+            if (userToken.getIsDel() || !userToken.getStatus()) {
+                throw new BadCredentialsException("API token is disabled or deleted");
+            }
+
+            // 检查API调用次数限制
+            if (userToken.getApiTimes() != null && userToken.getApiTimes() <= 0) {
+                throw new BadCredentialsException("API token usage limit exceeded");
+            }
+
+            System.out.println(">>> API Token验证成功，用户: " + emailId);
+
+            // 减少API调用次数（如果有限制）
+            if (userToken.getApiTimes() != null && userToken.getApiTimes() > 0) {
+                sysUserTokenDao.decreaseApiTimes(userToken.getId());
+                System.out.println(">>> API调用次数已减1，剩余: " + (userToken.getApiTimes() - 1));
+            }
+
+            // 创建认证对象
+            UsernamePasswordAuthenticationToken authToken = 
+                new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList<>());
+
+            return authToken;
+
+        } catch (Exception e) {
+            System.out.println(">>> API Token验证失败: " + e.getMessage());
+            throw new BadCredentialsException("API token verification failed: " + e.getMessage());
         }
     }
 
@@ -234,6 +340,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public void setAuthenticationFailureHandler(AuthenticationFailureHandler failureHandler) {
         this.failureHandler = failureHandler;
+    }
+
+     public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler authenticationSuccessHandler) {
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
 
     public void setPermissiveUrl(String... urls) {
