@@ -694,7 +694,7 @@ public class UserServiceImpl implements UserService {
 
             SysUser sysUser = sysUserDao.selectByUserName(username);
             if (sysUser == null) {
-                System.out.println(">>> JWT Token - 用户不存在: " + username);
+                System.out.println(">>> JWT Token - 用户不存在: " +username);
                 return null;
             }
 
