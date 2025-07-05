@@ -11,8 +11,6 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.RoleConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
-import com.hu.oneclick.common.security.JwtAuthenticationToken;
-import com.hu.oneclick.common.security.ApiToken;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
@@ -34,9 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -263,30 +258,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<SysUser> queryUserInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return new Resp.Builder<SysUser>().buildResult("401", "用户未认证");
-        }
-
-        String username = authentication.getName();
-        if (username == null || username.trim().isEmpty()) {
-            return new Resp.Builder<SysUser>().buildResult("400", "无法获取用户信息");
-        }
-
-        try {
-            // 通过邮箱查询用户信息（因为authentication.getName()返回的是邮箱）
-            SysUser sysUser = sysUserDao.queryByEmail(username);
-            if (sysUser == null) {
-                return new Resp.Builder<SysUser>().buildResult("404", "用户不存在");
-            }
-
-            return new Resp.Builder<SysUser>().setData(sysUser).ok();
-
-        } catch (Exception e) {
-            logger.error("查询用户信息失败", e);
-            return new Resp.Builder<SysUser>().buildResult("500", "查询用户信息失败: " + e.getMessage());
-        }
+        AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
+        SysUser sysUser = userLoginInfo.getSysUser();
+        sysUser.setPassword("");
+        return new Resp.Builder<SysUser>().setData(sysUser).ok();
     }
 
     @Override
@@ -638,82 +613,81 @@ public class UserServiceImpl implements UserService {
         return new Resp.Builder<String>().setData(primaryKey == 1 ? "删除成功" : "删除失败").ok();
     }
 
+    /**
+     * 获取用户账号信息
+     *
+     * @param emailId
+     * @Param: [emailId]
+     * @return: void
+     * @Author: MaSiyi
+     * @Date: 2021/11/10
+     */
+    @Override
     public Boolean getUserAccountInfo(String emailId, String token) {
-        try {
-            System.out.println(">>> API Token验证 - sysUserTokenDao.selectByUserIdAndToken 开始验证");
-            System.out.println(">>> emailId: " + emailId);
-            System.out.println(">>> token: " + token.substring(0, Math.min(10, token.length())) + "...");
-
-            List<SysUserToken> tokens = sysUserTokenDao.selectByUserIdAndToken(emailId, token);
-            System.out.println(">>> API Token验证 - 查询结果数量: " + (tokens != null ? tokens.size() : 0));
-
-            if (tokens == null || tokens.isEmpty()) {
-                System.out.println(">>> API Token验证失败: 未找到匹配的token记录");
-                return false;
-            }
-
-            SysUserToken userToken = tokens.get(0);
-            System.out.println(">>> API Token验证 - 找到token记录");
-
-            // 检查token是否过期
-            if (userToken.getExpirationTime() != null && userToken.getExpirationTime().before(new Date())) {
-                System.out.println(">>> API Token验证失败: token已过期");
-                return false;
-            }
-
-            // 检查token状态
-            if (userToken.getStatus() == null || !userToken.getStatus()) {
-                System.out.println(">>> API Token验证失败: token状态无效");
-                return false;
-            }
-
-            // 检查是否被删除
-            if (userToken.getIsDel() != null && userToken.getIsDel()) {
-                System.out.println(">>> API Token验证失败: token已被删除");
-                return false;
-            }
-
-            System.out.println(">>> API Token验证成功: token有效");
-            return true;
-
-        } catch (Exception e) {
-            System.out.println(">>> API Token验证过程中发生异常: " + e.getMessage());
-            e.printStackTrace();
+        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(emailId);
+        SysUser sysUser;
+        if (sysUsers.isEmpty()) {
             return false;
         }
-    }
+        sysUser = sysUsers.get(0);
 
-    /**
-     * 专门用于JWT Token认证后获取用户完整信息
-     */
-    public AuthLoginUser queryUserInfoForJwtToken(String username) {
-        try {
-            System.out.println(">>> JWT Token - 获取用户信息开始");
-            System.out.println(">>> JWT Token - 用户名: " + username);
-
-            SysUser sysUser = sysUserDao.queryByEmail(username);
-            if (sysUser == null) {
-                System.out.println(">>> JWT Token - 用户不存在: " + username);
-                return null;
+        //如果不是平台管理人员，则是子账号
+        /*if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
+            //查询是否有权限
+            SysUser parentUser = sysUserDao.queryById(sysUser.getParentId().toString());
+            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId());
+            if (sysUserTokens.isEmpty()) {
+                return false;
             }
+            for (SysUserToken sysUserToken : sysUserTokens) {
 
-            AuthLoginUser authLoginUser = new AuthLoginUser();
-            authLoginUser.setSysUser(sysUser);
+                if (sysUserToken.getApi_times() > 0) {
+                    sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
+                }
 
-            System.out.println(">>> JWT Token - 获取用户信息成功");
-            return authLoginUser;
-
-        } catch (Exception e) {
-            System.out.println(">>> JWT Token - 获取用户信息异常: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            }
+            return true;
+        } else */
+        {
+            //主账号
+            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
+            if (sysUserTokens.isEmpty()) {
+                return false;
+            }
+            for (SysUserToken sysUserToken : sysUserTokens) {
+                if (sysUserToken.getApiTimes() > 0) {
+                    sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
+                }
+            }
         }
+        return true;
     }
 
     @Override
+    public Resp<String> verifyLinkString(String linkStr) {
+        RBucket<String> bucket = redisClient.getBucket(linkStr);
+        String redisCode = bucket.get();
+        if (redisCode == null || "".equals(redisCode) || !"true".equals(redisCode)) {
+            throw new BizException(SysConstantEnum.LINKSTRERROR.getCode(), SysConstantEnum.LINKSTRERROR.getValue());
+        }
+        bucket.delete();
+        return new Resp.Builder<String>().ok();
+    }
+
+    /**
+     * 查询用户和子用户
+     *
+     * @param masterId
+     * @Param: [masterId]
+     * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>
+     * @Author: MaSiyi
+     * @Date: 2021/12/15
+     */
+    @Override
     public List<SysUser> queryByUserIdAndParentId(String masterId) {
         SysUser sysUser = new SysUser();
-        sysUser.setId(masterId);//        sysUser.setParentId(Long.valueOf(masterId));
+        sysUser.setId(masterId);
+//        sysUser.setParentId(Long.valueOf(masterId));
         return sysUserDao.queryAllIdOrParentId(sysUser);
     }
 
@@ -743,64 +717,5 @@ public class UserServiceImpl implements UserService {
     public Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId) {
         List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
         return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
-    }
-
-    @Override
-    public Resp<String> verifyLinkString(String linkString) {
-        // 实现token验证逻辑
-        try {
-            // 这里应该实现具体的token验证逻辑
-            // 返回验证结果，如果验证成功返回相应的字符串，失败返回null
-            if (linkString == null || linkString.trim().isEmpty()) {
-                return null;
-            }
-
-            // 简单的验证逻辑，实际项目中应该根据业务需求实现
-            return new Resp.Builder<String>().setData(linkString).ok();
-        } catch (Exception e) {
-            logger.error("验证链接字符串失败", e);
-            return null;
-        }
-    }
-
-    @Override
-    public Resp<AuthLoginUser> queryUserInfoForJwt() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return new Resp.Builder<AuthLoginUser>().buildResult("401", "用户未认证");
-        }
-
-        String username = authentication.getName();
-        if (username == null || username.trim().isEmpty()) {
-            return new Resp.Builder<AuthLoginUser>().buildResult("400", "无法获取用户信息");
-        }
-
-        try {
-            // 通过邮箱查询用户信息
-            SysUser sysUser = sysUserDao.queryByEmail(username);
-            if (sysUser == null) {
-                return new Resp.Builder<AuthLoginUser>().buildResult("404", "用户不存在");
-            }
-
-            // 创建AuthLoginUser对象
-            AuthLoginUser authLoginUser = new AuthLoginUser();
-            authLoginUser.setSysUser(sysUser);
-            // 根据AuthLoginUser类的实际属性设置值
-            authLoginUser.setSysUser(sysUser);
-            
-            // 获取用户项目信息
-            List<Map<String, Object>> userProjects = sysUserProjectDao.queryProjectByUserId(new BigInteger(sysUser.getId()));
-            if (userProjects != null && !userProjects.isEmpty()) {
-                // 如果需要设置项目信息，需要根据AuthLoginUser的实际属性来设置
-                System.out.println(">>> 用户项目信息获取成功");
-            }
-
-            return new Resp.Builder<AuthLoginUser>().setData(authLoginUser).ok();
-
-        } catch (Exception e) {
-            logger.error("查询用户信息失败", e);
-            return new Resp.Builder<AuthLoginUser>().buildResult("500", "查询用户信息失败: " + e.getMessage());
-        }
     }
 }

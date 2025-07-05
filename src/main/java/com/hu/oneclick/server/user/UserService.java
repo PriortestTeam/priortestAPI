@@ -1,6 +1,5 @@
 package com.hu.oneclick.server.user;
 
-import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.SysUser;
@@ -49,8 +48,6 @@ public interface UserService {
      * @return
      */
     Resp<String> queryEmailDoesItExist(String email);
-    
-    Boolean getUserAccountInfo(String emailId, String token);
 
     /**
      * 更新用户信息
@@ -131,14 +128,6 @@ public interface UserService {
      */
     Boolean getUserAccountInfo(String emailId, String token);
 
-    /**
-     * 专门用于JWT Token认证后获取用户完整信息
-     */
-    AuthLoginUser queryUserInfoForJwtToken(String username);
-
-    /**
-     * 验证链接字符串
-     */
     Resp<String> verifyLinkString(String linkStr);
 
     /** 查询用户和子用户
