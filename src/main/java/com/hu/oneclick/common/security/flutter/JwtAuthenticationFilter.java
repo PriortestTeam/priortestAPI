@@ -153,15 +153,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.isNotBlank(emailId) && StringUtils.isNotBlank(token)) {
             System.out.println(">>> 检测到emailId和token认证方式");
 
-            // 验证token是否存在于数据库中
-				SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(token);
-				if (sysUserToken == null) {
-					System.out.println(">>> 用户token不存在");
-					throw new BadCredentialsException("Token not found");
-				}
+            // 先验证用户账号是否存在
+            Boolean isValid = userService.getUserAccountInfo(emailId, null);
+            if (isValid == null || !isValid) {
+                System.out.println(">>> 用户账号不存在");
+                throw new BadCredentialsException("User not found");
+            }
 
-            // 验证用户账号和token
-            Boolean isValid = userService.getUserAccountInfo(emailId, token);
+            // 验证token是否存在于数据库中
+            SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(token);
+            if (sysUserToken == null) {
+                System.out.println(">>> 用户token不存在");
+                throw new BadCredentialsException("Token not found");
+            }
             if (isValid == null || !isValid) {
                 System.out.println(">>> 用户登录信息不存在或token无效");
                 throw new BadCredentialsException("User not found or invalid token");
@@ -201,16 +205,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new BadCredentialsException("User not found");
             }
 
-            // 由于无法获取完整用户信息，直接创建认证对象
+            System.out.println(">>> Bearer Token JWT验证成功，用户: " + username);
 
-            System.out.println(">>> Bearer Token验证成功，设置认证信息");
-
-            // 创建认证token并设置到SecurityContext
+            // 创建认证token
             org.springframework.security.authentication.UsernamePasswordAuthenticationToken authToken =
                     new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, null);
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            System.out.println(">>> 认证信息已设置到SecurityContext");
+            
             return authToken;
         } catch (Exception e) {
             System.out.println(">>> Bearer Token验证失败: " + e.getMessage());

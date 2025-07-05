@@ -130,14 +130,14 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println(">>> 配置SecurityFilterChain");
-        
+
         // Configure custom authentication filters
         MyUsernamePasswordAuthenticationFilter jsonAuthFilter = new MyUsernamePasswordAuthenticationFilter();
         jsonAuthFilter.setAuthenticationSuccessHandler(jsonLoginSuccessHandler);
         jsonAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler());
         jsonAuthFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
         jsonAuthFilter.setAuthenticationManager(authenticationManager());
-        
+
         // Get the JWT filter from the Spring context
         JwtAuthenticationFilter jwtAuthFilter = jwtAuthenticationFilter();
 
