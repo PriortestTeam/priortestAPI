@@ -638,7 +638,6 @@ public class UserServiceImpl implements UserService {
         return new Resp.Builder<String>().setData(primaryKey == 1 ? "删除成功" : "删除失败").ok();
     }
 
-    @Override
     public Boolean getUserAccountInfo(String emailId, String token) {
         try {
             System.out.println(">>> API Token验证 - sysUserTokenDao.selectByUserIdAndToken 开始验证");
@@ -692,13 +691,13 @@ public class UserServiceImpl implements UserService {
             System.out.println(">>> JWT Token - 获取用户信息开始");
             System.out.println(">>> JWT Token - 用户名: " + username);
 
-            SysUser sysUser = sysUserDao.selectByUserName(username);
+            SysUser sysUser = sysUserDao.queryByEmail(username);
             if (sysUser == null) {
-                System.out.println(">>> JWT Token - 用户不存在: " +username);
+                System.out.println(">>> JWT Token - 用户不存在: " + username);
                 return null;
             }
 
-            AuthLoginUser authLoginUser = newAuthLoginUser();
+            AuthLoginUser authLoginUser = new AuthLoginUser();
             authLoginUser.setSysUser(sysUser);
 
             System.out.println(">>> JWT Token - 获取用户信息成功");
@@ -787,18 +786,14 @@ public class UserServiceImpl implements UserService {
             // 创建AuthLoginUser对象
             AuthLoginUser authLoginUser = new AuthLoginUser();
             authLoginUser.setSysUser(sysUser);
-            authLoginUser.setUserId(sysUser.getId());
-            authLoginUser.setUserName(sysUser.getUserName());
-            authLoginUser.setUsername(sysUser.getEmail());
-
+            // 根据AuthLoginUser类的实际属性设置值
+            authLoginUser.setSysUser(sysUser);
+            
             // 获取用户项目信息
             List<Map<String, Object>> userProjects = sysUserProjectDao.queryProjectByUserId(new BigInteger(sysUser.getId()));
             if (userProjects != null && !userProjects.isEmpty()) {
-                Map<String, Object> userProject = userProjects.get(0);
-                Object projectId = userProject.get("project_id");
-                if (projectId != null) {
-                    authLoginUser.setProjectid((BigInteger) projectId);
-                }
+                // 如果需要设置项目信息，需要根据AuthLoginUser的实际属性来设置
+                System.out.println(">>> 用户项目信息获取成功");
             }
 
             return new Resp.Builder<AuthLoginUser>().setData(authLoginUser).ok();

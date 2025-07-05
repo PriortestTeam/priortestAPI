@@ -49,6 +49,8 @@ public interface UserService {
      * @return
      */
     Resp<String> queryEmailDoesItExist(String email);
+    
+    Boolean getUserAccountInfo(String emailId, String token);
 
     /**
      * 更新用户信息
