@@ -114,14 +114,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		System.out.println(">>> 不是白名单URL，继续处理...");
 
-		if (requiresAuthentication(request, response)) {
-			Authentication authResult = attemptAuthentication(request, response);
-			if (authResult != null) {
+		try {
+			Authentication authResult = attemptAuthentication(request, response, filterChain);
+			if(authResult != null) {
 				successfulAuthentication(request, response, filterChain, authResult);
 			} else {
-				unsuccessfulAuthentication(request, response);
+				unsuccessfulAuthentication(request, response, new BadCredentialsException("Authentication failed"));
 			}
-			return;
+		} catch (AuthenticationException e) {
+			System.out.println(">>> JWT认证失败: " + e.getMessage());
+			unsuccessfulAuthentication(request, response, e);
 		}
 		filterChain.doFilter(request, response);
 	}
@@ -203,4 +205,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected AuthenticationFailureHandler getFailureHandler() {
         return failureHandler;
     }
+
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws AuthenticationException, IOException {
+		return null;
+	}
+
+	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+			Authentication authResult) throws IOException, ServletException {
+	}
 }
