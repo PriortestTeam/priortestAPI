@@ -21,4 +21,3 @@ public class OneClickApplication {
         SpringApplication.run(OneClickApplication.class, args);
     }
 }
-}
