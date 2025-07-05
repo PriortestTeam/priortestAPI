@@ -2,6 +2,7 @@ package com.hu.oneclick.common.security.flutter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.entity.SysUserToken;
 import com.hu.oneclick.server.user.UserService;
@@ -170,9 +171,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             System.out.println(">>> JWT Token验证成功，用户: " + subject);
 
-            // 创建简单的认证对象，不查询数据库
-            UsernamePasswordAuthenticationToken authToken = 
-                new UsernamePasswordAuthenticationToken(subject, null, new ArrayList<>());
+            // 创建JwtAuthenticationToken对象以匹配JwtRefreshSuccessHandler的期望
+            JwtAuthenticationToken authToken = new JwtAuthenticationToken(jwt);
+            authToken.setAuthenticated(true);
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
             System.out.println(">>> 认证信息已设置到SecurityContext");
