@@ -211,6 +211,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
             System.out.println(">>> 认证信息已设置到SecurityContext");
+            return authToken;
         } catch (Exception e) {
             System.out.println(">>> Bearer Token验证失败: " + e.getMessage());
             throw new BadCredentialsException("Bearer Token verification failed: " + e.getMessage());
