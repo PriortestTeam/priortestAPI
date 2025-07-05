@@ -303,11 +303,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             System.out.println(">>> API Token验证成功，用户: " + emailId);
 
-            // 创建认证对象
+            // 创建认证对象 - 使用三参数构造函数创建已认证的token
             UsernamePasswordAuthenticationToken authToken = 
                 new UsernamePasswordAuthenticationToken(emailId, null, Collections.emptyList());
-            authToken.setAuthenticated(true);
-
+            
+            // 不需要调用setAuthenticated(true)，因为三参数构造函数已经设置为已认证状态
             SecurityContextHolder.getContext().setAuthentication(authToken);
             System.out.println(">>> API Token认证信息已设置到SecurityContext");
             System.out.println(">>> ========== API Token验证完成 ==========");
