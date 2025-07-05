@@ -115,22 +115,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println(">>> 检测到Bearer Token，使用JWT验证");
                 authentication = authenticateBearerToken(authHeader.substring(7).trim());
             } else if (path.startsWith("/api/apiAdapter/")) {
+                System.out.println("========== API路径匹配检查 ==========");
+                System.out.println(">>> 路径匹配成功: " + path + " 匹配 /api/apiAdapter/ 前缀");
                 System.out.println(">>> 检测到API Token访问 apiAdapter 接口，使用API Token验证");
                 authentication = authenticateApiToken(authHeader);
             } else {
+                System.out.println("========== API路径匹配检查 ==========");
+                System.out.println(">>> 路径不匹配: " + path + " 不匹配任何已知模式");
+                System.out.println(">>> Authorization头格式: " + (authHeader.startsWith("Bearer ") ? "Bearer Token" : "其他格式"));
                 System.out.println(">>> 未知的认证方式或路径不匹配，拒绝访问");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authentication method");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authentication method for path: " + path);
                 return;
             }
 
             if (authentication != null) {
-                System.out.println(">>> 认证成功，继续处理请求");
-                successHandler.onAuthenticationSuccess(request, response, authentication);
+                System.out.println("========== 最终认证结果 ==========");
+                System.out.println(">>> ✅ 认证成功，继续处理请求");
+                System.out.println(">>> 认证主体: " + authentication.getPrincipal());
+                System.out.println(">>> 认证已设置到SecurityContext");
+                SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
             } else {
-                System.out.println(">>> 认证失败");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("{\"error\":\"Authentication failed\"}");
+                System.out.println("========== 最终认证结果 ==========");
+                System.out.println(">>> ❌ 认证失败，返回401");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
             }
 
         } catch (Exception e) {
@@ -192,39 +200,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private Authentication authenticateApiToken(String authHeader) {
         try {
-            System.out.println(">>> 开始验证API Token");
+            System.out.println("========== API Token 验证详细日志 开始 ==========");
+            System.out.println(">>> 步骤1: 准备验证API Token");
 
             // API Token格式: emailId + token，用空格分隔
             String[] parts = authHeader.split(" ", 2);
             if (parts.length != 2) {
+                System.out.println(">>> 步骤2: ❌ API Token格式错误，缺少空格分隔符");
                 throw new BadCredentialsException("Invalid API token format");
             }
 
             String emailId = parts[0];
             String token = parts[1];
 
-            System.out.println(">>> API Token - EmailId: " + emailId);
+            System.out.println(">>> 步骤3: ✅ API Token解析成功");
+            System.out.println(">>> 步骤3: EmailId: " + emailId);
+            System.out.println(">>> 步骤3: Token: " + token.substring(0, Math.min(token.length(), 10)) + "... (truncated)");
 
             // 基本格式验证
             if (emailId.isEmpty() || token.isEmpty()) {
+                System.out.println(">>> 步骤4: ❌ EmailId或Token为空");
                 throw new BadCredentialsException("EmailId or token is empty");
             }
 
             // 简化验证逻辑，暂时跳过数据库查询
             // TODO: 后续实现完整的 API Token 验证逻辑
-            System.out.println(">>> API Token验证成功，用户: " + emailId);
+            System.out.println(">>> 步骤5: ⚠️  跳过数据库查询验证，后续需要实现");
+            System.out.println(">>> 步骤6: 模拟API Token验证成功");
 
             // 创建认证对象
             UsernamePasswordAuthenticationToken authToken = 
                 new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList<>());
 
+            authToken.setDetails(emailId);
             SecurityContextHolder.getContext().setAuthentication(authToken);
-            System.out.println(">>> 认证信息已设置到SecurityContext");
 
+            System.out.println(">>> 步骤8: ✅ API Token认证对象已创建并设置到SecurityContext");
+            System.out.println(">>> 步骤8: 认证主体: " + authToken.getPrincipal());
+            System.out.println(">>> 步骤8: 认证详情: " + authToken.getDetails());
+            System.out.println("========== API Token 验证详细日志 结束 ==========");
             return authToken;
 
         } catch (Exception e) {
-            System.out.println(">>> API Token验证失败: " + e.getMessage());
+            System.out.println(">>> ❌ API Token验证最终失败: " + e.getMessage());
+            System.out.println(">>> 异常栈跟踪: " + e.getClass().getSimpleName());
+            System.out.println("========== API Token 验证详细日志 结束 ==========");
             throw new BadCredentialsException("API token verification failed: " + e.getMessage());
         }
     }
