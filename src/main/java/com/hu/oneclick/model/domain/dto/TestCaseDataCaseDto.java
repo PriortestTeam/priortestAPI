@@ -25,34 +25,34 @@ public class TestCaseDataCaseDto {
     @Schema(description = "优先级")
     private String priority;
 
-    @Schema(description = "特性");
+    @Schema(description = "特性")
     private String feature;
 
-    @Schema(description = "描述");
+    @Schema(description = "描述")
     private String description;
 
-    @Schema(description = "执行时间");
+    @Schema(description = "执行时间")
     private Date executeTime;
 
-    @Schema(description = "浏览器");
+    @Schema(description = "浏览器")
     private String browser;
 
-    @Schema(description = "平台");
+    @Schema(description = "平台")
     private String platform;
 
-    @Schema(description = "版本");
+    @Schema(description = "版本")
     private String version;
 
-    @Schema(description = "用例分类");
+    @Schema(description = "用例分类")
     private String caseCategory;
 
-    @Schema(description = "测试类型");
+    @Schema(description = "测试类型")
     private String testType;
 
-    @Schema(description = "测试条件");
+    @Schema(description = "测试条件")
     private String testCondition;
 
-    @Schema(description = "环境");
+    @Schema(description = "环境")
     private String env;
 
     @Schema(description = "外部链接ID");
@@ -64,27 +64,27 @@ public class TestCaseDataCaseDto {
     @Schema(description = "模块");
     private String module;
 
-    @Schema(description = "测试设备");
+    @Schema(description = "测试设备")
     private String testDevice;
 
-    @Schema(description = "测试数据");
+    @Schema(description = "测试数据")
     private String testData;
 
-    @Schema(description = "测试方法");
+    @Schema(description = "测试方法")
     private String testMethod;
 
-    @Schema(description = "测试状态");
+    @Schema(description = "测试状态")
     private String testStatus;
 
-    @Schema(description = "报告给");
+    @Schema(description = "报告给")
     private String reportTo;
 
-    @Schema(description = "测试计划输入");
+    @Schema(description = "测试计划输入")
     private String testPlanInput;
 
-    @Schema(description = "测试用例扩展");
+    @Schema(description = "测试用例扩展")
     private String testcaseExpand;
 
-    @Schema(description = "备注");
+    @Schema(description = "备注")
     private String remarks;
 }
