@@ -63,11 +63,6 @@ public class ApiAdpaderController {
 
     @GetMapping("/{projectId}/testCycle/retrieveTestCycleAsTitle/getId")
     public Resp<TestCycleVo> getIdByTitle(@RequestParam String title, @PathVariable Long projectId) {
-        System.out.println("========== ApiAdpaderController 请求处理 ==========");
-        System.out.println(">>> ✅ 请求成功到达控制器");
-        System.out.println(">>> 请求方法: getIdByTitle");
-        System.out.println(">>> projectId: " + projectId);
-        System.out.println(">>> title: " + title);
         if (StringUtil.isEmpty(title)) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "title不能为空",
                 HttpStatus.BAD_REQUEST.value());
