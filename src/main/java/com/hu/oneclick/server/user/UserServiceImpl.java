@@ -262,23 +262,59 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Resp<SysUser> queryUserInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = null;
+    public Resp<AuthLoginUser> queryUserInfo() {
+        try {
+            System.out.println(">>> 开始获取用户信息");
 
-        if (authentication instanceof ApiToken) {
-            ApiToken apiToken = (ApiToken) authentication;
-            userName = apiToken.getUserName();
-        } else if (authentication instanceof JwtAuthenticationToken) {
-            JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
-            userName = jwtToken.getJwt().getSubject();
-        } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            userName = authentication.getName();
-        } else {
-            throw new BizException("不支持的认证类型: " + authentication.getClass().getName());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println(">>> 当前认证对象: " + (authentication != null ? authentication.getClass().getSimpleName() : "null"));
+
+            if (authentication == null || !authentication.isAuthenticated()) {
+                System.out.println(">>> 用户未认证");
+                return Resp.error("用户未认证");
+            }
+
+            AuthLoginUser authLoginUser = null;
+
+            if (authentication instanceof UsernamePasswordAuthenticationToken) {
+                // API Token 认证 - 只返回基本用户信息
+                String emailId = (String) authentication.getPrincipal();
+                System.out.println(">>> API Token认证 - 用户邮箱: " + emailId);
+
+                SysUser sysUser = sysUserDao.selectByUserName(emailId);
+                if (sysUser == null) {
+                    System.out.println(">>> API Token认证 - 用户不存在: " + emailId);
+                    return Resp.error("用户不存在");
+                }
+
+                authLoginUser = new AuthLoginUser();
+                authLoginUser.setSysUser(sysUser);
+                System.out.println(">>> API Token认证 - 用户信息获取成功");
+
+            } else if (authentication instanceof JwtAuthenticationToken) {
+                // JWT Token 认证 - 获取完整用户信息
+                JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
+                String username = jwtToken.getToken().getSubject();
+                System.out.println(">>> JWT Token认证 - 用户名: " + username);
+
+                authLoginUser = queryUserInfoForJwtToken(username);
+                if (authLoginUser == null) {
+                    return Resp.error("获取JWT用户信息失败");
+                }
+                System.out.println(">>> JWT Token认证 - 用户信息获取成功");
+
+            } else {
+                System.out.println(">>> 未知的认证类型: " + authentication.getClass().getSimpleName());
+                return Resp.error("未知的认证类型");
+            }
+
+            return Resp.success(authLoginUser);
+
+        } catch (Exception e) {
+            System.out.println(">>> 获取用户信息异常: " + e.getMessage());
+            e.printStackTrace();
+            return Resp.error("获取用户信息失败: " + e.getMessage());
         }
-
-        return new Resp.Builder<SysUser>().setData(sysUserDao.queryByEmail(userName)).ok();
     }
 
     @Override
@@ -630,76 +666,79 @@ public class UserServiceImpl implements UserService {
         return new Resp.Builder<String>().setData(primaryKey == 1 ? "删除成功" : "删除失败").ok();
     }
 
-    /**
-     * 获取用户账号信息
-     *
-     * @param emailId
-     * @Param: [emailId]
-     * @return: void
-     * @Author: MaSiyi
-     * @Date: 2021/11/10
-     */
     @Override
     public Boolean getUserAccountInfo(String emailId, String token) {
-        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(emailId);
-        SysUser sysUser;
-        if (sysUsers.isEmpty()) {
+        try {
+            System.out.println(">>> API Token验证 - sysUserTokenDao.selectByUserIdAndToken 开始验证");
+            System.out.println(">>> emailId: " + emailId);
+            System.out.println(">>> token: " + token.substring(0, Math.min(10, token.length())) + "...");
+
+            List<SysUserToken> tokens = sysUserTokenDao.selectByUserIdAndToken(emailId, token);
+            System.out.println(">>> API Token验证 - 查询结果数量: " + (tokens != null ? tokens.size() : 0));
+
+            if (tokens == null || tokens.isEmpty()) {
+                System.out.println(">>> API Token验证失败: 未找到匹配的token记录");
+                return false;
+            }
+
+            SysUserToken userToken = tokens.get(0);
+            System.out.println(">>> API Token验证 - 找到token记录");
+
+            // 检查token是否过期
+            if (userToken.getExpirationTime() != null && userToken.getExpirationTime().before(new Date())) {
+                System.out.println(">>> API Token验证失败: token已过期");
+                return false;
+            }
+
+            // 检查token状态
+            if (userToken.getStatus() == null || !userToken.getStatus()) {
+                System.out.println(">>> API Token验证失败: token状态无效");
+                return false;
+            }
+
+            // 检查是否被删除
+            if (userToken.getIsDel() != null && userToken.getIsDel()) {
+                System.out.println(">>> API Token验证失败: token已被删除");
+                return false;
+            }
+
+            System.out.println(">>> API Token验证成功: token有效");
+            return true;
+
+        } catch (Exception e) {
+            System.out.println(">>> API Token验证过程中发生异常: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
-        sysUser = sysUsers.get(0);
-
-        //如果不是平台管理人员，则是子账号
-        /*if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
-            //查询是否有权限
-            SysUser parentUser = sysUserDao.queryById(sysUser.getParentId().toString());
-            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId());
-            if (sysUserTokens.isEmpty()) {
-                return false;
-            }
-            for (SysUserToken sysUserToken : sysUserTokens) {
-
-                if (sysUserToken.getApi_times() > 0) {
-                    sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
-                }
-
-            }
-            return true;
-        } else */
-        {
-            //主账号
-            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
-            if (sysUserTokens.isEmpty()) {
-                return false;
-            }
-            for (SysUserToken sysUserToken : sysUserTokens) {
-                if (sysUserToken.getApiTimes() > 0) {
-                    sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
-                }
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public Resp<String> verifyLinkString(String linkStr) {
-        RBucket<String> bucket = redisClient.getBucket(linkStr);
-        String redisCode = bucket.get();
-        if (redisCode == null || "".equals(redisCode) || !"true".equals(redisCode)) {
-            throw new BizException(SysConstantEnum.LINKSTRERROR.getCode(), SysConstantEnum.LINKSTRERROR.getValue());
-        }
-        bucket.delete();
-        return new Resp.Builder<String>().ok();
     }
 
     /**
-     * 查询用户和子用户
-     *
-     * @param masterId
-     * @Param: [masterId]
-     * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>
-     * @Author: MaSiyi
-     * @Date: 2021/12/15
+     * 专门用于JWT Token认证后获取用户完整信息
      */
+    public AuthLoginUser queryUserInfoForJwtToken(String username) {
+        try {
+            System.out.println(">>> JWT Token - 获取用户信息开始");
+            System.out.println(">>> JWT Token - 用户名: " + username);
+
+            SysUser sysUser = sysUserDao.selectByUserName(username);
+            if (sysUser == null) {
+                System.out.println(">>> JWT Token - 用户不存在: " + username);
+                return null;
+            }
+
+            AuthLoginUser authLoginUser = new AuthLoginUser();
+            authLoginUser.setSysUser(sysUser);
+
+            System.out.println(">>> JWT Token - 获取用户信息成功");
+            return authLoginUser;
+
+        } catch (Exception e) {
+            System.out.println(">>> JWT Token - 获取用户信息异常: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     public List<SysUser> queryByUserIdAndParentId(String masterId) {
         SysUser sysUser = new SysUser();

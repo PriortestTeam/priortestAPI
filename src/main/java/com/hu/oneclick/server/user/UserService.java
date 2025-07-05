@@ -127,6 +127,11 @@ public interface UserService {
      * @Date: 2021/11/10
      */
     Boolean getUserAccountInfo(String emailId, String token);
+    
+    /**
+     * 专门用于JWT Token认证后获取用户完整信息
+     */
+    AuthLoginUser queryUserInfoForJwtToken(String username);
 
     Resp<String> verifyLinkString(String linkStr);
 
