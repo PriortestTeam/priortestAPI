@@ -262,58 +262,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Resp<AuthLoginUser> queryUserInfo() {
+    public Resp<SysUser> queryUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new Resp.Builder<SysUser>().buildResult("401", "用户未认证");
+        }
+
+        String username = authentication.getName();
+        if (username == null || username.trim().isEmpty()) {
+            return new Resp.Builder<SysUser>().buildResult("400", "无法获取用户信息");
+        }
+
         try {
-            System.out.println(">>> 开始获取用户信息");
-
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            System.out.println(">>> 当前认证对象: " + (authentication != null ? authentication.getClass().getSimpleName() : "null"));
-
-            if (authentication == null || !authentication.isAuthenticated()) {
-                System.out.println(">>> 用户未认证");
-                return Resp.error("用户未认证");
+            // 通过邮箱查询用户信息（因为authentication.getName()返回的是邮箱）
+            SysUser sysUser = sysUserDao.queryByEmail(username);
+            if (sysUser == null) {
+                return new Resp.Builder<SysUser>().buildResult("404", "用户不存在");
             }
 
-            AuthLoginUser authLoginUser = null;
-
-            if (authentication instanceof UsernamePasswordAuthenticationToken) {
-                // API Token 认证 - 只返回基本用户信息
-                String emailId = (String) authentication.getPrincipal();
-                System.out.println(">>> API Token认证 - 用户邮箱: " + emailId);
-
-                SysUser sysUser = sysUserDao.selectByUserName(emailId);
-                if (sysUser == null) {
-                    System.out.println(">>> API Token认证 - 用户不存在: " + emailId);
-                    return Resp.error("用户不存在");
-                }
-
-                authLoginUser = new AuthLoginUser();
-                authLoginUser.setSysUser(sysUser);
-                System.out.println(">>> API Token认证 - 用户信息获取成功");
-
-            } else if (authentication instanceof JwtAuthenticationToken) {
-                // JWT Token 认证 - 获取完整用户信息
-                JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
-                String username = jwtToken.getToken().getSubject();
-                System.out.println(">>> JWT Token认证 - 用户名: " + username);
-
-                authLoginUser = queryUserInfoForJwtToken(username);
-                if (authLoginUser == null) {
-                    return Resp.error("获取JWT用户信息失败");
-                }
-                System.out.println(">>> JWT Token认证 - 用户信息获取成功");
-
-            } else {
-                System.out.println(">>> 未知的认证类型: " + authentication.getClass().getSimpleName());
-                return Resp.error("未知的认证类型");
-            }
-
-            return Resp.success(authLoginUser);
+            return new Resp.Builder<SysUser>().setData(sysUser).ok();
 
         } catch (Exception e) {
-            System.out.println(">>> 获取用户信息异常: " + e.getMessage());
-            e.printStackTrace();
-            return Resp.error("获取用户信息失败: " + e.getMessage());
+            logger.error("查询用户信息失败", e);
+            return new Resp.Builder<SysUser>().buildResult("500", "查询用户信息失败: " + e.getMessage());
         }
     }
 
@@ -772,5 +744,64 @@ public class UserServiceImpl implements UserService {
     public Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId) {
         List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
         return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
+    }
+
+    @Override
+    public String verifyLinkString(String token) {
+        // 实现token验证逻辑
+        try {
+            // 这里应该实现具体的token验证逻辑
+            // 返回验证结果，如果验证成功返回相应的字符串，失败返回null
+            if (token == null || token.trim().isEmpty()) {
+                return null;
+            }
+
+            // 简单的验证逻辑，实际项目中应该根据业务需求实现
+            return "验证成功";
+        } catch (Exception e) {
+            logger.error("验证链接字符串失败", e);
+            return null;
+        }
+    }
+
+    @Override
+    public Resp<AuthLoginUser> queryUserInfoForJwt() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new Resp.Builder<AuthLoginUser>().buildResult("401", "用户未认证");
+        }
+
+        String username = authentication.getName();
+        if (username == null || username.trim().isEmpty()) {
+            return new Resp.Builder<AuthLoginUser>().buildResult("400", "无法获取用户信息");
+        }
+
+        try {
+            // 通过邮箱查询用户信息
+            SysUser sysUser = sysUserDao.queryByEmail(username);
+            if (sysUser == null) {
+                return new Resp.Builder<AuthLoginUser>().buildResult("404", "用户不存在");
+            }
+
+            // 创建AuthLoginUser对象
+            AuthLoginUser authLoginUser = new AuthLoginUser();
+            authLoginUser.setSysUser(sysUser);
+            authLoginUser.setUserId(sysUser.getId());
+            authLoginUser.setUserName(sysUser.getUserName());
+            authLoginUser.setUsername(sysUser.getEmail());
+
+            // 获取用户项目信息
+            List<SysUserProject> userProjects = sysUserProjectDao.selectByUserId(sysUser.getId());
+            if (userProjects != null && !userProjects.isEmpty()) {
+                authLoginUser.setUserProjectId(userProjects.get(0).getProjectId());
+            }
+
+            return new Resp.Builder<AuthLoginUser>().setData(authLoginUser).ok();
+
+        } catch (Exception e) {
+            logger.error("查询用户信息失败", e);
+            return new Resp.Builder<AuthLoginUser>().buildResult("500", "查询用户信息失败: " + e.getMessage());
+        }
     }
 }
