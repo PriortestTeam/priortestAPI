@@ -1,6 +1,9 @@
 package com.hu.oneclick.model.domain.dto;
+
 import lombok.Data;
+
 import java.io.Serializable;
+
 /**
  * SysUserRoleDto
  *
@@ -12,6 +15,7 @@ import java.io.Serializable;
 @Data
 public class SysUserRoleDto implements Serializable {
     private static final long serialVersionUID = -67242842971294342L;
+
     /**
      * userId
      *
@@ -21,6 +25,7 @@ public class SysUserRoleDto implements Serializable {
      * @Date: 2022/1/3
      */
     private String id;
+
     /**
      * 邮箱
      */
@@ -29,10 +34,12 @@ public class SysUserRoleDto implements Serializable {
      * 用户名
      */
     private String userName;
+
     /**
      * 角色Id
      */
     private String roleId;
+
     /**
      * 角色名称
      */
@@ -42,6 +49,4 @@ public class SysUserRoleDto implements Serializable {
      */
     private String roleDesc;
     private String roomId;
-}
-}
 }

@@ -1,13 +1,18 @@
 package com.hu.oneclick.model.domain.dto;
+
+
 import lombok.Data;
+
 import java.math.BigInteger;
 import java.util.Date;
+
 @Data
-
-
 public class TestCaseBisDto {
+
     TestCaseDataRunDto testCaseRun;
+
     TestCaseDataCaseDto testCase;
+
     public void setTestCaseRun(int run, int status, Date updateTime, BigInteger createUserId, BigInteger updateUserId, BigInteger caseRunDuration, BigInteger caseTotalPeriod) {
         testCaseRun = new TestCaseDataRunDto();
         testCaseRun.setRunCount(run);
@@ -18,6 +23,7 @@ public class TestCaseBisDto {
         testCaseRun.setCaseRunDuration(caseRunDuration);
         testCaseRun.setCaseTotalPeriod(caseTotalPeriod);
     }
+
     public void setTestCase(Long id, Long projectId, String title, String priority, String feature, String description, Date executeTime, String browser, String platform, String version, String caseCategory, String testType, String testCondition, String env, String externalLinkId, Integer lastRunStatus, String module, String testDevice, String testData, String testMethod, String testStatus, String reportTo, String testcaseExpand, String remarks) {
         testCase = new TestCaseDataCaseDto();
         testCase.setId(id);
@@ -45,6 +51,4 @@ public class TestCaseBisDto {
         testCase.setTestcaseExpand(testcaseExpand);
         testCase.setRemarks(remarks);
     }
-}
-}
 }

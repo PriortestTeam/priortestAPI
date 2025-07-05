@@ -1,16 +1,38 @@
 package com.hu.oneclick.model.param;
+
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.hu.oneclick.model.entity.Issue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-@Data
-@Schema(description = "问题查询参数")
+import lombok.Getter;
+import lombok.Setter;
 
+import jakarta.validation.constraints.NotNull;
+import java.io.Serializable;
 
-public class IssueParam {
-    @Schema(description = "项目ID")
-    private Long projectId;
-    @Schema(description = "问题标题")
+/**
+ * @Author: jhh
+ * @Date: 2023/4/24
+ */
+@Getter
+@Setter
+@Schema(description = "缺陷Param")
+public class IssueParam implements Serializable {
+    @Schema(description = "名称")
     private String title;
-    public Long getProjectId() {
-        return projectId;
+
+    @Schema(description = "项目ID")
+    @NotNull(message = "项目ID不能为空")
+    private Long projectId;
+
+    @Schema(description = "视图ID")
+    private String viewId;
+
+    public LambdaQueryWrapper getQueryCondition() {
+        LambdaQueryWrapper<Issue> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StrUtil.isNotBlank(this.title), Issue::getTitle, this.title);
+        queryWrapper.eq(null != this.projectId, Issue::getProjectId, this.projectId);
+        queryWrapper.orderByDesc(Issue::getCreateTime);
+        return queryWrapper;
     }
 }

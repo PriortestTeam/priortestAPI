@@ -1,13 +1,13 @@
 package com.hu.oneclick.model.domain.dto;
+
 import lombok.Data;
+
 /**
  * @author MaSiyi
  * @version 1.0.0 2021/10/9
  * @since JDK 1.8.0
  */
 @Data
-
-
 public class AdminPayDto {
     /**
      * 支付方式
@@ -29,6 +29,5 @@ public class AdminPayDto {
      * 订阅时长
      */
     private Integer subScription;
-}
-}
+
 }

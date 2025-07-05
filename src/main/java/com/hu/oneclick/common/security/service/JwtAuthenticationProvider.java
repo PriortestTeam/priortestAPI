@@ -1,4 +1,5 @@
 package com.hu.oneclick.common.security.service;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -11,22 +12,25 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Component;
+
 import java.util.Calendar;
+
 /**
  * @author qingyang
  */
 @Component
-
-
 public class JwtAuthenticationProvider implements AuthenticationProvider {
+
 	private final JwtUserServiceImpl userService;
+
 	public JwtAuthenticationProvider(JwtUserServiceImpl userService) {
 		this.userService = userService;
 	}
+
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		DecodedJWT jwt = ((JwtAuthenticationToken)authentication).getToken();
-		if(jwt.getExpiresAt().before(Calendar.getInstance().getTime() {
+		if(jwt.getExpiresAt().before(Calendar.getInstance().getTime())) {
 			throw new NonceExpiredException("Token expires");
 		}
 		String username = jwt.getSubject();
@@ -40,16 +44,16 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             JWTVerifier verifier = JWT.require(algorithm)
                     .withSubject(username)
                     .build();
-            verifier.verify(jwt.getToken();
+            verifier.verify(jwt.getToken());
         } catch (Exception e) {
             throw new BadCredentialsException("JWT token verify fail", e);
         }
-		return new JwtAuthenticationToken(user, jwt, user.getAuthorities();
+		return new JwtAuthenticationToken(user, jwt, user.getAuthorities());
 	}
+
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return JwtAuthenticationToken.class.isAssignableFrom(authentication);
 	}
-}
-}
+
 }

@@ -1,4 +1,5 @@
 package com.hu.oneclick.model.entity;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -7,69 +8,56 @@ import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.model.base.VerifyParam;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+
 import java.io.Serializable;
+
 /**
  * @author qingyang todo
  */
-@JsonInclude(JsonInclude.Include.NON_EMPTY);
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Data
-
-
 public class OneFilter implements VerifyParam, Serializable {
+
     private String id;
     /**
      * 类型，
      */
     private String type;
+
     private String fieldNameCn;
+
     private String fieldNameEn;
+
     private String fieldType;
+
     /**
      * and || or
      */
     private String andOr;
-    public String getFieldNameEn() {
-        return fieldNameEn;
-    }
-    public void setFieldNameEn(String fieldNameEn) {
-        this.fieldNameEn = fieldNameEn;
-    }
-    public String getSourceVal() {
-        return sourceVal;
-    }
-    public void setSourceVal(String sourceVal) {
-        this.sourceVal = sourceVal;
-    }
-    public String getCondition() {
-        return condition;
-    }
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
-    public String getAndOr() {
-        return andOr;
-    }
-    public void setAndOr(String andOr) {
-        this.andOr = andOr;
-    }
+
     /**
      * 根据type，类型确定sourceVal 值
      */
     private String sourceVal;
+
     /**
      * 数值类型使用
      */
     private Integer intVal;
+
     /**
      * 字符串类型使用
      */
     private String textVal;
+
     /**
      * f
      * 日期类型filter 使用
      */
     private String beginDate;
+
     private String endDate;
+
     /**
      * 条件
      * 中间的条件：
@@ -86,6 +74,8 @@ public class OneFilter implements VerifyParam, Serializable {
      * @Date: 2021/12/22
      */
     private String condition;
+
+
     /** 字段类型 系统字段 sys 用户字段 user
      * @Param:
      * @return:
@@ -93,20 +83,25 @@ public class OneFilter implements VerifyParam, Serializable {
      * @Date: 2021/12/31
      */
     private String customType;
+
     /**
      * 自定义字段的ID
      */
     private String customFieldId;
+
     @Override
     public void verify() throws BizException {
-        if (StringUtils.isEmpty(this.type) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "类型" + SysConstantEnum.PARAM_EMPTY.getValue();
-        } else if (StringUtils.isEmpty(this.andOr) {
-            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "条件" + SysConstantEnum.PARAM_EMPTY.getValue();
+        if (StringUtils.isEmpty(this.type)) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "类型" + SysConstantEnum.PARAM_EMPTY.getValue());
+        } else if (StringUtils.isEmpty(this.andOr)) {
+            throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "条件" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
-        if (StringUtils.isEmpty(this.sourceVal) {
+
+        if (StringUtils.isEmpty(this.sourceVal)) {
             return;
         }
+
+
         switch (type) {
             case "fString":
                 fString();
@@ -121,6 +116,7 @@ public class OneFilter implements VerifyParam, Serializable {
                 break;
         }
     }
+
     /**
      * 字符串
      */
@@ -136,13 +132,14 @@ public class OneFilter implements VerifyParam, Serializable {
                 throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "参数格式不正确。");
             }
             length = i > length ? 30 : i;
-            this.textVal = this.sourceVal.substring((split[0] + OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER).length();
+            this.textVal = this.sourceVal.substring((split[0] + OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER).length());
         }
         if (this.textVal.length() > length) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "文本内容不得超过" + length + "个字符。");
         }
         setSourceValIsNull();
     }
+
     /**
      * 数值
      */
@@ -154,22 +151,25 @@ public class OneFilter implements VerifyParam, Serializable {
         }
         setSourceValIsNull();
     }
+
     /**
      * 时间
      */
     private void fDateTime() {
         try {
             String[] split = this.sourceVal.split(OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER);
-            this.beginDate = DateUtil.format(DateUtil.parseDate(split[0]);
-            this.endDate = DateUtil.format(DateUtil.parseDate(split[1]);
+            this.beginDate = DateUtil.format(DateUtil.parseDate(split[0]));
+            this.endDate = DateUtil.format(DateUtil.parseDate(split[1]));
         } catch (Exception e) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "时间格式不正确。");
         }
         setSourceValIsNull();
     }
+
+
     private void setSourceValIsNull() {
         this.sourceVal = null;
     }
-}
-}
+
+
 }

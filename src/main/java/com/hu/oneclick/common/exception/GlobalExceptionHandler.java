@@ -1,7 +1,10 @@
 package com.hu.oneclick.common.exception;
+
 import java.util.List;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+
 import com.google.common.collect.Lists;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.model.base.Resp;
@@ -23,14 +26,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 /**
  * @author qingyang
  */
 @RestControllerAdvice
-
-
 public class GlobalExceptionHandler {
+
     private final static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     /**
      * @param e
      * @return com.hu.oneclick.model.base.Resp<java.lang.String>
@@ -38,12 +42,12 @@ public class GlobalExceptionHandler {
      * @author Vince
      * @createTime 2022/12/13 21:18
      */
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class});
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BindException.class})
     @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Resp<String> handleConstraintViolationException(Exception e) {
         logger.error("class: GlobalExceptionHandler#handleConstraintViolationException 请求参数校验异常ERROR==>：" + e);
-        List&lt;ObjectError> allErrors = Lists.newArrayList();
+        List<ObjectError> allErrors = Lists.newArrayList();
         if (e instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException ex = (MethodArgumentNotValidException)e;
             allErrors = ex.getBindingResult().getAllErrors();
@@ -51,16 +55,17 @@ public class GlobalExceptionHandler {
             BindException ex = (BindException)e;
             allErrors = ex.getAllErrors();
         }
-        if (!ObjectUtils.isEmpty(allErrors) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.PARAM_EMPTY.getCode(),;
-                allErrors.get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST.value();
+        if (!ObjectUtils.isEmpty(allErrors)) {
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.PARAM_EMPTY.getCode(),
+                allErrors.get(0).getDefaultMessage(), HttpStatus.BAD_REQUEST.value());
         }
-        return new Resp.Builder<String>().httpBadRequest().buildResult(SysConstantEnum.SYS_ERROR.getValue(), HttpStatus.BAD_REQUEST.value();
+        return new Resp.Builder<String>().httpBadRequest().buildResult(SysConstantEnum.SYS_ERROR.getValue(), HttpStatus.BAD_REQUEST.value());
     }
-    @ExceptionHandler(Exception.class);
+
+    @ExceptionHandler(Exception.class)
     public Resp<String> handleException(Exception e, HttpServletRequest request) {
         logger.info("class: GlobalExceptionHandler#handleException type: {}, message: {}", e.getClass(),
-            e.getMessage();
+            e.getMessage());
         String bizCode = "";
         String msg = SysConstantEnum.SYSTEM_BUSY.getValue();
         int httpStatus = 0;
@@ -69,7 +74,7 @@ public class GlobalExceptionHandler {
             httpStatus = e1.getHttpCode() > 0 ? e1.getHttpCode() : HttpStatus.INTERNAL_SERVER_ERROR.value();
             bizCode = e1.getCode();
             msg = e1.getMsg();
-        } else if (e instanceof MissingServletRequestParameterException) {
+        } else if (e instanceof MissingServletRequestParameterException
             || e instanceof MethodArgumentTypeMismatchException
             || e instanceof ValidException
             || e instanceof DataIntegrityViolationException
@@ -91,6 +96,5 @@ public class GlobalExceptionHandler {
         resp.setHttpCode(httpStatus);
         return resp;
     }
-}
-}
+
 }

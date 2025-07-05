@@ -1,13 +1,14 @@
 package com.hu.oneclick.common.util;
+
 import cn.hutool.core.util.StrUtil;
+
 /**
  * 类型转换器
  *
  * @author xiaohai
  */
-
-
 public class Convert {
+
     /**
      * 转换为字符串<br>
      * 如果给定的值为null，或者转换失败，返回默认值<br>
@@ -26,6 +27,7 @@ public class Convert {
         }
         return value.toString();
     }
+
     /**
      * 转换为字符串<br>
      * 如果给定的值为<code>null</code>，或者转换失败，返回默认值<code>null</code><br>
@@ -37,6 +39,7 @@ public class Convert {
     public static String toStr(Object value) {
         return toStr(value, null);
     }
+
     /**
      * 转换为int<br>
      * 如果给定的值为空，或者转换失败，返回默认值<br>
@@ -57,15 +60,16 @@ public class Convert {
             return ((Number) value).intValue();
         }
         final String valueStr = toStr(value, null);
-        if (StrUtil.isEmpty(valueStr) {
+        if (StrUtil.isEmpty(valueStr)) {
             return defaultValue;
         }
         try {
-            return Integer.parseInt(valueStr.trim();
+            return Integer.parseInt(valueStr.trim());
         } catch (Exception e) {
             return defaultValue;
         }
     }
+
     /**
      * 转换为int<br>
      * 如果给定的值为<code>null</code>，或者转换失败，返回默认值<code>null</code><br>
@@ -77,6 +81,5 @@ public class Convert {
     public static Integer toInt(Object value) {
         return toInt(value, null);
     }
-}
-}
+
 }

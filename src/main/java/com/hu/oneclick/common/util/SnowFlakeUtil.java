@@ -1,13 +1,15 @@
 package com.hu.oneclick.common.util;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * 原作者 zzxadi https://github.com/zzxadi/Snowflake-IdWorker
  */
-
-
 public class SnowFlakeUtil {
+
     private final static Logger log = LoggerFactory.getLogger("SnowFlakeUtil");
+
     private final long id;
     /**
      * 时间起始标记点，作为基准，一般取系统的最近时间
@@ -29,6 +31,7 @@ public class SnowFlakeUtil {
      * 毫秒内自增位
      */
     private final long sequenceBits = 12L;
+
     /**
      * 12
      */
@@ -42,12 +45,14 @@ public class SnowFlakeUtil {
      */
     private final long sequenceMask = -1L ^ -1L << this.sequenceBits;
     private long lastTimestamp = -1L;
+
     private SnowFlakeUtil(long id) {
         if (id > this.maxWorkerId || id < 0) {
-            throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", this.maxWorkerId);
+            throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", this.maxWorkerId));
         }
         this.id = id;
     }
+
     public synchronized long nextId() {
         long timestamp = timeGen();
         if (this.lastTimestamp == timestamp) {
@@ -60,17 +65,21 @@ public class SnowFlakeUtil {
         } else {
             this.sequence = 0;
         }
+
         if (timestamp < this.lastTimestamp) {
-            log.error(String.format("clock moved backwards.Refusing to generate id for %d milliseconds", (this.lastTimestamp - timestamp);
+            log.error(String.format("clock moved backwards.Refusing to generate id for %d milliseconds", (this.lastTimestamp - timestamp)));
             return -1;
         }
+
         this.lastTimestamp = timestamp;
         return timestamp - this.epoch << this.timestampLeftShift | this.id << this.workerIdShift | this.sequence;
     }
+
     private static SnowFlakeUtil flowIdWorker = new SnowFlakeUtil(1);
     public static SnowFlakeUtil getFlowIdInstance() {
         return flowIdWorker;
     }
+
     /**
      * 等待下一个毫秒的到来, 保证返回的毫秒数在参数lastTimestamp之后
      */
@@ -81,18 +90,18 @@ public class SnowFlakeUtil {
         }
         return timestamp;
     }
+
     /**
      * 获得系统当前毫秒数
      */
     private static long timeGen() {
         return System.currentTimeMillis();
     }
+
     public static void main(String[] args) {
         for(int i=0;i<100;i++){
             SnowFlakeUtil snowFlakeUtil = SnowFlakeUtil.getFlowIdInstance();
-            System.out.println(snowFlakeUtil.nextId();
+            System.out.println(snowFlakeUtil.nextId());
         }
     }
-}
-}
 }

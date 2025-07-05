@@ -1,9 +1,11 @@
 package com.hu.oneclick.common.config;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
 /**
  * @author xwf
  * @date 2021/9/13 0:23
@@ -11,12 +13,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  */
 @EnableAsync//开启异步调用
 @Configuration
-
-
 public class AsyncConfig {
+
     private static final int MAX_POOL_SIZE = 32;
+
     private static final int CORE_POOL_SIZE = 16;
-    @Bean("asyncTaskExecutor");
+
+    @Bean("asyncTaskExecutor")
     public AsyncTaskExecutor asyncTaskExecutor() {
         ThreadPoolTaskExecutor asyncTaskExecutor = new ThreadPoolTaskExecutor();
         asyncTaskExecutor.setMaxPoolSize(MAX_POOL_SIZE);
@@ -25,6 +28,4 @@ public class AsyncConfig {
         asyncTaskExecutor.initialize();
         return asyncTaskExecutor;
     }
-}
-}
 }

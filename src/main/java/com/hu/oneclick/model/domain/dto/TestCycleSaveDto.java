@@ -1,14 +1,17 @@
 package com.hu.oneclick.model.domain.dto;
+
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+
 /**
  * 测试周期DTO
  *
@@ -18,25 +21,26 @@ import java.util.Date;
 @Setter
 @Getter
 @Schema(description = "测试周期DTO")
-
-
 public class TestCycleSaveDto implements Serializable {
+
     private static final long serialVersionUID = 3621834190197699211L;
-    @JsonFormat(shape = JsonFormat.Shape.STRING);
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Schema(description = "主键id")
     private Long id;
+
     /**
      * 项目id
      */
     @Schema(description = "项目id")
-    @JsonFormat(shape = JsonFormat.Shape.STRING);
-    @NotNull(message = "项目ID不能为空");
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @NotNull(message = "项目ID不能为空")
     private Long projectId;
     /**
      * 名称
      */
     @Schema(description = "名称")
-    @NotBlank(message = "名称不能为空");
+    @NotBlank(message = "名称不能为空")
     private String title;
     /**
      * 执行进度 0: 未开始; 1:未完成; 2: 完成
@@ -52,8 +56,8 @@ public class TestCycleSaveDto implements Serializable {
      * 最后一次运行时间
      */
     @Schema(description = "最后一次运行时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss");
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss");
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date lastRunDate;
     /**
      * 版本
@@ -64,8 +68,8 @@ public class TestCycleSaveDto implements Serializable {
      * 计划执行时间
      */
     @Schema(description = "计划执行时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss");
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss");
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date planExecuteDate;
     /**
      * 描述
@@ -80,7 +84,7 @@ public class TestCycleSaveDto implements Serializable {
     /**
      * 0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。)
      */
-    @Schema(description = "0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。)")
+    @Schema(description = "0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。))")
     private Integer released;
     /**
      * 用例执行人
@@ -119,15 +123,15 @@ public class TestCycleSaveDto implements Serializable {
      * auto_job_start
      */
     @Schema(description = "auto_job_start")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss");
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss");
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date autoJobStart;
     /**
      * auto_job_end
      */
     @Schema(description = "auto_job_end")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss");
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss");
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date autoJobEnd;
     @Schema(description = "frequency")
     private String frequency;
@@ -137,8 +141,8 @@ public class TestCycleSaveDto implements Serializable {
      * auto_job_run_time
      */
     @Schema(description = "auto_job_run_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss");
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss");
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date autoJobRunTime;
     @Schema(description = "browser")
     private String browser;
@@ -151,6 +155,5 @@ public class TestCycleSaveDto implements Serializable {
      */
     @Schema(description = "自定义字段值")
     private JSONObject customFieldDatas;
-}
-}
+
 }

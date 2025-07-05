@@ -1,7 +1,10 @@
 package com.hu.oneclick.model.domain.dto;
+
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Data;
+
 import java.io.Serializable;
+
 /**
  * ClassName: TestCycleJoinTestCaseDto
  * Package: com.hu.oneclick.model.domain.dto
@@ -12,20 +15,28 @@ import java.io.Serializable;
  * @Version 1.0
  */
 @Data
-
-
 public class TestCycleJoinTestCaseDto implements Serializable {
+
     private Long projectId;
+
     private Long testCycleId;
+
     private Long testCaseId;
+
     private Integer runStatus;
+
     private Integer stepStatus;
+
     private Long caseRunDuration;
+
     private Integer runCount;
+
     private Integer executeStatus;
+
     private JSONObject testCaseContent;
+
     private Long caseTotalPeriod;
+
     private Boolean addedOn;
-}
-}
+
 }

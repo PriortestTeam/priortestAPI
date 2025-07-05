@@ -1,7 +1,10 @@
 package com.hu.oneclick.model.domain.dto;
+
 import lombok.Data;
 import org.springframework.stereotype.Component;
+
 import java.util.Date;
+
 /**
  * runTestCase参数
  *
@@ -10,8 +13,6 @@ import java.util.Date;
  */
 @Data
 @Component
-
-
 public class TestCaseRunDto {
     private Long testCaseId;
     private Long testCycleId;
@@ -23,6 +24,4 @@ public class TestCaseRunDto {
     private Long caseTotalPeriod;
     private Date stepUpdateTime;
     private int runFlag;
-}
-}
 }
