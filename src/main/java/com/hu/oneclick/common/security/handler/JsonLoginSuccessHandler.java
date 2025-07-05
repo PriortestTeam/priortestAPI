@@ -1,3 +1,4 @@
+
 package com.hu.oneclick.common.security.handler;
 
 import com.alibaba.fastjson2.JSON;
@@ -38,7 +39,30 @@ public class JsonLoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
+        
+        System.out.println(">>> 用户登录成功，开始生成JWT token");
+        
+        // 生成JWT token
         String token = jwtUserServiceImpl.saveUserLoginInfo((AuthLoginUser) authentication.getPrincipal());
+        
+        // 获取用户邮箱（作为用户标识）
+        AuthLoginUser loginUser = (AuthLoginUser) authentication.getPrincipal();
+        String userEmail = loginUser.getUsername(); // 假设username就是email
+        
+        System.out.println(">>> 为用户 " + userEmail + " 生成了新的JWT token");
+        System.out.println(">>> 新生成的token前20位: " + token.substring(0, Math.min(20, token.length())) + "...");
+        
+        // 将最新的token存储到Redis中，键格式: LOGIN_JWT:用户邮箱
+        String redisKey = "LOGIN_JWT:" + userEmail;
+        RBucket<String> bucket = redissonClient.getBucket(redisKey);
+        
+        // 设置token，过期时间1小时
+        bucket.set(token, 1, TimeUnit.HOURS);
+        
+        System.out.println(">>> Redis中存储当前有效token: " + redisKey);
+        System.out.println(">>> Redis存储完成，过期时间: 1小时");
+        
+        // 返回响应
         response.setContentType("application/json;charset=UTF-8");
         Map<String,String> result = new HashMap<>(2);
         result.put("token",token);
@@ -49,5 +73,3 @@ public class JsonLoginSuccessHandler implements AuthenticationSuccessHandler {
     }
 
 }
-```</replit_final_file>
-This code adds RedissonClient dependency injection and Redis storage logic for JWT tokens in the JsonLoginSuccessHandler.
