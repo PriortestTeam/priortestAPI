@@ -1,3 +1,4 @@
+
 package com.hu.oneclick.model.domain.dto;
 
 import lombok.Data;
@@ -22,7 +23,7 @@ public class CustomFieldDto {
 
     private Long scopeId;
 
-    // 手动添加缺失的getter方法
+    // 手动添加缺失的getter/setter方法
     public String getProjectId() {
         return projectId;
     }
@@ -38,5 +39,20 @@ public class CustomFieldDto {
     public void setScopeId(Long scopeId) {
         this.scopeId = scopeId;
     }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }
-`
