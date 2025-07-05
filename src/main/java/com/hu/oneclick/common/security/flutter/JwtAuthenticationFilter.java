@@ -1,32 +1,26 @@
 package com.hu.oneclick.common.security.flutter;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.hu.oneclick.common.constant.OneConstant.REDIS_KEY_PREFIX;
-import com.hu.oneclick.common.security.ApiToken;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hu.oneclick.common.security.JwtAuthenticationToken;
 import com.hu.oneclick.dao.SysUserTokenDao;
-import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
-import com.hu.oneclick.model.entity.SysUserToken;
-import com.hu.oneclick.server.user.UserService;
-import org.apache.commons.lang3.StringUtils;
-import org.redisson.api.RBucket;
+import com.hu.oneclick.server.UserService;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -36,7 +30,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author qingyang
