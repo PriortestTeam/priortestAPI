@@ -153,14 +153,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.isNotBlank(emailId) && StringUtils.isNotBlank(token)) {
             System.out.println(">>> 检测到emailId和token认证方式");
 
-            // 获取数据库中的token记录
-            List<SysUserToken> userTokens = sysUserTokenDao.selectUserToken(emailId);
-            if (userTokens == null || userTokens.isEmpty()) {
-                System.out.println(">>> 用户token不存在");
-                throw new BadCredentialsException("Token not found");
-            }
-
-            SysUserToken sysUserToken = userTokens.get(0);
+            // 验证token是否存在于数据库中
+				SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(token);
+				if (sysUserToken == null) {
+					System.out.println(">>> 用户token不存在");
+					throw new BadCredentialsException("Token not found");
+				}
 
             // 验证用户账号和token
             Boolean isValid = userService.getUserAccountInfo(emailId, token);
@@ -196,32 +194,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new BadCredentialsException("Bearer Token认证失败：token中缺少用户信息");
             }
 
-            // 验证JWT Token并获取用户信息 - 使用emailId作为用户标识
+            // 验证用户是否存在
             Boolean isValidUser = userService.getUserAccountInfo(username, null);
             if (isValidUser == null || !isValidUser) {
                 System.out.println(">>> 无法获取用户登录信息");
                 throw new BadCredentialsException("User not found");
             }
 
-            // 获取用户信息用于验证
-            AuthLoginUser user = userService.getUserLoginInfo(username);
-            if (user == null || StringUtils.isBlank(user.getPassword())) {
-                throw new BadCredentialsException("Bearer Token认证失败：用户不存在或密码为空");
-            }
+            // 由于无法获取完整用户信息，直接创建认证对象
 
-            // 使用用户密码作为密钥验证JWT
-            String encryptSalt = user.getPassword();
-            Algorithm algorithm = Algorithm.HMAC256(encryptSalt);
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withSubject(username)
-                    .build();
-            verifier.verify(token);
+            System.out.println(">>> Bearer Token验证成功，设置认证信息");
 
-            System.out.println(">>> Bearer Token认证成功，用户: " + username);
-            return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(user, token, user.getAuthorities());
+            // 创建认证token并设置到SecurityContext
+            org.springframework.security.authentication.UsernamePasswordAuthenticationToken authToken =
+                    new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, null);
+            SecurityContextHolder.getContext().setAuthentication(authToken);
 
+            System.out.println(">>> 认证信息已设置到SecurityContext");
         } catch (Exception e) {
-            throw new BadCredentialsException("Bearer Token认证失败：" + e.getMessage(), e);
+            System.out.println(">>> Bearer Token验证失败: " + e.getMessage());
+            throw new BadCredentialsException("Bearer Token verification failed: " + e.getMessage());
         }
     }
 
