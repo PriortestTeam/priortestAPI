@@ -1,5 +1,6 @@
 package com.hu.oneclick.controller;
-import lombok.extern.slf4j.Slf4j;
+
+
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -13,11 +14,14 @@ import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 import com.hu.oneclick.server.service.CustomFieldsService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
+
 /**
  * <p>
  * 自定义字段表 前端控制器
@@ -26,28 +30,30 @@ import java.util.Set;
  * @author vince
  * @since 2022-12-13
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/customFields");
-@Slf4j
-
-
+@RequestMapping("/customFields")
 public class CustomFieldsController {
+
     @NonNull
     private final CustomFieldsService customFieldsService;
+
     @Page
     @GetMapping("/queryCustomList")
-    public Resp<List&lt;CustomFieldVo>> queryCustomList(CustomFieldDto customFieldDto) {
+    public Resp<List<CustomFieldVo>> queryCustomList(CustomFieldDto customFieldDto) {
         if (customFieldDto.getProjectId() == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
         log.info("queryCustomList==>customFieldDto:{}", JSON.toJSONString(customFieldDto));
         return customFieldsService.queryCustomList(customFieldDto);
     }
+
     @PostMapping("/add")
     public Resp<String> add(@Valid @RequestBody CustomFieldVo customFieldVo) {
         return customFieldsService.add(customFieldVo);
     }
+
     @PutMapping("/update")
     public Resp<String> update(@Valid @RequestBody CustomFieldVo customFieldVo) {
         if (customFieldVo.getCustomFieldId() == null) {
@@ -55,6 +61,7 @@ public class CustomFieldsController {
         }
         return customFieldsService.update(customFieldVo);
     }
+
     @DeleteMapping("/delete")
     public Resp<String> delete(@Valid @RequestBody Set<Long> customFieldIds) {
         if (ObjectUtils.isEmpty(customFieldIds)) {
@@ -62,8 +69,9 @@ public class CustomFieldsController {
         }
         return customFieldsService.delete(customFieldIds);
     }
+
     @GetMapping("/getAllCustomList")
-    public Resp<List&lt;CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
+    public Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
         if (customFieldDto.getProjectId() == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
@@ -73,19 +81,22 @@ public class CustomFieldsController {
         log.info("getAllCustomList==>customFieldDto:{}", JSON.toJSONString(customFieldDto));
         return customFieldsService.getAllCustomList(customFieldDto);
     }
+
     @GetMapping("/getAllCustomListByScopeId")
-    public Resp<List&lt;CustomFileldLinkVo>> getAllCustomListByScopeId() {
-        List&lt;CustomFileldLinkVo> dataList = customFieldsService.getAllCustomListByScopeId(1000001L);
-        return new Resp.Builder<List&lt;CustomFileldLinkVo>>().setData(dataList).ok();
+    public Resp<List<CustomFileldLinkVo>> getAllCustomListByScopeId() {
+        List<CustomFileldLinkVo> dataList = customFieldsService.getAllCustomListByScopeId(1000001L);
+        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(dataList).ok();
     }
+
     @GetMapping("/getDropDownBox")
-    public Resp<List&lt;CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
+    public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
         if (customFieldDto.getProjectId() == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
         log.info("getDropDownBox==>customFieldDto:{}", JSON.toJSONString(customFieldDto));
         return customFieldsService.getDropDownBox(customFieldDto);
     }
+
     @PostMapping("/updateValueDropDownBox")
     public Resp<String> updateValueDropDownBox(@RequestBody CustomFieldsDto customFieldsDto) {
         if (null == customFieldsDto.getCustomFieldId()) {
@@ -97,5 +108,6 @@ public class CustomFieldsController {
         log.info("updateValueDropDownBox==>customFieldsDto:{}", JSON.toJSONString(customFieldsDto));
         return customFieldsService.updateValueDropDownBox(customFieldsDto);
     }
+
+
 }
-`}
