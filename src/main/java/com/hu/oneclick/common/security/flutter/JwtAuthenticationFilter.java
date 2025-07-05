@@ -100,9 +100,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
+        // 检查Authorization头是否存在
+        String authHeader = request.getHeader("Authorization");
+        
         try {
-            // 检查Authorization头是否存在
-            String authHeader = request.getHeader("Authorization");
             System.out.println(">>> ========== 开始请求处理 ==========");
             System.out.println(">>> 请求路径: " + path);
             System.out.println(">>> 请求方法: " + request.getMethod());
