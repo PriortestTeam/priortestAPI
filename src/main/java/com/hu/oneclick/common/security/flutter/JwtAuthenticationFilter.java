@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 /**
  * @author qingyang
@@ -132,50 +133,75 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
         System.out.println(">>> 开始认证，请求路径: " + path);
+        Authentication authResult = null;
+        String authHeader = request.getHeader("Authorization");
 
-        // 检查是否是API适配器路径 - 使用emailId:token认证方式
-        if (path.contains("/api/apiAdapter")) {
-            System.out.println(">>> 检测到API适配器路径，使用emailId:token认证");
-            return attemptApiTokenAuthentication(request);
-        } else {
-            // 其他路径使用Bearer Token认证
+        // 根据路径决定认证方式
+        if (path.startsWith("/api/apiAdapter/")) {
+            // API adapter路径使用API Token认证 (查询数据库)
+            System.out.println(">>> API路径，使用API Token认证");
+            authResult = attemptApiTokenAuthentication(request);
+        } else if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            // 其他路径使用JWT Token认证 (不查询数据库)
             System.out.println(">>> 使用Bearer Token认证");
-            return attemptBearerTokenAuthentication(request);
+            authResult = attemptBearerTokenAuthentication(request);
+        } else {
+            System.out.println(">>> 缺少有效的认证信息");
+            throw new BadCredentialsException("Missing valid authentication");
         }
+
+        return authResult;
     }
 
     /**
-     * API Token认证 (emailId:token格式)
+     * API Token认证 (emailId + token格式) - 仅用于 api/apiAdpater 路径
      */
     private Authentication attemptApiTokenAuthentication(HttpServletRequest request) throws AuthenticationException {
-        String emailId = request.getHeader("emailId");
-        String token = request.getHeader("Authorization");
-
-        if (StringUtils.isNotBlank(emailId) && StringUtils.isNotBlank(token)) {
-            System.out.println(">>> 检测到emailId和token认证方式");
-
-            // 先验证用户账号是否存在
-            Boolean isValid = userService.getUserAccountInfo(emailId, null);
-            if (isValid == null || !isValid) {
-                System.out.println(">>> 用户账号不存在");
-                throw new BadCredentialsException("User not found");
-            }
-
-            // 验证token是否存在于数据库中
-            SysUserToken sysUserToken = sysUserTokenDao.selectByTokenValue(token);
-            if (sysUserToken == null) {
-                System.out.println(">>> 用户token不存在");
-                throw new BadCredentialsException("Token not found");
-            }
-            if (isValid == null || !isValid) {
-                System.out.println(">>> 用户登录信息不存在或token无效");
-                throw new BadCredentialsException("User not found or invalid token");
-            }
-
-            // 创建认证token
-            return new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(emailId, token);
+        String header = request.getHeader("Authorization");
+        if (StringUtils.isBlank(header)) {
+            throw new BadCredentialsException("Missing Authorization header");
         }
-        throw new BadCredentialsException("Invalid emailId or token for API adapter");
+
+        System.out.println(">>> 解析API Token: " + header);
+
+        // API Token格式: emailId + token (空格分隔)
+        String[] parts = header.split("\\s+", 2);
+        if (parts.length != 2) {
+            throw new BadCredentialsException("Invalid API token format. Expected: 'emailId token'");
+        }
+
+        String emailId = parts[0];
+        String token = parts[1];
+
+        System.out.println(">>> emailId: " + emailId + ", token: " + token.substring(0, Math.min(10, token.length())) + "...");
+
+        // 根据emailId查找用户
+        AuthLoginUser user = userService.getUserLoginInfo(emailId);
+        if (user == null) {
+            System.out.println(">>> 用户不存在: " + emailId);
+            throw new BadCredentialsException("User not found: " + emailId);
+        }
+
+        // 验证API token - 查询数据库表
+        SysUserToken userToken = sysUserTokenDao.findByUserIdAndToken(user.getUserId().toString(), token);
+        if (userToken == null) {
+            System.out.println(">>> API Token无效或已过期");
+            throw new BadCredentialsException("Invalid or expired API token");
+        }
+
+        // 检查token是否过期
+        if (userToken.getExpirationTime() != null && userToken.getExpirationTime().before(new Date())) {
+            System.out.println(">>> API Token已过期");
+            throw new BadCredentialsException("API token expired");
+        }
+
+        System.out.println(">>> API Token验证成功，用户: " + emailId);
+
+        // 创建认证对象
+        UsernamePasswordAuthenticationToken authToken = 
+            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+
+        return authToken;
     }
 
     /**
@@ -183,47 +209,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     private Authentication attemptBearerTokenAuthentication(HttpServletRequest request) throws AuthenticationException {
         String header = request.getHeader("Authorization");
-
         if (StringUtils.isBlank(header) || !header.startsWith("Bearer ")) {
-            throw new BadCredentialsException("Authorization header is missing or invalid");
+            throw new BadCredentialsException("Invalid Authorization header format");
         }
 
-        try {
-            String token = header.substring(7); // 移除 "Bearer " 前缀
-            System.out.println(">>> 解析Bearer Token: " + token.substring(0, Math.min(20, token.length())) + "...");
+        String token = header.substring(7);
+        System.out.println(">>> 解析Bearer Token: " + token.substring(0, Math.min(30, token.length())) + "...");
 
-            // 解析JWT Token
+        try {
+            // 解析JWT token
             DecodedJWT jwt = JWT.decode(token);
             String username = jwt.getSubject();
-
-            if (StringUtils.isBlank(username)) {
-                throw new BadCredentialsException("Bearer Token认证失败：token中缺少用户信息");
-            }
-
             System.out.println(">>> JWT Token解析成功，用户: " + username);
 
-            // 验证JWT Token的过期时间
-            if (jwt.getExpiresAt() != null && jwt.getExpiresAt().before(new Date())) {
-                throw new BadCredentialsException("JWT Token已过期");
-            }
+            // JWT token验证不需要查询数据库，直接使用JWT provider验证
+            JwtAuthenticationToken authToken = new JwtAuthenticationToken(jwt, token);
+            return authenticationManager.authenticate(authToken);
 
-            // 验证用户是否存在
-            Boolean isValidUser = userService.getUserAccountInfo(username, null);
-            if (isValidUser == null || !isValidUser) {
-                System.out.println(">>> 用户不存在: " + username);
-                throw new BadCredentialsException("User not found: " + username);
-            }
-
-            System.out.println(">>> JWT Token验证成功，用户: " + username);
-
-            // 创建认证token
-            org.springframework.security.authentication.UsernamePasswordAuthenticationToken authToken =
-                    new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, null);
-
-            return authToken;
         } catch (Exception e) {
             System.out.println(">>> JWT Token验证失败: " + e.getMessage());
-            throw new BadCredentialsException("JWT Token verification failed: " + e.getMessage());
+            throw new BadCredentialsException("JWT Token verification failed: " + e.getMessage(), e);
         }
     }
 
