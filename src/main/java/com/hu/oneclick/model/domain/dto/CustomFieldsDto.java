@@ -41,6 +41,23 @@ public class CustomFieldsDto {
     private Long modifyUserId;
 
     private String projectId;
-    
+
     private String type;
+
+    // 手动添加缺失的getter方法
+    public Long getCustomFieldId() {
+        return customFieldId;
+    }
+
+    public void setCustomFieldId(Long customFieldId) {
+        this.customFieldId = customFieldId;
+    }
+
+    public String getFieldType() {
+        return fieldType;
+    }
+
+    public void setFieldType(String fieldType) {
+        this.fieldType = fieldType;
+    }
 }

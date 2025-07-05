@@ -22,5 +22,21 @@ public class CustomFieldDto {
 
     private Long scopeId;
 
+    // 手动添加缺失的getter方法
+    public String getProjectId() {
+        return projectId;
+    }
 
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public Long getScopeId() {
+        return scopeId;
+    }
+
+    public void setScopeId(Long scopeId) {
+        this.scopeId = scopeId;
+    }
 }
+`

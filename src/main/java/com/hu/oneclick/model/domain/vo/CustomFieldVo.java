@@ -31,6 +31,15 @@ public class CustomFieldVo {
     @Null(message = "新增不能指定id", groups = {AddGroup.class}) //新增时的校验规则
     private Long customFieldId;
 
+    // 手动添加getter方法以解决编译错误
+    public Long getCustomFieldId() {
+        return customFieldId;
+    }
+
+    public void setCustomFieldId(Long customFieldId) {
+        this.customFieldId = customFieldId;
+    }
+
     @NotNull(message = "type不能为空", groups = {AddGroup.class, UpdateGroup.class})
     @NotEmpty(message = "type不能为空", groups = {AddGroup.class, UpdateGroup.class})
     private String type;

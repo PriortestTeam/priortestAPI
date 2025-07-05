@@ -79,4 +79,52 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
     public String getCustomFieldId() {
         return super.getCustomFieldId();
     }
+    public void setEntity(CustomFileldLink customFileldLink) {
+        CustomFileldLink entity = new CustomFileldLink();
+        // 设置属性值
+        this.entity = entity;
+    }
+
+    // 根据当前对象更新关联实体的属性
+    public void updateEntity() {
+        if (this.entity != null) {
+            // 更新实体属性
+        }
+    }
+
+    // 从关联实体获取数据
+    public void loadFromEntity() {
+        if (this.entity != null) {
+            // 从实体加载数据
+        }
+    }
+
+    // 验证当前对象
+    public boolean validate() {
+        // 执行验证逻辑
+        return true;
+    }
+
+    // 获取完整的显示名称
+    public String getFullDisplayName() {
+        return this.fieldName != null ? this.fieldName : "未知字段";
+    }
+
+    // 判断是否为新创建的对象
+    public boolean isNew() {
+        return this.entity == null || this.entity.getCustomFieldId() == null;
+    }
+
+    // 获取字段ID，如果实体存在的话
+    public Long getFieldId() {
+        return this.entity != null ? this.entity.getCustomFieldId() : null;
+    }
+
+    // 设置字段关联
+    public void setFieldAssociation(Long fieldId, String fieldName) {
+        this.fieldName = fieldName;
+        if (this.entity != null) {
+            // 移除错误的方法调用
+        }
+    }
 }

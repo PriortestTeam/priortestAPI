@@ -24,9 +24,9 @@ import java.util.Map;
  * @author qingyang
  */
 @Slf4j
+@Tag(name = "故事", description = "故事相关接口")
 @RestController
 @RequestMapping("feature")
-@Tag(name = "故事", description = "故事相关接口")
 @Slf4j
 public class FeatureController extends BaseController {
 
