@@ -34,7 +34,7 @@ public class ProjectManageController extends BaseController {
     }
 
 
-    @Operation(summary="列表")
+    @Operation(summary="列表"))
     @PostMapping("/listAll")
     public Resp<PageInfo<ProjectManage>> listAll(@RequestBody ProjectManageParam param) {
         if (null == param) {
@@ -45,7 +45,7 @@ public class ProjectManageController extends BaseController {
         return new Resp.Builder<PageInfo<ProjectManage>>().setData(PageInfo.of(dataList)).ok();
     }
 
-    @Operation(summary="新增")
+    @Operation(summary="新增"))
     @PostMapping("/saveProject")
     public Resp<?> saveProject(@RequestBody @Validated ProjectManageSaveDto dto) {
         try {
@@ -57,7 +57,7 @@ public class ProjectManageController extends BaseController {
         }
     }
 
-    @Operation(summary="修改")
+    @Operation(summary="修改"))
     @PutMapping("/updateProject")
     public Resp<ProjectManage> updateProject(@RequestBody @Validated ProjectManageSaveDto dto) {
         try {
@@ -72,14 +72,14 @@ public class ProjectManageController extends BaseController {
         }
     }
 
-    @Operation(summary="详情")
+    @Operation(summary="详情"))
     @GetMapping("/info/{id}")
     public Resp<ProjectManage> info(@PathVariable Long id) {
         ProjectManage feature = this.projectManageService.info(id);
         return new Resp.Builder<ProjectManage>().setData(feature).ok();
     }
 
-    @Operation(summary="删除")
+    @Operation(summary="删除"))
     @DeleteMapping("/deleteProject/{ids}")
     public Resp<?> deleteProject(@PathVariable Long[] ids) {
         try {
@@ -92,7 +92,7 @@ public class ProjectManageController extends BaseController {
         return new Resp.Builder<ProjectManage>().ok();
     }
 
-    @Operation(summary="克隆")
+    @Operation(summary="克隆"))
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {

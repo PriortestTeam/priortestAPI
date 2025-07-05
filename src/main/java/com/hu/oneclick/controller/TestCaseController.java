@@ -33,7 +33,7 @@ public class TestCaseController extends BaseController {
     @Resource
     private TestCaseService testCaseService;
 
-    @Operation(summary = "获取测试用例列表")
+    @Operation(summary = "获取测试用例列表"))
     @PostMapping("/list")
     public Resp<PageInfo<TestCase>> list(@RequestBody Map<String, Object> param,
                                         @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
@@ -74,7 +74,7 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation(summary = "新增测试用例")
+    @Operation(summary = "新增测试用例"))
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated TestCaseSaveDto dto) {
         try {
@@ -86,7 +86,7 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation(summary = "修改测试用例")
+    @Operation(summary = "修改测试用例"))
     @PutMapping("/update")
     public Resp<?> update(@RequestBody @Validated TestCaseSaveDto dto) {
         try {
@@ -98,7 +98,7 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation(summary = "获取测试用例列表")
+    @Operation(summary = "获取测试用例列表"))
     @GetMapping("/info/{id}")
     public Resp<TestCase> info(@PathVariable Long id) {
         TestCase testCase = testCaseService.info(id);
@@ -106,7 +106,7 @@ public class TestCaseController extends BaseController {
     }
 
 
-    @Operation(summary = "复制测试用例")
+    @Operation(summary = "复制测试用例"))
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {
@@ -118,14 +118,14 @@ public class TestCaseController extends BaseController {
         }
     }
 
-    @Operation(summary = "获取测试用例列表")
+    @Operation(summary = "获取测试用例列表"))
     @GetMapping("/testCaseSearch")
     public  Resp<List<TestCase>> testCaseSearch(@RequestParam  Long projectId, @RequestParam String title) {
         List<TestCase> testCaseList = testCaseService.testCaseSearch(projectId,title);
         return new Resp.Builder<List<TestCase>>().setData(testCaseList).ok();
     }
 
-    @Operation(summary = "删除测试用例")
+    @Operation(summary = "删除测试用例"))
     @DeleteMapping("/delete/{id}")
     public Resp<?> delete(@PathVariable Long id) {
        return testCaseService.removeAndChild(id);

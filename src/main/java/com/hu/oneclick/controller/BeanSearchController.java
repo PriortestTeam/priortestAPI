@@ -57,7 +57,7 @@ public class BeanSearchController {
     private JwtUserServiceImpl jwtUserService;
 
 
-    @Operation(summary = "通用查询")
+    @Operation(summary = "通用查询"))
     @GetMapping("/{scope}/{viewId}")
     public Resp<PageInfo<?>> generalQuery(@Parameter(description = "范围") @PathVariable String scope,
                                            @Parameter(description = "视图ID") @PathVariable Long viewId

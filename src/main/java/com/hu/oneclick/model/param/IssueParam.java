@@ -16,16 +16,16 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-@Schema(description = "缺陷Param")
+@Schema(description = "缺陷Param"))
 public class IssueParam implements Serializable {
-    @Schema(description = "名称")
+    @Schema(description = "名称"))
     private String title;
 
-    @Schema(description = "项目ID")
+    @Schema(description = "项目ID"))
     @NotNull(message = "项目ID不能为空")
     private Long projectId;
 
-    @Schema(description = "视图ID")
+    @Schema(description = "视图ID"))
     private String viewId;
 
     public LambdaQueryWrapper getQueryCondition() {

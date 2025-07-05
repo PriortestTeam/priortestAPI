@@ -14,39 +14,39 @@ import java.io.Serializable;
  *
  * @author masiyi
  */
-@Schema(description = "折扣表")
+@Schema(description = "折扣表"))
 @Data
 public class SysOrderDiscountDto implements Serializable, VerifyParam {
 
     /**
      * 订阅时长
      */
-    @Schema(description = "订阅时长")
+    @Schema(description = "订阅时长"))
     private String subScription;
 
     /**
      * 容量大小
      */
-    @Schema(description = "容量大小")
+    @Schema(description = "容量大小"))
     private String dataStrorage;
 
     /**
      * apiCall
      */
-    @Schema(description = "apiCall")
+    @Schema(description = "apiCall"))
     private String apiCall;
 
     /**
      * 用户类型
      */
-    @Schema(description = "用户类型")
+    @Schema(description = "用户类型"))
     private String userClass;
 
 
     /**
      * 服务周期
      */
-    @Schema(description = "服务周期")
+    @Schema(description = "服务周期"))
     private String serviceDuration;
 
     @Override

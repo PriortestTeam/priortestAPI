@@ -25,13 +25,13 @@ public class SysUserOrderRecordController {
     @Autowired
     private SysUserOrderRecordService sysUserOrderRecordService;
 
-    @Operation(summary = "付款")
+    @Operation(summary = "付款"))
     @GetMapping("payment")
     public Resp<String> payment(@RequestParam String id) {
         return sysUserOrderRecordService.payment(id);
     }
 
-    @Operation(summary = "获取用户订单详细")
+    @Operation(summary = "获取用户订单详细"))
     @GetMapping("getUserOrderRecord")
     public Resp<List<SysUserOrderRecord>> getUserOrderRecord() {
         return sysUserOrderRecordService.getUserOrderRecord();

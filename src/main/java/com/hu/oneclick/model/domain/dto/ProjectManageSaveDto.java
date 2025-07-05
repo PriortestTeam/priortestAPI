@@ -17,7 +17,7 @@ import java.util.Date;
 public class ProjectManageSaveDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @Schema(description = "主键id")
+    @Schema(description = "主键id"))
     private Long id;
 
     @NotBlank(message = "标题不能为空")
@@ -46,6 +46,6 @@ public class ProjectManageSaveDto {
     /**
      * 自定义字段值
      */
-    @Schema(description = "自定义字段值")
+    @Schema(description = "自定义字段值"))
     private JSONObject customFieldDatas;
 }

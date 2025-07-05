@@ -54,7 +54,7 @@ public class ProjectController {
     }
 
     @GetMapping("queryById/{id}")
-    @Operation(summary="查询项目详细")
+    @Operation(summary="查询项目详细"))
     private Resp<Project> queryById(@PathVariable String id) {
         return projectService.queryById(id);
     }
@@ -66,7 +66,7 @@ public class ProjectController {
     }
 
     @PostMapping("addProject")
-    @Operation(summary="添加项目")
+    @Operation(summary="添加项目"))
     private Resp<String> addProject(@RequestBody Project project) {
         return projectService.addProject(project);
     }
@@ -93,7 +93,7 @@ public class ProjectController {
 
 
     @GetMapping("getThePersonInCharge")
-    @Operation(summary="获取负责人")
+    @Operation(summary="获取负责人"))
     public Resp<List<String>> getThePersonInCharge() {
         return sysCustomFieldService.getThePersonInCharge();
     }

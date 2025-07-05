@@ -32,7 +32,7 @@ public class SprintController extends BaseController {
     }
 
 
-    @Operation(summary="列表")
+    @Operation(summary="列表"))
     @PostMapping("/list")
     public Resp<PageInfo<Sprint>> list(@RequestBody java.util.Map<String, Object> param,
                                        @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
@@ -73,7 +73,7 @@ public class SprintController extends BaseController {
         }
     }
 
-    @Operation(summary="新增")
+    @Operation(summary="新增"))
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated SprintSaveDto dto) {
         try {
@@ -85,7 +85,7 @@ public class SprintController extends BaseController {
         }
     }
 
-    @Operation(summary="修改")
+    @Operation(summary="修改"))
     @PutMapping("/update")
     public Resp<Sprint> update(@RequestBody @Validated SprintSaveDto dto) {
         try {
@@ -100,14 +100,14 @@ public class SprintController extends BaseController {
         }
     }
 
-    @Operation(summary="详情")
+    @Operation(summary="详情"))
     @GetMapping("/info/{id}")
     public Resp<Sprint> info(@PathVariable Long id) {
         Sprint sprint = this.sprintService.info(id);
         return new Resp.Builder<Sprint>().setData(sprint).ok();
     }
 
-    @Operation(summary="删除")
+    @Operation(summary="删除"))
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
@@ -120,7 +120,7 @@ public class SprintController extends BaseController {
     }
 
 
-    @Operation(summary="克隆")
+    @Operation(summary="克隆"))
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {

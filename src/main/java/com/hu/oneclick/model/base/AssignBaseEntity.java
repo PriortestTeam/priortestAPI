@@ -15,43 +15,43 @@ public class AssignBaseEntity implements Serializable {
 
     //解决swagger获取id精度缺失问题,postman不会有这个问题
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @Schema(description = "主键id")
+    @Schema(description = "主键id"))
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @TableField(fill = FieldFill.INSERT)
-    @Schema(description = "创建人ID")
+    @Schema(description = "创建人ID"))
     private Long createUserId;
     //
     //@TableField(fill = FieldFill.INSERT)
-    //@Schema(description = "创建人名")
+    //@Schema(description = "创建人名"))
     //private String createUserName;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @Schema(description = "更新人ID")
+    @Schema(description = "更新人ID"))
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
     //
-    //@Schema(description = "更新人名")
+    //@Schema(description = "更新人名"))
     //@TableField(fill = FieldFill.INSERT_UPDATE)
     //private String updateUserName;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Schema(description = "创建时间")
+    @Schema(description = "创建时间"))
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Schema(description = "更新时间")
+    @Schema(description = "更新时间"))
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
     //@TableLogic
     //@TableField(value = "is_delete", fill = FieldFill.INSERT)
-    //@Schema(description = "逻辑删除")
+    //@Schema(description = "逻辑删除"))
     //private Integer isDelete;
 
 }
