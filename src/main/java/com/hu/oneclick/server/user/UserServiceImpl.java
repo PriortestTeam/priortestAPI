@@ -792,10 +792,13 @@ public class UserServiceImpl implements UserService {
             authLoginUser.setUsername(sysUser.getEmail());
 
             // 获取用户项目信息
-            List<SysUserProject> userProjects = sysUserProjectDao.selectByUserId(sysUser.getId());
+            List<Map<String, Object>> userProjects = sysUserProjectDao.queryProjectByUserId(new BigInteger(sysUser.getId()));
             if (userProjects != null && !userProjects.isEmpty()) {
-                SysUserProject userProject = userProjects.get(0);
-                authLoginUser.setProjectid(userProject.getProjectId());
+                Map<String, Object> userProject = userProjects.get(0);
+                Object projectId = userProject.get("project_id");
+                if (projectId != null) {
+                    authLoginUser.setProjectid((BigInteger) projectId);
+                }
             }
 
             return new Resp.Builder<AuthLoginUser>().setData(authLoginUser).ok();
