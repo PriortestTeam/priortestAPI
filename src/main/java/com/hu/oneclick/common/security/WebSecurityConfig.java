@@ -166,7 +166,6 @@ public class WebSecurityConfig {
                     "/webjars/**",
                     "/actuator/**"
                 ).permitAll()
-                .requestMatchers("/api/apiAdpater/**").permitAll()  // API token endpoints are handled by filter
                 .anyRequest().authenticated()
             )
             // 先添加登录过滤器
@@ -179,7 +178,6 @@ public class WebSecurityConfig {
                     String path = request.getRequestURI();
                     // 如果是登录请求、API token请求或Swagger UI请求，跳过JWT过滤器
                     if (path.equals("/api/login") || path.equals("/login") || 
-                        path.startsWith("/api/apiAdpater/") ||
                         path.startsWith("/api/swagger-ui/") ||
                         path.startsWith("/api/v3/api-docs") ||
                         path.equals("/api/swagger-ui.html") ||
