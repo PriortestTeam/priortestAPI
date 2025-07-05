@@ -134,6 +134,9 @@ public interface UserService {
      */
     AuthLoginUser queryUserInfoForJwtToken(String username);
 
+    /**
+     * 验证链接字符串
+     */
     Resp<String> verifyLinkString(String linkStr);
 
     /** 查询用户和子用户

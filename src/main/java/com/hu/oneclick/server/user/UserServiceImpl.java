@@ -747,17 +747,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String verifyLinkString(String token) {
+    public Resp<String> verifyLinkString(String linkString) {
         // 实现token验证逻辑
         try {
             // 这里应该实现具体的token验证逻辑
             // 返回验证结果，如果验证成功返回相应的字符串，失败返回null
-            if (token == null || token.trim().isEmpty()) {
+            if (linkString == null || linkString.trim().isEmpty()) {
                 return null;
             }
 
             // 简单的验证逻辑，实际项目中应该根据业务需求实现
-            return "验证成功";
+            return new Resp.Builder<String>().setData(linkString).ok();
         } catch (Exception e) {
             logger.error("验证链接字符串失败", e);
             return null;
@@ -794,7 +794,8 @@ public class UserServiceImpl implements UserService {
             // 获取用户项目信息
             List<SysUserProject> userProjects = sysUserProjectDao.selectByUserId(sysUser.getId());
             if (userProjects != null && !userProjects.isEmpty()) {
-                authLoginUser.setUserProjectId(userProjects.get(0).getProjectId());
+                SysUserProject userProject = userProjects.get(0);
+                authLoginUser.setProjectid(userProject.getProjectId());
             }
 
             return new Resp.Builder<AuthLoginUser>().setData(authLoginUser).ok();
