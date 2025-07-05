@@ -79,4 +79,10 @@ public class TestCaseDataCaseDto {
 
     @Schema(description = "测试计划输入")
     private String testPlanInput;
+
+    @Schema(description = "测试用例扩展")
+    private String testcaseExpand;
+
+    @Schema(description = "备注")
+    private String remarks;
 }
