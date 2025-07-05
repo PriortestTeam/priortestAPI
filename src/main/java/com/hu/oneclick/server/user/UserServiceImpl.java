@@ -1,3 +1,4 @@
+
 package com.hu.oneclick.server.user;
 
 import cn.hutool.core.bean.BeanUtil;
@@ -11,7 +12,6 @@ import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.model.entity.SysUserToken;
-import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,6 @@ import java.util.Map;
 /**
  * 用户服务实现类
  */
-@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -38,18 +37,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean consumeApiTimes(String token, SysUser sysUser) {
-        log.info("开始消费API次数 - token: {}, userId: {}", token, sysUser.getId());
-
         List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
         if (sysUserTokens.isEmpty()) {
-            log.warn("未找到有效的token记录 - token: {}, userId: {}", token, sysUser.getId());
             return false;
         }
 
         for (SysUserToken sysUserToken : sysUserTokens) {
             if (sysUserToken.getApiTimes() > 0) {
                 sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
-                log.info("成功消费API次数 - tokenId: {}, 剩余次数: {}", sysUserToken.getId(), sysUserToken.getApiTimes() - 1);
             }
         }
         return true;
@@ -76,7 +71,7 @@ public class UserServiceImpl implements UserService {
         if (redisCode != null) {
             return new Resp.Builder<String>().setData(redisCode).ok();
         } else {
-            return new Resp.Builder<String>().setMessage("验证链接无效或已过期").fail();
+            return new Resp.Builder<String>().fail();
         }
     }
 
@@ -84,5 +79,11 @@ public class UserServiceImpl implements UserService {
     public Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId) {
         List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
         return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
+    }
+
+    @Override
+    public Resp<String> getUserAccountInfo(String param1, String param2) {
+        // 实现缺失的方法
+        return new Resp.Builder<String>().ok();
     }
 }
