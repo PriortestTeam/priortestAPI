@@ -1,5 +1,6 @@
 package com.hu.oneclick.server.user;
 
+import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.SysUser;
@@ -127,7 +128,7 @@ public interface UserService {
      * @Date: 2021/11/10
      */
     Boolean getUserAccountInfo(String emailId, String token);
-    
+
     /**
      * 专门用于JWT Token认证后获取用户完整信息
      */
