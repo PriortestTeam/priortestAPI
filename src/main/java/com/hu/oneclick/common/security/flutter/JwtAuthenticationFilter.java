@@ -163,7 +163,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean isPermissivePath(String path) {
         return path.equals("/api/login") || 
                path.equals("/login") || 
-               path.startsWith("/api/apiAdpater/") ||
+               path.startsWith("/api/apiAdapter/") ||
+               path.startsWith("/api/swagger-ui/") ||
+               path.startsWith("/api/v3/api-docs") ||
+               path.equals("/api/swagger-ui.html") ||
+               path.startsWith("/swagger-ui/") ||
+               path.startsWith("/v3/api-docs") ||
+               path.equals("/swagger-ui.html");
+    }
+
+    private boolean shouldSkipAuthentication(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.equals("/api/login") || 
+               path.equals("/login") || 
+               path.startsWith("/api/apiAdapter/") ||
                path.startsWith("/api/swagger-ui/") ||
                path.startsWith("/api/v3/api-docs") ||
                path.equals("/api/swagger-ui.html") ||
