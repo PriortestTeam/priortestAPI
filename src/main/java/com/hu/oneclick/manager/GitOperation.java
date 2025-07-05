@@ -1,15 +1,11 @@
 package com.hu.oneclick.manager;
-
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-
 import java.io.File;
 import java.util.Set;
-
-
 
 public class GitOperation {
     private final String username;
@@ -17,7 +13,6 @@ public class GitOperation {
     private final String gitUrl;
     private final String remoteName;
     private String localRepoDirPath;
-
     public GitOperation(String username, String password, String gitUrl, String remoteName, String localRepoDirPath) {
         this.username = username;
         this.password = password;
@@ -25,7 +20,6 @@ public class GitOperation {
         this.remoteName = String.format("%s%s", remoteName, System.currentTimeMillis();
         this.localRepoDirPath = localRepoDirPath + "/.git";
     }
-
     public void push() throws Exception {
         File localRepo = new File(localRepoDirPath);
         FileRepositoryBuilder repoBuilder = new FileRepositoryBuilder();
@@ -36,7 +30,6 @@ public class GitOperation {
             if (!localRepo.exists() {
                 repository.create();
             }
-
             git = new Git(repository);
             git.remoteSetUrl().setRemoteUri(new URIish(gitUrl).setRemoteName(this.remoteName).call();
             git.add().addFilepattern(".").call();

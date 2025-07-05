@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.dao.TestCaseTemplateJsonDAO;
@@ -12,31 +11,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import jakarta.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
-
 /**
  * @author xwf
  * @date 2021/8/4 22:18
  */
 @Service
-
-
 public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonService {
-
     private final static Logger logger = LoggerFactory.getLogger(TestCaseStepServiceImpl.class);
-
     @Resource
     private TestCaseTemplateJsonDAO testCaseTemplateJsonDAO;
-
     private final JwtUserServiceImpl jwtUserService;
-
     public TestCaseTemplateJsonServiceImpl(JwtUserServiceImpl jwtUserService) {
         this.jwtUserService = jwtUserService;
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> insert(TestCaseTemplateJson testCaseTemplateJson) {
@@ -51,7 +41,6 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> update(TestCaseTemplateJson testCaseTemplateJson) {
@@ -65,14 +54,12 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage();
         }
     }
-
     @Override
-    public Resp<List&lt;TestCaseTemplateJson>> queryListByUserId() {
+    public Resp<List<TestCaseTemplateJson>> queryListByUserId() {
         String masterId = jwtUserService.getMasterId();
-        List&lt;TestCaseTemplateJson> testCaseTemplateJsons = testCaseTemplateJsonDAO.queryByUserId(masterId);
-        return new Resp.Builder<List&lt;TestCaseTemplateJson>>().setData(testCaseTemplateJsons).total(testCaseTemplateJsons).ok();
+        List<TestCaseTemplateJson> testCaseTemplateJsons = testCaseTemplateJsonDAO.queryByUserId(masterId);
+        return new Resp.Builder<List<TestCaseTemplateJson>>().setData(testCaseTemplateJsons).total(testCaseTemplateJsons).ok();
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteById(String id) {
@@ -86,7 +73,6 @@ public class TestCaseTemplateJsonServiceImpl  implements TestCaseTemplateJsonSer
             return new Resp.Builder<String>().buildResult(e.getCode(),e.getMessage();
         }
     }
-
     @Override
     public Resp<TestCaseTemplateJson> queryById(String id) {
         return new Resp.Builder<TestCaseTemplateJson>().setData(testCaseTemplateJsonDAO.selectByPrimaryKey(id).ok();

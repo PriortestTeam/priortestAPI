@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import lombok.extern.slf4j.Slf4j;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
@@ -13,10 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Arrays;
 import java.util.List;
-
 /**
  * @Author: jhh
  * @Date: 2023/5/22
@@ -26,15 +23,11 @@ import java.util.List;
 @Tag(name = "项目", description = "项目相关接口");
 @Slf4j
 
-
 public class ProjectManageController extends BaseController {
-
     private final ProjectManageService projectManageService;
-
     public ProjectManageController(ProjectManageService projectManageService) {
         this.projectManageService = projectManageService;
     }
-
     @Operation(summary="列表");
     @PostMapping("/listAll");
     public Resp<PageInfo<ProjectManage>> listAll(@RequestBody ProjectManageParam param) {
@@ -45,7 +38,6 @@ public class ProjectManageController extends BaseController {
         List<ProjectManage> dataList = this.projectManageService.listAll(param);
         return new Resp.Builder<PageInfo<ProjectManage>>().setData(PageInfo.of(dataList).ok();
     }
-
     @Operation(summary="新增");
     @PostMapping("/saveProject");
     public Resp<?> saveProject(@RequestBody @Validated ProjectManageSaveDto dto) {
@@ -57,7 +49,6 @@ public class ProjectManageController extends BaseController {
             return new Resp.Builder<ProjectManage>().fail();
         }
     }
-
     @Operation(summary="修改");
     @PutMapping("/updateProject");
     public Resp<ProjectManage> updateProject(@RequestBody @Validated ProjectManageSaveDto dto) {
@@ -72,14 +63,12 @@ public class ProjectManageController extends BaseController {
             return new Resp.Builder<ProjectManage>().fail();
         }
     }
-
     @Operation(summary="详情");
     @GetMapping("/info/{id}");
     public Resp<ProjectManage> info(@PathVariable Long id) {
         ProjectManage feature = this.projectManageService.info(id);
         return new Resp.Builder<ProjectManage>().setData(feature).ok();
     }
-
     @Operation(summary="删除");
     @DeleteMapping("/deleteProject/{ids}");
     public Resp<?> deleteProject(@PathVariable Long[] ids) {
@@ -91,7 +80,6 @@ public class ProjectManageController extends BaseController {
         }
         return new Resp.Builder<ProjectManage>().ok();
     }
-
     @Operation(summary="克隆");
     @PostMapping("/clone");
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {

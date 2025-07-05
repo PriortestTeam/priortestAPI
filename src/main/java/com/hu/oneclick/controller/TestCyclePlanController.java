@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
@@ -25,11 +24,9 @@ import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
-
 /**
  * 测试周期 - 运行计划
  *
@@ -41,9 +38,7 @@ import java.util.stream.Collectors;
 @Tag(name = "测试周期 - 运行计划", description = "测试周期 - 运行计划相关接口");
 @Slf4j
 
-
 public class TestCyclePlanController extends BaseController {
-
     // 测试周期计划组名前缀
     private final static String GROUP_PREFIX = "TEST_CYCLE";
     private final static String JOB_PREFIX = "TEST_CYCLE_JOB";
@@ -52,15 +47,12 @@ public class TestCyclePlanController extends BaseController {
         Class<?> class1 = Class.forName(classname);
         return (Class<? extends QuartzJobBean>) class1;
     }
-
     @Resource
     private TestCyclePlanService testCyclePlanService;
     @Resource
     private TestCycleService testCycleService;
     @Resource
     private QuartzManager qtzManager;
-
-
     @Operation(summary = "列表");
     @PostMapping("/list/{testCycleId}");
     public Resp<PageInfo<JobDetails>> list(@Parameter(description = "测试周期ID") @PathVariable Long testCycleId) {
@@ -72,7 +64,6 @@ public class TestCyclePlanController extends BaseController {
             return new Resp.Builder<PageInfo<JobDetails>>().fail();
         }
     }
-
     @Operation(summary = "新增");
     @PostMapping("/save");
     public Resp<TestCyclePlan> save(@RequestBody @Validated TestCyclePlanSaveDto dto) {
@@ -102,7 +93,6 @@ public class TestCyclePlanController extends BaseController {
             return new Resp.Builder<TestCyclePlan>().fail();
         }
     }
-
     @Operation(summary = "详情");
     @GetMapping("/info/{id}");
     public Resp<TestCyclePlan> info(@PathVariable Long id) {
@@ -122,7 +112,6 @@ public class TestCyclePlanController extends BaseController {
             return new Resp.Builder<TestCyclePlan>().fail();
         }
     }
-
     @Operation(summary = "删除");
     @DeleteMapping("/delete/{ids}");
     public Resp<?> delete(@PathVariable Long[] ids) {
@@ -143,7 +132,6 @@ public class TestCyclePlanController extends BaseController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "根据计划ID查询测试周期计划");
     @GetMapping("/{planId}");
     public Resp<TestCyclePlanSaveDto> getTestCyclePlan(@PathVariable("planId") Long planId) {
@@ -166,7 +154,6 @@ public class TestCyclePlanController extends BaseController {
             return new Resp.Builder<TestCyclePlanSaveDto>().fail();
         }
     }
-
     @Operation(summary = "创建测试周期计划");
     @PostMapping
     public Resp<TestCyclePlan> createTestCyclePlan(@RequestBody @Validated TestCyclePlanSaveDto dto) {
@@ -196,7 +183,6 @@ public class TestCyclePlanController extends BaseController {
             return new Resp.Builder<TestCyclePlan>().fail();
         }
     }
-
     @Operation(summary = "更新测试周期计划");
     @PutMapping("/{planId}");
     public Resp<TestCyclePlan> updateTestCyclePlan(@PathVariable("planId") Long planId, @RequestBody @Validated TestCyclePlanSaveDto dto) {
@@ -221,7 +207,6 @@ public class TestCyclePlanController extends BaseController {
             return new Resp.Builder<TestCyclePlan>().fail();
         }
     }
-
     @Operation(summary = "删除测试周期计划");
     @DeleteMapping("/{planId}");
     public Resp<?> deleteTestCyclePlan(@PathVariable("planId") Long planId) {
@@ -240,5 +225,4 @@ public class TestCyclePlanController extends BaseController {
         }
         return new Resp.Builder<>().ok();
     }
-
 }

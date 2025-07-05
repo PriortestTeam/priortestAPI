@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller.user;
-
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.PlatformUserDto;
 import com.hu.oneclick.server.user.PlatformUserService;
@@ -11,9 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
-
 /**
  * @author xwf
  *
@@ -23,40 +20,29 @@ import java.util.List;
 @RequestMapping("/platformUser");
 @PreAuthorize("@ps.backstageManagement()")
 
-
 public class PlatformUserController {
-
     private final PlatformUserService platformUserService;
-
     private final UserService userService;
-
     public PlatformUserController(PlatformUserService platformUserService,UserService userService) {
         this.platformUserService = platformUserService;
         this.userService = userService;
     }
-
     @PostMapping("/queryPlatformUser");
     public Resp<List<PlatformUserDto>> queryPlatformUser(@RequestBody PlatformUserDto platformUserDto){
-
         return platformUserService.queryPlatformUsers(platformUserDto);
     }
-
     @PostMapping("createPlatformUser");
     public Resp<String> createPlatformUser(@RequestBody PlatformUserDto platformUserDto){
         return platformUserService.createPlatformUser(platformUserDto);
     }
-
     @PostMapping("updatePlatformUser");
     public Resp<String> updatePlatformUser(@RequestBody PlatformUserDto platformUserDto){
         return platformUserService.updatePlatformUser(platformUserDto);
     }
-
     @DeleteMapping("deletePlatformUser/{id}");
     public Resp<String> deletePlatformUser(@PathVariable String id){
         return platformUserService.deletePlatformUserByid(id);
     }
-
-
 }
 }
 }

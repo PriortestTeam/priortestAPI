@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.page.BaseController;
@@ -14,13 +13,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.Map;
-
 /**
  * @author qingyang
  */
@@ -29,28 +26,22 @@ import java.util.Map;
 @Tag(name = "视图管理", description = "视图管理相关接口");
 @Slf4j
 
-
 public class ViewController extends BaseController {
-
     @Resource
     private ViewService viewService;
     @Resource
     private JwtUserServiceImpl jwtUserService;
-
-
     @GetMapping("queryDoesExistByTitle");
     public Resp<String> queryDoesExistByTitle(@RequestParam("projectId") String projectId,
                                               @RequestParam("title") String title,
                                               @RequestParam("scope") String scope) {
         return viewService.queryDoesExistByTitle(projectId, title, scope);
     }
-
     @GetMapping("getViewScopeChildParams");
     @Operation(summary="根据范围搜索所有字段(弃用请使用getViewScope");
     public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope) {
         return viewService.getViewScopeChildParams(scope);
     }
-
     /**
      * @Param: [scope]
      * @return: com.hu.oneclick.model.base.Resp<java.util.Map < java.lang.String, java.lang.Object>>
@@ -62,7 +53,6 @@ public class ViewController extends BaseController {
     public Resp<Map<String, Object>> getViewScope(@RequestParam String scope) {
         return viewService.getViewScope(scope);
     }
-
     @PostMapping("queryViews");
     @Operation(summary="查询以当前项目的所有视图");
     private Resp<PageInfo<View>> queryViews(@RequestBody View view) {
@@ -75,14 +65,11 @@ public class ViewController extends BaseController {
             return new Resp.Builder<PageInfo<View>>().fail();
         }
     }
-
     @PostMapping("addView");
     @Operation(summary="添加视图(已弃用请使用addViewRE");
     private Resp<String> addView(@RequestBody View view) {
         return viewService.addView(view);
     }
-
-
     @PostMapping("addViewRE");
     @Operation(summary="添加视图(新");
     private Resp<?> addViewRE(@RequestBody View view) {
@@ -97,7 +84,6 @@ public class ViewController extends BaseController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @PostMapping("updateView");
     @Operation(summary="修改视图");
     private Resp<?> updateView(@RequestBody View view) {
@@ -112,13 +98,10 @@ public class ViewController extends BaseController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @DeleteMapping("deleteView/{viewId}");
     private Resp<String> deleteView(@PathVariable String viewId) {
         return viewService.deleteView(viewId);
     }
-
-
     @GetMapping("queryById/{viewId}");
     @Operation(summary="根据ID查询视图详细信息");
     private Resp<View> queryById(@PathVariable String viewId) {
@@ -129,7 +112,6 @@ public class ViewController extends BaseController {
             return new Resp.Builder<View>().fail();
         }
     }
-
     @GetMapping("queryViewParents");
     @Operation(summary="查询父视图");
     private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String projectId) {
@@ -141,13 +123,11 @@ public class ViewController extends BaseController {
             return new Resp.Builder<List<View>>().fail();
         }
     }
-
     @GetMapping("queryViewTrees");
     @Operation(summary="查询视图树");
     private Resp<List<ViewTreeDto>> queryViewTrees(@RequestParam String scope) {
         return viewService.queryViewTrees(scope);
     }
-
     @PostMapping("renderingView");
     @Operation(summary="渲染视图");
     public Resp<Object> renderingView(@RequestBody String viewId) {
@@ -158,13 +138,11 @@ public class ViewController extends BaseController {
         }
         return null;
     }
-
     @PostMapping("getViewFilter");
     @Operation(summary="获取filter字段");
     public Resp<Object> getViewFilter() {
         return viewService.getViewFilter();
     }
-
     @PostMapping("getSubViewRecord");
     public Object getSubViewRecord(
         @RequestParam(name = "pageNum", defaultValue = "1") @Min(1) int page,
@@ -173,7 +151,6 @@ public class ViewController extends BaseController {
     {
         return viewService.findSubViewRecordByScopeName(page, offset, param);
     }
-
     @GetMapping("getCountAsVersion");
     public Resp<Map<String, Object>> getCountAsVersion(@RequestParam String projectId, @RequestParam String version) {
         return viewService.getCountAsVersion(projectId, version);

@@ -1,5 +1,4 @@
 package com.hu.oneclick.common.util;
-
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -9,14 +8,11 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.core.io.ResourceLoader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
-
-
 
 public class PDFTableUtil {
     private float xPos = 50;
@@ -31,7 +27,6 @@ public class PDFTableUtil {
     private int pageCount = 0;
     private String dirPath;
     private int fontSize = 10;
-
     public PDFTableUtil(String dirPath) throws Exception {
         this.dirPath = dirPath;
         document = new PDDocument();
@@ -52,7 +47,6 @@ public class PDFTableUtil {
         contentStream.setFont(font, fontSize);
         pageCount++;
     }
-
     public void generate(String[][] datas) throws IOException {
         setYHeight(5);
         int curRow = 0;
@@ -111,7 +105,6 @@ public class PDFTableUtil {
             }
         }
     }
-
     public void showText(String text) throws IOException {
         setYHeight(20);
         if (yCur <= 10) {
@@ -122,17 +115,14 @@ public class PDFTableUtil {
         contentStream.showText(text);
         contentStream.endText();
     }
-
     public void save(String name) throws IOException {
         contentStream.close();
         document.save(dirPath + "/" + name);
         document.close();
     }
-
     private void setYHeight(float height) {
         yPos = yCur -= height;
     }
-
     private void makePage() throws IOException {
         contentStream.close();
         page = new PDPage(PDRectangle.A4);
@@ -143,7 +133,6 @@ public class PDFTableUtil {
         yCur = 830;
         pageCount++;
     }
-
     private boolean hasEndWith(String path) {
         if (!path.startsWith("/") {
             return false;
@@ -157,7 +146,6 @@ public class PDFTableUtil {
         suffix.add(".png");
         suffix.add(".gif");
         suffix.add(".jpeg");
-
         for (String s : suffix) {
             if (path.endsWith(s) {
                 return true;

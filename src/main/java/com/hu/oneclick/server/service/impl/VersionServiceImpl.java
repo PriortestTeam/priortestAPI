@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -16,38 +15,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 @Service
 @Slf4j
-
-
 public class VersionServiceImpl implements VersionService {
-
     @Autowired
     VersionDao versionDao;
-
     @Override
     public Long releaseCreation(VersionRequestDto releaseCreationDto) {
-
         LambdaQueryWrapper<ReleaseManagement> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtil.isNotEmpty(releaseCreationDto.getVersion() && StringUtil.isNotEmpty(releaseCreationDto.getVersion() {
             queryWrapper.eq(ReleaseManagement::getVersion, releaseCreationDto.getVersion()
                 .eq(ReleaseManagement::getProjectId, releaseCreationDto.getProjectId();
         }
-        List&lt;ReleaseManagement> list = versionDao.selectList(queryWrapper);
+        List<ReleaseManagement> list = versionDao.selectList(queryWrapper);
         if (CollectionUtil.isNotEmpty(list) {
             throw new BizException(SysConstantEnum.VERSION_HAVE_EXIST.getCode(),
                 SysConstantEnum.VERSION_HAVE_EXIST.getValue(), HttpStatus.OK.value();
         }
-
         ReleaseManagement version = new ReleaseManagement();
         BeanUtil.copyProperties(releaseCreationDto, version);
         versionDao.insert(version);
         return version.getId();
     }
-
     @Override
     public void releaseModification(VersionRequestDto releaseModification) {
         // Validation on payload with modified record id
@@ -55,7 +45,6 @@ public class VersionServiceImpl implements VersionService {
             throw new BizException(SysConstantEnum.RECORD_ID_NOT_EXIST.getCode(),
                 SysConstantEnum.RECORD_ID_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value();
         }
-
         // get the existing record as per id, version, project id
         VersionDto versionDto = getRecordByIdAndVersion(releaseModification.getId(), releaseModification.getVersion(), releaseModification.getProjectId();
         if (versionDto == null) {
@@ -73,9 +62,7 @@ public class VersionServiceImpl implements VersionService {
         ReleaseManagement db = new ReleaseManagement();
         BeanUtil.copyProperties(releaseModification, db);
         versionDao.updateById(db);
-
     }
-
     @Override
     public VersionDto getRecordByIdAndVersion(Long id, String version, Long projectId) {
         QueryWrapper<ReleaseManagement> queryWrapper = new QueryWrapper<>();
@@ -88,8 +75,6 @@ public class VersionServiceImpl implements VersionService {
         BeanUtil.copyProperties(releaseManagement, versionDto);
         return versionDto;
     }
-
-
     @Override
     public VersionDto getVersion(Long version) {
         ReleaseManagement v = versionDao.selectById(version);
@@ -97,14 +82,13 @@ public class VersionServiceImpl implements VersionService {
         BeanUtil.copyProperties(v, versionDto);
         return versionDto;
     }
-
     @Override
-    public List&lt;VersionDto> getVersionList(VersionRequestDto versionRequestDto) {
+    public List<VersionDto> getVersionList(VersionRequestDto versionRequestDto) {
         LambdaQueryWrapper<ReleaseManagement> queryWrapper = new LambdaQueryWrapper<>();
         if (versionRequestDto.getProjectId() != null) {
             queryWrapper.eq(ReleaseManagement::getProjectId, versionRequestDto.getProjectId();
         }
-        List&lt;ReleaseManagement> list = versionDao.selectList(queryWrapper);
+        List<ReleaseManagement> list = versionDao.selectList(queryWrapper);
         return BeanUtil.copyToList(list, VersionDto.class);
     }
 }

@@ -1,9 +1,6 @@
 package com.hu.oneclick.model.entity;
-
 import lombok.Data;
-
 import java.io.Serializable;
-
 /**
  * (SysCustomField)实体类
  *
@@ -12,10 +9,8 @@ import java.io.Serializable;
  */
 @Data
 
-
 public class SysCustomField implements Serializable {
     private static final long serialVersionUID = 680119388243867579L;
-
     private String id;
     /**
      * 字段名
@@ -29,9 +24,7 @@ public class SysCustomField implements Serializable {
      * 默认值
      */
     private String defaultValues;
-
     private String valueList;
-
     /**
      * type
      *
@@ -50,17 +43,13 @@ public class SysCustomField implements Serializable {
      * @Date: 2021/12/29
      */
     private String scope;
-
     private int chartDisplay;
-
     private int mandatory;
-
     private int uiDisplay;
     //private String unicodeId;
     private int length;
     private int allowAddedValue;
     private int sort;
-
 }
 }
 }

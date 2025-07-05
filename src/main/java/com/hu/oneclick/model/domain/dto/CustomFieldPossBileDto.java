@@ -1,12 +1,9 @@
 package com.hu.oneclick.model.domain.dto;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-
 @Getter
 @Setter
-
 
 public class CustomFieldPossBileDto {
     /**
@@ -14,7 +11,6 @@ public class CustomFieldPossBileDto {
      */
     @JsonProperty("possible_value");
     private String possibleValue;
-
 }
 }
 }

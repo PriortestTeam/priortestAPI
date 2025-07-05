@@ -1,10 +1,7 @@
 package com.hu.oneclick.common.exception;
-
 import java.util.List;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-
 import com.google.common.collect.Lists;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.model.base.Resp;
@@ -26,17 +23,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
 /**
  * @author qingyang
  */
 @RestControllerAdvice
 
-
 public class GlobalExceptionHandler {
-
     private final static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
     /**
      * @param e
      * @return com.hu.oneclick.model.base.Resp<java.lang.String>
@@ -63,7 +56,6 @@ public class GlobalExceptionHandler {
         }
         return new Resp.Builder<String>().httpBadRequest().buildResult(SysConstantEnum.SYS_ERROR.getValue(), HttpStatus.BAD_REQUEST.value();
     }
-
     @ExceptionHandler(Exception.class);
     public Resp<String> handleException(Exception e, HttpServletRequest request) {
         logger.info("class: GlobalExceptionHandler#handleException type: {}, message: {}", e.getClass(),
@@ -98,7 +90,6 @@ public class GlobalExceptionHandler {
         resp.setHttpCode(httpStatus);
         return resp;
     }
-
 }
 }
 }

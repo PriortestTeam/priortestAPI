@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
@@ -22,29 +21,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-
 /**
  * @author qingyang
  */
 @Service
-
-
 public class SettingPermissionServiceImpl implements SettingPermissionService {
-
     private final static Logger logger = LoggerFactory.getLogger(SettingPermissionServiceImpl.class);
-
     private final JwtUserServiceImpl jwtUserServiceImpl;
-
     private final SysUserDao sysUserDao;
-
     private final ProjectDao projectDao;
-
     private final SysProjectPermissionDao sysProjectPermissionDao;
-
     private final RedissonClient redisClient;
-
     public SettingPermissionServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, ProjectDao projectDao, SysProjectPermissionDao sysProjectPermissionDao, RedissonClient redisClient) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.sysUserDao = sysUserDao;
@@ -52,7 +40,6 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         this.sysProjectPermissionDao = sysProjectPermissionDao;
         this.redisClient = redisClient;
     }
-
     @Override
     public Resp<SubUserPermissionDto> getPermissions(String subUserId, String projectId) {
         if (subUserId == null || projectId == null) {
@@ -67,7 +54,6 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail();
         String projectIdStr = subUserDto.getProjectIdStr();
         Project project;
-
         boolean flag = subUserDto.getAll().equals(projectIdStr)
             || (StringUtils.isNotEmpty(projectIdStr) && projectIdStr.contains(projectId);
         if (flag) {
@@ -75,18 +61,16 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
         } else {
             return new Resp.Builder<SubUserPermissionDto>().buildResult("您无此项目权限。");
         }
-
         if (project == null) {
             return new Resp.Builder<SubUserPermissionDto>().buildResult("未查询到该项目。");
         }
-
         //设置权限
         //获取权限
-//        List&lt;SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
+//        List<SysOperationAuthority> sysOperationAuthority = getSysOperationAuthority();
         //没有选中的跳过
 //        if(project.getOperationAuthIds() != null){
 //            //选中的权限id
-//            List&lt;String> selects =  Arrays.asList(project.getOperationAuthIds().split(",");
+//            List<String> selects =  Arrays.asList(project.getOperationAuthIds().split(",");
 //            sysOperationAuthority.forEach(j -> {
 //                //遍历父级
 //                selects.forEach(k -> {
@@ -94,9 +78,8 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
 //                        j.setIsSelect("1");
 //                    }
 //                });
-
 //                //遍历子级
-//                List&lt;SysOperationAuthority> childList = j.getChildList();
+//                List<SysOperationAuthority> childList = j.getChildList();
 //                if (childList != null){
 //                    childList.forEach(s ->{
 //                        selects.forEach(k -> {
@@ -109,13 +92,11 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
 //            });
 //        }
 //        project.setSysOperationAuthorities(sysOperationAuthority);
-
         SubUserPermissionDto subUserPermissionDto = new SubUserPermissionDto();
         subUserPermissionDto.setSubUserDto(subUserDto);
         subUserPermissionDto.setProject(project);
         return new Resp.Builder<SubUserPermissionDto>().setData(subUserPermissionDto).ok();
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> updatePermissions(SubUserPermissionDto entity) {
@@ -140,25 +121,22 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
-    public Resp<List&lt;Project>> getProjects(String subUserId) {
-        List&lt;Project> result = null;
+    public Resp<List<Project>> getProjects(String subUserId) {
+        List<Project> result = null;
 //        SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
 //        SubUserDto subUserDto = sysUserDao.querySubUserInfo(subUserId,masterUser.getId();
 //        if (subUserDto.getProjectIdStr().equals(subUserDto.getAll(){
 //            result = projectDao.queryAllProjects(masterUser.getId();
 //        }else if(StringUtils.isNotEmpty(subUserDto.getProjectIdStr(){
-//            List&lt;String> ids = Arrays.asList(subUserDto.getProjectIdStr().split(subUserDto.getDelimiter();
+//            List<String> ids = Arrays.asList(subUserDto.getProjectIdStr().split(subUserDto.getDelimiter();
 //            if (ids.size() <= 0){
-//                return new Resp.Builder<List&lt;Project>>().buildResult("该用户未分配项目。");
+//                return new Resp.Builder<List<Project>>().buildResult("该用户未分配项目。");
 //            }
 //            result = projectDao.queryInProjectIdsAndPermission(ids,masterUser.getId();
 //        }
-        return new Resp.Builder<List&lt;Project>>().setData(result).ok();
+        return new Resp.Builder<List<Project>>().setData(result).ok();
     }
-
-
     /**
      * 更新用户的缓存（权限列表）信息
      */

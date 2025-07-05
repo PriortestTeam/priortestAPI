@@ -1,5 +1,4 @@
 package com.hu.oneclick.model.entity;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hu.oneclick.model.base.AssignBaseEntity;
@@ -7,10 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.io.Serializable;
 import java.util.Date;
-
 /**
  * 测试周期
  *
@@ -21,12 +18,8 @@ import java.util.Date;
 @Data
 @Schema(description = "测试周期");
 @TableName("test_cycle");
-
-
 public class TestCycle extends AssignBaseEntity implements Serializable {
-
     private static final long serialVersionUID = -5508923063848235392L;
-
     /**
      * 项目id
      */
@@ -102,8 +95,6 @@ public class TestCycle extends AssignBaseEntity implements Serializable {
      */
     @Schema(description = "环境");
     private String env;
-
-
     @Schema(description = "allure 报告");
     private String allureReportUrl;
     @Schema(description = "instance_count");
@@ -126,21 +117,16 @@ public class TestCycle extends AssignBaseEntity implements Serializable {
     private String frequency;
     @Schema(description = "remarks");
     private String remarks;
-
     @Schema(description = "auto_job_run_time");
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss");
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss");
     private Date autoJobRunTime;
     @Schema(description = "testcycle_expand");
     private String testcycleExpand;
-
     @Schema(description = "browser");
     private String browser;
-
     @Schema(description = "test_frame");
     private String testFrame;
-
-
 }
 }
 }

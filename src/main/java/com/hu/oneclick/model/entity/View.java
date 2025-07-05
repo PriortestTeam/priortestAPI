@@ -1,5 +1,4 @@
 package com.hu.oneclick.model.entity;
-
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
@@ -10,12 +9,10 @@ import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
 /**
  * 视图表实体
  *
@@ -27,14 +24,9 @@ import java.util.Map;
 @Data
 @Schema(description = "视图实体");
 @TableName("view");
-
-
 public class View extends AssignBaseEntity implements Serializable {
-
     private static final long serialVersionUID = 2648094842570049550L;
-
     private Long id;
-
     /**
      * 关联项目id
      */
@@ -59,53 +51,39 @@ public class View extends AssignBaseEntity implements Serializable {
      * {},自定义json 对象
      */
     private String filter;
-
     /**
      * 视图类型
      **/
     @NotNull(message = "视图类型不能为空");
     private Integer viewType;
-
     @TableField(exist = false);
     private List<OneFilter> oneFilters;
-
     @TableField(exist = false);
     private List<Map> autoFilter;
-
     /**
      * 修改人
      */
     private String updateUser;
-
     private String parentId;
-
     private String scopeId;
-
     private Integer level;
-
     public String getParentId() {
         return parentId;
     }
-
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }
-
     public Integer getLevel() {
         return level;
     }
-
     public void setLevel(Integer level) {
         this.level = level;
     }
-
     @Schema(description = "Default:0, 自渲染1");
 //    @TableField(exist = false);
     private Integer isAuto;
-
     @TableField(exist = false);
     private List<String> autoViewChild;
-
     /**
      * 手动赋值的意义在于，DB插入的时候需要filter，但是api返回的时候不需要filter
      * DB插入或更新前在filter的set方法里调用此方法
@@ -116,7 +94,6 @@ public class View extends AssignBaseEntity implements Serializable {
         }
         return filter;
     }
-
     public List<OneFilter> getOneFilters() {
         if (StrUtil.isNotBlank(filter) {
             return JSON.parseArray(filter, OneFilter.class);

@@ -1,7 +1,5 @@
 package com.hu.oneclick.common.security.handler;
-
 import com.alibaba.fastjson2.JSON;
-
 import com.hu.oneclick.common.constant.OneConstant.REDIS_KEY_PREFIX;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -14,37 +12,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 /**
  * @author qingyang
  */
 @Component
 
-
 public class TokenClearLogoutHandler implements LogoutHandler {
-
     private final JwtUserServiceImpl jwtUserServiceImpl;
-
     public TokenClearLogoutHandler(JwtUserServiceImpl jwtUserServiceImpl) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
     }
-
     @Autowired
     private RedissonClient redissonClient;
-
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         clearToken(authentication, response);
     }
-
     protected void clearToken(Authentication authentication, HttpServletResponse response) {
         if (authentication == null) {
             return;
@@ -77,7 +66,6 @@ public class TokenClearLogoutHandler implements LogoutHandler {
             throw new BizException(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue();
         }
     }
-
 }
 }
 }

@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
@@ -36,7 +35,6 @@ import com.hu.oneclick.relation.service.RelationService;
 import com.hu.oneclick.server.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,7 +67,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
-
 /**
  * @author qingyang
  */
@@ -77,7 +74,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> implements
     TestCaseService {
-
   @Resource
   private ModifyRecordsService modifyRecordsService;
   @Resource
@@ -102,41 +98,32 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   private TestCaseDao testCaseDao;
   @Resource
   private TestCaseStepService testCaseStepService;
-
   @Resource
   TestCycleTcDao testCycleTcDao;
-
   @Resource
   private RelationService relationService;
-
   @Resource
   TestCycleService testCycleService;
-
   @Resource
   private cn.zhxu.bs.MapSearcher mapSearcher;
-
   @Resource
   private IssueService issueService;
-
   @Resource
   private ViewDao viewDao;
-
   @Override
-  public Resp<List&lt;LeftJoinDto>> queryTitles(String projectId, String title) {
-    List&lt;TestCase> list = this.lambdaQuery()
+  public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
+    List<TestCase> list = this.lambdaQuery()
         .eq(TestCase::getProjectId, projectId)
         .eq(TestCase::getCreateUserId, jwtUserService.getMasterId()
         .like(StrUtil.isNotBlank(title), TestCase::getTitle, title)
         .list();
     if (CollUtil.isEmpty(list) {
-      return new Resp.Builder<List&lt;LeftJoinDto>>().ok();
+      return new Resp.Builder<List<LeftJoinDto>>().ok();
     }
-    List&lt;LeftJoinDto> select = list.stream().map(i -> BeanUtil.copyProperties(i, LeftJoinDto.class)
+    List<LeftJoinDto> select = list.stream().map(i -> BeanUtil.copyProperties(i, LeftJoinDto.class)
         .collect(Collectors.toList();
-    return new Resp.Builder<List&lt;LeftJoinDto>>().setData(select).total(select).ok();
+    return new Resp.Builder<List<LeftJoinDto>>().setData(select).total(select).ok();
   }
-
-
   /**
    * update testcase custom
    *
@@ -151,22 +138,20 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 //        testCase.setCustomFieldDatas(customFieldDataService.testCaseRenderingCustom(id.toString();
     return new Resp.Builder<TestCase>().setData(testCase).ok();
   }
-
   @Override
-  public Resp<List&lt;TestCase>> queryList(TestCaseDto testCase) {
+  public Resp<List<TestCase>> queryList(TestCaseDto testCase) {
     try {
       String masterId = jwtUserService.getMasterId();
       testCase.setCreateUserId(Long.valueOf(masterId);
       testCase.setFilter(
           queryFilterService.mysqlFilterProcess(testCase.getViewTreeDto(), masterId);
-      List&lt;TestCase> select = baseMapper.queryList(testCase);
-      return new Resp.Builder<List&lt;TestCase>>().setData(select).total(select).ok();
+      List<TestCase> select = baseMapper.queryList(testCase);
+      return new Resp.Builder<List<TestCase>>().setData(select).total(select).ok();
     } catch (Exception e) {
       e.printStackTrace();
     }
     return null;
   }
-
   @Override
   @Transactional(rollbackFor = Exception.class);
   public Resp<String> insert(TestCase testCase) {
@@ -190,7 +175,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
     }
   }
-
   @Override
   @Transactional(rollbackFor = Exception.class);
   public Resp<String> update(TestCase testCase) {
@@ -208,29 +192,24 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
     }
   }
-
   /**
    * 修改字段，进行记录
    *
    * @param testCase
    */
   private void modifyRecord(TestCase testCase) {
-
   }
   @Override
   @Transactional(rollbackFor = Exception.class);
   public Resp<String> delete(String id) {
-
     return null;
   }
-
   @Override
   public Resp<Feature> queryTestNeedByFeatureId(String featureId) {
     String masterId = jwtUserService.getMasterId();
     Feature featureDto = featureDao.queryById(featureId, masterId);
     return new Resp.Builder<Feature>().setData(featureDto).ok();
   }
-
   @Override
   @Transactional(rollbackFor = Exception.class);
   public Resp<ImportTestCaseDto> importTestCase(MultipartFile multipartFile, String param) {
@@ -256,27 +235,27 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //    Integer ifIgnorFirstRow = jsonObject.getInteger("ifIgnorFirstRow");
     //    //构建导入测试模板获取列对应的cell下标
     //    JSONObject cellIndexObject = buildCellIndexByTemplateTestCase(jsonObject);
-    //    List&lt;String> allowPriority = Arrays.asList("高", "中", "低");
-    //    List&lt;String> allowBrowser = Arrays.asList("Google Chrome", "Fire Fox", "IE");
-    //    List&lt;String> allowPlatform = Arrays.asList("window", "mac");
-    //    List&lt;String> statusPlatform = Arrays.asList("Ready", "Draft");
-    //    List&lt;String> moudleMergeValues = sysCustomFieldService.getSysCustomField("moudle").getData().getMergeValues();
-    //    List&lt;String> versionsMergeValues = sysCustomFieldService.getSysCustomField("versions").getData().getMergeValues();
-    //    List&lt;String> testCategoryMergeValues = sysCustomFieldService.getSysCustomField("testCategory").getData().getMergeValues();
-    //    List&lt;String> testTypeMergeValues = sysCustomFieldService.getSysCustomField("testType").getData().getMergeValues();
-    //    List&lt;String> testEnvMergeValues = sysCustomFieldService.getSysCustomField("testEnv").getData().getMergeValues();
-    //    List&lt;String> testDeviceMergeValues = sysCustomFieldService.getSysCustomField("testDevice").getData().getMergeValues();
-    //    List&lt;String> testMethodMergeValues = sysCustomFieldService.getSysCustomField("testMethod").getData().getMergeValues();
+    //    List<String> allowPriority = Arrays.asList("高", "中", "低");
+    //    List<String> allowBrowser = Arrays.asList("Google Chrome", "Fire Fox", "IE");
+    //    List<String> allowPlatform = Arrays.asList("window", "mac");
+    //    List<String> statusPlatform = Arrays.asList("Ready", "Draft");
+    //    List<String> moudleMergeValues = sysCustomFieldService.getSysCustomField("moudle").getData().getMergeValues();
+    //    List<String> versionsMergeValues = sysCustomFieldService.getSysCustomField("versions").getData().getMergeValues();
+    //    List<String> testCategoryMergeValues = sysCustomFieldService.getSysCustomField("testCategory").getData().getMergeValues();
+    //    List<String> testTypeMergeValues = sysCustomFieldService.getSysCustomField("testType").getData().getMergeValues();
+    //    List<String> testEnvMergeValues = sysCustomFieldService.getSysCustomField("testEnv").getData().getMergeValues();
+    //    List<String> testDeviceMergeValues = sysCustomFieldService.getSysCustomField("testDevice").getData().getMergeValues();
+    //    List<String> testMethodMergeValues = sysCustomFieldService.getSysCustomField("testMethod").getData().getMergeValues();
     //    Date now = new Date();
-    //    Map&lt;SysConstantEnum, Map&lt;String, String>> errorTipsMap = new HashMap&lt;>();
+    //    Map<SysConstantEnum, Map<String, String>> errorTipsMap = new HashMap<>();
     //    int successCount = 0;
     //    int errorCount = 0;
     //    int updateCount = 0;
     //    //判断文件后缀，根据不同后缀操作数据
     //    JSONArray rowValueArray = buildRowValueArray(suffix, multipartFile.getInputStream(),
     //            cellIndexObject, ifIgnorFirstRow);
-    //    List&lt;TestCase> testCases = new ArrayList&lt;>();
-    //    Map&lt;String, List&lt;TestCaseStep>> testCaseStepsMap = new HashMap&lt;>();
+    //    List<TestCase> testCases = new ArrayList<>();
+    //    Map<String, List<TestCaseStep>> testCaseStepsMap = new HashMap<>();
     //    for (Object o : rowValueArray) {
     //        JSONObject rowValue = (JSONObject) o;
     //        TestCase testCase = new TestCase();
@@ -351,7 +330,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //        setSelectValue(rowValue.getJSONObject("automationCol"), testMethodMergeValues, testCase
     //                , errorTipsMap, "testMethod", true);
     //        ///判断是否新增或者更新，根据故事ID+ExternalID查询测试用例，如果存在则进行更新；
-
     //        //判断ExternalI是否存在，进行判断下一步是否更新
     //        if (jsonObject.containsKey("ifUpdateCase") {
     //            JSONObject externalIdCol = rowValue.getJSONObject("externalIdCol");
@@ -372,17 +350,14 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //            //    }
     //            //}
     //        }
-
     //        //处理 Step
-    //        List&lt;TestCaseStep> testCaseSteps = new ArrayList&lt;>();
+    //        List<TestCaseStep> testCaseSteps = new ArrayList<>();
     //        if (cellIndexObject.containsKey("stepCol") {
     //            String setpValue = getCellValue(errorTipsMap,
     //                    rowValue.getJSONObject("stepCol"), true);
-
     //            //测试数据
     //            String cellTestDataValue = getCellValue(errorTipsMap,
     //                    rowValue.getJSONObject("stepTestDataCol"), true);
-
     //            //Expected Result 预期结果
     //            String cellExpectedResultValue = getCellValue(errorTipsMap,
     //                    rowValue.getJSONObject("stepExpectResultCol"), true);
@@ -393,7 +368,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //                String[] steps = setpValue.split(splitTestStep);
     //                String[] testDatas = cellTestDataValue.split(splitTestStep);
     //                String[] expectedResults = cellExpectedResultValue.split(splitTestStep);
-
     //                for (int i1 = 0; i1 < steps.length; i1++) {
     //                    int stepsLength = steps.length;
     //                    TestCaseStep testCaseStep = new TestCaseStep();
@@ -430,7 +404,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //        testCases.add(testCase);
     //        //testCaseStepsMap.put(testCase.getId().replace("UPDATE", ""), testCaseSteps);
     //    }
-
     //    //判断是否异常,如出现异常，则全部进行操作db
     //    if (errorTipsMap.isEmpty() {
     //        //判断是否新增或者更新，根据故事ID+ExternalID查询测试用例，如果存在则进行更新；
@@ -452,7 +425,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //            //    this.testCaseStepDao.delete(delTestCase);
     //            //    updateCount++;
     //            //}
-    //            List&lt;TestCaseStep> testCaseSteps = testCaseStepsMap.get(testCase.getId();
+    //            List<TestCaseStep> testCaseSteps = testCaseStepsMap.get(testCase.getId();
     //            if (insertOrUpdate.getCode().equals("200") {
     //                for (TestCaseStep testCaseStep : testCaseSteps) {
     //                    //testCaseStep.setTestCaseId(testCase.getId();
@@ -484,7 +457,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     return new Resp.Builder<ImportTestCaseDto>().buildResult(SysConstantEnum.SYSTEM_BUSY.getCode(),;
         "导入测试用例失败");
   }
-
   /**
    * 导入测试用例发送emial
    *
@@ -503,7 +475,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     mailDto.setToEmail(email);
     mailDto.setTitle(OneConstant.EMAIL.TITLE_IMPORTTESTCASE);
     mailDto.setTemplateHtmlName(OneConstant.EMAIL.TEMPLATEHTMLNAME_IMPORTTESTCASE);
-    Map&lt;String, Object> attachmentMap = new HashMap&lt;>();
+    Map<String, Object> attachmentMap = new HashMap<>();
     attachmentMap.put("importDateTime", DateUtil.format(new Date(), "yyyy年MM月dd日 HH:mm:ss");
     attachmentMap.put("successCount", successCount);
     attachmentMap.put("errorCount", errorCount);
@@ -511,7 +483,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     mailDto.setAttachment(attachmentMap);
     mailService.sendTemplateMail(mailDto);
   }
-
   /**
    * 导入测试创建视图
    *
@@ -537,7 +508,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     view.setTitle("创建时间：" + nowString + "-" + nowString);
 //        viewService.addView(view);
   }
-
   /**
    * 根据文件封装col数据
    *
@@ -557,7 +527,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       BufferedReader reader = new BufferedReader(is);
       CSVParser parser = CSVFormat.DEFAULT.parse(reader);
       int rownum = 0;
-
       // 读取文件每行内容
       for (CSVRecord record : parser.getRecords() {
         //  跳过表头
@@ -614,7 +583,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     return rowValueArray;
   }
-
   /**
    * 构建导入返回参数
    *
@@ -624,7 +592,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * @return
    */
   private ImportTestCaseDto buildImportTestCaseDto(
-      Map&lt;SysConstantEnum, Map&lt;String, String>> errorTipsMap,
+      Map<SysConstantEnum, Map<String, String>> errorTipsMap,
       int successCount, int updateCount, int errorCount) {
     ImportTestCaseDto importTestCaseDto = new ImportTestCaseDto();
     importTestCaseDto.setSuccess(new ArrayList();
@@ -638,9 +606,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     importTestCaseDto.setError(new ArrayList();
     importTestCaseDto.setWarning(new ArrayList();
     for (SysConstantEnum sysConstantEnum : errorTipsMap.keySet() {
-      Map&lt;String, List&lt;String>> errorMap = new HashMap&lt;>();
-      List&lt;String> strings = new ArrayList&lt;>();
-      Map&lt;String, String> stringStringMap = errorTipsMap.get(sysConstantEnum);
+      Map<String, List<String>> errorMap = new HashMap<>();
+      List<String> strings = new ArrayList<>();
+      Map<String, String> stringStringMap = errorTipsMap.get(sysConstantEnum);
       for (String s : stringStringMap.keySet() {
         if (sysConstantEnum.equals() {
             SysConstantEnum.IMPORT_TESTCASE_ERROR_NOTSELECT) {// 如果是下拉菜单，取出key进行进行分割
@@ -656,7 +624,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     return importTestCaseDto;
   }
-
   /**
    * 获取cell的值，如果为required为true，则将错误信息插入
    *
@@ -665,7 +632,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * @param required     是否必填
    * @return
    */
-  private String getCellValue(Map&lt;SysConstantEnum, Map&lt;String, String>> errorTipsMap
+  private String getCellValue(Map<SysConstantEnum, Map<String, String>> errorTipsMap
       , JSONObject colValue,
       boolean required) {
     String value = "";
@@ -679,7 +646,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     return value;
   }
-
   /**
    * 设置字符串的值
    *
@@ -690,7 +656,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * @param required
    */
   private void setValue(JSONObject colValue, TestCase testCase,
-      Map&lt;SysConstantEnum, Map&lt;String, String>> errorTipsMap
+      Map<SysConstantEnum, Map<String, String>> errorTipsMap
       , String field, boolean required) {
     try {
       String value = null;
@@ -711,7 +677,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       throw new BizException(e.getMessage();
     }
   }
-
   /**
    * 设置下拉的字段
    *
@@ -726,8 +691,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * @throws IllegalAccessException
    */
   private void setSelectValue(JSONObject colValue,
-      List&lt;String> allow, TestCase testCase,
-      Map&lt;SysConstantEnum, Map&lt;String, String>> errorTipsMap
+      List<String> allow, TestCase testCase,
+      Map<SysConstantEnum, Map<String, String>> errorTipsMap
       , String field, boolean required) {
     try {
       String value = null;
@@ -753,8 +718,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       throw new BizException(e.getMessage();
     }
   }
-
-
   /**
    * 构建返回提示参数
    *
@@ -763,13 +726,13 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * @param colValue        列
    * @param selectVal       下拉内容，错误类型为下拉必填
    */
-  private void buildErrorTips(Map&lt;SysConstantEnum, Map&lt;String, String>> tipsMap,
+  private void buildErrorTips(Map<SysConstantEnum, Map<String, String>> tipsMap,
       SysConstantEnum sysConstantEnum,
       JSONObject colValue, String selectVal) {
-    Map&lt;String, String> errorMaps = tipsMap.get(sysConstantEnum);
+    Map<String, String> errorMaps = tipsMap.get(sysConstantEnum);
     // 判断此错误类型是否已经添加
     if (null == errorMaps) {
-      tipsMap.put(sysConstantEnum, new HashMap&lt;>();
+      tipsMap.put(sysConstantEnum, new HashMap<>();
       errorMaps = tipsMap.get(sysConstantEnum);
     }
     String col = colValue.getString("colLetter");
@@ -786,7 +749,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       errorMaps.put(col, errorMaps.get(col) + "," + rownum);
     }
   }
-
   /**
    * 构建导入测试模板获取列对应的cell下标
    *
@@ -809,7 +771,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     return res;
   }
-
   /**
    * 根据下标获取列的字母字母
    *
@@ -820,7 +781,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     String letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     return letter.substring(colIndex, colIndex + 1);
   }
-
   /**
    * 查询关联故事
    *
@@ -838,8 +798,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         new LambdaQueryWrapper<Feature>().eq(Feature::getTitle, feature.getTitle()
             .eq(Feature::getProjectId, feature.getProjectId();
   }
-
-
   /**
    * 查重
    */
@@ -859,7 +817,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //    throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), testCase.getTitle() + SysConstantEnum.DATE_EXIST.getValue();
     //}
   }
-
   /**
    * 判断externaID是否在故事下存在
    *
@@ -876,9 +833,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     testCase.setId(null);
     // TestCase testCaseOne = baseMapper.selectOne(testCase);
     ////如果testCaseId不为空则判断查询出ID是否与传入ID一致说明不重复
-
   }
-
   /**
    * 获取字段对应中文字义
    *
@@ -920,19 +875,16 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     return args;
   }
-
-
-  private List&lt;String> getCommonList(SysCustomFieldExpand versions) {
+  private List<String> getCommonList(SysCustomFieldExpand versions) {
     versions = Optional.ofNullable(versions).orElse(new SysCustomFieldExpand();
-    List&lt;String> list;
+    List<String> list;
     if (StringUtils.isEmpty(versions.getLinkSysCustomField() {
-      list = new ArrayList&lt;>();
+      list = new ArrayList<>();
     } else {
       list = Arrays.asList(versions.getLinkSysCustomField().split(",");
     }
     return list;
   }
-
   /**
    * 添加测试用例
    *
@@ -946,7 +898,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   public Resp<String> addTestCase(TestCycleDto testCycleDto) {
     return new Resp.Builder<String>().ok();
   }
-
   /**
    * 更新action
    *
@@ -959,17 +910,17 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * @Date: 2021/12/1
    */
   @Override
-  public Resp<List&lt;TestCase>> updateAction(List&lt;String> testCaseId, String actionType,
+  public Resp<List<TestCase>> updateAction(List<String> testCaseId, String actionType,
       String testCycleId) {
     String masterId = jwtUserService.getMasterId();
-    ArrayList&lt;TestCase> testCases = new ArrayList&lt;>();
+    ArrayList<TestCase> testCases = new ArrayList<>();
     if (actionType.equals(ActionConstant.RELOAD) {
       for (String id : testCaseId) {
         TestCase testCase = baseMapper.queryById(id, masterId);
         testCases.add(testCase);
       }
       // 如果是刷新就返回数据给前端
-      return new Resp.Builder<List&lt;TestCase>>().setData(testCases).ok();
+      return new Resp.Builder<List<TestCase>>().setData(testCases).ok();
     } else if (actionType.equals(ActionConstant.REMOVE) {
       for (String id : testCaseId) {
         TestCycleJoinTestCase tc = new TestCycleJoinTestCase();
@@ -979,31 +930,28 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         // testCycleJoinbaseMapper.delete(tc);
       }
     }
-    return new Resp.Builder<List&lt;TestCase>>().fail();
+    return new Resp.Builder<List<TestCase>>().fail();
   }
-
   @Override
-  public List&lt;TestCase> list(TestCaseParam param) {
+  public List<TestCase> list(TestCaseParam param) {
     return this.lambdaQuery()
         .like(StrUtil.isNotBlank(param.getTitle(), TestCase::getTitle, param.getTitle()
         .eq(TestCase::getProjectId, param.getProjectId()
         .orderByDesc(TestCase::getCreateTime)
         .list();
   }
-
   @Override
   public PageInfo<TestCase> list(TestCaseParam param, int pageNum, int pageSize) {
     PageHelper.startPage(pageNum, pageSize);
-    List&lt;TestCase> list = this.lambdaQuery()
+    List<TestCase> list = this.lambdaQuery()
         .like(StrUtil.isNotBlank(param.getTitle(), TestCase::getTitle, param.getTitle()
         .eq(TestCase::getProjectId, param.getProjectId()
         .orderByDesc(TestCase::getCreateTime)
         .list();
     return new PageInfo<>(list);
   }
-
   @Override
-  public List&lt;TestCase> listWithViewFilter(TestCaseParam param) {
+  public List<TestCase> listWithViewFilter(TestCaseParam param) {
     // 检查是否需要应用视图过滤
     if (viewFilterService.shouldApplyViewFilter(param.getViewId() {
       // 使用视图过滤进行查询
@@ -1013,7 +961,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       return list(param);
     }
   }
-
   @Override
   public PageInfo<TestCase> listWithViewFilter(TestCaseParam param, int pageNum, int pageSize) {
     // 检查是否需要应用视图过滤
@@ -1025,97 +972,81 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       return list(param, pageNum, pageSize);
     }
   }
-
   @Override
-  public List&lt;TestCase> listExtend(TestCaseParam param) {
+  public List<TestCase> listExtend(TestCaseParam param) {
     return this.lambdaQuery()
         .in(CollUtil.isNotEmpty(param.getTestCaseIdList(), TestCase::getId,
             param.getTestCaseIdList()
         .orderByDesc(TestCase::getCreateTime)
         .list();
   }
-
   /**
    * 使用视图过滤的查询逻辑
    */
-  private List&lt;TestCase> listWithViewFilterLogic(TestCaseParam param) {
+  private List<TestCase> listWithViewFilterLogic(TestCaseParam param) {
     try {
       // 获取视图过滤参数
-      Map&lt;String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
           param.getViewId(), param.getProjectId().toString();
-      
       if (filterParams == null) {
         // 如果获取过滤参数失败，回退到简单查询
         log.warn("获取视图过滤参数失败，回退到简单查询");
         return list(param);
       }
-
       // 使用 BeanSearcher 进行复杂查询
       // 这里需要注入 BeanSearcher，但由于当前架构限制，我们使用另一种方式
       // 可以通过调用 BeanSearchController 的逻辑来实现
-      
       // 临时方案：使用现有的 queryList 方法
       TestCaseDto testCaseDto = new TestCaseDto();
       testCaseDto.setProjectId(param.getProjectId();
-      
       // 创建 ViewTreeDto 对象
       ViewTreeDto viewTreeDto = new ViewTreeDto();
       viewTreeDto.setId(Long.valueOf(param.getViewId();
       testCaseDto.setViewTreeDto(viewTreeDto);
-      
-      Resp<List&lt;TestCase>> resp = queryList(testCaseDto);
+      Resp<List<TestCase>> resp = queryList(testCaseDto);
       if (resp != null && resp.getData() != null) {
         return resp.getData();
       }
-      
-      return new ArrayList&lt;>();
+      return new ArrayList<>();
     } catch (Exception e) {
       log.error("视图过滤查询失败，回退到简单查询", e);
       return list(param);
     }
   }
-
   /**
    * 使用视图过滤的查询逻辑，支持分页
    */
   private PageInfo<TestCase> listWithViewFilterLogic(TestCaseParam param, int pageNum, int pageSize) {
     try {
       // 获取视图过滤参数
-      Map&lt;String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
           param.getViewId(), param.getProjectId().toString();
-      
       if (filterParams == null) {
         // 如果获取过滤参数失败，回退到简单查询
         log.warn("获取视图过滤参数失败，回退到简单查询");
         return list(param, pageNum, pageSize);
       }
-
       // 使用 BeanSearcher 进行复杂查询
       // 这里需要注入 BeanSearcher，但由于当前架构限制，我们使用另一种方式
       // 可以通过调用 BeanSearchController 的逻辑来实现
-      
       // 临时方案：使用现有的 queryList 方法
       TestCaseDto testCaseDto = new TestCaseDto();
       testCaseDto.setProjectId(param.getProjectId();
-      
       // 创建 ViewTreeDto 对象
       ViewTreeDto viewTreeDto = new ViewTreeDto();
       viewTreeDto.setId(Long.valueOf(param.getViewId();
       testCaseDto.setViewTreeDto(viewTreeDto);
-      
-      Resp<List&lt;TestCase>> resp = queryList(testCaseDto);
+      Resp<List<TestCase>> resp = queryList(testCaseDto);
       if (resp != null && resp.getData() != null) {
         // 手动分页处理
-        List&lt;TestCase> allData = resp.getData();
+        List<TestCase> allData = resp.getData();
         int total = allData.size();
         int startIndex = (pageNum - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, total);
-        
-        List&lt;TestCase> pageData = new ArrayList&lt;>();
+        List<TestCase> pageData = new ArrayList<>();
         if (startIndex < total) {
           pageData = allData.subList(startIndex, endIndex);
         }
-        
         PageInfo<TestCase> pageInfo = new PageInfo<>(pageData);
         pageInfo.setPageNum(pageNum);
         pageInfo.setPageSize(pageSize);
@@ -1123,14 +1054,12 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         pageInfo.setPages((total + pageSize - 1) / pageSize);
         return pageInfo;
       }
-      
-      return new PageInfo<>(new ArrayList&lt;>();
+      return new PageInfo<>(new ArrayList<>();
     } catch (Exception e) {
       log.error("视图过滤查询失败，回退到简单查询", e);
       return list(param, pageNum, pageSize);
     }
   }
-
   @Override
   public TestCase save(TestCaseSaveDto dto) {
     TestCase testCase = new TestCase();
@@ -1142,7 +1071,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     baseMapper.insert(testCase);
     return testCase;
   }
-
   @Override
   public TestCase update(TestCaseSaveDto dto) {
     TestCase testCase = baseMapper.getByIdAndProjectId(dto.getId(), dto.getProjectId();
@@ -1158,7 +1086,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     baseMapper.updateById(testCase);
     return testCase;
   }
-
   @Override
   public TestCase info(Long id) {
     TestCase testCase = baseMapper.selectById(id);
@@ -1166,16 +1093,15 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       throw new BizException(StrUtil.format("测试用例查询不到。ID：{}", id);
     }
     //  查询测试用例关联步骤
-    List&lt;TestCaseStep> testCaseStepList = testCaseStepService.lambdaQuery()
+    List<TestCaseStep> testCaseStepList = testCaseStepService.lambdaQuery()
         .eq(TestCaseStep::getTestCaseId, testCase.getId().list();
     testCase.setTestCaseStepList(testCaseStepList);
     return testCase;
   }
-
   @Override
   @Transactional(rollbackFor = Exception.class);
-  public void clone(List&lt;Long> ids) {
-    List&lt;TestCase> testCaseList = new ArrayList&lt;>();
+  public void clone(List<Long> ids) {
+    List<TestCase> testCaseList = new ArrayList<>();
     for (Long id : ids) {
       TestCase testCase = baseMapper.selectById(id);
       if (testCase == null) {
@@ -1190,14 +1116,12 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     // 批量克隆
     this.saveBatch(testCaseList);
   }
-
   @Resource
   TestCaseDao testCase;
-
   @Override
-  public List&lt;TestCaseBisDto> getTestCaseAllByCycleId(Long testCycleId) {
-    List&lt;TestCaseDataDto> list = testCase.getSelectAll(testCycleId);
-    List&lt;TestCaseBisDto> arrList = new ArrayList&lt;>();
+  public List<TestCaseBisDto> getTestCaseAllByCycleId(Long testCycleId) {
+    List<TestCaseDataDto> list = testCase.getSelectAll(testCycleId);
+    List<TestCaseBisDto> arrList = new ArrayList<>();
     for (TestCaseDataDto testCaseDataDto : list) {
       TestCaseBisDto testCaseBisDto = new TestCaseBisDto();
       testCaseBisDto.setTestCaseRun(testCaseDataDto.getRunCount(), testCaseDataDto.getRunStatus(),
@@ -1219,7 +1143,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     return arrList;
   }
-
   /**
    * 根据CaseId、projectId查找
    *
@@ -1231,33 +1154,30 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   public TestCase getByIdAndProjectId(Long projectId, Long testCaseId) {
     return baseMapper.getByIdAndProjectId(testCaseId, projectId);
   }
-
-
   @Override
-  public List&lt;TestCase> testCaseSearch(Long projectId, String title) {
-    List&lt;TestCase> list = this.lambdaQuery()
+  public List<TestCase> testCaseSearch(Long projectId, String title) {
+    List<TestCase> list = this.lambdaQuery()
         .eq(TestCase::getProjectId, projectId)
         .like(StrUtil.isNotBlank(title), TestCase::getTitle, title)
         .select(TestCase::getId, TestCase::getTitle)
         .list();
     if (CollUtil.isEmpty(list) {
-      return new ArrayList&lt;>();
+      return new ArrayList<>();
     }
     return list;
   }
-
   @Override
   @Transactional
   public Resp<Map> removeAndChild(Long id) {
     // 获取testCase信息
     TestCase testCase = this.getById(id);
-    List&lt;Long> testCaseIds = new ArrayList&lt;>();
+    List<Long> testCaseIds = new ArrayList<>();
     testCaseIds.add(id);
     Integer testCycleJoinTestCaseDelNum = 0;
     Integer testCycleTcDelNum = 0;
     Integer relationDelNum = 0;
     Integer testCaseDelNum = 0;
-    Map&lt;String, Integer> res = new HashMap&lt;>();
+    Map<String, Integer> res = new HashMap<>();
     try {
       // 删除关联表
       testCycleJoinTestCaseDelNum = testCycleJoinTestCaseDao.delete(
@@ -1270,7 +1190,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
               .eq(TestCasesExecution::getProjectId, testCase.getProjectId();
       relationDelNum = relationService.removeBatchByTestCaseIds(testCaseIds);
       testCaseDelNum = testCaseDao.deleteById(id);
-
       res.put("testCase", testCaseDelNum);
       res.put("testCycleJoinTestCase", testCycleJoinTestCaseDelNum);
       res.put("testCasesExecution", testCycleTcDelNum);
@@ -1282,7 +1201,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     return new Resp.Builder<Map>().buildResult(SysConstantEnum.SUCCESS.getCode(),;
         SysConstantEnum.SUCCESS.getValue(), res);
   }
-
   @Override
   public TestCase queryByProjectIdAndExteranlId(final Long projectId, final String exteranlId) {
     final LambdaQueryWrapper<TestCase> wrapper = new LambdaQueryWrapper<>();
@@ -1295,7 +1213,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     return testCase;
   }
-
   @Override
   public IssueStatusVo retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId) {
     Issue issue = issueService.retrieveIssueStatusAsPerIssueId(projectId, issueId);
@@ -1306,35 +1223,29 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     return vo;
   }
-
   @Override
   public TestCycle saveTestCycle(Long projectId, TestCycleSaveDto dto) {
     dto.setProjectId(projectId);
     return testCycleService.save(dto);
   }
-
   @Override
-  public List&lt;Map&lt;String, Object>> listWithBeanSearcher(String viewId, String projectId) {
+  public List<Map<String, Object>> listWithBeanSearcher(String viewId, String projectId) {
     try {
       // 获取视图过滤参数
-      Map&lt;String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
-      
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
       if (filterParams == null) {
         // 如果没有过滤条件，返回空列表
-        return new ArrayList&lt;>();
+        return new ArrayList<>();
       }
-      
       // 使用BeanSearcher进行查询，使用testCase作为查询类
       Class<?> testCaseClass = Class.forName("com.hu.oneclick.model.entity.TestCase");
-      List&lt;Map&lt;String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
-      
+      List<Map<String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
       return result;
     } catch (Exception e) {
       log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
-      return new ArrayList&lt;>();
+      return new ArrayList<>();
     }
   }
-
   @Override
   public PageInfo<TestCase> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize) {
     // 1. 确定表名
@@ -1348,16 +1259,13 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     // 2. 获取 projectId
     String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
-    
     // 3. 计算偏移量
     int offset = (pageNum - 1) * pageSize;
-    
     // 添加调试日志
     log.info("queryByFieldAndValue - 分页参数: pageNum={}, pageSize={}, offset={}", pageNum, pageSize, offset);
     log.info("queryByFieldAndValue - 查询参数: tableName={}, fieldNameEn={}, value={}, projectId={}", tableName, fieldNameEn, value, projectId);
-    
     // 4. 使用 DAO 方法查询数据
-    List&lt;Map&lt;String, Object>> result = viewDao.queryRecordsByScope(
+    List<Map<String, Object>> result = viewDao.queryRecordsByScope(
         tableName,
         fieldNameEn,
         value,
@@ -1366,12 +1274,10 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         offset,
         pageSize
     );
-    
     log.info("queryByFieldAndValue - 查询结果数量: {}", result.size();
     if (!result.isEmpty() {
       log.info("queryByFieldAndValue - 第一条记录: {}", result.get(0);
     }
-    
     // 5. 查询总数
     long total = viewDao.countRecordsByScope(
         tableName,
@@ -1380,12 +1286,9 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         projectId,
         null
     );
-    
     log.info("queryByFieldAndValue - 总记录数: {}", total);
-    
     // 6. 转 bean
-    List&lt;TestCase> testCaseList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class).collect(Collectors.toList();
-    
+    List<TestCase> testCaseList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class).collect(Collectors.toList();
     // 7. 构造 PageInfo
     PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
     pageInfo.setPageNum(pageNum);
@@ -1396,41 +1299,32 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     pageInfo.setIsLastPage(pageNum >= pageInfo.getPages();
     pageInfo.setHasPreviousPage(pageNum > 1);
     pageInfo.setHasNextPage(pageNum < pageInfo.getPages();
-    
     log.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
              pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage();
-    
     return pageInfo;
   }
-
   @Override
   public PageInfo<TestCase> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize) {
     try {
       // 获取视图过滤参数
-      Map&lt;String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
-      
+      Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
       if (filterParams == null) {
         // 如果没有过滤条件，返回空分页结果
-        return new PageInfo<>(new ArrayList&lt;>();
+        return new PageInfo<>(new ArrayList<>();
       }
-      
       // 使用BeanSearcher进行查询，使用testCase作为查询类
       Class<?> testCaseClass = Class.forName("com.hu.oneclick.model.entity.TestCase");
-      
       // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
-      List&lt;Map&lt;String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
-      
+      List<Map<String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
       // 转换为 TestCase 对象
-      List&lt;TestCase> testCaseList = result.stream()
+      List<TestCase> testCaseList = result.stream()
           .map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class)
           .collect(Collectors.toList();
-      
       // 使用与 BeanSearchController 相同的分页处理方式
       return PageUtil.manualPaging(testCaseList);
     } catch (Exception e) {
       log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
-      return new PageInfo<>(new ArrayList&lt;>();
+      return new PageInfo<>(new ArrayList<>();
     }
   }
-
 }

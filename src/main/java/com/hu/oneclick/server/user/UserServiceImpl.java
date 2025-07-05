@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.user;
-
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -44,53 +42,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
 /**
  * @author qingyang
  */
 @Service
-
-
 public class UserServiceImpl implements UserService {
     private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-
     private final SysUserDao sysUserDao;
-
     private final JwtUserServiceImpl jwtUserServiceImpl;
-
     private final RedissonClient redisClient;
-
     private final MailService mailService;
-
     private final SysUserTokenDao sysUserTokenDao;
-
     private final ProjectService projectService;
-
     private final SubUserProjectDao subUserProjectDao;
-
     private final UserOrderService userOrderService;
-
     private final SystemConfigService systemConfigService;
-
     private final RoomDao roomDao;
-
     private final RoleFunctionDao roleFunctionDao;
-
     private final SysUserBusinessDao sysUserBusinessDao;
-
     private final SysRoleDao sysRoleDao;
-
     private final SysUserProjectDao sysUserProjectDao;
-
     @Value("${onclick.default.photo}");
     private String defaultPhoto;
-
     @Value("${onclick.time.firstTime}");
     private long firstTime;
-
     @Value("${onclick.time.secondTime}");
     private long secondTime;
-
     public UserServiceImpl(SysUserDao sysUserDao,
                            RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl,
                            MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService,
@@ -112,23 +89,20 @@ public class UserServiceImpl implements UserService {
         this.sysRoleDao = sysRoleDao;
         this.sysUserProjectDao = sysUserProjectDao;
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> register(final RegisterBody registerBody) {
         try {
             final SysUser registerUser = new SysUser();
             BeanUtils.copyProperties(registerBody, registerUser);
-
             String email = registerUser.getEmail();
             if (StringUtils.isEmpty(email) {
                 throw new BizException(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue();
             }
-
             SysUser user = new SysUser();
             BeanUtils.copyProperties(registerUser, user);
             //检查数据库是否已存在用户
-            List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
             if (!CollUtil.isEmpty(sysUsers) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue();
             }
@@ -143,7 +117,6 @@ public class UserServiceImpl implements UserService {
                     // "&params=" + linkStr);
                     mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
                         "&params=" + linkStr);
-
                     return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue();
                 }
             }
@@ -170,11 +143,9 @@ public class UserServiceImpl implements UserService {
             user.setPhoto(defaultPhoto);
             user.setSysRoleId(RoleConstant.ADMIN_PLAT);
             user.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION);
-
             if (sysUserDao.insert(user) > 0) {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-
                 mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
                     "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue();
@@ -185,20 +156,17 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
-    public Resp<String> modifyPassword(Map&lt;String, String> args) {
+    public Resp<String> modifyPassword(Map<String, String> args) {
         try {
             SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
             String oldPassword = args.get("oldPassword");
             String newPassword = args.get("newPassword");
             verify(newPassword, null);
-
             if (!jwtUserServiceImpl.verifyPassword(oldPassword, sysUser) {
                 return new Resp.Builder<String>().buildResult("旧密码输入错误");
             }
-
             sysUser.setPassword(encodePassword(newPassword);
             updatePassword(sysUser);
             jwtUserServiceImpl.saveUserLoginInfo2(sysUser);
@@ -208,10 +176,9 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
-    public Resp<String> resetPassword(Map&lt;String, String> args) {
+    public Resp<String> resetPassword(Map<String, String> args) {
         try {
             String newPassword = args.get("newPassword");
             String verificationCode = args.get("verificationCode");
@@ -223,7 +190,6 @@ public class UserServiceImpl implements UserService {
             }
             //验证邮箱
             verifyEmailCode(OneConstant.REDIS_KEY_PREFIX.RESET_PASSWORD + email, verificationCode);
-
             sysUser.setPassword(encodePassword(newPassword);
             updatePassword(sysUser);
             return new Resp.Builder<String>().setData("修改成功").ok();
@@ -232,7 +198,6 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     public Resp<String> queryEmailDoesItExist(String email) {
         SysUser user = sysUserDao.queryByEmail(email);
@@ -242,7 +207,6 @@ public class UserServiceImpl implements UserService {
         }
         return new Resp.Builder<String>().ok();
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateUserInfo(SysUser sysUser) {
@@ -257,7 +221,6 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.SYS_ERROR.getCode(), SysConstantEnum.SYS_ERROR.getValue(), e.getMessage();
         }
     }
-
     @Override
     public Resp<SysUser> queryUserInfo() {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
@@ -265,27 +228,22 @@ public class UserServiceImpl implements UserService {
         sysUser.setPassword("");
         return new Resp.Builder<SysUser>().setData(sysUser).ok();
     }
-
     @Override
-    public Resp<List&lt;SysProjectPermissionDto>> queryUserPermissions() {
+    public Resp<List<SysProjectPermissionDto>> queryUserPermissions() {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
-        return new Resp.Builder<List&lt;SysProjectPermissionDto>>().setData(userLoginInfo.getPermissions().ok();
+        return new Resp.Builder<List<SysProjectPermissionDto>>().setData(userLoginInfo.getPermissions().ok();
     }
-
     @Override
-    public Resp<List&lt;SubUserDto>> queryByNameSubUsers(String subUserName) {
-        List&lt;SubUserDto> subUserDtos = CollUtil.newArrayList();
-//        List&lt;SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
-        return new Resp.Builder<List&lt;SubUserDto>>().setData(subUserDtos).totalSize(subUserDtos.size().ok();
+    public Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName) {
+        List<SubUserDto> subUserDtos = CollUtil.newArrayList();
+//        List<SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
+        return new Resp.Builder<List<SubUserDto>>().setData(subUserDtos).totalSize(subUserDtos.size().ok();
     }
-
     @Override
     public Resp<String> deleteUserById(String id) {
         //删除平台用户并删除子用户
-
         return Result.deleteResult(sysUserDao.deleteById(id);
     }
-
     /**
      * 验证密码是否符合规则
      *
@@ -304,7 +262,6 @@ public class UserServiceImpl implements UserService {
             }
         }
     }
-
     /**
      * 验证邮箱验证码
      *
@@ -319,7 +276,6 @@ public class UserServiceImpl implements UserService {
         }
         bucket.delete();
     }
-
     /**
      * 更新密码
      *
@@ -331,7 +287,6 @@ public class UserServiceImpl implements UserService {
             throw new BizException(SysConstantEnum.FAILED.getCode(), SysConstantEnum.FAILED.getValue();
         }
     }
-
     /**
      * 密码加密
      *
@@ -341,14 +296,13 @@ public class UserServiceImpl implements UserService {
     private String encodePassword(String password) {
         return jwtUserServiceImpl.encryptPassword(password);
     }
-
     @Override
     public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
         if (StringUtils.isEmpty(activateAccountDto.getEmail() {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue();
         }
         //检查数据库是否已存在用户
-        List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail();
+        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail();
         if (sysUsers.isEmpty() {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue();
         }
@@ -359,12 +313,10 @@ public class UserServiceImpl implements UserService {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REPASSWORD_ERROR.getCode(), SysConstantEnum.REPASSWORD_ERROR.getValue();
             }
         }
-
         PasswordCheckerUtil passwordChecker = new PasswordCheckerUtil();
         if (!passwordChecker.check(activateAccountDto.getPassword() {
             throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue();
         }
-
         //激活账号
         if (activation.equals(OneConstant.PASSWORD.ACTIVATION) {
             sysUser.setActiveState(OneConstant.ACTIVE_STATUS.TRIAL);
@@ -374,14 +326,12 @@ public class UserServiceImpl implements UserService {
             long time = activitiDate.getTime() + firstTime * 24 * 60 * 60 * 1000;
             sysUser.setExpireDate(new Date(time);
             String userId = sysUser.getId();
-
             // TODO 如果OpenProjectByDefaultId为空，代表这个是注册的激活
 //            SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
 //            if (subUserProject == null || StringUtils.isEmpty(subUserProject.getOpenProjectByDefaultId() {
-
             QueryWrapper<SysUserProject> query = Wrappers.query();
             query.eq("user_id", userId);
-            List&lt;SysUserProject> userProjects = sysUserProjectDao.selectList(query);
+            List<SysUserProject> userProjects = sysUserProjectDao.selectList(query);
             if (userProjects.isEmpty() {
 //                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
 //                userUseOpenProject.setProjectId(project.getId();
@@ -393,7 +343,6 @@ public class UserServiceImpl implements UserService {
 //                subUserProject.setProjectId(project.getId();
 //                subUserProject.setOpenProjectByDefaultId(project.getId();
 //                subUserProjectDao.insert(subUserProject);
-
                 Project project = new Project();
                 project.setUserId(userId);
                 project.setTitle("初始化项目");
@@ -402,20 +351,15 @@ public class UserServiceImpl implements UserService {
                 project.setUpdateTime(new Date();
                 project.setReportToName(sysUser.getUserName();
                 projectService.initProject(project, null);
-
                 SysUserProject sysUserProject = new SysUserProject();
                 sysUserProject.setUserId(new BigInteger(userId);
                 sysUserProject.setProjectId(new BigInteger(project.getId();
                 sysUserProject.setIsDefault(1);
                 sysUserProjectDao.insert(sysUserProject);
-
                 this.initOrder(userId);
-
                 // 2022/11/1 WangYiCheng 设置创始人初始项目的默认function
                 RoleFunction roleFunction = roleFunctionDao.queryByRoleId(sysUser.getSysRoleId();
-
                 SysRole sysRole = sysRoleDao.queryById(String.valueOf(sysUser.getSysRoleId();
-
                 SysUserBusiness sysUserBusiness = new SysUserBusiness();
                 sysUserBusiness.setType("RoleFunctions");
                 sysUserBusiness.setValue(roleFunction.getCheckFunctionId();
@@ -425,13 +369,11 @@ public class UserServiceImpl implements UserService {
                 sysUserBusiness.setUserName(sysUser.getUserName();
                 sysUserBusiness.setRoleId(Long.valueOf(sysUser.getSysRoleId();
                 sysUserBusiness.setRoleName(sysRole.getRoleName();
-
                 sysUserBusiness.setProjectId(Long.valueOf(project.getId();
                 sysUserBusiness.setProjectName(project.getTitle();
                 sysUserBusinessDao.insertSelective(sysUserBusiness);
             }
         }
-
         //申请延期
         if (activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION) {
             int activitiNumber = sysUser.getActivitiNumber() == null ? 0 : sysUser.getActivitiNumber();
@@ -448,10 +390,8 @@ public class UserServiceImpl implements UserService {
         if (sysUserDao.update(sysUser) == 0) {
             throw new BizException(SysConstantEnum.UPDATE_FAILED.getCode(), SysConstantEnum.UPDATE_FAILED.getValue();
         }
-
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue();
     }
-
     /**
      * 初始化订单
      *
@@ -467,29 +407,22 @@ public class UserServiceImpl implements UserService {
         sysUserOrder.setOrderId(orderId);
         String apiCall = systemConfigService.getDateForKeyAndGroup("apiCall", OneConstant.SystemConfigGroup.INITORDER);
         sysUserOrder.setApiCall(apiCall);
-
         String dataStrorage = systemConfigService.getDateForKeyAndGroup("dataStrorage", OneConstant.SystemConfigGroup.INITORDER);
         sysUserOrder.setDataStrorage(dataStrorage);
-
         String subScription = systemConfigService.getDateForKeyAndGroup("subScription", OneConstant.SystemConfigGroup.INITORDER);
         sysUserOrder.setSubScription(subScription);
-
         String serviceDuration = systemConfigService.getDateForKeyAndGroup("serviceDuration", OneConstant.SystemConfigGroup.INITORDER);
         sysUserOrder.setServiceDuration(serviceDuration);
-
         String originalPrice = systemConfigService.getDateForKeyAndGroup("originalPrice", OneConstant.SystemConfigGroup.INITORDER);
         sysUserOrder.setOriginalPrice(new BigDecimal(originalPrice);
-
         String currentPrice = systemConfigService.getDateForKeyAndGroup("currentPrice", OneConstant.SystemConfigGroup.INITORDER);
         sysUserOrder.setCurrentPrice(new BigDecimal(currentPrice);
-
         sysUserOrder.setUserId(userId);
         userOrderService.insertOrder(sysUserOrder);
     }
-
     @Override
     public Resp<String> forgetThePassword(String email) {
-        List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
         if (sysUsers.isEmpty() {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue();
         }
@@ -497,7 +430,6 @@ public class UserServiceImpl implements UserService {
         Integer activeState = sysUser.getActiveState();
         if (OneConstant.ACTIVE_STATUS.TRIAL_EXPIRED.equals(activeState) {
             return new Resp.Builder<String>().buildResult("400", "账户试用已过期");
-
         } else if (OneConstant.ACTIVE_STATUS.ACTIVE_FAILED.equals(activeState) || OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(activeState) {
             return new Resp.Builder<String>().buildResult("400", "请先去激活账户");
         }
@@ -507,12 +439,10 @@ public class UserServiceImpl implements UserService {
         mailService.sendSimpleMail(email, "OneClick忘记密码", "http://127.0.0.1:9529/#/findpwd?email=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue();
     }
-
     @Override
     public Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto) {
         return activateAccount(activateAccountDto, OneConstant.PASSWORD.FORGETPASSWORD);
     }
-
     @Override
     public Resp<String> applyForAnExtension(String email) {
         // 这里需要检测用户一些信息
@@ -530,18 +460,15 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.TRIALER_LIMIT.getCode(),;
                 SysConstantEnum.TRIALER_LIMIT.getValue(), HttpStatus.BAD_REQUEST.value();
         }
-
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
         mailService.sendSimpleMail(email, "OneClick申请延期", "http://43.139.159.146/#/deferred?email=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue();
     }
-
     @Override
     public Resp<String> applyForAnExtensionIn(ActivateAccountDto activateAccountDto) {
         return activateAccount(activateAccountDto, OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION);
     }
-
     /**
      * 管理员生成token
      *
@@ -554,9 +481,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Resp<SysUserToken> makeToken(SysUserTokenDto sysUserTokenDto) {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
-
         String token = RandomUtil.randomString(50);
-
         SysUserToken sysUserToken = new SysUserToken();
         sysUserToken.setUserId(userLoginInfo.getSysUser().getId();
         String tokenName = sysUserTokenDto.getTokenName();
@@ -571,20 +496,15 @@ public class UserServiceImpl implements UserService {
         sysUserToken.setStatus(false);
         sysUserToken.setApiTimes(0L);
         sysUserToken.setCreateId(userLoginInfo.getSysUser().getId();
-
-
         RBucket<Object> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + tokenName);
         if (bucket.isExists() {
             bucket.delete();
         }
         bucket.set(JSON.toJSONString(userLoginInfo);
         bucket.expire(datePoor3, TimeUnit.MINUTES);
-
-
         sysUserTokenDao.insert(sysUserToken);
         return new Resp.Builder<SysUserToken>().setData(sysUserToken).ok();
     }
-
     /**
      * 获取生成的token列表
      *
@@ -594,12 +514,11 @@ public class UserServiceImpl implements UserService {
      * @Date: 2021/11/10
      */
     @Override
-    public Resp<List&lt;SysUserToken>> listTokens() {
+    public Resp<List<SysUserToken>> listTokens() {
         AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
-        List&lt;SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(userLoginInfo.getSysUser().getId();
-        return new Resp.Builder<List&lt;SysUserToken>>().setData(sysUserTokens).ok();
+        List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(userLoginInfo.getSysUser().getId();
+        return new Resp.Builder<List<SysUserToken>>().setData(sysUserTokens).ok();
     }
-
     /**
      * 删除token
      *
@@ -614,7 +533,6 @@ public class UserServiceImpl implements UserService {
         int primaryKey = sysUserTokenDao.deleteByPrimaryKey(tokenId);
         return new Resp.Builder<String>().setData(primaryKey == 1 ? "删除成功" : "删除失败").ok();
     }
-
     /**
      * 获取用户账号信息
      *
@@ -626,33 +544,30 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Boolean getUserAccountInfo(String emailId, String token) {
-        List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(emailId);
+        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(emailId);
         SysUser sysUser;
         if (sysUsers.isEmpty() {
             return false;
         }
         sysUser = sysUsers.get(0);
-
         //如果不是平台管理人员，则是子账号
         /*if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT) {
             //查询是否有权限
             SysUser parentUser = sysUserDao.queryById(sysUser.getParentId().toString();
-            List&lt;SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId();
+            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId();
             if (sysUserTokens.isEmpty() {
                 return false;
             }
             for (SysUserToken sysUserToken : sysUserTokens) {
-
                 if (sysUserToken.getApi_times() > 0) {
                     sysUserTokenDao.decreaseApiTimes(sysUserToken.getId();
                 }
-
             }
             return true;
         } else */
         {
             //主账号
-            List&lt;SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
+            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
             if (sysUserTokens.isEmpty() {
                 return false;
             }
@@ -664,7 +579,6 @@ public class UserServiceImpl implements UserService {
         }
         return true;
     }
-
     @Override
     public Resp<String> verifyLinkString(String linkStr) {
         RBucket<String> bucket = redisClient.getBucket(linkStr);
@@ -675,24 +589,22 @@ public class UserServiceImpl implements UserService {
         bucket.delete();
         return new Resp.Builder<String>().ok();
     }
-
     /**
      * 查询用户和子用户
      *
      * @param masterId
      * @Param: [masterId]
-     * @return: java.util.List&lt;com.hu.oneclick.model.entity.SysUser>
+     * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>
      * @Author: MaSiyi
      * @Date: 2021/12/15
      */
     @Override
-    public List&lt;SysUser> queryByUserIdAndParentId(String masterId) {
+    public List<SysUser> queryByUserIdAndParentId(String masterId) {
         SysUser sysUser = new SysUser();
         sysUser.setId(masterId);
 //        sysUser.setParentId(Long.valueOf(masterId);
         return sysUserDao.queryAllIdOrParentId(sysUser);
     }
-
     /**
      * 返回用户的激活次数
      *
@@ -707,7 +619,6 @@ public class UserServiceImpl implements UserService {
         SysUser sysUser = sysUserDao.queryByEmail(email);
         return new Resp.Builder<String>().setData(String.valueOf(sysUser.getActivitiNumber().ok();
     }
-
     /**
      * @param projectId 项目id
      * @return Resp<List < Map < String, Object>>>
@@ -716,8 +627,8 @@ public class UserServiceImpl implements UserService {
      * @createTime 2022/12/24 19:56
      */
     @Override
-    public Resp<List&lt;Map&lt;String, Object>>> listUserByProjectId(Long projectId) {
-        List&lt;Map&lt;String, Object>> list = sysUserDao.listUserByProjectId(projectId);
-        return new Resp.Builder<List&lt;Map&lt;String, Object>>>().setData(list).ok();
+    public Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId) {
+        List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
+        return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
     }
 }

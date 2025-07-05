@@ -7,21 +7,15 @@ import java.util.List;
  */
 @Data
 public class ViewScopeChildParams implements Serializable {
-
     private String filedName;
-
     private String filedNameCn;
-
     private String type;
-
     /**
      * 下边几个参数，下拉选项框使用
      */
     private List&lt;ViewScopeChildParams> selectChild;
     private String optionValue;
     private String optionValueCn;
-
-
 }
 }
 }

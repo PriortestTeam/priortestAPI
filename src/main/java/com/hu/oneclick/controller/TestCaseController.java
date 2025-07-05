@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.page.BaseController;
 import com.hu.oneclick.model.base.Resp;
@@ -12,7 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +18,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.bean.BeanUtil;
-
 /**
  * @author qingyang
  */
@@ -29,12 +26,9 @@ import cn.hutool.core.bean.BeanUtil;
 @Tag(name = "测试用例", description = "测试用例相关接口");
 @Slf4j
 
-
 public class TestCaseController extends BaseController {
-
     @Resource
     private TestCaseService testCaseService;
-
     @Operation(summary = "获取测试用例列表");
     @PostMapping("/list");
     public Resp<PageInfo<TestCase>> list(@RequestBody Map<String, Object> param,
@@ -43,12 +37,10 @@ public class TestCaseController extends BaseController {
         // 优先使用 URL 参数，如果没有则使用请求体参数
         int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString() : 1);
         int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString() : 20);
-
         // 添加调试日志
         log.info("TestCaseController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
         log.info("TestCaseController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize");
         log.info("TestCaseController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
-
         // 3. 子视图字段过滤参数
         if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName") {
             String fieldNameEn = param.get("fieldNameEn").toString();
@@ -75,7 +67,6 @@ public class TestCaseController extends BaseController {
             return new Resp.Builder<PageInfo<TestCase>>().fail();
         }
     }
-
     @Operation(summary = "新增测试用例");
     @PostMapping("/save");
     public Resp<?> save(@RequestBody @Validated TestCaseSaveDto dto) {
@@ -87,7 +78,6 @@ public class TestCaseController extends BaseController {
             return new Resp.Builder<TestCase>().fail();
         }
     }
-
     @Operation(summary = "修改测试用例");
     @PutMapping("/update");
     public Resp<?> update(@RequestBody @Validated TestCaseSaveDto dto) {
@@ -99,15 +89,12 @@ public class TestCaseController extends BaseController {
             return new Resp.Builder<TestCase>().fail();
         }
     }
-
     @Operation(summary = "获取测试用例列表");
     @GetMapping("/info/{id}");
     public Resp<TestCase> info(@PathVariable Long id) {
         TestCase testCase = testCaseService.info(id);
         return new Resp.Builder<TestCase>().setData(testCase).ok();
     }
-
-
     @Operation(summary = "复制测试用例");
     @PostMapping("/clone");
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
@@ -119,20 +106,17 @@ public class TestCaseController extends BaseController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @Operation(summary = "获取测试用例列表");
     @GetMapping("/testCaseSearch");
     public  Resp<List<TestCase>> testCaseSearch(@RequestParam  Long projectId, @RequestParam String title) {
         List<TestCase> testCaseList = testCaseService.testCaseSearch(projectId,title);
         return new Resp.Builder<List<TestCase>>().setData(testCaseList).ok();
     }
-
     @Operation(summary = "删除测试用例");
     @DeleteMapping("/delete/{id}");
     public Resp<?> delete(@PathVariable Long id) {
        return testCaseService.removeAndChild(id);
     }
-
 }
 }
 }

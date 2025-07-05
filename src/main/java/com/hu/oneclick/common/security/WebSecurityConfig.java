@@ -1,5 +1,4 @@
 package com.hu.oneclick.common.security;
-
 import com.hu.oneclick.common.security.handler.HttpStatusLoginSuccessHandler;
 import com.hu.oneclick.common.security.handler.HttpStatusLogoutSuccessHandler;
 import com.hu.oneclick.common.security.handler.JsonLoginSuccessHandler;
@@ -35,7 +34,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +43,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-
 /**
  * @author qingyang
  */
@@ -53,49 +50,35 @@ import java.util.Map;
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true);
 
-
 public class WebSecurityConfig {
-
     @Autowired
     private JwtRefreshSuccessHandler jwtRefreshSuccessHandler;
-
     @Autowired
     private HttpStatusLoginSuccessHandler httpStatusLoginSuccessHandler;
-
     @Autowired
     private HttpStatusLogoutSuccessHandler httpStatusLogoutSuccessHandler;
-
     @Autowired
     private UserDetailsService userDetailsService;
-
     @Autowired
     private JsonLoginSuccessHandler jsonLoginSuccessHandler;
-
     @Autowired
     private JwtAuthenticationProvider jwtAuthenticationProvider;
-
     @Autowired
     private ApplicationContext applicationContext;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private SysUserTokenDao sysUserTokenDao;
-
     @Autowired
     private RedissonClient redisClient;
-
     @PostConstruct
     public void checkJwtProvider() {
         System.out.println(">>> JwtAuthenticationProvider 注入结果: " + jwtAuthenticationProvider);
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -110,7 +93,6 @@ public class WebSecurityConfig {
         );
         return provider;
     }
-
     @Bean
     public AuthenticationManager authenticationManager() {
         return new ProviderManager(Arrays.asList(
@@ -118,7 +100,6 @@ public class WebSecurityConfig {
             jwtAuthenticationProvider
         );
     }
-
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter();
@@ -128,21 +109,17 @@ public class WebSecurityConfig {
         // 不在这里设置白名单，而是在请求匹配器中处理
         return filter;
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println(">>> 配置SecurityFilterChain");
-
         // Configure custom authentication filters
         MyUsernamePasswordAuthenticationFilter jsonAuthFilter = new MyUsernamePasswordAuthenticationFilter();
         jsonAuthFilter.setAuthenticationSuccessHandler(jsonLoginSuccessHandler);
         jsonAuthFilter.setAuthenticationFailureHandler(new HttpStatusLoginFailureHandler();
         jsonAuthFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy();
         jsonAuthFilter.setAuthenticationManager(authenticationManager();
-
         // Get the JWT filter from the Spring context
         JwtAuthenticationFilter jwtAuthFilter = jwtAuthenticationFilter();
-
         // @formatter:off
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()
@@ -203,11 +180,9 @@ public class WebSecurityConfig {
                 .frameOptions(frame -> frame.deny()
                 .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'");
         // @formatter:on
-
         System.out.println(">>> SecurityFilterChain配置完成");
         return http.build();
     }
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -216,7 +191,6 @@ public class WebSecurityConfig {
         configuration.setAllowedHeaders(Collections.singletonList("*");
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

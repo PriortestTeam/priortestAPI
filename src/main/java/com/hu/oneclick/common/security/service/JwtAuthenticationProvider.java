@@ -1,5 +1,4 @@
 package com.hu.oneclick.common.security.service;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -12,23 +11,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Component;
-
 import java.util.Calendar;
-
 /**
  * @author qingyang
  */
 @Component
 
-
 public class JwtAuthenticationProvider implements AuthenticationProvider {
-
 	private final JwtUserServiceImpl userService;
-
 	public JwtAuthenticationProvider(JwtUserServiceImpl userService) {
 		this.userService = userService;
 	}
-
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		DecodedJWT jwt = ((JwtAuthenticationToken)authentication).getToken();
@@ -52,12 +45,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         }
 		return new JwtAuthenticationToken(user, jwt, user.getAuthorities();
 	}
-
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return JwtAuthenticationToken.class.isAssignableFrom(authentication);
 	}
-
 }
 }
 }

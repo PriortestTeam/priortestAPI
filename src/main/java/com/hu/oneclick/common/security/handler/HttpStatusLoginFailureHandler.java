@@ -1,5 +1,4 @@
 package com.hu.oneclick.common.security.handler;
-
 import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -15,14 +14,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
-
 /**
  * @author qingyang
  */
 
-
 public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandler {
-
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException {
@@ -50,6 +46,4 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		}
 		response.getWriter().write(result);
 	}
-
-
 }

@@ -1,5 +1,4 @@
 package com.hu.oneclick.common.security.handler;
-
 import com.alibaba.fastjson2.JSON;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -8,27 +7,21 @@ import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 /**
  * @author qingyang
  */
 @Component
 
-
 public class JsonLoginSuccessHandler implements AuthenticationSuccessHandler {
-
     private final JwtUserServiceImpl jwtUserServiceImpl;
-
     public JsonLoginSuccessHandler(JwtUserServiceImpl jwtUserServiceImpl) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
     }
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
@@ -41,7 +34,6 @@ public class JsonLoginSuccessHandler implements AuthenticationSuccessHandler {
         String s = JSON.toJSONString(ok);
         response.getWriter().write(s);
     }
-
 }
 }
 }

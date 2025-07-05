@@ -1,5 +1,4 @@
 package com.hu.oneclick.common.validator.group;
-
 /**
  * @ClassName AddGroup.java
  * @Description

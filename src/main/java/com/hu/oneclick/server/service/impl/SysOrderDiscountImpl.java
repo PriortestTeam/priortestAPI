@@ -24,7 +24,6 @@ import java.util.Map;
  */
 @Service
 public class SysOrderDiscountImpl implements SysOrderDiscountService {
-
     @Autowired
     private SysOrderDiscountDao sysOrderDiscountDao;
     @Autowired
@@ -33,7 +32,6 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
     private JwtUserServiceImpl jwtUserService;
     @Autowired
     private SysUserReferenceService sysUserReferenceService;
-
     /**
      * 计算折扣
      *
@@ -44,8 +42,7 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
      * @Date: 2021/10/14
      */
     @Override
-    public Resp<Map&lt;String, BigDecimal>> calculateOrderPrice(SysOrderDiscountDto sysOrderDiscountDto) {
-
+    public Resp<Map<String, BigDecimal>> calculateOrderPrice(SysOrderDiscountDto sysOrderDiscountDto) {
         sysOrderDiscountDto.verify();
         //根据所选的选出折扣表里面的基础折扣
         String normalDiscountFlag = systemConfigService.getDateForKeyAndGroup("NormalDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
@@ -68,10 +65,8 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         //根据推荐表里面获取当前的推荐人折扣
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
         Date[] monthLimit = DateUtil.getMonthLimit(new Date();
-
         BigDecimal allReferenceDiscount = this.getReferenceDiscount(sysUser, monthLimit[0], monthLimit[1]);
         currentPrice = currentPrice.subtract(currentPrice.multiply(allReferenceDiscount);
-
         //如果特别折扣开关为打开
         String specialDiscount = systemConfigService.getDateForKeyAndGroup("SpecialDiscount", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         if (OneConstant.SystemConfigStatus.ON.equals(specialDiscount) {
@@ -95,10 +90,10 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
             String flashDiscountNu = systemConfigService.getDateForKeyAndGroup("FlashDiscount", OneConstant.SystemConfigGroup.FLASHDISCOUNT);
             currentPrice = currentPrice.subtract(currentPrice.multiply(new BigDecimal(flashDiscountNu);
         }
-        Map&lt;String, BigDecimal> map = new HashMap&lt;>(3);
+        Map<String, BigDecimal> map = new HashMap<>(3);
         map.put("originalPrice", allPrice);
         map.put("currentPrice",currentPrice.setScale(2, RoundingMode.HALF_UP);
-        return new Resp.Builder<Map&lt;String, BigDecimal>>().setData(map).ok();
+        return new Resp.Builder<Map<String, BigDecimal>>().setData(map).ok();
     }
     /** 计算推荐折扣
      * @Param:
@@ -113,7 +108,6 @@ public class SysOrderDiscountImpl implements SysOrderDiscountService {
         String referencedTime = systemConfigService.getDateForKeyAndGroup("ReferencedTime", OneConstant.SystemConfigGroup.SYSTEMCONFIG);
         BigDecimal referenceTimeCountDiscountGg;
         if (OneConstant.SystemConfigStatus.ON.equals(referencedTime) {
-
             int referenceTimeCount = sysUserReferenceService.getReferenceTime(sysUser,startTime,endTime);
             String referenceTimeCountDiscount = systemConfigService
                     .getDateForKeyAndGroup(String.valueOf(referenceTimeCount), OneConstant.SystemConfigGroup.REFERENCETIME);

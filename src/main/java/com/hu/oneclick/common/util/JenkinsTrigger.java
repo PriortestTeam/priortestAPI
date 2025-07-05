@@ -5,7 +5,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 /* Trigger builds remotely in JenkinsCI with Java Example */
 public class JenkinsTrigger {
-
   public static void main(String[] args) throws Exception {
     /* Prepend credentials to fix the Jenkins remote build 403 error */
     String JENKINS_URL = "http://user:gNouIkl2ca1t@54.226.181.123/job/RemoteTriggerExample/build?token=abc-123";

@@ -1,17 +1,14 @@
 package com.hu.oneclick.model.domain.dto;
-
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
-
 /**
  * 测试周期DTO
  *
@@ -22,15 +19,11 @@ import java.util.Date;
 @Getter
 @Schema(description = "测试周期DTO");
 
-
 public class TestCycleSaveDto implements Serializable {
-
     private static final long serialVersionUID = 3621834190197699211L;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING);
     @Schema(description = "主键id");
     private Long id;
-
     /**
      * 项目id
      */
@@ -157,7 +150,6 @@ public class TestCycleSaveDto implements Serializable {
      */
     @Schema(description = "自定义字段值");
     private JSONObject customFieldDatas;
-
 }
 }
 }

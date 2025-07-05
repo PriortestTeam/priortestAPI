@@ -45,71 +45,52 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "测试周期", description = "测试周期相关接口")
 @Slf4j
 public class TestCycleController extends BaseController {
-
     @Resource
     private TestCycleService testCycleService;
-
     @Resource
     private TestCaseService testCaseService;
-
     @Resource
     private TestCycleJoinTestCaseService testCycleJoinTestCaseService;
-
     private TestCycleTcService testCycleTcService;
-
     @Autowired
     public void setTestCycleTcService(TestCycleTcService testCycleTcService) {
         this.testCycleTcService = testCycleTcService;
     }
-
 //    @GetMapping("queryById/{id}")
 //    @Operation(summary="查询测试周期")
 //    public Resp<TestCycle> queryById(@PathVariable String id) {
 //        return testCycleService.queryById(id);
 //    }
-
-
 //    @PostMapping("queryList")
 //    public Resp<List<TestCycle>> queryList(@RequestBody TestCycleDto testCycle) {
 //        return testCycleService.queryList(testCycle);
 //    }
-
 //    @PostMapping("insert")
 //    @Operation(summary="测试周期")
 //    public Resp<String> insert(@RequestBody TestCycle testCycle) {
 //        return testCycleService.insert(testCycle);
 //    }
-
 //    @PostMapping("update")
 //    public Resp<String> update(@RequestBody TestCycle testCycle) {
 //        return testCycleService.update(testCycle);
 //    }
-
 //    @DeleteMapping("delete/{id}")
 //    public Resp<String> delete(@PathVariable String id) {
 //        return testCycleService.delete(id);
 //    }
-
-
-
-
-
 //    @Page
 //    @PostMapping("queryBindCaseList")
 //    public  Resp<List<TestCase>> queryBindCaseList(@RequestParam String testCycleId) {
 //        return testCycleService.queryBindCaseList(testCycleId);
 //    }
-
 //    @PostMapping("executeTestCase")
 //    public Resp<String> executeTestCase(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
 //        return testCycleService.executeTestCase(executeTestCaseDto);
 //    }
-
 //    @PostMapping("bindCaseInsert")
 //    public Resp<String> bindCaseInsert(@RequestBody TestCycleJoinTestCase testCycleJoinTestCase) {
 //        return testCycleService.bindCaseInsert(testCycleJoinTestCase);
 //    }
-
 //    @DeleteMapping("bindCaseDelete/{id}")
 //    public Resp<String> bindCaseDelete(@PathVariable String id) {
 //        return testCycleService.bindCaseDelete(id);
@@ -120,39 +101,32 @@ public class TestCycleController extends BaseController {
         System.out.println(executeTestCaseDto.getTestCaseId();
         return testCycleTcService.runTestCycleTc(executeTestCaseDto);
     }
-
     @PostMapping("caseRun/execute")
     public Resp<PageInfo<Object>> runExecuteTestCase(@RequestBody ExecuteTestCaseRunDto executeTestCaseRunDto) {
         return testCycleTcService.runExecuteTestCase(executeTestCaseRunDto);
     }
-
     @PostMapping("caseRun/testCase")
     public Resp<String> runTestCase(@RequestBody TestCaseRunDto testCaseRunDto) throws ParseException {
         return testCycleTcService.runTestCase(testCaseRunDto);
     }
-
 //    @PostMapping("excute")
 //    public Resp<Map<String,Object>> excute(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
 //        return testCycleService.excute(executeTestCaseDto);
 //    }
-
 //    @PostMapping("mergeIssue")
 //    public Resp<String> mergeIssue(@RequestBody Issue issue) {
 //        return testCycleService.mergeIssue(issue);
 //    }
-
 //    @PostMapping("queryIssueByIdOrName")
 //    public Resp<Map<String, Object>> queryIssueByIdOrName(@RequestBody Issue issue) {
 //        return testCycleService.queryIssueByIdOrName(issue);
 //    }
 //    /* WJK新增 END*/
-
 //    @PostMapping("addSchedule")
 //    @Schema(description = "添加计划")
 //    public Resp<String> addSchedule(@RequestBody TestCycleScheduleModel model) {
 //        return testCycleService.addSchedule(model);
 //    }
-
     @Operation(summary="列表")
     @PostMapping("/list")
     public Resp<PageInfo<TestCycle>> list(@RequestBody Map<String, Object> param,
@@ -161,12 +135,10 @@ public class TestCycleController extends BaseController {
         // 优先使用 URL 参数，如果没有则使用请求体参数
         int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString() : 1);
         int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString() : 20);
-
         // 添加调试日志
         log.info("TestCycleController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
         log.info("TestCycleController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize");
         log.info("TestCycleController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
-
         // 3. 子视图字段过滤参数
         if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName") {
             String fieldNameEn = param.get("fieldNameEn").toString();
@@ -195,7 +167,6 @@ public class TestCycleController extends BaseController {
             return new Resp.Builder<PageInfo<TestCycle>>().fail();
         }
     }
-
     @Operation(summary="新增")
     @PostMapping("/saveTestCycle")
     public Resp<?> save(@RequestBody @Validated TestCycleSaveDto dto) {
@@ -211,7 +182,6 @@ public class TestCycleController extends BaseController {
             return new Resp.Builder<TestCycle>().fail();
         }
     }
-
     @Operation(summary="修改")
     @PutMapping("/updateTestCycle")
     public Resp<?> update(@RequestBody @Validated TestCycleSaveDto dto) {
@@ -227,14 +197,12 @@ public class TestCycleController extends BaseController {
             return new Resp.Builder<TestCycle>().fail();
         }
     }
-
     @Operation(summary="详情")
     @GetMapping("/info/{id}")
     public Resp<TestCycle> info(@PathVariable Long id) {
         TestCycle testCycle = testCycleService.info(id);
         return new Resp.Builder<TestCycle>().setData(testCycle).ok();
     }
-
     @Operation(summary="删除")
     @DeleteMapping("/deleteTestCycle/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
@@ -246,7 +214,6 @@ public class TestCycleController extends BaseController {
         }
         return new Resp.Builder<TestCycle>().ok();
     }
-
     @Operation(summary="克隆")
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
@@ -258,7 +225,6 @@ public class TestCycleController extends BaseController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @Operation(summary="列表")
     @PostMapping("/instance/listByTestCycle")
     public Resp<PageInfo<TestCaseBisDto>> listByTestCycle(@RequestBody TestCycleParam param) {
@@ -278,8 +244,6 @@ public class TestCycleController extends BaseController {
         startPage();
         return new Resp.Builder<PageInfo<TestCaseBisDto>>().setData(PageInfo.of(testCaseAllByCycleId).ok();
     }
-
-
     @Operation(summary="绑定测试用例到测试周期")
     @PostMapping("/instance/saveInstance")
     public Resp<?> saveInstance(
@@ -294,7 +258,6 @@ public class TestCycleController extends BaseController {
             return new Resp.Builder<TestCycleJoinTestCase>().fail();
         }
     }
-
     @Operation(summary="删除测试周期绑定的测试用例")
     @DeleteMapping("/instance/deleteInstance")
     public Resp<?> deleteInstance(
@@ -310,9 +273,6 @@ public class TestCycleController extends BaseController {
         }
         return new Resp.Builder<Boolean>().ok();
     }
-
-
-
 }
 }
 }

@@ -1,26 +1,19 @@
 package com.hu.oneclick.model.base;
-
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import org.springframework.http.HttpStatus;
-
 import java.util.List;
-
 /**
  * @author qingyang
  */
 
-
 public class Resp<T> {
-
     private String code;
     private String msg;
     private Long total;
     private int httpCode;
     private T data;
-
     public Resp(){}
-
     public Resp(Builder<T> builder) {
         this.code = builder.code;
         this.msg = builder.msg;
@@ -28,15 +21,12 @@ public class Resp<T> {
         this.total = builder.total;
         this.httpCode = builder.httpCode;
     }
-
     public static class  Builder<T> {
         private String code;
         private String msg;
         private Long total;
         private int httpCode;
         private T data;
-
-
         public Builder() {
         }
         public Resp<T> buildResult(String code,String msg){
@@ -50,14 +40,12 @@ public class Resp<T> {
             this.data = data;
             return new Resp<T>(this);
         }
-
         public Resp<T> buildResult(String code,String msg, int httpCode){
             this.code = code;
             this.msg = msg;
             this.httpCode = httpCode;
             return new Resp<T>(this);
         }
-
         public Resp<T> buildResult(String msg,int i){
             this.code = SysConstantEnum.FAILED.getCode();
             this.msg = msg;
@@ -75,14 +63,12 @@ public class Resp<T> {
             this.httpCode = HttpStatus.OK.value();
             return new Resp<T>(this);
         }
-
         public Resp<T> ok(String code, String msg, int httpCode){
             this.code= code;
             this.msg= msg;
             this.httpCode = httpCode;
             return new Resp<T>(this);
         }
-
         public Resp<T> fail(){
             this.code= SysConstantEnum.FAILED.getCode();
             this.msg= SysConstantEnum.FAILED.getValue();
@@ -97,7 +83,6 @@ public class Resp<T> {
             this.total=total;
             return this;
         }
-
         public Builder<T> total(Object obj){
             List<T> list = (List<T>) obj;
             this.total =  new PageInfo(list).getTotal();
@@ -124,44 +109,33 @@ public class Resp<T> {
             return this;
         }
     }
-
-
     public String getCode() {
         return code;
     }
-
     public void setCode(String code) {
         this.code = code;
     }
-
     public String getMsg() {
         return msg;
     }
-
     public void setMsg(String msg) {
         this.msg = msg;
     }
-
     public Long getTotal() {
         return total;
     }
-
     public void setTotal(Long total) {
         this.total = total;
     }
-
     public T getData() {
         return data;
     }
-
     public void setData(T data) {
         this.data = data;
     }
-
     public int getHttpCode() {
         return httpCode;
     }
-
     public void setHttpCode(int httpCode) {
         this.httpCode = httpCode;
     }

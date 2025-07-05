@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -17,34 +16,27 @@ import com.hu.oneclick.model.param.ProjectManageParam;
 import com.hu.oneclick.server.service.ProjectManageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 /**
  * @Author: jhh
  * @Date: 2023/5/22
  */
 @Service
 @Slf4j
-
-
 public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, ProjectManage> implements ProjectManageService {
     private final JwtUserServiceImpl jwtUserService;
     private final SysUserProjectDao sysUserProjectDao;
-
     public ProjectManageServiceImpl(JwtUserServiceImpl jwtUserService, SysUserProjectDao sysUserProjectDao) {
         this.jwtUserService = jwtUserService;
         this.sysUserProjectDao = sysUserProjectDao;
     }
-
     @Override
-    public List&lt;ProjectManage> listAll(ProjectManageParam param) {
+    public List<ProjectManage> listAll(ProjectManageParam param) {
         param.setRoomId(jwtUserService.getUserLoginInfo().getSysUser().getRoomId();
         return this.list(param.getQueryCondition();
     }
-
     @Override
     public ProjectManage add(ProjectManageSaveDto dto) {
         ProjectManage projectManage = new ProjectManage();
@@ -57,7 +49,6 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
         this.baseMapper.insert(projectManage);
         return projectManage;
     }
-
     @Override
     public ProjectManage edit(ProjectManageSaveDto dto) {
         ProjectManage projectManage = new ProjectManage();
@@ -70,7 +61,6 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
         this.baseMapper.updateById(projectManage);
         return projectManage;
     }
-
     @Override
     public ProjectManage info(Long id) {
         ProjectManage projectManage = baseMapper.selectById(id);
@@ -79,10 +69,9 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
         }
         return projectManage;
     }
-
     @Override
-    public void clone(List&lt;Long> ids) {
-        List&lt;ProjectManage> projectManageList = new ArrayList&lt;>();
+    public void clone(List<Long> ids) {
+        List<ProjectManage> projectManageList = new ArrayList<>();
         for (Long id : ids) {
             ProjectManage projectManage = baseMapper.selectById(id);
             if (projectManage == null) {
@@ -96,7 +85,6 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
         // 批量克隆
         this.saveBatch(projectManageList);
     }
-
     public void delete(Long[] ids) {
         QueryWrapper<SysUserProject> query = Wrappers.query();
         query.eq("is_default", 1).in("project_id", Arrays.asList(ids);
@@ -104,11 +92,9 @@ public class ProjectManageServiceImpl extends ServiceImpl<ProjectManageDao, Proj
         if (count > 0) {
             throw new BaseException("有项目被占用,暂时无法删除");
         }
-
         QueryWrapper<SysUserProject> query2 = Wrappers.query();
         query2.in("project_id", Arrays.asList(ids);
         sysUserProjectDao.delete(query2);
-
         this.removeByIds(Arrays.asList(ids);
     }
 }

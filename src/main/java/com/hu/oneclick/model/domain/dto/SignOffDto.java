@@ -1,15 +1,12 @@
 package com.hu.oneclick.model.domain.dto;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 /**
  * @author 王富贵
  * @version 1.0.0 2021/9/17
  * @since JDK 1.8.0
  */
 @Data
-
 
 public class SignOffDto {
     /**
@@ -48,7 +45,6 @@ public class SignOffDto {
      */
     @Schema(description = "以字符串的形式传递'false','ture'", example = "false");
     private String auto;
-
 }
 }
 }

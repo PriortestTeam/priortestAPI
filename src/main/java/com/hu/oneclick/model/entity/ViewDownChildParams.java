@@ -1,10 +1,7 @@
 package com.hu.oneclick.model.entity;
-
 import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
-
 /**
  * (ViewDownChildParams)实体类
  *
@@ -13,10 +10,8 @@ import java.util.Date;
  */
 @Data
 
-
 public class ViewDownChildParams implements Serializable {
     private static final long serialVersionUID = 848798611045855488L;
-
     private String id;
     /**
      * 作用域
@@ -26,20 +21,11 @@ public class ViewDownChildParams implements Serializable {
      * 下拉框数据
      */
     private String defaultValues;
-
     private Date createTime;
-
     private Date updateTime;
-
     private String projectId;
-
     private String userId;
-
     private Boolean delFlag;
-
-
-
-
 }
 }
 }

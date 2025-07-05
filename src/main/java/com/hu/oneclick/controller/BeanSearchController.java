@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.zhxu.bs.BeanSearcher;
@@ -21,13 +20,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 /**
  * 复杂查询统一管理
  *
@@ -39,9 +36,7 @@ import java.util.Map;
 @Tag(name = "复杂查询统一管理", description = "复杂查询统一管理相关接口");
 @Slf4j
 
-
 public class BeanSearchController {
-
     private static final Logger log = LoggerFactory.getLogger(BeanSearchController.class);
     /**
      * 注入 Map 检索器，它检索出来的数据以 Map 对象呈现
@@ -57,8 +52,6 @@ public class BeanSearchController {
     private ViewService viewService;
     @Resource
     private JwtUserServiceImpl jwtUserService;
-
-
     @Operation(summary = "通用查询");
     @GetMapping("/{scope}/{viewId}");
     public Resp<PageInfo<?>> generalQuery(@Parameter(description = "范围") @PathVariable String scope,
@@ -83,33 +76,25 @@ public class BeanSearchController {
             log.error("获取项目异常");
             return new Resp.Builder<PageInfo<?>>().ok();
         }
-
         List<List<OneFilter>> lst = new ArrayList<>();
-
         // 查询视图
         View view1 = viewService.getById(viewId);
-
         this.processAllFilter(view1, lst);
-
         if (CollUtil.isEmpty(lst) {
             return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(mapSearcher.searchAll(scopeClass, MapUtils.builder().build().ok();
         }
         Map<String, Object> params = this.processParam(lst, projectId);
-
         List<Map<String, Object>> list = mapSearcher.searchAll(scopeClass, params);
         // 物理分页
         return new Resp.Builder<PageInfo<?>>().setData(PageUtil.manualPaging(list).ok();
     }
-
     private Map<String, Object> processParam(List<List<OneFilter>> lst, String projectId){
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("P0.projectId", projectId);
         params.put("P0.projectId-op", "eq");
-
         // 参数增加逻辑关系
         StringBuilder gexpr = new StringBuilder();
         gexpr.append("P0");
-
         int j =0;
         for(List<OneFilter> oneFilters : lst){
             gexpr.append("&(");
@@ -128,18 +113,15 @@ public class BeanSearchController {
             j= j+1;
         }
         params.put("gexpr", gexpr.toString();
-
         return params;
     }
     private void processAllFilter(View view, List<List<OneFilter>> lst){
         if(StringUtils.isNotEmpty(view.getParentId() && view.getLevel() > 0){
             View tempView = viewService.getById(view.getParentId();
             this.processAllFilter(tempView, lst);
-
             lst.add(view.getOneFilters();
         }else{
             lst.add(view.getOneFilters();
         }
     }
-
 }

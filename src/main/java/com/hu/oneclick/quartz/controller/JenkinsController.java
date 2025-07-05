@@ -1,5 +1,4 @@
 package com.hu.oneclick.quartz.controller;
-
 import cn.hutool.core.map.MapUtil;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.quartz.JenkinsManager;
@@ -15,19 +14,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import java.util.Map;
-
 @RestController
 @RequestMapping(value = "/jenkins");
 @Tag(name = "API - jenkins", description = "API - jenkins相关接口");
 @Slf4j
-
-
 public class JenkinsController {
-
     @Resource
     private JenkinsManager jenkinsManager;
-
-
     @Operation(summary = "添加Job");
     @PostMapping(value = "/addJob");
     public Resp<?> addJob(@RequestBody @Validated JenkinsSaveDto dto) {
@@ -39,7 +32,6 @@ public class JenkinsController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "更新Job");
     @PutMapping(value = "/updateJob");
     public Resp<?> updateJob(@RequestBody @Validated JenkinsSaveDto dto) {
@@ -51,7 +43,6 @@ public class JenkinsController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "Job详情");
     @GetMapping(value = "/jobInfo");
     public Resp<?> jobInfo(@RequestParam(value = "jobName") String jobName) {
@@ -63,7 +54,6 @@ public class JenkinsController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @Operation(summary = "获取Job列表");
     @GetMapping(value = "/jobList");
     public Resp<?> jobList() {
@@ -75,7 +65,6 @@ public class JenkinsController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @Operation(summary = "构建Job");
     @PutMapping("/buildJob");
     public Resp<?> buildJob(@RequestBody @Validated JenkinsBuildDto dto) {
@@ -91,7 +80,6 @@ public class JenkinsController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "停止Job");
     @PutMapping("/stopJob");
     public Resp<?> stopJob(@RequestBody @Validated JenkinsOperateDto dto) {
@@ -103,7 +91,6 @@ public class JenkinsController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "删除任务");
     @DeleteMapping("/deleteJob");
     public Resp<?> deleteJob(@RequestBody @Validated JenkinsOperateDto dto) {
@@ -115,7 +102,6 @@ public class JenkinsController {
         }
         return new Resp.Builder<>().ok();
     }
-
 }
 }
 }

@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import lombok.extern.slf4j.Slf4j;
 import cn.hutool.core.bean.BeanUtil;
 import com.github.pagehelper.PageInfo;
@@ -15,11 +14,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 /**
  * @author qingyang
  */
@@ -28,15 +25,11 @@ import java.util.Map;
 @RequestMapping("feature");
 @Slf4j
 
-
 public class FeatureController extends BaseController {
-
     private final FeatureService featureService;
-
     public FeatureController(FeatureService featureService) {
         this.featureService = featureService;
     }
-
     @Operation(summary="列表")
     @PostMapping("/list")
     public Resp<PageInfo<Feature>> list(@RequestBody Map<String, Object> param,
@@ -45,12 +38,10 @@ public class FeatureController extends BaseController {
         // 优先使用 URL 参数，如果没有则使用请求体参数
         int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString()) : 1);
         int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString()) : 20);
-
         // 添加调试日志
         log.info("FeatureController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
         log.info("FeatureController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize"));
         log.info("FeatureController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
-
         // 3. 子视图字段过滤参数
         if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName")) {
             String fieldNameEn = param.get("fieldNameEn").toString();
@@ -79,7 +70,6 @@ public class FeatureController extends BaseController {
             return new Resp.Builder<PageInfo<Feature>>().fail();
         }
     }
-
     @Operation(summary="新增")
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated FeatureSaveDto dto) {
@@ -91,7 +81,6 @@ public class FeatureController extends BaseController {
             return new Resp.Builder<Feature>().fail();
         }
     }
-
     @Operation(summary="修改")
     @PutMapping("/update")
     public Resp<Feature> update(@RequestBody @Validated FeatureSaveDto dto) {
@@ -106,14 +95,12 @@ public class FeatureController extends BaseController {
             return new Resp.Builder<Feature>().fail();
         }
     }
-
     @Operation(summary="详情")
     @GetMapping("/info/{id}")
     public Resp<Feature> info(@PathVariable Long id) {
         Feature feature = this.featureService.info(id);
         return new Resp.Builder<Feature>().setData(feature).ok();
     }
-
     @Operation(summary="删除")
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
@@ -125,8 +112,6 @@ public class FeatureController extends BaseController {
         }
         return new Resp.Builder<Feature>().ok();
     }
-
-
     @Operation(summary="克隆")
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
@@ -138,7 +123,6 @@ public class FeatureController extends BaseController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @Operation(summary="模糊查询故事标题")
     @GetMapping("/getFeatureByTitle")
     public Resp<List<Map<String, String>>> getFeatureByTitle(@RequestParam String title, @RequestParam Long projectId) {
@@ -148,5 +132,4 @@ public class FeatureController extends BaseController {
         }
         return new Resp.Builder<List<java.util.Map<String, String>>>().setData(feature).ok();
     }
-
 }

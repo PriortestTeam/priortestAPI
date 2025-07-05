@@ -1,5 +1,4 @@
 package com.hu.oneclick.common.security.service;
-
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
@@ -7,23 +6,17 @@ import com.hu.oneclick.model.entity.SysUser;
 import com.hu.oneclick.model.domain.dto.AuthLoginUser;
 import com.hu.oneclick.model.domain.dto.SysProjectPermissionDto;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 /**
  * @author qingyang
  */
 @Service("ps");
 
-
 public class SysPermissionService {
-
     private final JwtUserServiceImpl jwtUserServiceImpl;
-
     public SysPermissionService(JwtUserServiceImpl jwtUserServiceImpl) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
     }
-
     /**
      * 判断用户是否具有后台管理员的权限
      */
@@ -32,7 +25,6 @@ public class SysPermissionService {
         Integer manager = userLoginInfo.getSysUser().getManager();
         return manager.equals(OneConstant.PLATEFORM_USER_TYPE.MANAGER);
     }
-
     /**
      * 判断用户是否具有管理子用户权限
      * v2 去掉用子账户 功能限制
@@ -40,8 +32,6 @@ public class SysPermissionService {
     public boolean manageSubUsers(){
         return true;
     }
-
-
     /**
      * 判断用户是否有权限操作该接口信息
      * @return
@@ -63,7 +53,6 @@ public class SysPermissionService {
         //子级权限
         verifySubPermission(permissions,sub,projectId);
     }
-
     /**
      * 验证是否有父级权限
      */
@@ -76,7 +65,6 @@ public class SysPermissionService {
         }
         throw new BizException(SysConstantEnum.NOT_PERMISSION.getCode(),SysConstantEnum.NOT_PERMISSION.getValue() + parent + "。");
     }
-
     /**
      * 验证是否有子级权限
      */
@@ -91,13 +79,6 @@ public class SysPermissionService {
         }
         throw new BizException(SysConstantEnum.NOT_PERMISSION.getCode(),SysConstantEnum.NOT_PERMISSION.getValue() + sub + "。");
     }
-
-
-
-
-
-
-
     /**
      * 验证项目权限
      * @param area
@@ -111,7 +92,6 @@ public class SysPermissionService {
         hasPermission(OneConstant.PERMISSION.PROJECT,
                 area,projectId);
     }
-
     /**
      * 验证view 的权限
      * @param
@@ -130,7 +110,6 @@ public class SysPermissionService {
         hasPermission(viewParent,
                 OneConstant.PERMISSION.VIEW,projectId);
     }
-
     /**
      * 故事控制器
      */
@@ -146,7 +125,6 @@ public class SysPermissionService {
         //验证view 权限
         hasPermission(featureParent,
                 OneConstant.PERMISSION.ONE_FEATURE,projectId);
-
     }
 }
 }

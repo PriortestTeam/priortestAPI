@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import cn.hutool.core.bean.BeanUtil;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
@@ -14,25 +13,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 @Tag(name = "问题管理", description = "问题管理相关接口");
 @RestController
 @RequestMapping("issue");
 @Slf4j
 
-
 public class IssueController extends BaseController {
-
     private final IssueService issueService;
-
     public IssueController(IssueService issueService) {
         this.issueService = issueService;
     }
-
     @Operation(summary = "列表", description = "获取问题列表");
     @PostMapping("/list");
     public Resp<PageInfo<Issue>> list(@RequestBody Map<String, Object> param,
@@ -41,12 +34,10 @@ public class IssueController extends BaseController {
         // 优先使用 URL 参数，如果没有则使用请求体参数
         int pageNum = urlPageNum != null ? urlPageNum : (param.get("pageNum") != null ? Integer.parseInt(param.get("pageNum").toString() : 1);
         int pageSize = urlPageSize != null ? urlPageSize : (param.get("pageSize") != null ? Integer.parseInt(param.get("pageSize").toString() : 20);
-
         // 添加调试日志
         log.info("IssueController.list - URL参数: urlPageNum={}, urlPageSize={}", urlPageNum, urlPageSize);
         log.info("IssueController.list - 请求体参数: param.pageNum={}, param.pageSize={}", param.get("pageNum"), param.get("pageSize");
         log.info("IssueController.list - 最终使用: pageNum={}, pageSize={}", pageNum, pageSize);
-
         // 3. 子视图字段过滤参数
         if (param.containsKey("fieldNameEn") && param.containsKey("value") && param.containsKey("scopeName") {
             String fieldNameEn = param.get("fieldNameEn").toString();
@@ -75,8 +66,6 @@ public class IssueController extends BaseController {
             return new Resp.Builder<PageInfo<Issue>>().fail();
         }
     }
-
-
     @Operation(summary = "新增", description = "新增问题");
     @PostMapping("/save");
     public Resp<?> save(@RequestBody @Validated IssueSaveDto dto) {
@@ -88,7 +77,6 @@ public class IssueController extends BaseController {
             return new Resp.Builder<Issue>().fail();
         }
     }
-
     @Operation(summary = "修改", description = "修改问题");
     @PutMapping("/update");
     public Resp<Issue> update(@RequestBody @Validated IssueSaveDto dto) {
@@ -103,14 +91,12 @@ public class IssueController extends BaseController {
             return new Resp.Builder<Issue>().fail();
         }
     }
-
     @Operation(summary = "详情", description = "获取问题详情");
     @GetMapping("/info/{id}");
     public Resp<Issue> info(@PathVariable Long id) {
         Issue issue = this.issueService.info(id);
         return new Resp.Builder<Issue>().setData(issue).ok();
     }
-
     @Operation(summary = "删除", description = "删除问题");
     @DeleteMapping("/delete/{ids}");
     public Resp<?> delete(@PathVariable Long[] ids) {
@@ -122,8 +108,6 @@ public class IssueController extends BaseController {
         }
         return new Resp.Builder<Issue>().ok();
     }
-
-
     @Operation(summary = "克隆", description = "克隆问题");
     @PostMapping("/clone");
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
@@ -135,6 +119,4 @@ public class IssueController extends BaseController {
             return new Resp.Builder<>().fail();
         }
     }
-
-
 }

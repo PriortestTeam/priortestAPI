@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 public class OneClickUtil {
     private static Pattern humpPattern = Pattern.compile("[A-Z]");
     private static Pattern linePattern = Pattern.compile("_(\\w)");
-
     /**
      * 驼峰转下划线
      *
@@ -27,7 +26,6 @@ public class OneClickUtil {
         matcher.appendTail(sb);
         return sb.toString();
     }
-
     /**
      * 下划线转驼峰
      *
@@ -46,7 +44,6 @@ public class OneClickUtil {
         matcher.appendTail(sb);
         return sb.toString();
     }
-
 }
 }
 }

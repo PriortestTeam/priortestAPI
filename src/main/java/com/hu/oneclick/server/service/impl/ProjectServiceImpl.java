@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -29,49 +28,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
-
 /**
  * @author qingyang
  */
 @Service
-
-
 public class ProjectServiceImpl implements ProjectService {
     private final static Logger logger = LoggerFactory.getLogger(ProjectServiceImpl.class);
-
     @Value("${onclick.dirPath}");
     private String dirPath;
-
     private final SysPermissionService sysPermissionService;
-
     private final JwtUserServiceImpl jwtUserService;
-
     private final ProjectDao projectDao;
-
     private final QueryFilterService queryFilterService;
-
     private final TestCycleService testCycleService;
-
     private final IssueDao issueDao;
-
     private final MailService mailService;
-
     private final AttachmentService attachmentService;
-
     private final CustomFieldDataService customFieldDataService;
-
     private final SubUserProjectDao subUserProjectDao;
-
     private final ProjectSignOffDao projectSignOffDao;
-
     private SysUserProjectDao sysUserProjectDao;
-
     public ProjectServiceImpl(SysPermissionService sysPermissionService, JwtUserServiceImpl jwtUserService, ProjectDao projectDao,
                               RedissonClient redisClient, QueryFilterService queryFilterService, ViewDao viewDao, TestCycleService testCycleService,
                               IssueDao issueDao, MailService mailService, AttachmentService attachmentService, CustomFieldDataService customFieldDataService,
@@ -89,7 +70,6 @@ public class ProjectServiceImpl implements ProjectService {
         this.projectSignOffDao = projectSignOffDao;
         this.sysUserProjectDao = sysUserProjectDao;
     }
-
     /**
      * update project customdata
      *
@@ -101,11 +81,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Resp<Project> queryById(String id) {
         Project project = projectDao.queryById(id);
-//        List&lt;CustomFieldData> customFieldData = customFieldDataService.projectRenderingCustom(project.getId();
+//        List<CustomFieldData> customFieldData = customFieldDataService.projectRenderingCustom(project.getId();
 //        project.setCustomFieldDatas(customFieldData);
         return new Resp.Builder<Project>().setData(project).ok();
     }
-
     @Override
     public Resp<String> queryDoesExistByTitle(String title) {
         try {
@@ -115,11 +94,10 @@ public class ProjectServiceImpl implements ProjectService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
-    public Resp<List&lt;Project>> queryForProjects(ProjectDto project) {
+    public Resp<List<Project>> queryForProjects(ProjectDto project) {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        List&lt;Project> projects = new ArrayList&lt;>();
+        List<Project> projects = new ArrayList<>();
         String sysUserId = sysUser.getId();
         if (ObjectUtil.isNotNull(sysUser.getSysRoleId() && sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT) {
             projects = projectDao.queryAllProjects(sysUserId);
@@ -134,21 +112,17 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
 //        project.setUserId(masterId);
-
 //        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto(), masterId);
-
-//        List&lt;Project> projects = projectDao.queryAll(project);
-        return new Resp.Builder<List&lt;Project>>().setData(projects).total(projects).ok();
+//        List<Project> projects = projectDao.queryAll(project);
+        return new Resp.Builder<List<Project>>().setData(projects).total(projects).ok();
     }
-
     @Override
-    public Resp<List&lt;Project>> queryForProjects() {
+    public Resp<List<Project>> queryForProjects() {
         SysUser masterUser = jwtUserService.getUserLoginInfo().getSysUser();
         Long roomId = masterUser.getRoomId();
-        List&lt;Project> projects = projectDao.queryAllProjects(String.valueOf(roomId);
-        return new Resp.Builder<List&lt;Project>>().setData(projects).totalSize(projects.size().ok();
+        List<Project> projects = projectDao.queryAllProjects(String.valueOf(roomId);
+        return new Resp.Builder<List<Project>>().setData(projects).totalSize(projects.size().ok();
     }
-
     /**
      * update自定义字段
      *
@@ -168,7 +142,7 @@ public class ProjectServiceImpl implements ProjectService {
             int insert = projectDao.insert(project);
             if (insert > 0) {
                 //插入用户自定义值
-//                List&lt;CustomFieldData> customFieldDatas = project.getCustomFieldDatas();
+//                List<CustomFieldData> customFieldDatas = project.getCustomFieldDatas();
 //                insert = customFieldDataService.insertProjectCustomData(customFieldDatas, project);
             }
             return Result.addResult(insert);
@@ -177,7 +151,6 @@ public class ProjectServiceImpl implements ProjectService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateProject(Project project) {
@@ -191,7 +164,6 @@ public class ProjectServiceImpl implements ProjectService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteProject(String projectId) {
@@ -204,27 +176,22 @@ public class ProjectServiceImpl implements ProjectService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> checkProject(String projectId) {
         int flag = 0;
         try {
             SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-
             Project project = projectDao.queryById(projectId);
-
             if (project != null) {
                 UpdateWrapper<SysUserProject> update = Wrappers.update();
                 update.set("is_default", 0);
                 update.eq("user_id", new BigInteger(sysUser.getId().eq("project_id", new BigInteger(sysUser.getUserUseOpenProject().getProjectId();
                 sysUserProjectDao.update(new SysUserProject(), update);
-
                 UpdateWrapper<SysUserProject> update2 = Wrappers.update();
                 update2.set("is_default", 1);
                 update2.eq("user_id", new BigInteger(sysUser.getId().eq("project_id", new BigInteger(projectId);
                 sysUserProjectDao.update(new SysUserProject(), update2);
-
                 UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
                 userUseOpenProject.setProjectId(projectId);
                 userUseOpenProject.setUserId(sysUser.getId();
@@ -232,7 +199,6 @@ public class ProjectServiceImpl implements ProjectService {
                 sysUser.setUserUseOpenProject(userUseOpenProject);
                 jwtUserService.saveUserLoginInfo2(sysUser);
                 flag = 1;
-
 //                if (sysUser.getUserUseOpenProject() != null) {
 //                    projectDao.deleteUseOpenProject(sysUser.getUserUseOpenProject().getId();
 //                }
@@ -248,7 +214,6 @@ public class ProjectServiceImpl implements ProjectService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> getCloseProject(String id, String closeDesc) {
@@ -265,8 +230,6 @@ public class ProjectServiceImpl implements ProjectService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
-
     /**
      * 查询项目是否存在
      *
@@ -282,8 +245,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
         return null;
     }
-
-
     /**
      * 检测生成pdf表
      */
@@ -297,18 +258,15 @@ public class ProjectServiceImpl implements ProjectService {
         if (!folder.exists() {
             folder.mkdirs();
         }
-
         // 测试报告
         String projectId = signOffDto.getProjectId();
         Project project = this.queryById(projectId).getData();
-
-        List&lt;Map&lt;String, Object>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
+        List<Map<String, Object>> allTestCycle = testCycleService.getAllTestCycle(signOffDto);
         int value = allTestCycle.size();
         long count = allTestCycle.stream().filter(f -> String.valueOf(f.get("execute_status").equals(String.valueOf(1).count();
         float testEx = (float) count / value;
         long runStatus = allTestCycle.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(1).count();
         float testPass = (float) runStatus / count == 0 ? 1 : count;
-
         String[][] reportTable = new String[][]{
             {"项目", project.getTitle()},
             {"测试环境", signOffDto.getEnv()},
@@ -319,45 +277,39 @@ public class ProjectServiceImpl implements ProjectService {
             {"测试执行率", String.format("%.1f", (testEx * 100) + "%"},
             {"测试通过率", String.format("%.1f", (testPass * 100) + "%"},
         };
-
         //功能测试结果
-        Map&lt;String, List&lt;Map&lt;String, Object>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category").toString();
-        List&lt;Map&lt;String, Object>> function = caseCategory.get("功能") == null ? new ArrayList&lt;>() : caseCategory.get("功能");
+        Map<String, List<Map<String, Object>>> caseCategory = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("case_category").toString();
+        List<Map<String, Object>> function = caseCategory.get("功能") == null ? new ArrayList<>() : caseCategory.get("功能");
         long runStatusPass = function.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(1).count();
         long runStatusFail = function.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(2).count();
-
         String[][] functionalReportTable = new String[][]{
             {"测试用例", String.valueOf(function.size()},
             {"没有执行", String.valueOf(function.size() - runStatusPass - runStatusFail)},
             {"成功", String.valueOf(runStatusPass)},
             {"失败", String.valueOf(runStatusFail)},
         };
-
         //性能测试结果
-        List&lt;Map&lt;String, Object>> performance = caseCategory.get("性能") == null ? new ArrayList&lt;>() : caseCategory.get("性能");
+        List<Map<String, Object>> performance = caseCategory.get("性能") == null ? new ArrayList<>() : caseCategory.get("性能");
         long runStatusPassCs = performance.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(1).count();
         long runStatusFailCs = performance.stream().filter(f -> String.valueOf(f.get("run_status").equals(String.valueOf(2).count();
-
         String[][] performanceReportTable = new String[][]{
             {"测试用例", String.valueOf(performance.size()},
             {"没有执行", String.valueOf(performance.size() - runStatusPassCs - runStatusFailCs)},
             {"成功", String.valueOf(runStatusPass)},
             {"失败", String.valueOf(runStatusFailCs)},
         };
-
         //测试覆盖
-        Map&lt;String, List&lt;Map&lt;String, Object>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module").toString();
+        Map<String, List<Map<String, Object>>> feature = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("module").toString();
         String[][] coverageReportTable = new String[feature.keySet().size()][];
         int index = 0;
         for (String featureId : feature.keySet() {
-            List&lt;Map&lt;String, Object>> maps = feature.get(featureId);
+            List<Map<String, Object>> maps = feature.get(featureId);
             coverageReportTable[index] = new String[]{featureId, String.valueOf(maps.size()};
             index++;
         }
-
         //新缺陷
-        ArrayList&lt;Issue> issuesList = new ArrayList&lt;>();
-        for (Map&lt;String, Object> map : allTestCycle) {
+        ArrayList<Issue> issuesList = new ArrayList<>();
+        for (Map<String, Object> map : allTestCycle) {
             String testCaseId = map.get("test_case_id").toString();
             String testCycleId = map.get("test_cycle_id").toString();
             Issue issue = issueDao.queryCycleAndTest(testCaseId, testCycleId);
@@ -368,30 +320,26 @@ public class ProjectServiceImpl implements ProjectService {
         long urgent = issuesList.stream().filter(f -> "高".equals(f.getPriority().count();
         long important = issuesList.stream().filter(f -> "中".equals(f.getPriority().count();
         long general = issuesList.stream().filter(f -> "低".equals(f.getPriority().count();
-
         String[][] issueRepostTable = new String[][]{
             {"紧急", String.valueOf(urgent)},
             {"重要", String.valueOf(important)},
             {"一般", String.valueOf(general)},
         };
-
         //已知缺陷
-        List&lt;Issue> allIssue = issueDao.findAll();
+        List<Issue> allIssue = issueDao.findAll();
         allIssue.removeAll(issuesList);
         long haveUrgent = allIssue.stream().filter(f -> "高".equals(f.getPriority().count();
         long haveImportant = allIssue.stream().filter(f -> "中".equals(f.getPriority().count();
         long haveGeneral = allIssue.stream().filter(f -> "低".equals(f.getPriority().count();
-
         String[][] existedIssueReportTable = new String[][]{
             {"紧急", String.valueOf(haveUrgent)},
             {"重要", String.valueOf(haveImportant)},
             {"一般", String.valueOf(haveGeneral)},
         };
-
         //测试周期列表
         String testCycle = signOffDto.getTestCycle();
         testCycle = testCycle.substring(testCycle.lastIndexOf("=") + 1);
-        List&lt;String> testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, signOffDto.getEnv(), testCycle);
+        List<String> testCycleName = testCycleService.getTestCycleByProjectIdAndEvn(projectId, signOffDto.getEnv(), testCycle);
         if (testCycleName.isEmpty() {
             return new Resp.Builder<String>().buildResult("没有查询到当前发布版本的测试周期");
         }
@@ -401,16 +349,14 @@ public class ProjectServiceImpl implements ProjectService {
             testCycleReportTable[index] = new String[]{testCycleNameOne, " "};
             index++;
         }
-
         //测试平台/设备
-        Map&lt;String, List&lt;Map&lt;String, Object>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform").toString();
+        Map<String, List<Map<String, Object>>> platforms = allTestCycle.stream().collect(Collectors.groupingBy(f -> f.get("platform").toString();
         String[][] platformReportTable = new String[platforms.keySet().size()][];
         index = 0;
         for (String platForm : platforms.keySet() {
-            List&lt;Map&lt;String, Object>> maps = platforms.get(platForm);
+            List<Map<String, Object>> maps = platforms.get(platForm);
             platformReportTable[index] = new String[]{platForm, String.valueOf(maps.size()};
         }
-
         //签发
         boolean flag = false;
         long ex = runStatusPass + runStatusFail;
@@ -423,58 +369,44 @@ public class ProjectServiceImpl implements ProjectService {
         } else if (issuesList.size() < 3) {
             flag = true;
         }
-
         String[][] signOffReportTable = new String[][]{
             {"签队团队", signOffDto.getFileUrl()},
             {"状态", flag ? "通过" : "失败"},
             {"日期", DateUtil.format(new Date()},
             {"备注", ""},
         };
-
         try {
             PDFTableUtil pdfTable = new PDFTableUtil(dirPath);
             pdfTable.generate(reportTable);
-
             pdfTable.showText("功能测试结果");
             pdfTable.generate(functionalReportTable);
-
             pdfTable.showText("性能测试结果");
             pdfTable.generate(performanceReportTable);
-
             pdfTable.showText("测试覆盖");
             pdfTable.generate(coverageReportTable);
-
             pdfTable.showText("新缺陷");
             pdfTable.generate(issueRepostTable);
-
             pdfTable.showText("已知缺陷");
             pdfTable.generate(existedIssueReportTable);
-
             pdfTable.showText("测试周期列表");
             pdfTable.generate(testCycleReportTable);
-
             pdfTable.showText("测试平台/设备");
             pdfTable.generate(platformReportTable);
-
             pdfTable.showText("签发");
             pdfTable.generate(signOffReportTable);
-
 //            String uuid = UUID.randomUUID().toString();
             // 20241012103012 - ProjectTitle_ENV_Version_Status_SignOff.pdf
             var saveFile = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS").concat("-").
                 concat(project.getTitle().concat("_").concat(signOffDto.getEnv().concat("_").
                 concat(signOffDto.getVersion().concat("_").concat(flag ? "通过_SignOff.pdf" : "失败_SignOff.pdf");
             pdfTable.save(saveFile);
-
             //发送邮件
             String desFilePathd = realPath + "/" + saveFile;//uuid + ".pdf";
             AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
             String signOffId = String.valueOf(SnowFlakeUtil.getFlowIdInstance().nextId();
             String sendName = signOffId + project.getTitle() + signOffDto.getEnv() + signOffDto.getVersion() + ".pdf";
-
             //存储签收邮件
             saveSignOff(signOffId, userLoginInfo, signOffDto, project, desFilePathd, sendName);
-
             mailService.sendAttachmentsMail(userLoginInfo.getUsername(), "OneClick验收结果", "请查收验收结果", desFilePathd, sendName);
         } catch (Exception e) {
             e.printStackTrace();
@@ -483,7 +415,6 @@ public class ProjectServiceImpl implements ProjectService {
         }
         return new Resp.Builder<String>().ok();
     }
-
     /**
      * 存储验收记录
      *
@@ -503,8 +434,6 @@ public class ProjectServiceImpl implements ProjectService {
         projectSignOff.setCreateUser(userLoginInfo.getSysUser().getId();
         projectSignOffDao.insert(projectSignOff);
     }
-
-
     @Override
     public Resp<String> upload(MultipartFile file) {
         if (cheakUserSignFile() {
@@ -530,17 +459,14 @@ public class ProjectServiceImpl implements ProjectService {
         attachment.setAreaType(OneConstant.AREA_TYPE.SIGNOFFSIGN);
         attachment.setFileName(file.getOriginalFilename();
         attachmentService.insertAttachment(attachment);
-
         try {
             FileUtils.copyInputStreamToFile(file.getInputStream(), new File(uri);
         } catch (IOException e) {
             e.printStackTrace();
             return new Resp.Builder<String>().setData(e.getMessage().fail();
         }
-
         return new Resp.Builder<String>().setData(uri).ok();
     }
-
     /**
      * 检查用户签名上传是否超过规定数量
      *
@@ -550,10 +476,9 @@ public class ProjectServiceImpl implements ProjectService {
      * @Date: 2021/10/18
      */
     private Boolean cheakUserSignFile() {
-        List&lt;Map&lt;String, Object>> data = attachmentService.getUserAttachment().getData();
+        List<Map<String, Object>> data = attachmentService.getUserAttachment().getData();
         return data.size() >= 3;
     }
-
     /**
      * 初始化仓库
      *
@@ -565,10 +490,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Integer initProject(Project project, UserUseOpenProject userUseOpenProject) {
 //        projectDao.insertUseOpenProject(userUseOpenProject);
-
         return projectDao.initProject(project);
     }
-
     /**
      * 插入用户默认打开项目
      *
@@ -582,19 +505,17 @@ public class ProjectServiceImpl implements ProjectService {
     public Integer insertUseOpenProject(UserUseOpenProject userUseOpenProject) {
         return projectDao.insertUseOpenProject(userUseOpenProject);
     }
-
     /**
      * 根据条件查询project
      *
      * @param project
      * @Param: [project]
-     * @return: java.util.List&lt;com.hu.oneclick.model.entity.Project>
+     * @return: java.util.List<com.hu.oneclick.model.entity.Project>
      * @Author: MaSiyi
      * @Date: 2021/12/31
      */
     @Override
-    public List&lt;Project> findAllByProject(Project project) {
-
+    public List<Project> findAllByProject(Project project) {
         return projectDao.findAllByProject(project);
     }
 }

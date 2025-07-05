@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.SysConfig;
 import com.hu.oneclick.server.service.SysConfigService;
@@ -10,9 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
-
 /**
  * @ClassName SysConfigController.java
  * @Description
@@ -24,13 +21,9 @@ import java.util.List;
 @RequestMapping("/sysConfig");
 @RequiredArgsConstructor
 
-
 public class SysConfigController {
-
-
     @NonNull
     private final SysConfigService sysConfigService;
-
     @GetMapping("/listByGroup/{scope}");
     public Resp<List<SysConfig>> listByGroup(@PathVariable("scope") String scope) {
         return sysConfigService.listByGroup(scope);

@@ -1,16 +1,12 @@
 package com.hu.oneclick.common.util;
-
 /**
  * @author qingyang
  */
-
 import java.util.LinkedHashSet;
 import java.util.Set;
-
 /**
  * 密码规则
  */
-
 
 public class PasswordCheckerUtil {
     // 包含大写字母
@@ -29,11 +25,9 @@ public class PasswordCheckerUtil {
     private int minLength = 8;
     // 最大长度
     private int maxLength = 20;
-
     public PasswordCheckerUtil() {
         this.specialCharSet = defaultSpecialCharSet();
     }
-
     /**
      * 密码符合规则，返回true
      */
@@ -42,7 +36,6 @@ public class PasswordCheckerUtil {
             // 长度不符合
             return false;
         }
-
         //包含大写
         boolean containUpperCase = false;
         //包含小写
@@ -53,7 +46,6 @@ public class PasswordCheckerUtil {
         boolean containDigit = false;
         //包含特殊
         boolean containSpecial = false;
-
         for (char ch : password.toCharArray() {
             if (Character.isUpperCase(ch) {
                 containUpperCase = true;
@@ -70,7 +62,6 @@ public class PasswordCheckerUtil {
                 return false;
             }
         }
-
         if (this.upperCase && !containUpperCase) {
             return false;
         }
@@ -88,7 +79,6 @@ public class PasswordCheckerUtil {
         }
         return true;
     }
-
     Set<Character> defaultSpecialCharSet() {
         Set<Character> specialChars = new LinkedHashSet<>();
         // 键盘上能找到的符号

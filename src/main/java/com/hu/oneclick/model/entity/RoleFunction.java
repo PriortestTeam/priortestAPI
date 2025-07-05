@@ -1,10 +1,6 @@
 package com.hu.oneclick.model.entity;
-
-
 import lombok.Data;
 import java.io.Serializable;
-
-
 /**
  * 角色权限
  *
@@ -12,7 +8,6 @@ import java.io.Serializable;
  * @since 2022-10-31 20:58:43
  */
 @Data
-
 
 public class RoleFunction implements Serializable {
     private static final long serialVersionUID = 418948698502600249L;
@@ -36,7 +31,6 @@ public class RoleFunction implements Serializable {
      * 默认不可见权限Id
      */
     private String invisibleFunctionId;
-
 }
 }
 }

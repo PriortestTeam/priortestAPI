@@ -1,5 +1,4 @@
 package com.hu.oneclick.quartz.controller;
-
 import com.hu.oneclick.common.util.PageUtil;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.quartz.QuartzManager;
@@ -13,30 +12,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 @RestController
 @RequestMapping(value = "/job");
 @Tag(name = "定时任务调度管理", description = "定时任务调度管理相关接口");
 @Slf4j
-
-
 public class JobController {
-
     @Resource
     private QuartzManager qtzManager;
-
-
     @SuppressWarnings("unchecked");
     private static Class<? extends QuartzJobBean> getClass(String classname) throws Exception {
         Class<?> class1 = Class.forName(classname);
         return (Class<? extends QuartzJobBean>) class1;
     }
-
     @Operation(summary = "添加任务");
     @PostMapping(value = "/addJob");
     public Resp<?> addJob(@RequestBody @Validated JobSaveDto dto) {
@@ -48,7 +39,6 @@ public class JobController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "更新任务");
     @PutMapping(value = "/updateJob");
     public Resp<?> updateJob(@RequestBody @Validated JobUpdateDto dto) {
@@ -60,7 +50,6 @@ public class JobController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "任务详情");
     @GetMapping(value = "/jobInfo");
     public Resp<?> jobInfo(@RequestParam(value = "jobName") String jobName,
@@ -73,7 +62,6 @@ public class JobController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @Operation(summary = "暂停任务");
     @PutMapping("/pauseJob");
     public Resp<?> pauseJob(@RequestBody @Validated JobOperateDto dto) {
@@ -85,7 +73,6 @@ public class JobController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "恢复任务");
     @PutMapping("/resumeJob");
     public Resp<?> resumeJob(@RequestBody @Validated JobOperateDto dto) {
@@ -97,7 +84,6 @@ public class JobController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "删除任务");
     @DeleteMapping("/deleteJob");
     public Resp<?> deleteJob(@RequestBody @Validated JobOperateDto dto) {
@@ -109,7 +95,6 @@ public class JobController {
         }
         return new Resp.Builder<>().ok();
     }
-
     @Operation(summary = "查询任务列表");
     @GetMapping(value = "/queryJob");
     public Resp<?> queryJob() {
@@ -124,7 +109,6 @@ public class JobController {
             return new Resp.Builder<>().fail();
         }
     }
-
 }
 }
 }

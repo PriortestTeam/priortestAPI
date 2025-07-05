@@ -29,45 +29,33 @@ import java.util.UUID;
  */
 @Service
 public class AttachmentServiceImpl implements AttachmentService {
-
     private final static Logger logger = LoggerFactory.getLogger(AttachmentServiceImpl.class);
-
     private final JwtUserServiceImpl jwtUserService;
-
     private final MinioClient minioClient;
-
     private final AttachmentDao attachmentDao;
-
     private final SysPermissionService sysPermissionService;
-
-
     @Value("${onclick.minioConfig.bucketName}")
     private String bucketName;
-
     @Value("${onclick.minioConfig.endpoint}")
     private String endpoint;
-
-
     public AttachmentServiceImpl(JwtUserServiceImpl jwtUserService, MinioClient minioClient, AttachmentDao attachmentDao, SysPermissionService sysPermissionService) {
         this.jwtUserService = jwtUserService;
         this.minioClient = minioClient;
         this.attachmentDao = attachmentDao;
         this.sysPermissionService = sysPermissionService;
     }
-
     @Override
-    public Resp<List&lt;Attachment>> list(String type, String linkId) {
+    public Resp<List<Attachment>> list(String type, String linkId) {
         if (StringUtils.isEmpty(type) || StringUtils.isEmpty(linkId) {
-            return new Resp.Builder<List&lt;Attachment>>().buildResult("参数不能为空！");
+            return new Resp.Builder<List<Attachment>>().buildResult("参数不能为空！");
         }
         Attachment attachment = new Attachment();
         attachment.setAreaType(type);
         attachment.setUserId(jwtUserService.getMasterId();
         attachment.setLinkId(linkId);
-        List&lt;Attachment> attachments = attachmentDao.queryAll(attachment);
-        return new Resp.Builder<List&lt;Attachment>>().setData(attachments).total(attachments).ok();
+        List<Attachment> attachments = attachmentDao.queryAll(attachment);
+        return new Resp.Builder<List<Attachment>>().setData(attachments).total(attachments).ok();
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> addAttachment(MultipartFile file, String type, String linkId) {
@@ -102,7 +90,6 @@ public class AttachmentServiceImpl implements AttachmentService {
             return new Resp.Builder<String>().buildResult(e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> updateAttachment(MultipartFile file, String attachmentId) {
@@ -139,7 +126,6 @@ public class AttachmentServiceImpl implements AttachmentService {
             return new Resp.Builder<String>().buildResult(e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Resp<String> deleteAttachment(String attachmentId) {
@@ -158,7 +144,6 @@ public class AttachmentServiceImpl implements AttachmentService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     /**
      * @param attachmentId
      * @Param: [attachmentId]
@@ -169,10 +154,8 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     public Resp<String> deleteAttachmentById(String attachmentId) {
         String masterId = jwtUserService.getMasterId();
-
         return Result.deleteResult(attachmentDao.deleteById(attachmentId, masterId);
     }
-
     /**
      * 文件上传
      *
@@ -187,7 +170,6 @@ public class AttachmentServiceImpl implements AttachmentService {
         MinioUtil.putObject(minioClient, bucketName, fileName, file.getInputStream(), file);
         return fileName;
     }
-
     /**
      * 删除文件
      *
@@ -196,7 +178,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     private void deleteFile(String fileName) {
         MinioUtil.rmObject(minioClient, bucketName, fileName);
     }
-
     /**
      * TODO 验证文件大小
      *
@@ -204,28 +185,21 @@ public class AttachmentServiceImpl implements AttachmentService {
      * @param type
      */
     private void verifyFileSize(MultipartFile file, String type) {
-
     }
-
     @Override
-    public Resp<List&lt;Map&lt;String, Object>>> getUserAttachment() {
+    public Resp<List<Map<String, Object>>> getUserAttachment() {
         SysUser sysUser = jwtUserService.getUserLoginInfo().getSysUser();
-        List&lt;Map&lt;String, Object>> list = attachmentDao.getUserAttachment(sysUser.getId(), OneConstant.AREA_TYPE.SIGNOFFSIGN);
-        for (Map&lt;String, Object> map : list) {
+        List<Map<String, Object>> list = attachmentDao.getUserAttachment(sysUser.getId(), OneConstant.AREA_TYPE.SIGNOFFSIGN);
+        for (Map<String, Object> map : list) {
             String id = String.valueOf(map.get("id");
             map.put("id", id);
         }
-
-
-        return new Resp.Builder<List&lt;Map&lt;String, Object>>>().setData(list).ok();
+        return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
     }
-
     @Override
     public Integer insertAttachment(Attachment attachment) {
         return attachmentDao.insert(attachment);
     }
-
-
 }
 }
 }

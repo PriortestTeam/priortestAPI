@@ -1,22 +1,17 @@
 package com.hu.oneclick.common.constant;
-
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 /**
  * @author qingyang
  */
 
-
 public class TwoConstant {
-
     public static String convertPermission(String scope){
         switch (scope){
             case OneConstant.SCOPE.ONE_SPRINT:
@@ -43,8 +38,6 @@ public class TwoConstant {
                 throw new BizException(SysConstantEnum.SCOPE_ERROR.getCode(),SysConstantEnum.SCOPE_ERROR.getValue();
         }
     }
-
-
     /**
      * 裁剪子用户邮箱用户名
      * @param username
@@ -57,7 +50,6 @@ public class TwoConstant {
         }
         return username;
     }
-
     /**
      * list转字符串
      * @param strings
@@ -65,7 +57,6 @@ public class TwoConstant {
      */
     public static String convertToString(List<String> strings,Integer length){
         StringBuilder sb = new StringBuilder();
-
         for(int i = 0;i < strings.size(); i++){
             if (StringUtils.isEmpty(strings.get(i){
                 sb.append(OneConstant.COMMON.REPLACE_EMPTY_CHARACTERS);
@@ -75,7 +66,6 @@ public class TwoConstant {
                 }
                 sb.append(strings.get(i);
             }
-
             if (i == strings.size() - 1){
                 break;
             }
@@ -83,7 +73,6 @@ public class TwoConstant {
         }
         return sb.toString();
     }
-
     /**
      * 字符串转list
      * @param str
@@ -101,8 +90,6 @@ public class TwoConstant {
         }
         return strings;
     }
-
-
     /**
      * 字符串转换成对象
      */
@@ -112,5 +99,4 @@ public class TwoConstant {
         }
         return JSON.parseArray(source, clazz);
     }
-
 }

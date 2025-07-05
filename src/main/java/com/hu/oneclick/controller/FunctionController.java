@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import lombok.extern.slf4j.Slf4j;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
@@ -25,11 +24,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.*;
-
 /**
  * @author masiyi
  */
@@ -39,19 +36,13 @@ import java.util.*;
 @RequestMapping("function");
 @Slf4j
 
-
 public class FunctionController {
-
     @Autowired
     private FunctionService functionService;
-
     @Autowired
     private UserBusinessService userBusinessService;
-
     @Autowired
     private JwtUserServiceImpl jwtUserService;
-
-
     /**
      * 根据父编号查询菜单
      *
@@ -102,7 +93,6 @@ public class FunctionController {
         }
         return new Resp.Builder<JSONArray>().setData(dataArray).ok();
     }
-
     public JSONArray getMenuByFunction(List<SysFunction> dataList, String fc) throws Exception {
         JSONArray dataArray = new JSONArray();
         for (SysFunction function : dataList) {
@@ -127,7 +117,6 @@ public class FunctionController {
         }
         return dataArray;
     }
-
     /**
      * 角色对应功能显示
      *
@@ -168,7 +157,6 @@ public class FunctionController {
         }
         return new Resp.Builder<JSONArray>().setData(arr).ok();
     }
-
     public JSONArray getFunctionList(List<SysFunction> dataList,
                                      String type,
                                      Long roleId,
@@ -183,18 +171,14 @@ public class FunctionController {
         } else {
             ubValue = StringUtils.isNotEmpty(sysUserBusiness.getValue() ? sysUserBusiness.getValue() : "[]";
         }
-
         String invisibleList = sysUserBusiness.getInvisible();
         if(invisibleList==null){
             invisibleList = "[]";
         }
-
-
 //        String ubValue = userBusinessService.getUBValueByTypeAndKeyId(type, keyId);
         if (null != dataList) {
             for (SysFunction function : dataList) {
                 JSONObject item = new JSONObject();
-
                 //可见的才显示出来
                 if(!invisibleList.contains("[" + function.getId().toString() + "]"){
                     Boolean checked = ubValue.contains("[" + function.getId().toString() + "]");
@@ -213,13 +197,10 @@ public class FunctionController {
                         dataArray.add(item);
                     }
                 }
-
-
             }
         }
         return dataArray;
     }
-
     /**
      * 根据id列表查找功能信息
      *
@@ -269,11 +250,9 @@ public class FunctionController {
         } catch (Exception e) {
             e.printStackTrace();
             return new Resp.Builder<JSONObject>().fail();
-
         }
         return new Resp.Builder<JSONObject>().ok();
     }
-
     /**
      * 保存用户角色功能/修改用户角色功能
      *
@@ -283,9 +262,7 @@ public class FunctionController {
     @PostMapping(value = "/saveRoleFunction");
     @Operation(summary = "保存用户角色功能");
     public Resp<Object> saveRoleFunction(@RequestBody @Valid RoleProjectFunctionDTO dto) {
-
         SysUserBusiness sysUserBusiness = userBusinessService.getRoleProjectFunction(dto.getRoleId(), dto.getProjectId(), dto.getUserId();
-
         if (null != sysUserBusiness) {
             BeanUtils.copyProperties(dto, sysUserBusiness);
             if (dto.getFunctionList().size() > 0) {

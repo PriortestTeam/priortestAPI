@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,14 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 /**
  * @Author: jhh
  * @Date: 2023/7/8
@@ -40,36 +37,30 @@ import java.util.stream.Collectors;
 public class TestCycleJoinTestCaseServiceImpl extends
     ServiceImpl<TestCycleJoinTestCaseDao, TestCycleJoinTestCase>
     implements TestCycleJoinTestCaseService {
-
     @Resource
     private TestCycleJoinTestCaseDao testCycleJoinTestCaseDao;
-
     @Resource
     private TestCycleTcDao testCycleTcDao;
-
     @Resource
     private TestCycleDao testCycleDao;
-
     @Resource
     private TestCaseDao testCaseDao;
     @Autowired
     private TestCycleBiz testCycleBiz;
-
     @Override
     public Boolean saveInstance(TestCycleJoinTestCaseSaveDto dto) {
-        final List&lt;Long> result = saveDataWithIdReturn(dto);
+        final List<Long> result = saveDataWithIdReturn(dto);
         if (!result.isEmpty() {
             testCycleBiz.increaseInstanceCount(dto.getTestCycleId(), result.size();
         }
         return true;
     }
-
     @Override
-    public List&lt;Long> saveDataWithIdReturn(TestCycleJoinTestCaseSaveDto dto) {
-        List&lt;Long> result = new ArrayList&lt;>();
+    public List<Long> saveDataWithIdReturn(TestCycleJoinTestCaseSaveDto dto) {
+        List<Long> result = new ArrayList<>();
         TestCycleJoinTestCase joinTestCase;
         for (Long testCaseId : dto.getTestCaseIds() {
-            List&lt;TestCycleJoinTestCase> entityList = this.getByProjectIdAndCycleIdAndCaseId(
+            List<TestCycleJoinTestCase> entityList = this.getByProjectIdAndCycleIdAndCaseId(
                 dto.getProjectId(),
                 dto.getTestCycleId(), testCaseId);
             if (CollUtil.isNotEmpty(entityList) {
@@ -85,7 +76,6 @@ public class TestCycleJoinTestCaseServiceImpl extends
         }
         return result;
     }
-
     @Override
     public Resp<Object> strictlySaveInstance(final TestCycleJoinTestCaseSaveDto dto) {
         // 验证 testCycleId 必须存在
@@ -106,11 +96,10 @@ public class TestCycleJoinTestCaseServiceImpl extends
                 SysConstantEnum.TEST_CYCLE_NOT_INCLUDE_IN_PROJECT.getValue(),
                 HttpStatus.BAD_REQUEST.value();
         }
-
         // 验证 testCaseId 都必须存在
         final LambdaQueryWrapper<TestCase> testCaseWrapper = new LambdaQueryWrapper<>();
-        final List&lt;Long> testCaseIdList = Arrays.asList(dto.getTestCaseIds();
-        final List&lt;TestCase> testCases = testCaseDao.selectList(
+        final List<Long> testCaseIdList = Arrays.asList(dto.getTestCaseIds();
+        final List<TestCase> testCases = testCaseDao.selectList(
             testCaseWrapper
                 .eq(TestCase::getProjectId, dto.getProjectId()
                 .in(TestCase::getId, testCaseIdList)
@@ -122,27 +111,23 @@ public class TestCycleJoinTestCaseServiceImpl extends
                 testCaseIdList
             );
         }
-
         // 到达这里说明全部存在或者部分存在
         if (testCases.size() == testCaseIdList.size() {
-            final List&lt;Long> savedIds = saveDataWithIdReturn(dto);
-            List&lt;Map&lt;String, Long>> data = new ArrayList&lt;>();
+            final List<Long> savedIds = saveDataWithIdReturn(dto);
+            List<Map<String, Long>> data = new ArrayList<>();
             for (int i = 0; i < savedIds.size(); i++) {
                 data.add(Map.of("id", savedIds.get(i), "testCaseId", testCaseIdList.get(i);
             }
-
             if (!savedIds.isEmpty() {
                 testCycleBiz.increaseInstanceCount(dto.getTestCycleId(), savedIds.size();
             }
-
             return new Resp.Builder<>().buildResult(;
                 SysConstantEnum.ADD_SUCCESS.getCode(), SysConstantEnum.ADD_SUCCESS.getValue(),
                 data
             );
         }
-
         // 返回错误的 testCaseId 数据
-        final List&lt;Long> existTestCaseIdList = testCases.stream().map(TestCase::getId).collect(
+        final List<Long> existTestCaseIdList = testCases.stream().map(TestCase::getId).collect(
             Collectors.toList();
         testCaseIdList.removeAll(existTestCaseIdList);
         return new Resp.Builder<>().httpBadRequest().buildResult(;
@@ -151,20 +136,17 @@ public class TestCycleJoinTestCaseServiceImpl extends
             testCaseIdList
         );
     }
-
-    private List&lt;TestCycleJoinTestCase> getByProjectIdAndCycleIdAndCaseId(Long projectId, Long testCycleId, Long testCaseId) {
+    private List<TestCycleJoinTestCase> getByProjectIdAndCycleIdAndCaseId(Long projectId, Long testCycleId, Long testCaseId) {
         LambdaQueryWrapper<TestCycleJoinTestCase> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TestCycleJoinTestCase::getProjectId, projectId)
             .eq(TestCycleJoinTestCase::getTestCycleId, testCycleId)
             .eq(TestCycleJoinTestCase::getTestCaseId, testCaseId);
         return this.list(queryWrapper);
     }
-
     @Override
     @Transactional
     public void deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
-//        List&lt;Long> testCasesIds = new ArrayList&lt;>();
-
+//        List<Long> testCasesIds = new ArrayList<>();
 //        for (Long testCaseId : dto.getTestCaseIds() {
 //            // 删除关联的test_cycle_join_test_case表
 //            this.testCycleJoinTestCaseDao.deleteByParam(dto.getProjectId(), dto.getTestCycleId(),
@@ -174,36 +156,29 @@ public class TestCycleJoinTestCaseServiceImpl extends
 //        testCasesIds = Arrays.asList(dto.getTestCaseIds();
 ////        //删除关联的relation表
 ////        this.relationService.removeBatchByTestCaseIds(testCasesIds);
-
 //        // 删除test_cases_execution表
 //        testCycleTcDao.delete(
 //            new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId,
 //                    testCasesIds).eq(TestCasesExecution::getTestCycleId, dto.getTestCycleId()
 //                .eq(TestCasesExecution::getProjectId, dto.getProjectId();
-
-        List&lt;Long> testCasesIds = testCycleBiz.deleteInstance(dto);
+        List<Long> testCasesIds = testCycleBiz.deleteInstance(dto);
         if (!testCasesIds.isEmpty() {
             testCycleBiz.decreaseInstanceCount(dto.getTestCycleId(), testCasesIds.size();
         }
     }
-
     @Override
-    public List&lt;Long> getCaseIdListByCycleId(Long testCycleId) {
-
+    public List<Long> getCaseIdListByCycleId(Long testCycleId) {
         return this.testCycleJoinTestCaseDao.getCaseIdListByCycleId(testCycleId);
     }
-
     @Override
     public int countCycleIdByCaseId(Long testCaseId, Long projectid, Long cycleId) {
         return this.testCycleJoinTestCaseDao.countByTestCaseIdInt(testCaseId, projectid, cycleId);
     }
-
     @Override
     public TestCycleJoinTestCase getCycleJoinTestCaseByCaseId(Long caseId, Long projectId,
                                                               Long cycleId) {
         return this.testCycleJoinTestCaseDao.getCycleJoinTestCaseByCaseId(caseId, projectId, cycleId);
     }
-
     /**
      * 更改runCaseStatus
      *
@@ -214,24 +189,20 @@ public class TestCycleJoinTestCaseServiceImpl extends
     @Transactional(rollbackFor = Exception.class);
     public Resp runCaseStatusUpdate(Long projectId,
                                     TestCycleJoinTestCaseDto testCycleJoinTestCaseDto) {
-
         // 参数校验
         if (testCycleJoinTestCaseDto == null || testCycleJoinTestCaseDto.getTestCycleId() == null
             || testCycleJoinTestCaseDto.getAddedOn() == null
             || testCycleJoinTestCaseDto.getTestCaseId() == null) {
             return new Resp.Builder<>().buildResult("非法参数");
         }
-
         TestCycleJoinTestCase testCycleJoinTestCase = this.getOne(
             new LambdaQueryWrapper<TestCycleJoinTestCase>()
                 .eq(TestCycleJoinTestCase::getTestCycleId, testCycleJoinTestCaseDto.getTestCycleId()
                 .eq(TestCycleJoinTestCase::getProjectId, projectId)
                 .eq(TestCycleJoinTestCase::getTestCaseId, testCycleJoinTestCaseDto.getTestCaseId();
-
         if (testCycleJoinTestCase == null) {
             return new Resp.Builder<>().buildResult("数据不存在");
         }
-
         testCycleJoinTestCase.setRunStatus(testCycleJoinTestCaseDto.getRunStatus();
         if (testCycleJoinTestCaseDto.getAddedOn() {
             testCycleJoinTestCase.setCaseRunDuration((int) (testCycleJoinTestCase.getCaseRunDuration()
@@ -246,7 +217,6 @@ public class TestCycleJoinTestCaseServiceImpl extends
             testCycleJoinTestCase.setCaseTotalPeriod(testCycleJoinTestCaseDto.getCaseTotalPeriod();
             testCycleJoinTestCase.setRunCount(testCycleJoinTestCaseDto.getRunCount();
         }
-
         // 更新
         boolean b = this.updateById(testCycleJoinTestCase);
         if (!b) {
@@ -254,18 +224,17 @@ public class TestCycleJoinTestCaseServiceImpl extends
         }
         return new Resp.Builder<>().ok();
     }
-
     @Override
     public TestCycleJoinTestCaseVo removeTCsFromTestCycle(Long projectId, TestCycleJoinTestCaseSaveDto dto) {
         TestCycleJoinTestCaseVo vo = new TestCycleJoinTestCaseVo();
-        List&lt;TestCycleJoinTestCase> testCycleJoinTestCases = baseMapper.selectList(
+        List<TestCycleJoinTestCase> testCycleJoinTestCases = baseMapper.selectList(
             new LambdaQueryWrapper<TestCycleJoinTestCase>()
                 .eq(TestCycleJoinTestCase::getProjectId, dto.getProjectId()
                 .eq(TestCycleJoinTestCase::getTestCycleId, dto.getTestCycleId()
         );
-        List&lt;Long> collect = testCycleJoinTestCases.stream().map(TestCycleJoinTestCase::getTestCaseId).collect(Collectors.toList();
+        List<Long> collect = testCycleJoinTestCases.stream().map(TestCycleJoinTestCase::getTestCaseId).collect(Collectors.toList();
         Long[] testCaseIds = dto.getTestCaseIds();
-        List&lt;Long> longs = Arrays.asList(testCaseIds);
+        List<Long> longs = Arrays.asList(testCaseIds);
         boolean b = collect.removeAll(longs);
         if (b) {
             TestCycleJoinTestCaseSaveDto td = new TestCycleJoinTestCaseSaveDto();
@@ -283,8 +252,6 @@ public class TestCycleJoinTestCaseServiceImpl extends
         }
         return vo;
     }
-
-
 }
 }
 }

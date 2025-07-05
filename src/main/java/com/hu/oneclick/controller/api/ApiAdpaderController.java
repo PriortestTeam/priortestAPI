@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller.api;
-
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson2.JSON;
@@ -32,37 +31,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/apiAdpater");
 @Slf4j
 
-
 public class ApiAdpaderController {
-
     @Autowired
     private IssueService issueService;
-
     @Resource
     private TestCycleJoinTestCaseService testCycleJoinTestCaseService;
     @Resource
     private RetrieveTestCycleAsTitleService rtcatService;
-
     @Resource
     private TestCycleService testCycleService;
-
     @Resource
     private TestCaseService testCaseService;
-
     @Resource
     private RelationService relationService;
-
     @GetMapping("/{projectId}/testCycle/retrieveTestCycleAsTitle/getId");
     public Resp<TestCycleVo> getIdByTitle(@RequestParam String title, @PathVariable Long projectId) {
         if (StringUtil.isEmpty(title) {
@@ -77,7 +67,6 @@ public class ApiAdpaderController {
         log.info("getIdByTitle ==> projectId:{}", JSON.toJSONString(projectId);
         return rtcatService.getIdForTitle(title, projectId);
     }
-
     @GetMapping("/{projectId}/testRun/retrieveTCInTestCycle/getCaseId");
     public Resp<TestCycleVo> hasCaseId(
         @PathVariable Long projectId, @RequestParam Long testCaseId, @RequestParam Long testCycleId
@@ -99,7 +88,6 @@ public class ApiAdpaderController {
         }
         return new Resp.Builder<TestCycleVo>().setData(cycleVo).ok();
     }
-
     @Operation(summary = "新增");
     @PostMapping("/{projectId}/Issue/createIssue");
     public Resp<?> save(@PathVariable Long projectId, @RequestBody @Validated IssueSaveDto dto) {
@@ -111,7 +99,6 @@ public class ApiAdpaderController {
             return new Resp.Builder<Issue>().fail();
         }
     }
-
     @Operation(summary = "更新缺陷");
     @PutMapping("/{projectId}/issue/statusUpdate");
     public Resp<Issue> statusUpdate(@PathVariable Long projectId,
@@ -127,13 +114,11 @@ public class ApiAdpaderController {
             }
             this.issueService.studusedit(issue, issueStatusDto);
             return new Resp.Builder<Issue>().setData(null).ok();
-
         } catch (Exception e) {
             log.error("更新缺陷失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<Issue>().fail();
         }
     }
-
     @Operation(summary = "修改");
     @PutMapping("/{projectId}/Issue/udpateIssue");
     public Resp<Issue> update(@PathVariable Long projectId,
@@ -149,26 +134,21 @@ public class ApiAdpaderController {
             return new Resp.Builder<Issue>().fail();
         }
     }
-
     @Operation(summary = "根据CaseId、projectId查找");
     @GetMapping("/{projectId}/retrieveTestcase");
     public Resp<TestCase> getByCaseIdAndProjectId(@PathVariable("projectId") Long projectId,
                                                   @RequestParam Long testCaseId) {
-
         // 参数校验
         if (testCaseId == null || String.valueOf(testCaseId).isBlank() {
             return new Resp.Builder<TestCase>().buildResult("非法参数");
         }
-
         TestCase testCase = testCaseService.getByIdAndProjectId(projectId, testCaseId);
         return new Resp.Builder<TestCase>().setData(testCase).ok();
     }
-
     @Operation(summary = "创建测试用例");
     @PostMapping("/{projectId}/createTestCase");
     public Resp<Map<String, Object>> createTestCase(@PathVariable("projectId") Long projectId,
                                                     @RequestBody @Validated TestCaseSaveDto testCaseSaveDto) {
-
         final TestCase testCase = testCaseService.save(testCaseSaveDto);
         return new Resp.Builder<Map<String, Object>>().setData(;
             Map.of(
@@ -177,7 +157,6 @@ public class ApiAdpaderController {
             )
         ).ok();
     }
-
     @Operation(summary = "根据CaseId、projectId、cycleId查找");
     @GetMapping("/{projectId}/retrieveRunCase");
     public Resp<TestCycleJoinTestCase> getByCaseIdAndProjectIdAndCycleId(
@@ -189,33 +168,27 @@ public class ApiAdpaderController {
             || String.valueOf(testCycleId).isBlank() {
             return new Resp.Builder<TestCycleJoinTestCase>().buildResult("非法参数");
         }
-
         TestCycleJoinTestCase testCycleJoinTestCase =
             testCycleJoinTestCaseService.getCycleJoinTestCaseByCaseId(testCaseId, projectId,
                 testCycleId);
         return new Resp.Builder<TestCycleJoinTestCase>().setData(testCycleJoinTestCase).ok();
     }
-
     @Operation(summary = "根据id,category 查询relation");
     @GetMapping("/{projectId}/retrieveIssueAsPerTestCaseId");
     public Resp<Map> getRelationByCaseIdAndCategory(@PathVariable("projectId") Long projectId,
                                                     @RequestParam Long testCaseId) {
-
         // 参数校验
         if (testCaseId == null || String.valueOf(testCaseId).isBlank() {
             return new Resp.Builder<Map>().buildResult("非法参数");
         }
-
         Map<String, Object> result =
             relationService.getRelationListByObjectIdAndTargetIdAndCategory(testCaseId);
         return new Resp.Builder<Map>().setData(result).ok();
     }
-
     @Operation(summary = "更改runCaseStatus");
     @PostMapping("/{projectId}/testCycle/runCaseStatusUpdate");
     public Resp runCaseStatusUpdate(@PathVariable("projectId") Long projectId,
                                     @RequestBody TestCycleJoinTestCaseDto testCycleJoinTestCaseDto) {
-
         try {
             return testCycleJoinTestCaseService.runCaseStatusUpdate(projectId, testCycleJoinTestCaseDto);
         } catch (Exception e) {
@@ -223,7 +196,6 @@ public class ApiAdpaderController {
             throw new RuntimeException(e);
         }
     }
-
     @Operation(summary = "保存测试用例到测试周期");
     @PostMapping("/{projectId}/testCycle/instance/saveInstance");
     public Resp<Object> testCycleSaveInstance(@PathVariable("projectId") Long projectId,
@@ -231,15 +203,12 @@ public class ApiAdpaderController {
         if (ArrayUtil.isEmpty(testCycleJoinTestCaseDto.getTestCaseIds() {
             throw new BaseException("请选择至少一个测试用例进行绑定");
         }
-
         if (!Objects.equals(projectId, testCycleJoinTestCaseDto.getProjectId() {
             throw new BizException(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode(),
                 SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value();
         }
-
         return testCycleJoinTestCaseService.strictlySaveInstance(testCycleJoinTestCaseDto);
     }
-
     @Operation(summary = "通过定义的外部 ID 查询测试用例");
     @GetMapping("/{projectId}/retrieveTestcaseByExternalId");
     public Resp<TestCase> retrieveTestcaseByExternalId(
@@ -248,7 +217,6 @@ public class ApiAdpaderController {
         return new Resp.Builder<TestCase>().setData(;
             testCaseService.queryByProjectIdAndExteranlId(projectId, externalId).ok();
     }
-
     @Operation(summary = "获取缺陷的状态,通过缺陷Id");
     @GetMapping("/{projectId}/retrieveIssueStatusAsPerIssueId");
     public Resp<IssueStatusVo> retrieveIssueStatusAsPerIssueId(
@@ -263,7 +231,6 @@ public class ApiAdpaderController {
             SysConstantEnum.DATA_NOT_FOUND.getValue(),
             HttpStatus.NOT_FOUND.value();
     }
-
     @Operation(summary = "新建测试周期");
     @PostMapping("/{projectId}/testCycle/saveTestCycle");
     public Resp<TestCycle> saveTestCycle(@PathVariable("projectId") Long projectId, @RequestBody @Validated TestCycleSaveDto dto) {
@@ -286,7 +253,6 @@ public class ApiAdpaderController {
         }
         return new Resp.Builder<TestCycle>().fail();
     }
-
     @Operation(summary = "移除多余测试周期用例");
     @PostMapping("/{projectId}/testCycle/instance/removeTCsFromTestCycle");
     public Resp<TestCycleJoinTestCaseVo> removeTCsFromTestCycle(@PathVariable("projectId") Long projectId, @RequestBody @Validated TestCycleJoinTestCaseSaveDto dto) {
@@ -295,7 +261,6 @@ public class ApiAdpaderController {
                 return new Resp.Builder<TestCycleJoinTestCaseVo>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode(),;
                     SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value();
             }
-
             LambdaQueryWrapper<TestCycle> wapper = new LambdaQueryWrapper<TestCycle>()
                 .eq(TestCycle::getProjectId, dto.getProjectId()
                 .eq(TestCycle::getId, dto.getTestCycleId();
@@ -304,7 +269,6 @@ public class ApiAdpaderController {
                 return new Resp.Builder<TestCycleJoinTestCaseVo>().ok(String.valueOf(HttpStatus.BAD_REQUEST.value(),;
                     dto.getTestCycleId() + "不存在项目中", HttpStatus.BAD_REQUEST.value();
             }
-
             LambdaQueryWrapper<TestCase> in = new LambdaQueryWrapper<TestCase>()
                 .eq(TestCase::getProjectId, dto.getProjectId()
                 .in(TestCase::getId, Arrays.asList(dto.getTestCaseIds();
@@ -315,7 +279,6 @@ public class ApiAdpaderController {
                 return new Resp.Builder<TestCycleJoinTestCaseVo>().ok(String.valueOf(HttpStatus.BAD_REQUEST.value(),;
                     collect1 + "不存在项目中 or 测试周期 中", HttpStatus.BAD_REQUEST.value();
             }
-
             if (Objects.nonNull(projectId) {
                 TestCycleJoinTestCaseVo vo = testCycleJoinTestCaseService.removeTCsFromTestCycle(projectId, dto);
                 return new Resp.Builder<TestCycleJoinTestCaseVo>().setData(vo).ok();
@@ -326,8 +289,6 @@ public class ApiAdpaderController {
         }
         return new Resp.Builder<TestCycleJoinTestCaseVo>().fail();
     }
-
-
     @Operation(summary = "返回缺陷列表,以runcaseId");
     @GetMapping("/{projectId}/retrieveIssueAsPerRunCaseId");
     public Resp<JSONObject> retrieveIssueAsPerRunCaseId(@PathVariable("projectId") Long projectId, @RequestParam Long runCaseId) {
@@ -336,13 +297,11 @@ public class ApiAdpaderController {
                 return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.TEST_CASE_PROJECT_ID_NOT_EXIST.getCode(),;
                     "运行用例不可以为空", HttpStatus.BAD_REQUEST.value();
             }
-
             List<Issue> issueList = issueService.list(
                 new LambdaQueryWrapper<Issue>()
                     .eq(Issue::getProjectId, projectId)
                     .eq(Issue::getRuncaseId, runCaseId)
             );
-
             if (CollectionUtil.isEmpty(issueList) {
                 List<Issue> issueListByRuncaseId = issueService.list(
                     new LambdaQueryWrapper<Issue>()
@@ -356,9 +315,7 @@ public class ApiAdpaderController {
                         "缺陷不存在", HttpStatus.NOT_FOUND.value();
                 }
             }
-
             // List<Issue> collect = issueList.stream().filter(issue -> !"关闭".equals(issue.getIssueStatus().collect(Collectors.toList();
-
             List<Issue> collect = issueList.stream()
                 .filter(issue ->
                     "新建".equals(issue.getIssueStatus() ||
@@ -367,13 +324,11 @@ public class ApiAdpaderController {
                         "验证失败".equals(issue.getIssueStatus()
                 )
                 .collect(Collectors.toList();
-
             if (CollectionUtil.isEmpty(collect) {
                 return new Resp.Builder<JSONObject>().ok(String.valueOf(SysConstantEnum.DATA_NOT_FOUND.getCode(),;
                     SysConstantEnum.DATA_NOT_FOUND.getValue(), HttpStatus.NOT_FOUND.value();
             }
             JSONObject jsonObject = new JSONObject();
-
             List<IssueVo> idlist = Lists.newArrayList();
 //      List<Long> runid = Lists.newArrayList();
             collect.forEach(c -> {
@@ -385,14 +340,12 @@ public class ApiAdpaderController {
             });
             jsonObject.put("id", idlist);
             jsonObject.put("runcaseId", runCaseId);
-
             return new Resp.Builder<JSONObject>().setData(jsonObject).ok();
         } catch (Exception e) {
             log.error("返回缺陷列表" + e.getMessage(), e);
             return new Resp.Builder<JSONObject>().fail();
         }
     }
-
 }
 }
 }

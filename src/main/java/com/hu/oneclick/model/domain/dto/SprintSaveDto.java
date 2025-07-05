@@ -1,5 +1,4 @@
 package com.hu.oneclick.model.domain.dto;
-
 import cn.hutool.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,22 +6,16 @@ import java.util.Date;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
-
-
 /**
  * @Author: jhh
  * @Date: 2023/5/16
  */
 @Data
 
-
 public class SprintSaveDto {
-
-
     @JsonFormat(shape = JsonFormat.Shape.STRING);
     @Schema(description = "主键id");
     private Long id;
-
     /**
      * 关联项目id
      */
@@ -34,7 +27,6 @@ public class SprintSaveDto {
      */
     @Schema(description = "名称");
     private String title;
-
     /**
      * 开始时间
      */
@@ -56,19 +48,14 @@ public class SprintSaveDto {
      */
     @Schema(description = "描述");
     private String description;
-
     @Schema(description = "记录");
     private String epic;
-
     @Schema(description = "模块");
     private String module;
-
     @Schema(description = "sprintGoal");
     private String sprintGoal;
-
     @Schema(description = "状态");
     private String sprintStatus;
-
     /**
      * 自定义字段值
      */

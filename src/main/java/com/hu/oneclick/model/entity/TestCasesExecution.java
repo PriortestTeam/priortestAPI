@@ -1,5 +1,4 @@
 package com.hu.oneclick.model.entity;
-
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -8,10 +7,8 @@ import com.hu.oneclick.model.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.stereotype.Component;
-
 import java.io.Serializable;
 import java.util.Date;
-
 /**
  *TestCasesExecution 实体类
  *
@@ -22,7 +19,6 @@ import java.util.Date;
 @Data
 @Component
 @TableName(value ="test_cases_execution");
-
 
 public class TestCasesExecution extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2641443521395154160L;

@@ -16,21 +16,17 @@ import java.util.List;
  */
 @Service
 public class ProjectSignOffServiceImpl implements ProjectSignOffService {
-
     @Autowired
     private ProjectSignOffDao projectSignOffDao;
     @Autowired
     private JwtUserServiceImpl jwtUserService;
-
-
     @Override
-    public Resp< List&lt;ProjectSignOff>> getPdf() {
+    public Resp< List<ProjectSignOff>> getPdf() {
         AuthLoginUser userLoginInfo = jwtUserService.getUserLoginInfo();
         SysUser sysUser = userLoginInfo.getSysUser();
         String projectId = sysUser.getUserUseOpenProject().getProjectId();
-
-        List&lt;ProjectSignOff> projectSignOffs = projectSignOffDao.selectByUserProject(sysUser.getId(), projectId);
-        return new Resp.Builder<List&lt;ProjectSignOff>>().setData(projectSignOffs).ok();
+        List<ProjectSignOff> projectSignOffs = projectSignOffDao.selectByUserProject(sysUser.getId(), projectId);
+        return new Resp.Builder<List<ProjectSignOff>>().setData(projectSignOffs).ok();
     }
 }
 }

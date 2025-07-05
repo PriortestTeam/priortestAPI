@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import com.alibaba.fastjson2.JSON;
 import com.hu.oneclick.common.constant.FieldConstant;
 import com.hu.oneclick.common.constant.TwoConstant;
@@ -19,37 +18,24 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 /**
  * @author qingyang
  */
 @Service
-
-
 public class CustomFieldServiceImpl implements CustomFieldService {
-
     private final static Logger logger = LoggerFactory.getLogger(CustomFieldServiceImpl.class);
-
     private final JwtUserServiceImpl jwtUserServiceImpl;
-
     private final CustomFieldDao customFieldDao;
-
     private final FieldRadioDao fieldRadioDao;
-
     private final FieldTextDao fieldTextDao;
-
     private final FieldDropDownDao fieldDropDownDao;
-
     private final JwtUserServiceImpl jwtUserService;
-
     private final ViewDownChildParamsDao viewDownChildParamsDao;
-
     public CustomFieldServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, CustomFieldDao customFieldDao, FieldRadioDao fieldRadioDao, FieldTextDao fieldTextDao, FieldDropDownDao fieldDropDownDao, JwtUserServiceImpl jwtUserService, ViewDownChildParamsDao viewDownChildParamsDao) {
         this.jwtUserServiceImpl = jwtUserServiceImpl;
         this.customFieldDao = customFieldDao;
@@ -59,26 +45,22 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         this.jwtUserService = jwtUserService;
         this.viewDownChildParamsDao = viewDownChildParamsDao;
     }
-
     @Override
-    public Resp<List&lt;CustomField>> queryCustomList(CustomField customField) {
+    public Resp<List<CustomField>> queryCustomList(CustomField customField) {
         customField.setUserId(jwtUserServiceImpl.getMasterId();
-
-        List&lt;CustomField> customFields = null;
+        List<CustomField> customFields = null;
         try {
             customFields = customFieldDao.queryAll(customField);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new Resp.Builder<List&lt;CustomField>>().setData(customFields).total(customFields).ok();
+        return new Resp.Builder<List<CustomField>>().setData(customFields).total(customFields).ok();
     }
-
     @Override
     public Resp<FieldRadio> queryFieldRadioById(String customFieldId) {
         FieldRadio fieldRadio = fieldRadioDao.queryFieldRadioById(customFieldId, jwtUserServiceImpl.getMasterId();
         return new Resp.Builder<FieldRadio>().setData(fieldRadio).ok();
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> addCustomRadio(FieldRadio fieldRadio) {
@@ -88,7 +70,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             fieldRadio.setUserId(masterId);
             String projectId = fieldRadio.getProjectId();
             Result.verifyDoesExist(queryByFieldName(fieldRadio.getFieldName(), projectId), fieldRadio.getFieldName();
-
             addViewDownChildParams(fieldRadio);
             return Result.addResult((customFieldDao.insert(fieldRadio) > 0
                 && fieldRadioDao.insert(fieldRadio) > 0) ? 1 : 0);
@@ -98,7 +79,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateCustomRadio(FieldRadio fieldRadio) {
@@ -117,7 +97,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteCustomRadio(String id) {
@@ -131,21 +110,18 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     public Resp<FieldText> queryFieldTextById(String customFieldId) {
         FieldText fieldText = fieldTextDao.queryFieldTextById(customFieldId, jwtUserServiceImpl.getMasterId();
         fieldText.setDefaultValues(TwoConstant.convertToList(fieldText.getDefaultValue();
         return new Resp.Builder<FieldText>().setData(fieldText).ok();
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> addCustomText(FieldText fieldText) {
         fieldText.subVerify();
         return addCustomText2(fieldText);
     }
-
     /**
      * 添加文本框
      *
@@ -158,7 +134,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         try {
             fieldText.setUserId(jwtUserServiceImpl.getMasterId();
             Result.verifyDoesExist(queryByFieldName(fieldText.getFieldName(), fieldText.getProjectId(), fieldText.getFieldName();
-
             addViewDownChildParams(fieldText);
             return Result.addResult((customFieldDao.insert(fieldText) > 0
                 && fieldTextDao.insert(fieldText) > 0) ? 1 : 0);
@@ -168,7 +143,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateCustomText(FieldText fieldText) {
@@ -178,7 +152,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         updateViewDownChildParams(fieldText);
         return updateCustomText2(fieldText);
     }
-
     private Resp<String> updateCustomText2(FieldText fieldText) {
         try {
             fieldText.setUserId(jwtUserServiceImpl.getMasterId();
@@ -191,7 +164,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteCustomText(String id) {
@@ -205,7 +177,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> addCustomRichText(FieldRichText fieldRichText) {
@@ -214,7 +185,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         BeanUtils.copyProperties(fieldRichText, fieldText);
         return addCustomText2(fieldText);
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateCustomRichText(FieldRichText fieldRichText) {
@@ -225,14 +195,12 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         updateViewDownChildParams(fieldRichText);
         return updateCustomText2(fieldText);
     }
-
     @Override
     public Resp<FieldDropDown> queryFieldDropDownById(String customFieldId) {
         FieldDropDown fieldDropDown = fieldDropDownDao.queryFieldTextById(customFieldId, jwtUserServiceImpl.getMasterId();
         fieldDropDown.setDropDowns(TwoConstant.convertToList(fieldDropDown.getDropDownList();
         return new Resp.Builder<FieldDropDown>().setData(fieldDropDown).ok();
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> addCustomDropDown(FieldDropDown fieldDropDown) {
@@ -240,7 +208,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             fieldDropDown.subVerify();
             fieldDropDown.setUserId(jwtUserServiceImpl.getMasterId();
             Result.verifyDoesExist(queryByFieldName(fieldDropDown.getFieldName(), fieldDropDown.getProjectId(), fieldDropDown.getFieldName();
-
             addViewDownChildParams(fieldDropDown);
             return Result.addResult((customFieldDao.insert(fieldDropDown) > 0
                 && fieldDropDownDao.insert(fieldDropDown) > 0) ? 1 : 0);
@@ -250,7 +217,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateCustomDropDown(FieldDropDown fieldDropDown) {
@@ -268,7 +234,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> deleteCustomDropDown(String customFieldId) {
@@ -282,7 +247,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     /**
      * 查询字段在当前项目中是否存在
      *
@@ -298,17 +262,15 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         }
         return null;
     }
-
     @Override
-    public Resp<List&lt;Object>> getAllCustomField(CustomFieldDto customFieldDto) {
-
+    public Resp<List<Object>> getAllCustomField(CustomFieldDto customFieldDto) {
         CustomField customField = new CustomField();
         customField.setProjectId(customFieldDto.getProjectId();
-        Resp<List&lt;CustomField>> listResp = queryCustomList(customField);
+        Resp<List<CustomField>> listResp = queryCustomList(customField);
         //获取该用户该项目下的用户字段
-        List&lt;CustomField> data = listResp.getData();
+        List<CustomField> data = listResp.getData();
         //过滤的list
-        List&lt;CustomField> collect = new ArrayList&lt;>();
+        List<CustomField> collect = new ArrayList<>();
         //按照scope分数据
         String scope = customFieldDto.getScope();
         if (StringUtils.isEmpty(scope) {
@@ -346,14 +308,11 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                 }).collect(Collectors.toList();
                 break;
             default:
-
         }
         //存储
-        List&lt;Object> list = new ArrayList&lt;>();
-
+        List<Object> list = new ArrayList<>();
         //获取对应scope下的字段类型
         for (CustomField field : collect) {
-
             String type = field.getType();
             switch (type) {
                 case FieldConstant.type.DROPDOWN:
@@ -376,13 +335,9 @@ public class CustomFieldServiceImpl implements CustomFieldService {
                 default:
                     break;
             }
-
         }
-
-
-        return new Resp.Builder<List&lt;Object>>().setData(list).ok();
+        return new Resp.Builder<List<Object>>().setData(list).ok();
     }
-
     /**
      * 添加视图字段集合
      *
@@ -392,17 +347,13 @@ public class CustomFieldServiceImpl implements CustomFieldService {
      * @Date: 2021/11/26
      */
     private <T> void addViewDownChildParams(T cla) {
-
         ViewDownChildParams viewDownChildParams = new ViewDownChildParams();
         if (cla instanceof CustomField) {
             CustomField customField = (CustomField) cla;
             viewDownChildParams.setUserId(customField.getUserId();
             viewDownChildParams.setProjectId(customField.getProjectId();
         }
-
-
-        List&lt;ViewDownChildParams> viewDownChildParams1 = viewDownChildParamsDao.queryList(viewDownChildParams);
-
+        List<ViewDownChildParams> viewDownChildParams1 = viewDownChildParamsDao.queryList(viewDownChildParams);
         // 设置DefaultValues
         ViewScopeChildParams viewScopeChildParams = new ViewScopeChildParams();
         viewScopeChildParams.setType("fString");
@@ -429,20 +380,18 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             viewScopeChildParams1.setOptionValueCn(fieldDropDown.getFieldName();
             viewDownChildParams.setScope(fieldDropDown.getScope();
         }
-
         if (viewDownChildParams1.isEmpty() {
             Date time = new Date();
             viewDownChildParams.setCreateTime(time);
             viewScopeChildParams.setSelectChild(Collections.singletonList(viewScopeChildParams1);
             //对应view_down_child_params表
-
             viewDownChildParams.setDefaultValues(JSON.toJSONString(viewScopeChildParams);
             viewDownChildParamsDao.insert(viewDownChildParams);
         } else if (viewDownChildParams1.size() == 1) {
             String defaultValues = viewDownChildParams.getDefaultValues();
-            List&lt;ViewScopeChildParams> childParams = JSON.parseArray(defaultValues, ViewScopeChildParams.class);
+            List<ViewScopeChildParams> childParams = JSON.parseArray(defaultValues, ViewScopeChildParams.class);
             if (childParams == null) {
-                childParams = new ArrayList&lt;>();
+                childParams = new ArrayList<>();
             }
             childParams.add(viewScopeChildParams);
             viewDownChildParams.setDefaultValues(JSON.toJSONString(childParams);
@@ -450,9 +399,7 @@ public class CustomFieldServiceImpl implements CustomFieldService {
         } else {
             throw new BizException("系统异常");
         }
-
     }
-
     /**
      * 根据projectid和userid删除视图字段
      *
@@ -464,7 +411,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
     private Integer deleteViewDownChildParams(CustomField customField) {
         return viewDownChildParamsDao.deleteByProjectAndUserId(customField.getProjectId(), customField.getUserId();
     }
-
     /**
      * 更新视图字段
      *
@@ -482,7 +428,6 @@ public class CustomFieldServiceImpl implements CustomFieldService {
             addViewDownChildParams(cla);
         }
     }
-
 }
 }
 }

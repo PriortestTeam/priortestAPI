@@ -10,13 +10,9 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class TestCycleDto extends TestCycle {
-
     private ViewTreeDto viewTreeDto;
-
     private String filter;
-
     private List<TestCase> testCases;
-
 }
 }
 }

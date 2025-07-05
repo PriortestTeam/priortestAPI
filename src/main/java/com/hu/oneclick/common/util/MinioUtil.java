@@ -1,13 +1,9 @@
-
 package com.hu.oneclick.common.util;
-
 import io.minio.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.InputStream;
-
 /**
  * @Author: zhangqingyang
  * @Description
@@ -15,11 +11,8 @@ import java.io.InputStream;
  * @Modified By:
  */
 
-
 public class MinioUtil {
-
     private final static Logger logger = LoggerFactory.getLogger(MinioUtil.class);
-
     /**
      * 创建具有给定区域的新存储桶
      */
@@ -35,7 +28,6 @@ public class MinioUtil {
         }
         return flag;
     }
-
     /**
      * 如果存储桶不存在 创建存储桶
      *
@@ -44,7 +36,6 @@ public class MinioUtil {
      * @throws Exception
      */
     public static void checkBucket(MinioClient client, String bucketName) throws Exception {
-
         // 如果存储桶不存在 创建存储桶
         if (!client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build() {
             client.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build();
@@ -72,7 +63,6 @@ public class MinioUtil {
             client.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(bucketName).config(builder).build();
         }
     }
-
     /**
      * 删除一个桶
      *
@@ -92,7 +82,6 @@ public class MinioUtil {
         }
         return flag;
     }
-
     /**
      * 在给定存储桶中以InputStream的形式获取整个对象的数据。
      * 使用后必须关闭InputStream，否则连接将保持打开状态
@@ -114,7 +103,6 @@ public class MinioUtil {
         }
         return stream;
     }
-
     /**
      * 使用指定的元数据将文件中的内容作为对象上传到给定存储桶，并使用sse密钥进行加密。
      * 如果对象大于5MB，客户端将自动使用多部分会话。
@@ -142,7 +130,6 @@ public class MinioUtil {
             logger.error("MinioUtil.class#putObject() error:{}" + e.getMessage();
         }
     }
-
     /**
      * 删除对象
      *

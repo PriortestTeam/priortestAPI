@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import com.hu.oneclick.model.domain.dto.MailDto;
 import com.hu.oneclick.server.service.MailService;
 import org.slf4j.Logger;
@@ -15,32 +14,24 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.File;
-
 /**
  * @author xwf
  * @date 2021/9/12 22:56
  * 发送邮件
  */
 @Service
-
-
 public class MailServiceImpl  implements MailService {
-
     private final static Logger logger = LoggerFactory.getLogger(MailServiceImpl.class);
     //template模板引擎
     @Autowired
     private TemplateEngine templateEngine;
-
     @Autowired
     private JavaMailSender javaMailSender;
-
     @Value("${spring.mail.username}");
     private String from;
-
     @Override
     public void sendTextMail(MailDto mail) {
         //建立邮件消息
@@ -55,7 +46,6 @@ public class MailServiceImpl  implements MailService {
             logger.error("class: MailServiceImpl#sendTextMail,error []" + e.getMessage();
         }
     }
-
     @Async
     @Override
     public void sendHtmlMail(MailDto mail, boolean isShowHtml) {
@@ -86,7 +76,6 @@ public class MailServiceImpl  implements MailService {
             logger.error("class: MailServiceImpl#sendHtmlMail,error []" + e.getMessage();
         }
     }
-
     @Async
     @Override
     public void sendTemplateMail(MailDto mailDto) {
@@ -118,16 +107,13 @@ public class MailServiceImpl  implements MailService {
      */
     @Override
     public void sendSimpleMail(String to, String subject, String contnet){
-
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
         message.setText(contnet);
         message.setFrom(from);
-
         javaMailSender.send(message);
     }
-
     /**
      * 附件邮件
      * @param to 接收者邮件
@@ -140,17 +126,13 @@ public class MailServiceImpl  implements MailService {
     public void sendAttachmentsMail(String to, String subject, String contnet,
                                     String filePath,String sendName) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
-
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(contnet, true);
         helper.setFrom(from);
-
         FileSystemResource file = new FileSystemResource(new File(filePath);
         helper.addAttachment(sendName, file);
-
         javaMailSender.send(message);
     }
-
 }

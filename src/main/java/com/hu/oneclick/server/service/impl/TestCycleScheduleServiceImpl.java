@@ -22,21 +22,18 @@ import java.util.List;
  */
 @Service
 public class TestCycleScheduleServiceImpl implements TestCycleScheduleService {
-
     @Autowired
     private TestCycleScheduleDao testCycleScheduleDao;
     @Autowired
     private TestCycleScheduleModelDao testCycleScheduleModelDao;
-
 //    @Scheduled(fixedDelay = 1000 * 60)
     public void jenkinsSchedule() {
-        List&lt;TestCycleSchedule> testCycleSchedules = testCycleScheduleDao.selectAllByRuntime(new Date();
+        List<TestCycleSchedule> testCycleSchedules = testCycleScheduleDao.selectAllByRuntime(new Date();
         for (TestCycleSchedule testCycleSchedule : testCycleSchedules) {
             //当前时间
             Date date = new Date();
             Date runTime = testCycleSchedule.getRunTime();
             long between = DateUtil.between(date, runTime, DateUnit.MS);
-
             if (between <= 1000 * 60L) {
                 Integer scheduleModelId = testCycleSchedule.getScheduleModelId();
                 TestCycleScheduleModel testCycleScheduleModel = testCycleScheduleModelDao.selectByPrimaryKey(scheduleModelId);
@@ -54,7 +51,6 @@ public class TestCycleScheduleServiceImpl implements TestCycleScheduleService {
                     testCycleSchedule.setRunStatus(JenkinsRunConstant.RUNSUCCESS);
                     testCycleScheduleDao.updateByPrimaryKeySelective(testCycleSchedule);
                 }
-
             }
         }
     }

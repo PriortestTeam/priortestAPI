@@ -11,40 +11,28 @@ import java.util.List;
 @RestController
 @RequestMapping("attachment")
 public class AttachmentController {
-
     private final AttachmentService attachmentService;
-
     public AttachmentController(AttachmentService attachmentService) {
         this.attachmentService = attachmentService;
     }
-
-
     @GetMapping("list")
     public Resp<List<Attachment>> list(@RequestParam String type, @RequestParam String linkId){
-
         return attachmentService.list(type,linkId);
     }
-
     @PostMapping("addAttachment")
     public Resp<String> addAttachment(@RequestBody MultipartFile file,
                                       @RequestParam String type,
                                       @RequestParam String linkId){
         return attachmentService.addAttachment(file,type,linkId);
     }
-
     @PostMapping("updateAttachment/{attachmentId}")
     public Resp<String> updateAttachment(@RequestBody MultipartFile file, @PathVariable String attachmentId){
         return attachmentService.updateAttachment(file,attachmentId);
     }
-
     @DeleteMapping("deleteAttachment/{attachmentId}")
     public Resp<String> deleteAttachment(@PathVariable String attachmentId){
         return attachmentService.deleteAttachment(attachmentId);
     }
-
-
-
-
 }
 }
 }

@@ -1,5 +1,4 @@
 package com.hu.oneclick.quartz;
-
 import cn.hutool.extra.spring.SpringUtil;
 import com.hu.oneclick.quartz.config.JenkinsConfig;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -14,18 +13,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
-
 @Component
 @Slf4j
-
-
 public class JenkinsManager {
-
     private static final JenkinsConfig jenkinsConfig = SpringUtil.getBean(JenkinsConfig.class);
-
     private JenkinsHttpClient jenkinsHttpClient = null;
     private JenkinsServer jenkinsServer = null;
-
     @PostConstruct
     public void init() {
         try {
@@ -35,7 +28,6 @@ public class JenkinsManager {
             log.error("jenkins init error", e);
         }
     }
-
     /**
      * 创建Job
      *
@@ -46,7 +38,6 @@ public class JenkinsManager {
     public void createJob(String jobName, String xml) throws IOException {
         jenkinsServer.createJob(jobName, xml, true);
     }
-
     /**
      * 更新Job
      *
@@ -57,7 +48,6 @@ public class JenkinsManager {
     public void updateJob(String jobName, String xml) throws IOException {
         jenkinsServer.updateJob(jobName, xml, true);
     }
-
     /**
      * 获取 Job 基本信息
      *
@@ -67,14 +57,12 @@ public class JenkinsManager {
     public JobWithDetails getJob(String jobName) throws IOException {
         return jenkinsServer.getJob(jobName);
     }
-
     /**
      * 获取 Job 列表
      */
-    public Map&lt;String, Job> getJobList() throws IOException {
+    public Map<String, Job> getJobList() throws IOException {
         return jenkinsServer.getJobs();
     }
-
     /**
      * 执行无参数 Job
      *
@@ -83,16 +71,14 @@ public class JenkinsManager {
     public void buildJob(String jobName) throws IOException {
         jenkinsServer.getJob(jobName).build(true);
     }
-
     /**
      * 执行带参数 Job
      *
      * @param jobName Job名称
      */
-    public void buildParamJob(String jobName, Map&lt;String, String> param) throws IOException {
+    public void buildParamJob(String jobName, Map<String, String> param) throws IOException {
         jenkinsServer.getJob(jobName).build(param, true);
     }
-
     /**
      * 停止 Job
      *
@@ -104,7 +90,6 @@ public class JenkinsManager {
         // 停止最后的 build
         build.Stop(true);
     }
-
     /**
      * 删除 Job
      *
@@ -113,7 +98,6 @@ public class JenkinsManager {
     public void deleteJob(String jobName) throws IOException {
         jenkinsServer.deleteJob(jobName, true);
     }
-
 }
 }
 }

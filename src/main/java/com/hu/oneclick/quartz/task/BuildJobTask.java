@@ -1,5 +1,4 @@
 package com.hu.oneclick.quartz.task;
-
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -11,12 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-
 import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 /**
  * 构建 Jenkins Job
  *
@@ -24,23 +21,18 @@ import java.net.URISyntaxException;
  * @date 2023/07/11
  */
 @Slf4j
-
-
 public class BuildJobTask extends QuartzJobBean {
-
     @Resource
     private JenkinsManager jenkinsManager;
     private JenkinsServer jenkinsServer = null;
     private String jobName = "";
-
-
     @Override
     protected void executeInternal(JobExecutionContext context) {
         try {
             // 获取参数列表
             JobDataMap jobDataMap = context.getMergedJobDataMap();
             String jenkinsJobName = jobDataMap.getString("jenkinsJobName");
-//            Map&lt;String, Object> jenkinsParams = (Map&lt;String, Object>) jobDataMap.get("jenkinsParams");
+//            Map<String, Object> jenkinsParams = (Map<String, Object>) jobDataMap.get("jenkinsParams");
             // 初始化 Jenkins 服务
             initJenkinsServer(jenkinsJobName);
             // 当前时间
@@ -55,7 +47,6 @@ public class BuildJobTask extends QuartzJobBean {
             log.error(e.getMessage(), e);
         }
     }
-
     private void initJenkinsServer(String jenkinsJobName) throws URISyntaxException {
         log.info("开始初始化 Jenkins 服务");
         // 获取URL
@@ -70,7 +61,6 @@ public class BuildJobTask extends QuartzJobBean {
         jobName = job;
         jenkinsServer = new JenkinsServer(new URI(StrUtil.format("http://{}", ip_port), user, token);
     }
-
 }
 }
 }

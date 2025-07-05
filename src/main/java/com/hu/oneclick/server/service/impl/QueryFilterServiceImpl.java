@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.service.impl;
-
 import com.google.common.base.CaseFormat;
 import com.hu.oneclick.common.constant.TwoConstant;
 import com.hu.oneclick.dao.ViewDao;
@@ -10,51 +9,42 @@ import com.hu.oneclick.server.service.QueryFilterService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * @author qingyang
  */
 @Service
-
-
 public class QueryFilterServiceImpl implements QueryFilterService {
-
     private final ViewDao viewDao;
-
     public QueryFilterServiceImpl(ViewDao viewDao) {
         this.viewDao = viewDao;
     }
-
     @Override
     public String mysqlFilterProcess(ViewTreeDto viewTr,String masterId) {
         if (viewTr == null){
             return null;
         }
-        List&lt;ViewTreeDto> viewTreeDtoList = viewDao.queryViewTreeById(masterId, viewTr.getId().toString();
+        List<ViewTreeDto> viewTreeDtoList = viewDao.queryViewTreeById(masterId, viewTr.getId().toString();
         if (viewTreeDtoList == null || viewTreeDtoList.size() <= 0){
             return null;
         }
-
         StringBuilder rs = new StringBuilder();
         //1 找出自己及所有后代的Filter
-        List&lt;View> listView = antiRecursion(viewTreeDtoList.get(0),null);
+        List<View> listView = antiRecursion(viewTreeDtoList.get(0),null);
         //2 取 对象
         for (View view : listView) {
-            List&lt;OneFilter> oneFilters = TwoConstant.convertToList(view.getFilter(), OneFilter.class);
+            List<OneFilter> oneFilters = TwoConstant.convertToList(view.getFilter(), OneFilter.class);
             //3 根据字段类型进行sql 拼接
             rs.append(antiOneFilter(oneFilters);
             rs.append(" ");
         }
         return rs.toString();
     }
-
     /**
      * 反解oneFilters
      */
-    private String antiOneFilter(List&lt;OneFilter> oneFilters){
+    private String antiOneFilter(List<OneFilter> oneFilters){
         StringBuilder rs = new StringBuilder();
         if (oneFilters == null || oneFilters.size() <=0){
             return "";
@@ -96,27 +86,24 @@ public class QueryFilterServiceImpl implements QueryFilterService {
         }
         return rs.toString();
     }
-
-
     /**
      * 反解递归
      * @param viewTr
      * @param listView
      * @return
      */
-    private List&lt;View> antiRecursion(ViewTreeDto viewTr, List&lt;View> listView){
+    private List<View> antiRecursion(ViewTreeDto viewTr, List<View> listView){
         if (viewTr == null){return null;}
         if (listView == null){
-            listView = new ArrayList&lt;>();
+            listView = new ArrayList<>();
         }
         View view = new View();
         BeanUtils.copyProperties(viewTr,view);
         listView.add(0,view);
-
-        List&lt;ViewTreeDto> childViews = viewTr.getChildViews();
+        List<ViewTreeDto> childViews = viewTr.getChildViews();
         if(childViews != null){
             for (ViewTreeDto childView : childViews) {
-                List&lt;View> resultViews = antiRecursion(childView, listView);
+                List<View> resultViews = antiRecursion(childView, listView);
             }
         }
         return listView;

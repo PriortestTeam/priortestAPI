@@ -1,5 +1,4 @@
 package com.hu.oneclick.server.user;
-
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -21,45 +20,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 /**
  * @author qingyang
  */
 @Service
-
-
 public class SubUserServiceImpl implements SubUserService {
-
     private final static Logger logger = LoggerFactory.getLogger(SubUserServiceImpl.class);
-
     private final JwtUserServiceImpl jwtUserServiceImpl;
-
     private final SysUserDao sysUserDao;
-
     private final SubUserProjectDao subUserProjectDao;
-
     private final ProjectDao projectDao;
-
     private final MailService mailService;
-
     private final RedissonClient redisClient;
-
     private final RoleFunctionDao roleFunctionDao;
-
     private final SysUserBusinessDao sysUserBusinessDao;
-
     private final SysRoleDao sysRoleDao;
-
     private final SysUserProjectDao sysUserProjectDao;
-
     @Value("${onclick.default.photo}");
     private String defaultPhoto;
-
     public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, SubUserProjectDao subUserProjectDao, ProjectDao projectDao,
                               MailService mailService, RedissonClient redisClient, RoleFunctionDao roleFunctionDao, SysUserBusinessDao sysUserBusinessDao,
                               SysRoleDao sysRoleDao, SysUserProjectDao sysUserProjectDao) {
@@ -74,59 +56,47 @@ public class SubUserServiceImpl implements SubUserService {
         this.sysRoleDao = sysRoleDao;
         this.sysUserProjectDao = sysUserProjectDao;
     }
-
     @Override
-    public Resp<List&lt;Map&lt;String, Object>>> querySubUsers(int pageNum, int pageSize) {
+    public Resp<List<Map<String, Object>>> querySubUsers(int pageNum, int pageSize) {
         SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
         Long roomId = sysUser.getRoomId();
-
-        List&lt;Map&lt;String, Object>> sysUsers = sysUserDao.queryUsersByRoomId(new BigInteger(roomId.toString(), pageNum, pageSize);
-
-        List&lt;BigInteger> ids = sysUsers.stream().map(obj -> new BigInteger(obj.get("id").toString().collect(Collectors.toList();
-        List&lt;Map&lt;String, Object>> projects = sysUserProjectDao.queryProjectWithUsers(ids);
-
-        List&lt;SysRole> sysRoles = sysRoleDao.queryAll(null);
-
-        for (Map&lt;String, Object> map : sysUsers) {
+        List<Map<String, Object>> sysUsers = sysUserDao.queryUsersByRoomId(new BigInteger(roomId.toString(), pageNum, pageSize);
+        List<BigInteger> ids = sysUsers.stream().map(obj -> new BigInteger(obj.get("id").toString().collect(Collectors.toList();
+        List<Map<String, Object>> projects = sysUserProjectDao.queryProjectWithUsers(ids);
+        List<SysRole> sysRoles = sysRoleDao.queryAll(null);
+        for (Map<String, Object> map : sysUsers) {
             BigInteger userid = new BigInteger(map.get("id").toString();
-
             String roleName = sysRoles.stream().filter(obj -> obj.getId().equals(map.get("sysRoleId").toString()
                 .map(SysRole::getRoleName).findFirst().orElse(null);
             map.put("sysRoleName", roleName);
-
-            Optional<Map&lt;String, Object>> first = projects.stream().filter(m -> new BigInteger(m.get("userId").toString().equals(userid)
+            Optional<Map<String, Object>> first = projects.stream().filter(m -> new BigInteger(m.get("userId").toString().equals(userid)
                 && Integer.parseInt(m.get("is_default").toString() == 1).findFirst();
             map.put("openProjectByDefaultId", first.map(obj -> obj.get("projectId").toString().orElse(null);
             map.put("openProjectByDefaultName", first.map(obj -> obj.get("title").toString().orElse(null);
-
-            List&lt;Map&lt;String, Object>> linkedProject = projects.stream().filter(m -> new BigInteger(m.get("userId").toString().equals(userid)
+            List<Map<String, Object>> linkedProject = projects.stream().filter(m -> new BigInteger(m.get("userId").toString().equals(userid)
                 .map(m -> {
-                    Map&lt;String, Object> linkedMap = new HashMap&lt;>();
+                    Map<String, Object> linkedMap = new HashMap<>();
                     linkedMap.put("projectId", m.get("projectId").toString();
                     linkedMap.put("title", m.get("title").toString();
                     return linkedMap;
                 }).collect(Collectors.toList();
-
             map.put("projectIdStr", linkedProject);
         }
-
-        return new Resp.Builder<List&lt;Map&lt;String, Object>>>().setData(sysUsers).total(sysUsers).ok();
+        return new Resp.Builder<List<Map<String, Object>>>().setData(sysUsers).total(sysUsers).ok();
     }
-
-    private void accept(SubUserDto subUserDto, List&lt;Project> projects) {
+    private void accept(SubUserDto subUserDto, List<Project> projects) {
         //用户名裁剪
         subUserDto.setEmail(TwoConstant.subUserNameCrop(subUserDto.getEmail();
         //整合关联的项目
         queryLikeProjectNames(subUserDto, projects);
     }
-
     /**
      * 整合关联的项目
      *
      * @param subUserDto
      */
-    private void queryLikeProjectNames(SubUserDto subUserDto, List&lt;Project> projects) {
-        List&lt;String> lists = new ArrayList&lt;>(projects.size();
+    private void queryLikeProjectNames(SubUserDto subUserDto, List<Project> projects) {
+        List<String> lists = new ArrayList<>(projects.size();
         String projectIdStr = subUserDto.getProjectIdStr();
         if (StringUtils.isEmpty(projectIdStr) {
             return;
@@ -143,7 +113,6 @@ public class SubUserServiceImpl implements SubUserService {
         //将项目名称列表转换成 字符串
         subUserDto.setProjectsSts(StringUtils.join(lists, "; ");
     }
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> createSubUser(SubUserDto sysUser) {
@@ -157,21 +126,18 @@ public class SubUserServiceImpl implements SubUserService {
             SysUser masterUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
             //拼接成员用户邮箱
             String oldEmail = sysUser.getEmail();
-            List&lt;SysUser> sysUsers = sysUserDao.queryByLikeEmail(oldEmail);
+            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(oldEmail);
             if (!sysUsers.isEmpty() {
                 throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), "邮箱" + SysConstantEnum.DATE_EXIST.getValue();
             }
-
             //验证用户是否存在
             verifySubEmailExists(oldEmail);
-
             sysUser.setEmail(oldEmail);
             //设置默认头像
             sysUser.setPhoto(defaultPhoto);
             sysUser.setSysRoleId(sysUser.getSysRoleId();
             sysUser.setManager(OneConstant.PLATEFORM_USER_TYPE.SUB_USER);
             sysUser.setRoomId(masterUser.getRoomId();
-
             if (sysUserDao.insert(sysUser) > 0) {
                 String[] ids = sysUser.getProjectIdStr().split(",");
                 SysUserProject sysUserProject;
@@ -184,17 +150,12 @@ public class SubUserServiceImpl implements SubUserService {
                     sysUserProject.setProjectId(new BigInteger(id);
                     sysUserProjectDao.insert(sysUserProject);
                 }
-
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-
                 mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + oldEmail +
                     "&params=" + linkStr);
-
                 //2022/10/31 WangYiCheng 新增用户，根据角色，设置默认权限
                 RoleFunction roleFunction = roleFunctionDao.queryByRoleId(sysUser.getSysRoleId();
-
-
                 SysUserBusiness sysUserBusiness = new SysUserBusiness();
                 sysUserBusiness.setType("RoleFunctions");
                 sysUserBusiness.setValue(roleFunction.getCheckFunctionId();
@@ -203,24 +164,18 @@ public class SubUserServiceImpl implements SubUserService {
                 sysUserBusiness.setUserId(Long.valueOf(sysUser.getId();
                 sysUserBusiness.setUserName(sysUser.getUserName();
                 sysUserBusiness.setRoleId(Long.valueOf(sysUser.getSysRoleId();
-
                 SysRole sysRole = sysRoleDao.queryById(String.valueOf(sysUser.getSysRoleId();
                 sysUserBusiness.setRoleName(sysRole.getRoleName();
-
                 String[] projectIds = sysUser.getProjectIdStr().split(",");
-
                 for (String projectId : projectIds) {
                     Project project = projectDao.queryById(projectId);
                     sysUserBusiness.setProjectId(Long.valueOf(project.getId();
                     sysUserBusiness.setProjectName(project.getTitle();
                     sysUserBusinessDao.insertSelective(sysUserBusiness);
                 }
-
-
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.CREATE_SUB_USER_SUCCESS.getCode(),;
                     SysConstantEnum.CREATE_SUB_USER_SUCCESS.getValue();
             }
-
             throw new BizException(SysConstantEnum.CREATE_SUB_USER_FAILED.getCode(),
                 SysConstantEnum.CREATE_SUB_USER_FAILED.getValue();
         } catch (BizException e) {
@@ -228,39 +183,30 @@ public class SubUserServiceImpl implements SubUserService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage();
         }
     }
-
     @Override
     public Resp<String> updateSubUser(SubUserDto subUserDto) {
         SysUser sysUserBefore = sysUserDao.queryById(subUserDto.getId();
-
         // 设置用户
         SysUser sysUser = new SysUser();
         sysUser.setId(subUserDto.getId();
         sysUser.setUserName(subUserDto.getUserName();
         sysUser.setSysRoleId(subUserDto.getSysRoleId();
         sysUserDao.updateSubUser(sysUser);
-
         QueryWrapper<SysUserProject> query = Wrappers.query();
         query.eq("user_id", new BigInteger(subUserDto.getId();
-        List&lt;SysUserProject> userProjects = sysUserProjectDao.selectList(query);
-
+        List<SysUserProject> userProjects = sysUserProjectDao.selectList(query);
         String defaultProject = userProjects.stream().filter(obj -> obj.getIsDefault() == 1).map(obj -> obj.getProjectId().toString()
             .findFirst().orElse(null);
-
-        List&lt;String> projectIdsBefore = userProjects.stream().map(arg -> arg.getProjectId().toString().collect(Collectors.toList();
-
-        List&lt;String> incomingIds = new ArrayList&lt;>(List.of(subUserDto.getProjectIdStr().split(",");
-
-        List&lt;String> deletedIds = new ArrayList&lt;>(projectIdsBefore);
+        List<String> projectIdsBefore = userProjects.stream().map(arg -> arg.getProjectId().toString().collect(Collectors.toList();
+        List<String> incomingIds = new ArrayList<>(List.of(subUserDto.getProjectIdStr().split(",");
+        List<String> deletedIds = new ArrayList<>(projectIdsBefore);
         deletedIds.removeAll(incomingIds);
-
         if (!deletedIds.isEmpty() {
             QueryWrapper<SysUserProject> query2 = Wrappers.query();
             query2.eq("user_id", new BigInteger(subUserDto.getId();
             query2.in("project_id", deletedIds.stream().map(BigInteger::new).collect(Collectors.toList();
             sysUserProjectDao.delete(query2);
         }
-
         if (defaultProject == null || !defaultProject.equals(subUserDto.getOpenProjectByDefaultId() {
             if (projectIdsBefore.contains(subUserDto.getOpenProjectByDefaultId() {
                 UpdateWrapper<SysUserProject> update = Wrappers.update();
@@ -275,7 +221,6 @@ public class SubUserServiceImpl implements SubUserService {
                 sysUserProject.setIsDefault(1);
                 sysUserProjectDao.insert(sysUserProject);
             }
-
             if (defaultProject != null && !deletedIds.contains(defaultProject) {
                 UpdateWrapper<SysUserProject> update = Wrappers.update();
                 update.set("is_default", 0);
@@ -284,7 +229,6 @@ public class SubUserServiceImpl implements SubUserService {
                 sysUserProjectDao.update(new SysUserProject(), update);
             }
         }
-
         incomingIds.remove(subUserDto.getOpenProjectByDefaultId();
         if (!incomingIds.isEmpty() {
             incomingIds.removeAll(projectIdsBefore);
@@ -298,14 +242,11 @@ public class SubUserServiceImpl implements SubUserService {
                 }
             }
         }
-
         //business相关
         //如果角色变了，则根据userId删除以前所有business数据，然后插入
         if (subUserDto.getSysRoleId() != sysUserBefore.getSysRoleId() {
             sysUserBusinessDao.deleteByUserId(subUserDto.getId();
-
             RoleFunction roleFunction = roleFunctionDao.queryByRoleId(subUserDto.getSysRoleId();
-
             SysUserBusiness sysUserBusiness = new SysUserBusiness();
             sysUserBusiness.setType("RoleFunctions");
             sysUserBusiness.setValue(roleFunction.getCheckFunctionId();
@@ -315,9 +256,7 @@ public class SubUserServiceImpl implements SubUserService {
             sysUserBusiness.setUserName(subUserDto.getUserName();
             sysUserBusiness.setRoleId(Long.valueOf(subUserDto.getSysRoleId();
             sysUserBusiness.setRoleName(subUserDto.getRoleName();
-
             String[] projectIds = subUserDto.getProjectIdStr().split(",");
-
             for (String projectId : projectIds) {
                 Project project = projectDao.queryById(projectId);
                 sysUserBusiness.setProjectId(Long.valueOf(project.getId();
@@ -325,23 +264,19 @@ public class SubUserServiceImpl implements SubUserService {
                 sysUserBusinessDao.insertSelective(sysUserBusiness);
             }
         } else {
-            List&lt;String> addProjectIds = new ArrayList&lt;>();
-
-            List&lt;String> projectIds = Arrays.asList(subUserDto.getProjectIdStr().split(",");
+            List<String> addProjectIds = new ArrayList<>();
+            List<String> projectIds = Arrays.asList(subUserDto.getProjectIdStr().split(",");
             for (int i = 0; i < projectIdsBefore.size(); i++) {
                 //原来的不在现在的，则是要删除的
                 if (!projectIds.contains(projectIdsBefore.get(i) {
                     sysUserBusinessDao.deleteByUserIdAndProjectId(subUserDto.getId(), projectIdsBefore.get(i);
                 }
             }
-
             for (int i = 0; i < projectIds.size(); i++) {
                 //现在的不在原来的，则是要增加的
                 if (!projectIdsBefore.contains(projectIds.get(i) {
                     addProjectIds.add(projectIds.get(i);
-
                     RoleFunction roleFunction = roleFunctionDao.queryByRoleId(subUserDto.getSysRoleId();
-
                     SysUserBusiness sysUserBusiness = new SysUserBusiness();
                     sysUserBusiness.setType("RoleFunctions");
                     sysUserBusiness.setValue(roleFunction.getCheckFunctionId();
@@ -351,30 +286,23 @@ public class SubUserServiceImpl implements SubUserService {
                     sysUserBusiness.setUserName(subUserDto.getUserName();
                     sysUserBusiness.setRoleId(Long.valueOf(subUserDto.getSysRoleId();
                     sysUserBusiness.setRoleName(subUserDto.getRoleName();
-
                     Project project = projectDao.queryById(projectIds.get(i);
                     sysUserBusiness.setProjectId(Long.valueOf(project.getId();
                     sysUserBusiness.setProjectName(project.getTitle();
                     sysUserBusinessDao.insertSelective(sysUserBusiness);
-
-
                 }
             }
         }
-
         //如果角色没变，根据userId、查询以前所有business的projectIds
         //以前有现在也有，则不动。以前有，现在没有则删除。以前没有，现在有，则增加
         return new Resp.Builder<String>().setData(SysConstantEnum.UPDATE_SUCCESS.getValue().ok();
     }
-
-
     @Override
     @Transactional(rollbackFor = Exception.class);
     public Resp<String> updateSubUserPassword(SubUserDto sysUser) {
         String msg = "接口已删除";
         return new Resp.Builder<String>().buildResult("500", "接口已删除");
     }
-
     @Override
     public Resp<String> deleteSubUser(String id) {
         //删除用户
@@ -384,7 +312,6 @@ public class SubUserServiceImpl implements SubUserService {
             QueryWrapper<SysUserProject> query = Wrappers.query();
             query.eq("user_id", new BigInteger(id);
             sysUserProjectDao.delete(query);
-
 //            projectDao.deleteOpenProjectByUserId(id);
             // 删除bussiness
             sysUserBusinessDao.deleteByUserId(id);
@@ -392,7 +319,6 @@ public class SubUserServiceImpl implements SubUserService {
         }
         return new Resp.Builder<String>().buildResult("500", "删除失败");
     }
-
     /**
      * 验证用户是否存在
      *
@@ -403,7 +329,6 @@ public class SubUserServiceImpl implements SubUserService {
             throw new BizException(SysConstantEnum.SUB_USERNAME_ERROR.getCode(), SysConstantEnum.SUB_USERNAME_ERROR.getValue();
         }
     }
-
     /**
      * 密码加密
      *
@@ -413,7 +338,6 @@ public class SubUserServiceImpl implements SubUserService {
     private String encodePassword(String password) {
         return jwtUserServiceImpl.encryptPassword(password);
     }
-
     /**
      * 返回用户的项目列表
      *
@@ -428,19 +352,15 @@ public class SubUserServiceImpl implements SubUserService {
         SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
         return new Resp.Builder<SubUserProject>().setData(subUserProject).ok();
     }
-
     @Override
-    public Resp<List&lt;Project>> getProjectByUserId() {
+    public Resp<List<Project>> getProjectByUserId() {
         SysUser sysUser = jwtUserServiceImpl.getUserLoginInfo().getSysUser();
         String userId = sysUser.getId();
-
         QueryWrapper<SysUserProject> query = Wrappers.query();
         query.eq("user_id", new BigInteger(userId);
-        List&lt;String> projectIdList = sysUserProjectDao.selectList(query).stream().map(obj -> obj.getProjectId().toString().collect(Collectors.toList();
-
-        List&lt;Project> projectList = projectDao.queryAllByIds(projectIdList);
-
-        return new Resp.Builder<List&lt;Project>>().setData(projectList).total(projectList).ok();
+        List<String> projectIdList = sysUserProjectDao.selectList(query).stream().map(obj -> obj.getProjectId().toString().collect(Collectors.toList();
+        List<Project> projectList = projectDao.queryAllByIds(projectIdList);
+        return new Resp.Builder<List<Project>>().setData(projectList).total(projectList).ok();
     }
 }
 }

@@ -1,5 +1,4 @@
 package com.hu.oneclick.controller;
-
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import com.github.pagehelper.PageInfo;
@@ -16,12 +15,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 /**
  * 测试用例步骤控制器
  *
@@ -33,14 +30,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Tag(name = "测试用例步骤", description = "测试用例步骤相关接口");
 
-
 public class TestCaseStepController extends BaseController {
-
     @Resource
     private TestCaseStepService testCaseStepService;
     @Resource
     private RelationService relationService;
-
     @Operation(summary="列表");
     @PostMapping("/list");
     public Resp<PageInfo<TestCaseStep>> list(@RequestBody TestCaseStepParam param) {
@@ -48,7 +42,6 @@ public class TestCaseStepController extends BaseController {
         List<TestCaseStep> testCaseStepList = testCaseStepService.list(param);
         return new Resp.Builder<PageInfo<TestCaseStep>>().setData(PageInfo.of(testCaseStepList).ok();
     }
-
     @Operation(summary="新增");
     @PostMapping("/save");
     public Resp<?> save(@RequestBody @Validated TestCaseStepSaveDto dto) {
@@ -60,7 +53,6 @@ public class TestCaseStepController extends BaseController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @Operation(summary="修改");
     @PutMapping("/update");
     public Resp<?> update(@RequestBody @Validated TestCaseStepSaveDto dto) {
@@ -72,14 +64,12 @@ public class TestCaseStepController extends BaseController {
             return new Resp.Builder<>().fail();
         }
     }
-
     @Operation(summary="详情");
     @GetMapping("/info/{id}");
     public Resp<TestCaseStep> info(@PathVariable Long id) {
         TestCaseStep testCase = testCaseStepService.info(id);
         return new Resp.Builder<TestCaseStep>().setData(testCase).ok();
     }
-
     @Operation(summary="删除");
     @DeleteMapping("/delete/{ids}");
     public Resp<?> delete(@PathVariable Long[] ids) {
@@ -91,7 +81,6 @@ public class TestCaseStepController extends BaseController {
         }
         return new Resp.Builder<TestCaseStep>().ok();
     }
-
     @Operation(summary="查询测试用例关联的所有测试用例步骤");
     @GetMapping("/of/testCase/{testCaseId}");
     public Resp<List<TestCaseStep>> getTestCaseSteps(@PathVariable Long testCaseId) {
@@ -102,7 +91,6 @@ public class TestCaseStepController extends BaseController {
         }
         return new Resp.Builder<List<TestCaseStep>>().setData(testCaseStepService.lambdaQuery().in(TestCaseStep::getId, testCaseStepIdList.stream().map(Long::valueOf).collect(Collectors.toList().list().ok();
     }
-
 }
 }
 }

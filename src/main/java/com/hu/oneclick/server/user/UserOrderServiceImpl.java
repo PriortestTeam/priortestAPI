@@ -25,7 +25,6 @@ import java.util.List;
  */
 @Service
 public class UserOrderServiceImpl implements UserOrderService {
-
     @Autowired
     private SysUserOrderDao sysUserOrderDao;
     @Autowired
@@ -36,8 +35,6 @@ public class UserOrderServiceImpl implements UserOrderService {
     private SysUserOrderRecordService sysUserOrderRecordService;
     @Autowired
     private JwtUserServiceImpl jwtUserService;
-
-
     @Override
     public Resp<String> insertOrder(SysUserOrder sysUserOrder) {
         String userId = sysUserOrder.getUserId();
@@ -45,12 +42,10 @@ public class UserOrderServiceImpl implements UserOrderService {
             userId = jwtUserService.getUserLoginInfo().getSysUser().getId();
         }
         sysUserOrder.setUserId(userId);
-
         //初始转态为未支付
         sysUserOrder.setStatus(false);
         long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
         sysUserOrder.setOrderId(orderId);
-
         //订阅时长
         String serviceDuration = sysUserOrder.getServiceDuration();
         int duration = 1;
@@ -68,13 +63,10 @@ public class UserOrderServiceImpl implements UserOrderService {
                 duration = 12;
                 break;
             default:
-
         }
-
         //月付，季付
         String subScription = sysUserOrder.getSubScription();
         int scription = duration;
-
         BigDecimal durationBigDecimal = new BigDecimal(duration);
         //产生订单的数量
         int orderCount;
@@ -94,7 +86,6 @@ public class UserOrderServiceImpl implements UserOrderService {
             default:
         }
         BigDecimal scriptionBigDecimal = new BigDecimal(scription);
-
         BigDecimal divide = new BigDecimal(1);
         if (!"Perpetual".equals(serviceDuration) {
             divide = durationBigDecimal.divide(scriptionBigDecimal);
@@ -102,21 +93,17 @@ public class UserOrderServiceImpl implements UserOrderService {
         orderCount = divide.intValue();
         //付款时间
         Calendar instance = Calendar.getInstance();
-
         for (int i = 0; i < orderCount; i++) {
             instance.add(Calendar.MONDAY, +scription);
             SysUserOrderRecord sysUserOrderRecord = new SysUserOrderRecord();
             addOrderRecord(sysUserOrderRecord, sysUserOrder);
             //原价
             BigDecimal originalPrice = sysUserOrder.getOriginalPrice();
-
             sysUserOrderRecord.setOriginal_price(originalPrice
                     .divide(new BigDecimal(orderCount), 2, RoundingMode.HALF_UP);
-
             //折扣价
             BigDecimal discountPrice = sysUserOrder.getCurrentPrice()
                     .divide(new BigDecimal(orderCount), 2, RoundingMode.HALF_UP);
-
             sysUserOrderRecord.setService_plan_duration(serviceDuration);
             //最后一次付款价格
             int newCount = orderCount - 1;
@@ -128,18 +115,13 @@ public class UserOrderServiceImpl implements UserOrderService {
                 sysUserOrderRecord.setDiscount_price(discountPrice);
             }
             sysUserOrderRecord.setPayment_time(instance.getTime();
-
             sysUserOrderRecordService.insert(sysUserOrderRecord);
-
         }
-
         if (sysUserOrderDao.insertSelective(sysUserOrder) > 0) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.ADD_SUCCESS.getCode(), SysConstantEnum.ADD_SUCCESS.getValue();
         }
         return new Resp.Builder<String>().buildResult(SysConstantEnum.ADD_FAILED.getCode(), SysConstantEnum.ADD_FAILED.getValue();
-
     }
-
     /**
      * 添加订单记录表
      *
@@ -149,7 +131,6 @@ public class UserOrderServiceImpl implements UserOrderService {
      * @Date: 2021/10/20
      */
     private void addOrderRecord(SysUserOrderRecord sysUserOrderRecord, SysUserOrder sysUserOrder) {
-
         //todo 而在提交的订单的时候，来判断用户身份的改变
         sysUserOrderRecord.setOrder_id(sysUserOrder.getOrderId();
         sysUserOrderRecord.setStatus(false);
@@ -167,12 +148,9 @@ public class UserOrderServiceImpl implements UserOrderService {
         sysUserOrderRecord.setDiscount(new BigDecimal("0");
         sysUserOrderRecord.setExpenditure(new BigDecimal("0");
         sysUserOrderRecord.setInvoice(false);
-
     }
-
     @Override
     public Resp<String> insertUserDetail(SysUser sysUser) {
-
         sysUser.setActiveState(OneConstant.ACTIVE_STATUS.PAYING_USERS);
         sysUser.setActivitiDate(new Date(System.currentTimeMillis();
         String userId = sysUser.getId();
@@ -183,7 +161,6 @@ public class UserOrderServiceImpl implements UserOrderService {
         String subScription = orderOfUserId.getSubScription();
         String dataTime = systemConfigService.getData(subScription);
         long addTime = Integer.parseInt(dataTime) * 24 * 60 * 60 * 1000L;
-
         //过期时间
         sysUser.setExpireDate(new Date(expireDate + addTime);
         sysUserDao.update(sysUser);
@@ -192,9 +169,7 @@ public class UserOrderServiceImpl implements UserOrderService {
         orderOfUserId.setStatus(true);
         sysUserOrderDao.updateByUuidSelective(orderOfUserId);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue();
-
     }
-
     /**
      * 查询付款方式
      *
@@ -204,13 +179,12 @@ public class UserOrderServiceImpl implements UserOrderService {
      * @Date: 2021/10/21
      */
     @Override
-    public Resp<List&lt;String>> getPaymentMethod() {
-        List&lt;String> keyForGroup = systemConfigService.getKeyForGroup(OneConstant.SystemConfigGroup.PAYMENTTYPE);
-        return new Resp.Builder<List&lt;String>>().setData(keyForGroup).ok();
+    public Resp<List<String>> getPaymentMethod() {
+        List<String> keyForGroup = systemConfigService.getKeyForGroup(OneConstant.SystemConfigGroup.PAYMENTTYPE);
+        return new Resp.Builder<List<String>>().setData(keyForGroup).ok();
     }
-
     @Override
-    public List&lt;SysUserOrder> listOrder(String userId) {
+    public List<SysUserOrder> listOrder(String userId) {
         return sysUserOrderDao.listOrder(userId);
     }
 }

@@ -7,16 +7,12 @@ import com.hu.oneclick.model.entity.SysCustomFieldExpand;
 import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 public class SysCustomFieldVo implements VerifyParam {
-
     private SysCustomField sysCustomField;
-
     private SysCustomFieldExpand sysCustomFieldExpand;
-
     /**
      *   返回使用，下拉框数据
      */
     private List<String> mergeValues;
-
     @Override
     public void verify() throws BizException {
         if(StringUtils.isEmpty(sysCustomField.getId(){
@@ -30,33 +26,24 @@ public class SysCustomFieldVo implements VerifyParam {
             }
         });
     }
-
-
     public SysCustomField getSysCustomField() {
         return sysCustomField;
     }
-
     public void setSysCustomField(SysCustomField sysCustomField) {
         this.sysCustomField = sysCustomField;
     }
-
     public SysCustomFieldExpand getSysCustomFieldExpand() {
         return sysCustomFieldExpand;
     }
-
     public void setSysCustomFieldExpand(SysCustomFieldExpand sysCustomFieldExpand) {
         this.sysCustomFieldExpand = sysCustomFieldExpand;
     }
-
     public List<String> getMergeValues() {
         return mergeValues;
     }
-
     public void setMergeValues(List<String> mergeValues) {
         this.mergeValues = mergeValues;
     }
-
-
 }
 }
 }

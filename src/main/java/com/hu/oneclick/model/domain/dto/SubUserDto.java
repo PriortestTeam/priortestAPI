@@ -14,24 +14,19 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class SubUserDto extends SysUser implements VerifyParam, Serializable {
-
     private static final long serialVersionUID = 1993189923318507589L;
-
     /**
      * 角色名
      */
     private String roleName;
-
     /**
      * 项目ids 字符传
      */
     private String projectIdStr;
-
     /**
      * 项目1 ； 项目2 。。。。
      */
     private String projectsSts;
-
     /** 默认打开项目
      * @Param: []
      * @return: void
@@ -39,10 +34,7 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
      * @Date: 2021/12/24
      */
     private String openProjectByDefaultId;
-
     private String openProjectByDefaultName;
-
-
     @Override
     public void verify() throws BizException {
         if (StringUtils.isEmpty(super.getEmail(){
@@ -52,7 +44,6 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
         }
         verifyPassword();
     }
-
     public void verifyPassword(){
         PasswordCheckerUtil passwordChecker = new PasswordCheckerUtil();
         if (StringUtils.isEmpty(super.getPassword(){
@@ -61,16 +52,12 @@ public class SubUserDto extends SysUser implements VerifyParam, Serializable {
             throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue();
         }
     }
-
-
     public final String getAll() {
         return "0";
     }
-
     public final String getDelimiter() {
         return ",";
     }
-
 }
 }
 }
