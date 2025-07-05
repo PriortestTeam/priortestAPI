@@ -60,7 +60,7 @@ public class TokenClearLogoutHandler implements LogoutHandler {
                 bucket.delete();
             }
         }
-        Map&lt;String, String> result = new HashMap&lt;>(2);
+        Map<String, String> result = new HashMap<>(2);
         result.put("status", SysConstantEnum.LOGOUT_SUCCESS.getCode();
         result.put("msg", SysConstantEnum.LOGOUT_SUCCESS.getValue();
         if (jwtUserServiceImpl.verifyUserExists(username) {
@@ -68,7 +68,7 @@ public class TokenClearLogoutHandler implements LogoutHandler {
             result.put("status", SysConstantEnum.SYS_ERROR.getCode();
             result.put("msg", SysConstantEnum.SYS_ERROR.getValue();
         }
-        Resp<Map&lt;String, String>> ok = new Resp.Builder<Map&lt;String, String>>().setData(result).ok();
+        Resp<Map<String, String>> ok = new Resp.Builder<Map<String, String>>().setData(result).ok();
         String s = JSON.toJSONString(ok);
         try {
             response.setContentType("application/json;charset=UTF-8");
@@ -78,5 +78,6 @@ public class TokenClearLogoutHandler implements LogoutHandler {
         }
     }
 
+}
 }
 }

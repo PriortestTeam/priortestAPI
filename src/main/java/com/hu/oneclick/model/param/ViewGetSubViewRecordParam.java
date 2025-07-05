@@ -12,3 +12,4 @@ public class ViewGetSubViewRecordParam {
     private String scopeId;
 }
 }
+}

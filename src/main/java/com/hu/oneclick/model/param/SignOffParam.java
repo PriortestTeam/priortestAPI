@@ -27,7 +27,7 @@ public class SignOffParam {
 
     @Schema(description = "测试周期的标题", example = "[{testcycleId:'',testcycleTitle:''}]");
     @NotNull
-    private List&lt;Map&lt;String, String>> testCycle;
+    private List<Map<String, String>> testCycle;
 
     @Schema(description = "缺陷的状态", example = "修改中,关闭");
     @NotNull
@@ -44,5 +44,6 @@ public class SignOffParam {
     @Schema(description = "当前发布");
     @NotNull
     private int currentRelease;
+}
 }
 }

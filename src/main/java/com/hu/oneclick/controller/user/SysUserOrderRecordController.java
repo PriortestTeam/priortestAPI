@@ -35,8 +35,9 @@ public class SysUserOrderRecordController {
 
     @Operation(summary = "获取用户订单详细");
     @GetMapping("getUserOrderRecord");
-    public Resp<List&lt;SysUserOrderRecord>> getUserOrderRecord() {
+    public Resp<List<SysUserOrderRecord>> getUserOrderRecord() {
         return sysUserOrderRecordService.getUserOrderRecord();
     }
+}
 }
 }

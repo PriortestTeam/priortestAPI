@@ -22,3 +22,4 @@ public class JobDetails {
     private Map&lt;String, Object> jobDataMap;
 }
 }
+}

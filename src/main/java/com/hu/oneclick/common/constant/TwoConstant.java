@@ -63,7 +63,7 @@ public class TwoConstant {
      * @param strings
      * @return
      */
-    public static String convertToString(List&lt;String> strings,Integer length){
+    public static String convertToString(List<String> strings,Integer length){
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0;i < strings.size(); i++){
@@ -89,11 +89,11 @@ public class TwoConstant {
      * @param str
      * @return
      */
-    public static List&lt;String> convertToList(String str){
+    public static List<String> convertToList(String str){
         if (StringUtils.isEmpty(str){
             return null;
         }
-        List&lt;String> strings = Arrays.asList(str.split(OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER);
+        List<String> strings = Arrays.asList(str.split(OneConstant.COMMON.ARRAY_CONVERTER_STRING_DELIMITER);
         for (int i = 0; i < strings.size(); i++){
             if (strings.get(i).equals(OneConstant.COMMON.REPLACE_EMPTY_CHARACTERS){
                 strings.set(i,"");
@@ -106,9 +106,9 @@ public class TwoConstant {
     /**
      * 字符串转换成对象
      */
-    public static <T> List&lt;T> convertToList(String source, Class<T> clazz){
+    public static <T> List<T> convertToList(String source, Class<T> clazz){
         if(StringUtils.isEmpty(source){
-            return new ArrayList&lt;>();
+            return new ArrayList<>();
         }
         return JSON.parseArray(source, clazz);
     }

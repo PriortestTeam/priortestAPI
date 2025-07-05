@@ -27,3 +27,4 @@ public class ResourcesConfig implements WebMvcConfigurer {
     }
 }
 }
+}

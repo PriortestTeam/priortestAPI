@@ -30,7 +30,7 @@ public class FieldDropDown extends CustomField implements Serializable {
     /**
      * 用于判断用户输入的参数
      */
-    private List&lt;String> dropDowns;
+    private List<String> dropDowns;
     /**
      * 数组中字符串长度,默认10
      */
@@ -82,11 +82,11 @@ public class FieldDropDown extends CustomField implements Serializable {
         this.dropDownList = dropDownList;
     }
 
-    public List&lt;String> getDropDowns() {
+    public List<String> getDropDowns() {
         return dropDowns;
     }
 
-    public void setDropDowns(List&lt;String> dropDowns) {
+    public void setDropDowns(List<String> dropDowns) {
         this.dropDowns = dropDowns;
     }
 
@@ -97,5 +97,6 @@ public class FieldDropDown extends CustomField implements Serializable {
     public void setLength(Integer length) {
         this.length = length;
     }
+}
 }
 }

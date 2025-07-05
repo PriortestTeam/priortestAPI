@@ -39,3 +39,4 @@ public class JobUpdateDto implements Serializable {
 
 }
 }
+}

@@ -41,3 +41,4 @@ public class UserUseOpenProject extends BaseEntity implements Serializable {
     }
 }
 }
+}

@@ -20,7 +20,7 @@ public class AttachmentController {
 
 
     @GetMapping("list")
-    public Resp<List&lt;Attachment>> list(@RequestParam String type, @RequestParam String linkId){
+    public Resp<List<Attachment>> list(@RequestParam String type, @RequestParam String linkId){
 
         return attachmentService.list(type,linkId);
     }
@@ -45,5 +45,6 @@ public class AttachmentController {
 
 
 
+}
 }
 }

@@ -64,3 +64,4 @@ public class SysOrderDiscountDto implements Serializable, VerifyParam {
     private static final long serialVersionUID = 115194643216464464L;
 }
 }
+}

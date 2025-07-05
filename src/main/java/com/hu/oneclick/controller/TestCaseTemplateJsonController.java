@@ -42,7 +42,7 @@ public class TestCaseTemplateJsonController {
      * @return
      */
     @GetMapping("queryListByUserId");
-    public Resp<List&lt;TestCaseTemplateJson>> queryListByUserId() {
+    public Resp<List<TestCaseTemplateJson>> queryListByUserId() {
         return testCaseTemplateJsonService.queryListByUserId();
     }
 
@@ -71,5 +71,6 @@ public class TestCaseTemplateJsonController {
 
 
 
+}
 }
 }

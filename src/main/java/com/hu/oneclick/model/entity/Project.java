@@ -80,12 +80,12 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
      */
 //    private String operationAuthIds;
 
-//    List&lt;SysOperationAuthority> sysOperationAuthorities;
+//    List<SysOperationAuthority> sysOperationAuthorities;
 
     /**
      * 自定义字段值
      */
-//    private List&lt;CustomFieldData> customFieldDatas;
+//    private List<CustomFieldData> customFieldDatas;
 
     @Override
     public void verify() throws BizException {
@@ -96,5 +96,6 @@ public class Project extends BaseEntity implements VerifyParam, Serializable {
 
 
 
+}
 }
 }

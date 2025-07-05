@@ -15,13 +15,14 @@ import java.util.List;
 
 public class ImportTestCaseDto  implements Serializable {
 
-    private List&lt;Object> error;
+    private List<Object> error;
 
 
-    private List&lt;Object> warning;
+    private List<Object> warning;
 
 
-    private List&lt;Object> success;
+    private List<Object> success;
 
+}
 }
 }

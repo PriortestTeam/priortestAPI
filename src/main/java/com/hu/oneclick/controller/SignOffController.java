@@ -44,24 +44,24 @@ public class SignOffController {
     PdfGenerateService pdfGenerateService;
 
     @GetMapping("/getProjectEnv");
-    public Resp<List&lt;CustomFieldPossBileDto>> getProjectEnv() {
+    public Resp<List<CustomFieldPossBileDto>> getProjectEnv() {
         return customFieldsService.getPossBile("env");
     }
 
 
     @GetMapping("/getProjectVersion");
-    public Resp<List&lt;CustomFieldPossBileDto>> getProjectVersion() {
+    public Resp<List<CustomFieldPossBileDto>> getProjectVersion() {
         return customFieldsService.getPossBile("version");
     }
 
 
     @GetMapping("/getIssue");
-    public Resp<List&lt;CustomFieldPossBileDto>> getIssue() {
+    public Resp<List<CustomFieldPossBileDto>> getIssue() {
         return customFieldsService.getPossBile("issueStatus");
     }
 
     @GetMapping("/getTestCycleDetail");
-    public Resp<List&lt;Map&lt;String, String>>> getTestCycleVersion(@RequestParam String projectId, @RequestParam String env, @RequestParam String version) {
+    public Resp<List<Map<String, String>>> getTestCycleVersion(@RequestParam String projectId, @RequestParam String env, @RequestParam String version) {
         return testCycleService.getTestCycleVersion(projectId, env, version);
     }
 
@@ -87,14 +87,14 @@ public class SignOffController {
 
     @GetMapping("/getPdf");
     @Operation(summary = "返回当前项目下产生的PDF列表");
-    public Resp<List&lt;ProjectSignOff>> getPdf() {
+    public Resp<List<ProjectSignOff>> getPdf() {
         return signOffService.getPdf();
     }
 
 
     @GetMapping("/getUserAttachmentSign");
     @Operation(summary = "访问用户签名文件路径");
-    public Resp<List&lt;Map&lt;String, Object>>> getUserAttachmentSign() {
+    public Resp<List<Map<String, Object>>> getUserAttachmentSign() {
         return attachmentService.getUserAttachment();
     }
 
@@ -104,5 +104,6 @@ public class SignOffController {
     public Object getProjectListByUser() {
         return new Resp.Builder<>().setData(userProjectService.getUserProject().ok();
     }
+}
 }
 }

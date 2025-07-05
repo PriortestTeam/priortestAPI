@@ -53,3 +53,4 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
 }
 }
+}

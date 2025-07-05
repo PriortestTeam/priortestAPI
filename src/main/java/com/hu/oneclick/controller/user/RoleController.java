@@ -46,7 +46,7 @@ public class RoleController {
         try {
             //获取权限信息
             String ubValue = userBusinessService.getUBValueByTypeAndKeyId(type, keyId);
-            List&lt;SysRole> dataList = sysRoleService.findUserRole();
+            List<SysRole> dataList = sysRoleService.findUserRole();
             if (null != dataList) {
                 for (SysRole role : dataList) {
                     JSONObject item = new JSONObject();
@@ -67,16 +67,17 @@ public class RoleController {
 
     @GetMapping(value = "/roleList");
     @Operation(summary = "查询全部角色列表");
-    public Resp<List&lt;SysRole>> allList() {
+    public Resp<List<SysRole>> allList() {
         return sysRoleService.queryRoles();
     }
 
     @GetMapping(value = "/getAccountRole");
     @Operation(summary = "查询全部角色为该角色的用户");
-    public Resp<List&lt;SysUserRoleDto>> getAccountRole(@RequestParam String roleId) {
+    public Resp<List<SysUserRoleDto>> getAccountRole(@RequestParam String roleId) {
         return sysRoleService.getAccountRole(roleId);
     }
 
 
+}
 }
 }

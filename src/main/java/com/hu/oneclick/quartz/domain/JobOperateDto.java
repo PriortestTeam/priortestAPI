@@ -31,3 +31,4 @@ public class JobOperateDto implements Serializable {
 
 }
 }
+}

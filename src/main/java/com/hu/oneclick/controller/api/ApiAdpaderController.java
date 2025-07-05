@@ -166,11 +166,11 @@ public class ApiAdpaderController {
 
     @Operation(summary = "创建测试用例");
     @PostMapping("/{projectId}/createTestCase");
-    public Resp<Map&lt;String, Object>> createTestCase(@PathVariable("projectId") Long projectId,
+    public Resp<Map<String, Object>> createTestCase(@PathVariable("projectId") Long projectId,
                                                     @RequestBody @Validated TestCaseSaveDto testCaseSaveDto) {
 
         final TestCase testCase = testCaseService.save(testCaseSaveDto);
-        return new Resp.Builder<Map&lt;String, Object>>().setData(;
+        return new Resp.Builder<Map<String, Object>>().setData(;
             Map.of(
                 "id", testCase.getId(),
                 "externalLinkId", testCase.getExternalLinkId()
@@ -206,7 +206,7 @@ public class ApiAdpaderController {
             return new Resp.Builder<Map>().buildResult("非法参数");
         }
 
-        Map&lt;String, Object> result =
+        Map<String, Object> result =
             relationService.getRelationListByObjectIdAndTargetIdAndCategory(testCaseId);
         return new Resp.Builder<Map>().setData(result).ok();
     }
@@ -299,7 +299,7 @@ public class ApiAdpaderController {
             LambdaQueryWrapper<TestCycle> wapper = new LambdaQueryWrapper<TestCycle>()
                 .eq(TestCycle::getProjectId, dto.getProjectId()
                 .eq(TestCycle::getId, dto.getTestCycleId();
-            List&lt;TestCycle> list = testCycleService.list(wapper);
+            List<TestCycle> list = testCycleService.list(wapper);
             if (Objects.isNull(list) || list.isEmpty() {
                 return new Resp.Builder<TestCycleJoinTestCaseVo>().ok(String.valueOf(HttpStatus.BAD_REQUEST.value(),;
                     dto.getTestCycleId() + "不存在项目中", HttpStatus.BAD_REQUEST.value();
@@ -308,9 +308,9 @@ public class ApiAdpaderController {
             LambdaQueryWrapper<TestCase> in = new LambdaQueryWrapper<TestCase>()
                 .eq(TestCase::getProjectId, dto.getProjectId()
                 .in(TestCase::getId, Arrays.asList(dto.getTestCaseIds();
-            List&lt;TestCase> list1 = testCaseService.list(in);
+            List<TestCase> list1 = testCaseService.list(in);
             if (Objects.isNull(list1) {
-                List&lt;String> collect = list1.stream().map(l -> Convert.toStr(l.getId().collect(Collectors.toList();
+                List<String> collect = list1.stream().map(l -> Convert.toStr(l.getId().collect(Collectors.toList();
                 String collect1 = collect.stream().collect(Collectors.joining(",");
                 return new Resp.Builder<TestCycleJoinTestCaseVo>().ok(String.valueOf(HttpStatus.BAD_REQUEST.value(),;
                     collect1 + "不存在项目中 or 测试周期 中", HttpStatus.BAD_REQUEST.value();
@@ -337,14 +337,14 @@ public class ApiAdpaderController {
                     "运行用例不可以为空", HttpStatus.BAD_REQUEST.value();
             }
 
-            List&lt;Issue> issueList = issueService.list(
+            List<Issue> issueList = issueService.list(
                 new LambdaQueryWrapper<Issue>()
                     .eq(Issue::getProjectId, projectId)
                     .eq(Issue::getRuncaseId, runCaseId)
             );
 
             if (CollectionUtil.isEmpty(issueList) {
-                List&lt;Issue> issueListByRuncaseId = issueService.list(
+                List<Issue> issueListByRuncaseId = issueService.list(
                     new LambdaQueryWrapper<Issue>()
                         .eq(Issue::getRuncaseId, runCaseId)
                 );
@@ -357,9 +357,9 @@ public class ApiAdpaderController {
                 }
             }
 
-            // List&lt;Issue> collect = issueList.stream().filter(issue -> !"关闭".equals(issue.getIssueStatus().collect(Collectors.toList();
+            // List<Issue> collect = issueList.stream().filter(issue -> !"关闭".equals(issue.getIssueStatus().collect(Collectors.toList();
 
-            List&lt;Issue> collect = issueList.stream()
+            List<Issue> collect = issueList.stream()
                 .filter(issue ->
                     "新建".equals(issue.getIssueStatus() ||
                         "修改中".equals(issue.getIssueStatus() ||
@@ -374,8 +374,8 @@ public class ApiAdpaderController {
             }
             JSONObject jsonObject = new JSONObject();
 
-            List&lt;IssueVo> idlist = Lists.newArrayList();
-//      List&lt;Long> runid = Lists.newArrayList();
+            List<IssueVo> idlist = Lists.newArrayList();
+//      List<Long> runid = Lists.newArrayList();
             collect.forEach(c -> {
                 IssueVo v = new IssueVo();
                 v.setId(c.getId();
@@ -393,5 +393,6 @@ public class ApiAdpaderController {
         }
     }
 
+}
 }
 }

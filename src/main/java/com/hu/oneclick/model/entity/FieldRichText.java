@@ -28,7 +28,7 @@ public class FieldRichText extends CustomField implements Serializable {
      */
     private Integer length = 300;
 
-    private List&lt;String> defaultValues;
+    private List<String> defaultValues;
 
     @Override
     public void subVerify(){
@@ -102,12 +102,13 @@ public class FieldRichText extends CustomField implements Serializable {
         this.length = length;
     }
 
-    public List&lt;String> getDefaultValues() {
+    public List<String> getDefaultValues() {
         return defaultValues;
     }
 
-    public void setDefaultValues(List&lt;String> defaultValues) {
+    public void setDefaultValues(List<String> defaultValues) {
         this.defaultValues = defaultValues;
     }
+}
 }
 }

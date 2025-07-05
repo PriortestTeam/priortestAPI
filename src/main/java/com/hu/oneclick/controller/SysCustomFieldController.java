@@ -23,7 +23,7 @@ public class SysCustomFieldController {
     }
 
     @GetMapping("querySysCustomFields");
-    public Resp<List&lt;SysCustomFieldVo>> querySysCustomFields() {
+    public Resp<List<SysCustomFieldVo>> querySysCustomFields() {
         return sysCustomFieldService.querySysCustomFields();
     }
 
@@ -37,5 +37,6 @@ public class SysCustomFieldController {
         return sysCustomFieldService.updateSysCustomFields(sysCustomFieldVo);
     }
 
+}
 }
 }

@@ -73,3 +73,4 @@ public class SysProjectPermission extends BaseEntity implements Serializable {
     }
 }
 }
+}

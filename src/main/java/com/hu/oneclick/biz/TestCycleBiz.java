@@ -50,8 +50,8 @@ public class TestCycleBiz {
         testCycleDao.update(new TestCycle(), updateWrapper);
     }
 
-    public List&lt;Long> deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
-        List&lt;Long> testCasesIds = new ArrayList&lt;>();
+    public List<Long> deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
+        List<Long> testCasesIds = new ArrayList<>();
 
         for (Long testCaseId : dto.getTestCaseIds() {
             // 删除关联的test_cycle_join_test_case表
@@ -71,5 +71,6 @@ public class TestCycleBiz {
 
         return testCasesIds;
     }
+}
 }
 }

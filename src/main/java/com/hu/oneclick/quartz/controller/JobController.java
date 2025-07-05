@@ -114,8 +114,8 @@ public class JobController {
     @GetMapping(value = "/queryJob");
     public Resp<?> queryJob() {
         try {
-            List&lt;JobDetails> jobAndTrigger = qtzManager.queryAllJobBean();
-            Map&lt;String, Object> map = new HashMap&lt;String, Object>();
+            List<JobDetails> jobAndTrigger = qtzManager.queryAllJobBean();
+            Map<String, Object> map = new HashMap<String, Object>();
             map.put("number", jobAndTrigger.size();
             map.put("JobAndTrigger", PageUtil.manualPaging(jobAndTrigger);
             return new Resp.Builder<>().setData(map).ok();
@@ -125,5 +125,6 @@ public class JobController {
         }
     }
 
+}
 }
 }

@@ -16,3 +16,4 @@ public class PlatformUserDto extends SubUserDto implements VerifyParam, Serializ
 
 }
 }
+}

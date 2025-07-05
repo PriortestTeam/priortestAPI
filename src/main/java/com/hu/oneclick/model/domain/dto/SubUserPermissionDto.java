@@ -32,7 +32,7 @@ public class SubUserPermissionDto implements VerifyParam,Serializable {
     /**
      * 添加使用
      */
-    private List&lt;SysProjectPermission> projectPermissions;
+    private List<SysProjectPermission> projectPermissions;
 
     @Override
     public void verify() throws BizException {
@@ -59,12 +59,13 @@ public class SubUserPermissionDto implements VerifyParam,Serializable {
         this.project = project;
     }
 
-    public List&lt;SysProjectPermission> getProjectPermissions() {
+    public List<SysProjectPermission> getProjectPermissions() {
         return projectPermissions;
     }
 
-    public void setProjectPermissions(List&lt;SysProjectPermission> projectPermissions) {
+    public void setProjectPermissions(List<SysProjectPermission> projectPermissions) {
         this.projectPermissions = projectPermissions;
     }
+}
 }
 }

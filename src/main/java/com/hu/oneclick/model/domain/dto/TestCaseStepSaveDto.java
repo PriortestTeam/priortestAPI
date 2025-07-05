@@ -31,7 +31,8 @@ public class TestCaseStepSaveDto implements Serializable {
 
     @Schema(description = "用例步骤集合");
 //    @Size(min = 1, max = 100, message = "用例步骤集合不能为空");
-    private List&lt;TestCaseStepSaveSubDto> steps;
+    private List<TestCaseStepSaveSubDto> steps;
 
+}
 }
 }

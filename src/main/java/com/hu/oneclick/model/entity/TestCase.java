@@ -180,7 +180,8 @@ public class TestCase extends AssignBaseEntity implements Serializable {
     @Schema(description = "测试用例步骤集合");
     @TableField(exist = false);
     @DbIgnore
-    private List&lt;TestCaseStep> testCaseStepList;
+    private List<TestCaseStep> testCaseStepList;
 
+}
 }
 }

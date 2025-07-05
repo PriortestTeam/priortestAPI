@@ -15,3 +15,4 @@ public class JenkinsConfig {
     private String password;
 }
 }
+}

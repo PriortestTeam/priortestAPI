@@ -29,10 +29,11 @@ public class SysOrderDiscountController {
 
     @Operation(summary="计算订单价格");
     @PostMapping("calculateOrderPrice");
-    public Resp<Map&lt;String, BigDecimal>> calculateOrderPrice(@RequestBody SysOrderDiscountDto sysOrderDiscountDto) {
+    public Resp<Map<String, BigDecimal>> calculateOrderPrice(@RequestBody SysOrderDiscountDto sysOrderDiscountDto) {
         return sysOrderDiscountService.calculateOrderPrice(sysOrderDiscountDto);
     }
 
 
+}
 }
 }

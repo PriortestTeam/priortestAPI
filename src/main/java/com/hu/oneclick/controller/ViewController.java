@@ -47,7 +47,7 @@ public class ViewController extends BaseController {
 
     @GetMapping("getViewScopeChildParams");
     @Operation(summary="根据范围搜索所有字段(弃用请使用getViewScope");
-    public Resp<List&lt;ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope) {
+    public Resp<List<ViewScopeChildParams>> getViewScopeChildParams(@RequestParam String scope) {
         return viewService.getViewScopeChildParams(scope);
     }
 
@@ -59,7 +59,7 @@ public class ViewController extends BaseController {
      */
     @GetMapping("getViewScope");
     @Operation(summary="根据范围搜索所有字段");
-    public Resp<Map&lt;String, Object>> getViewScope(@RequestParam String scope) {
+    public Resp<Map<String, Object>> getViewScope(@RequestParam String scope) {
         return viewService.getViewScope(scope);
     }
 
@@ -68,7 +68,7 @@ public class ViewController extends BaseController {
     private Resp<PageInfo<View>> queryViews(@RequestBody View view) {
         try {
             startPage();
-            List&lt;View> list = viewService.list(view);
+            List<View> list = viewService.list(view);
             return new Resp.Builder<PageInfo<View>>().setData(PageInfo.of(list).ok();
         } catch (Exception e) {
             log.error("查询失败，原因：" + e.getMessage(), e);
@@ -132,19 +132,19 @@ public class ViewController extends BaseController {
 
     @GetMapping("queryViewParents");
     @Operation(summary="查询父视图");
-    private Resp<List&lt;View>> queryViewParents(@RequestParam String scope, @RequestParam String projectId) {
+    private Resp<List<View>> queryViewParents(@RequestParam String scope, @RequestParam String projectId) {
         try {
-            List&lt;View> views = viewService.queryViewParents(scope, projectId);
-            return new Resp.Builder<List&lt;View>>().setData(views).ok();
+            List<View> views = viewService.queryViewParents(scope, projectId);
+            return new Resp.Builder<List<View>>().setData(views).ok();
         } catch (Exception e) {
             log.error("查询失败，原因：" + e.getMessage(), e);
-            return new Resp.Builder<List&lt;View>>().fail();
+            return new Resp.Builder<List<View>>().fail();
         }
     }
 
     @GetMapping("queryViewTrees");
     @Operation(summary="查询视图树");
-    private Resp<List&lt;ViewTreeDto>> queryViewTrees(@RequestParam String scope) {
+    private Resp<List<ViewTreeDto>> queryViewTrees(@RequestParam String scope) {
         return viewService.queryViewTrees(scope);
     }
 
@@ -175,8 +175,9 @@ public class ViewController extends BaseController {
     }
 
     @GetMapping("getCountAsVersion");
-    public Resp<Map&lt;String, Object>> getCountAsVersion(@RequestParam String projectId, @RequestParam String version) {
+    public Resp<Map<String, Object>> getCountAsVersion(@RequestParam String projectId, @RequestParam String version) {
         return viewService.getCountAsVersion(projectId, version);
     }
+}
 }
 }

@@ -42,7 +42,7 @@ public class CustomFieldsController {
 
     @Page
     @GetMapping("/queryCustomList")
-    public Resp<List&lt;CustomFieldVo>> queryCustomList(CustomFieldDto customFieldDto) {
+    public Resp<List<CustomFieldVo>> queryCustomList(CustomFieldDto customFieldDto) {
         if (customFieldDto.getProjectId() == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
@@ -72,7 +72,7 @@ public class CustomFieldsController {
     }
 
     @GetMapping("/getAllCustomList")
-    public Resp<List&lt;CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
+    public Resp<List<CustomFileldLinkVo>> getAllCustomList(CustomFieldDto customFieldDto) {
         if (customFieldDto.getProjectId() == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
         }
@@ -84,13 +84,13 @@ public class CustomFieldsController {
     }
 
     @GetMapping("/getAllCustomListByScopeId")
-    public Resp<List&lt;CustomFileldLinkVo>> getAllCustomListByScopeId() {
-        List&lt;CustomFileldLinkVo> dataList = customFieldsService.getAllCustomListByScopeId(1000001L);
-        return new Resp.Builder<List&lt;CustomFileldLinkVo>>().setData(dataList).ok();
+    public Resp<List<CustomFileldLinkVo>> getAllCustomListByScopeId() {
+        List<CustomFileldLinkVo> dataList = customFieldsService.getAllCustomListByScopeId(1000001L);
+        return new Resp.Builder<List<CustomFileldLinkVo>>().setData(dataList).ok();
     }
 
     @GetMapping("/getDropDownBox")
-    public Resp<List&lt;CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
+    public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
         if (customFieldDto.getProjectId() == null) {
             throw new BizException(SysConstantEnum.PARAM_EMPTY.getCode(), "projectId" + SysConstantEnum.PARAM_EMPTY.getValue());
         }

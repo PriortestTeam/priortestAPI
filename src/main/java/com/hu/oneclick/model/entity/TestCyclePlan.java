@@ -56,3 +56,4 @@ public class TestCyclePlan extends AssignBaseEntity implements Serializable {
     private List&lt;String> runTimeList;
 }
 }
+}

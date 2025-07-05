@@ -58,3 +58,4 @@ public class AssignBaseEntity implements Serializable {
 
 }
 }
+}

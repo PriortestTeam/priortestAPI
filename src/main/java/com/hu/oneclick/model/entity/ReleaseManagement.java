@@ -40,3 +40,4 @@ public class ReleaseManagement extends AssignBaseEntity implements Serializable 
 
 }
 }
+}

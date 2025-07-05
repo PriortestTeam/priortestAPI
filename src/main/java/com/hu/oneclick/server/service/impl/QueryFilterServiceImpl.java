@@ -123,3 +123,4 @@ public class QueryFilterServiceImpl implements QueryFilterService {
     }
 }
 }
+}

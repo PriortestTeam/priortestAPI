@@ -30,10 +30,11 @@ public class TestCaseParam implements Serializable {
     @NotNull(message = "项目ID不能为空");
     private Long projectId;
 
-    private List&lt;Long> testCaseIdList;
+    private List<Long> testCaseIdList;
 
     @Schema(description = "视图ID，用于复杂查询过滤");
     private String viewId;
 
+}
 }
 }

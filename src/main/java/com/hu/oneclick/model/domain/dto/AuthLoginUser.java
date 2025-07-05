@@ -38,7 +38,7 @@ public class AuthLoginUser implements UserDetails {
     /**
      * 子用户权限列表
      */
-    private List&lt;SysProjectPermissionDto> permissions;
+    private List<SysProjectPermissionDto> permissions;
 
     private SysUser sysUser;
 
@@ -102,11 +102,11 @@ public class AuthLoginUser implements UserDetails {
         this.sysUser =  user;
     }
 
-    public List&lt;SysProjectPermissionDto> getPermissions() {
+    public List<SysProjectPermissionDto> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List&lt;SysProjectPermissionDto> permissions) {
+    public void setPermissions(List<SysProjectPermissionDto> permissions) {
         this.permissions = permissions;
     }
 
@@ -117,5 +117,6 @@ public class AuthLoginUser implements UserDetails {
     public void setMasterIdentifier(String masterIdentifier) {
         this.masterIdentifier = masterIdentifier;
     }
+}
 }
 }

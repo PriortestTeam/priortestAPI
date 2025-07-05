@@ -99,7 +99,7 @@ public class Resp<T> {
         }
 
         public Builder<T> total(Object obj){
-            List&lt;T> list = (List&lt;T>) obj;
+            List<T> list = (List<T>) obj;
             this.total =  new PageInfo(list).getTotal();
             return this;
         }
@@ -165,5 +165,6 @@ public class Resp<T> {
     public void setHttpCode(int httpCode) {
         this.httpCode = httpCode;
     }
+}
 }
 }

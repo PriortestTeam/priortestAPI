@@ -15,7 +15,7 @@ public class SysCustomFieldVo implements VerifyParam {
     /**
      *   返回使用，下拉框数据
      */
-    private List&lt;String> mergeValues;
+    private List<String> mergeValues;
 
     @Override
     public void verify() throws BizException {
@@ -48,14 +48,15 @@ public class SysCustomFieldVo implements VerifyParam {
         this.sysCustomFieldExpand = sysCustomFieldExpand;
     }
 
-    public List&lt;String> getMergeValues() {
+    public List<String> getMergeValues() {
         return mergeValues;
     }
 
-    public void setMergeValues(List&lt;String> mergeValues) {
+    public void setMergeValues(List<String> mergeValues) {
         this.mergeValues = mergeValues;
     }
 
 
+}
 }
 }

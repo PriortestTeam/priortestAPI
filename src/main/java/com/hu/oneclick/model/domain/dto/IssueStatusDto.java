@@ -28,3 +28,4 @@ public class IssueStatusDto implements Serializable {
     private String fixVersion;
 }
 }
+}

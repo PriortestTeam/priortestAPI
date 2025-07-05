@@ -39,8 +39,8 @@ public class PageUtil extends PageHelper {
         PageHelper.clearPage();
     }
 
-    public static <E, T> PageInfo<T> convertPageInfo(List&lt;E> list, Class<T> tClass) {
-        List&lt;T> dto = new ArrayList&lt;>();
+    public static <E, T> PageInfo<T> convertPageInfo(List<E> list, Class<T> tClass) {
+        List<T> dto = new ArrayList<>();
         if (CollUtil.isNotEmpty(list) {
             dto = list.stream().map(l -> BeanUtil.copyProperties(l, tClass).collect(Collectors.toList();
         }
@@ -50,7 +50,7 @@ public class PageUtil extends PageHelper {
         return of1;
     }
 
-    public static <E> PageInfo<E> manualPaging(List&lt;E> list) {
+    public static <E> PageInfo<E> manualPaging(List<E> list) {
         PageDomain pageDomain = TableSupport.buildPageRequest();
         int pageNum = pageDomain.getPageNum() - 1;
         if (pageNum < 0) {
@@ -104,5 +104,6 @@ public class PageUtil extends PageHelper {
         return of;
     }
 
+}
 }
 }

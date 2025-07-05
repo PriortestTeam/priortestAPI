@@ -39,3 +39,4 @@ public class RoleFunction implements Serializable {
 
 }
 }
+}

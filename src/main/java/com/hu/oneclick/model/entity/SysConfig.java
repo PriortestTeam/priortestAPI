@@ -45,3 +45,4 @@ public class SysConfig implements Serializable {
 
 }
 }
+}

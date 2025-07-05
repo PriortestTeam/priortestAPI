@@ -48,3 +48,4 @@ public class SysUserRoleDto implements Serializable {
     private String roomId;
 }
 }
+}

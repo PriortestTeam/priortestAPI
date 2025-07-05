@@ -42,7 +42,7 @@ public class ProjectManageController extends BaseController {
             param = new ProjectManageParam();
         }
         startPage();
-        List&lt;ProjectManage> dataList = this.projectManageService.listAll(param);
+        List<ProjectManage> dataList = this.projectManageService.listAll(param);
         return new Resp.Builder<PageInfo<ProjectManage>>().setData(PageInfo.of(dataList).ok();
     }
 

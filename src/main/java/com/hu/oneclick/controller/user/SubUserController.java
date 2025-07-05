@@ -38,7 +38,7 @@ public class SubUserController {
 
     @GetMapping("querySubUsers");
     @Operation(summary = "查询子用户");
-    public Resp<List&lt;Map&lt;String, Object>>> querySubUsers(@RequestParam String pageNum, @RequestParam String pageSize) {
+    public Resp<List<Map<String, Object>>> querySubUsers(@RequestParam String pageNum, @RequestParam String pageSize) {
         int num = Integer.parseInt(pageNum);
         int size = Integer.parseInt(pageSize);
         return subUserService.querySubUsers(num, size);
@@ -46,7 +46,7 @@ public class SubUserController {
 
     @GetMapping("queryForProjects");
     @Operation(summary = "查询项目");
-    public Resp<List&lt;Project>> queryForProjects() {
+    public Resp<List<Project>> queryForProjects() {
         return projectService.queryForProjects();
     }
 
@@ -84,8 +84,9 @@ public class SubUserController {
 
     @GetMapping("queryForProjectsbyUser");
     @Operation(summary = "返回当前用户的项目列表");
-    public Resp<List&lt;Project>> getThePersonInCharge() {
+    public Resp<List<Project>> getThePersonInCharge() {
         return subUserService.getProjectByUserId();
     }
+}
 }
 }

@@ -38,3 +38,4 @@ public class RegisterBody {
   private String industry;
 }
 }
+}

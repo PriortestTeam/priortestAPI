@@ -39,3 +39,4 @@ public class JsonLoginConfigurer<T extends JsonLoginConfigurer<T, B>, B extends 
 
 }
 }
+}

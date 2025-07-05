@@ -4,3 +4,4 @@ package com.hu.oneclick.common.constant;
  */
         String TEMPLATEHTMLNAME_IMPORTTESTCASE = "importTestCase.html";
 }
+}

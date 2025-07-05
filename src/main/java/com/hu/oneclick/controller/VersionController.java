@@ -47,11 +47,12 @@ public class VersionController extends BaseController {
 
     @Operation(summary="列表查询");
     @PostMapping("getVersionList");
-    public Resp<List&lt;VersionDto>> getVersionList(@RequestBody VersionRequestDto releaseModification) {
-        List&lt;VersionDto> versionDto = versionService.getVersionList(releaseModification);
+    public Resp<List<VersionDto>> getVersionList(@RequestBody VersionRequestDto releaseModification) {
+        List<VersionDto> versionDto = versionService.getVersionList(releaseModification);
         return new Resp.Builder().setData(versionDto).ok();
     }
 
 
+}
 }
 }

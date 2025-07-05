@@ -42,3 +42,4 @@ public class JwtLoginConfigurer<T extends JwtLoginConfigurer<T, B>, B extends Ht
 
 }
 }
+}

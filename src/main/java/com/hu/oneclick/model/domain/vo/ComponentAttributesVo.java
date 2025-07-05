@@ -19,3 +19,4 @@ public class ComponentAttributesVo {
     private Boolean mandatory;
 }
 }
+}

@@ -103,7 +103,7 @@ public class IssueSaveDto implements Serializable {
      */
     @Schema(description = "修复分类");
     @JsonFormat(shape = JsonFormat.Shape.STRING);
-    private List&lt;String> fixCategory;
+    private List<String> fixCategory;
 
     /**
      * 发生频率，描述问题发生的频率，如每天、每周等
@@ -134,7 +134,7 @@ public class IssueSaveDto implements Serializable {
      */
     @Schema(description = "根因分类");
     @JsonFormat(shape = JsonFormat.Shape.STRING);
-    private List&lt;String> rootcauseCategory;
+    private List<String> rootcauseCategory;
 
     /**
      * 备注信息，提供任何附加信息或注解

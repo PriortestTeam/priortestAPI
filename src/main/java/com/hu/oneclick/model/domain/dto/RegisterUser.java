@@ -45,3 +45,4 @@ public class RegisterUser extends SysUser implements VerifyParam {
 
 }
 }
+}

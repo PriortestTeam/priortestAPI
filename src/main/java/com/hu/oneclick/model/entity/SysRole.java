@@ -52,3 +52,4 @@ public class SysRole extends BaseEntity implements Serializable {
 
 }
 }
+}

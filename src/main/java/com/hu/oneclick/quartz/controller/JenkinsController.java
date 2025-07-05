@@ -68,7 +68,7 @@ public class JenkinsController {
     @GetMapping(value = "/jobList");
     public Resp<?> jobList() {
         try {
-            Map&lt;String, Job> jobs = jenkinsManager.getJobList();
+            Map<String, Job> jobs = jenkinsManager.getJobList();
             return new Resp.Builder<>().setData(jobs).ok();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -116,5 +116,6 @@ public class JenkinsController {
         return new Resp.Builder<>().ok();
     }
 
+}
 }
 }

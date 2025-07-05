@@ -37,7 +37,7 @@ public class TestCaseController extends BaseController {
 
     @Operation(summary = "获取测试用例列表");
     @PostMapping("/list");
-    public Resp<PageInfo<TestCase>> list(@RequestBody Map&lt;String, Object> param,
+    public Resp<PageInfo<TestCase>> list(@RequestBody Map<String, Object> param,
                                         @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
                                         @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
         // 优先使用 URL 参数，如果没有则使用请求体参数
@@ -122,9 +122,9 @@ public class TestCaseController extends BaseController {
 
     @Operation(summary = "获取测试用例列表");
     @GetMapping("/testCaseSearch");
-    public  Resp<List&lt;TestCase>> testCaseSearch(@RequestParam  Long projectId, @RequestParam String title) {
-        List&lt;TestCase> testCaseList = testCaseService.testCaseSearch(projectId,title);
-        return new Resp.Builder<List&lt;TestCase>>().setData(testCaseList).ok();
+    public  Resp<List<TestCase>> testCaseSearch(@RequestParam  Long projectId, @RequestParam String title) {
+        List<TestCase> testCaseList = testCaseService.testCaseSearch(projectId,title);
+        return new Resp.Builder<List<TestCase>>().setData(testCaseList).ok();
     }
 
     @Operation(summary = "删除测试用例");
@@ -133,5 +133,6 @@ public class TestCaseController extends BaseController {
        return testCaseService.removeAndChild(id);
     }
 
+}
 }
 }

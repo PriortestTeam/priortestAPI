@@ -19,15 +19,16 @@ public class ETestController {
 
 
     @PostMapping("executeTestCase");
-    public Resp<String> executeTestCase(@RequestBody Map&lt;String,Object> data) {
+    public Resp<String> executeTestCase(@RequestBody Map<String,Object> data) {
         return new Resp.Builder<String>().setData("请求成功").ok();
     }
 
 
     @PostMapping("testNg");
-    public Resp<String> testNg(@RequestBody Map&lt;String,Object> data) {
+    public Resp<String> testNg(@RequestBody Map<String,Object> data) {
         return new Resp.Builder<String>().setData("请求成功").ok();
     }
 
+}
 }
 }

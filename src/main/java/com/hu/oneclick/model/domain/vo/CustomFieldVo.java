@@ -52,7 +52,7 @@ public class CustomFieldVo {
     private String possibleValue;
 
 
-    private List&lt;ComponentAttributesVo> componentAttributes;
+    private List<ComponentAttributesVo> componentAttributes;
 
 
     @Data

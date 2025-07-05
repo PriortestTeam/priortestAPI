@@ -21,7 +21,7 @@ public class RoleProjectFunctionDTO {
     private Long userId;
 
     @Schema(description = "功能列表");
-    private List&lt;FunctionModelDTO> functionList;
+    private List<FunctionModelDTO> functionList;
 
     @Schema(description = "角色id");
     private Long  roleId;
@@ -45,7 +45,7 @@ public class RoleProjectFunctionDTO {
     private String value;
 
     @Schema(description = "功能权限");
-    private List&lt;FunctionModelDTO> functionList;
+    private List<FunctionModelDTO> functionList;
 
     @Schema(description = "角色ID");
     private String roleIdStr;
@@ -66,7 +66,7 @@ public class RoleProjectFunctionDTO {
     }
 
     // 修复类型匹配问题
-    public List&lt;FunctionModelDTO> getFunctionList() {
+    public List<FunctionModelDTO> getFunctionList() {
         return functionList;
     }
 
@@ -106,7 +106,7 @@ public class RoleProjectFunctionDTO {
         this.userId = userId;
     }
 
-    public void setFunctionList(List&lt;FunctionModelDTO> functionList) {
+    public void setFunctionList(List<FunctionModelDTO> functionList) {
         this.functionList = functionList;
     }
 
@@ -134,11 +134,11 @@ public class RoleProjectFunctionDTO {
         this.projectIdStr = projectIdStr;
     }
 
-    public List&lt;FunctionModelDTO> getFunctionList1() {
+    public List<FunctionModelDTO> getFunctionList1() {
         return functionList;
     }
 
-    public void setFunctionList1(List&lt;FunctionModelDTO> functionList) {
+    public void setFunctionList1(List<FunctionModelDTO> functionList) {
         this.functionList = functionList;
     }
 }

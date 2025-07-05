@@ -79,7 +79,7 @@ public class FeatureSaveDto {
      * 关联的自定义字段
      */
     @Schema(description = "关联的自定义字段");
-    private List&lt;CustomFieldData> customFieldDataList;
+    private List<CustomFieldData> customFieldDataList;
     // 手动添加getId方法以解决编译错误
     public Long getId() {
         return id;

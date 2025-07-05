@@ -49,3 +49,4 @@ public class UserCaseParam implements Serializable {
     private String remarks;
 }
 }
+}

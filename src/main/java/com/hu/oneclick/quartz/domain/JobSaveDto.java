@@ -43,3 +43,4 @@ public class JobSaveDto implements Serializable {
 
 }
 }
+}

@@ -39,7 +39,7 @@ public class FeatureController extends BaseController {
 
     @Operation(summary="列表")
     @PostMapping("/list")
-    public Resp<PageInfo<Feature>> list(@RequestBody Map&lt;String, Object> param,
+    public Resp<PageInfo<Feature>> list(@RequestBody Map<String, Object> param,
                                        @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
                                        @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
         // 优先使用 URL 参数，如果没有则使用请求体参数
@@ -141,12 +141,12 @@ public class FeatureController extends BaseController {
 
     @Operation(summary="模糊查询故事标题")
     @GetMapping("/getFeatureByTitle")
-    public Resp<List&lt;Map&lt;String, String>>> getFeatureByTitle(@RequestParam String title, @RequestParam Long projectId) {
-        List&lt;Map&lt;String, String>> feature = this.featureService.getFeatureByTitle(title, projectId);
+    public Resp<List<Map<String, String>>> getFeatureByTitle(@RequestParam String title, @RequestParam Long projectId) {
+        List<Map<String, String>> feature = this.featureService.getFeatureByTitle(title, projectId);
         if (CollectionUtils.isEmpty(feature)) {
-            return new Resp.Builder<List&lt;java.util.Map&lt;String, String>>>().buildResult("查无记录", 404);
+            return new Resp.Builder<List<java.util.Map<String, String>>>().buildResult("查无记录", 404);
         }
-        return new Resp.Builder<List&lt;java.util.Map&lt;String, String>>>().setData(feature).ok();
+        return new Resp.Builder<List<java.util.Map<String, String>>>().setData(feature).ok();
     }
 
 }

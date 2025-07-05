@@ -70,7 +70,7 @@ public class TestCycleController extends BaseController {
 
 
 //    @PostMapping("queryList")
-//    public Resp<List&lt;TestCycle>> queryList(@RequestBody TestCycleDto testCycle) {
+//    public Resp<List<TestCycle>> queryList(@RequestBody TestCycleDto testCycle) {
 //        return testCycleService.queryList(testCycle);
 //    }
 
@@ -96,7 +96,7 @@ public class TestCycleController extends BaseController {
 
 //    @Page
 //    @PostMapping("queryBindCaseList")
-//    public  Resp<List&lt;TestCase>> queryBindCaseList(@RequestParam String testCycleId) {
+//    public  Resp<List<TestCase>> queryBindCaseList(@RequestParam String testCycleId) {
 //        return testCycleService.queryBindCaseList(testCycleId);
 //    }
 
@@ -132,7 +132,7 @@ public class TestCycleController extends BaseController {
     }
 
 //    @PostMapping("excute")
-//    public Resp<Map&lt;String,Object>> excute(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
+//    public Resp<Map<String,Object>> excute(@RequestBody ExecuteTestCaseDto executeTestCaseDto){
 //        return testCycleService.excute(executeTestCaseDto);
 //    }
 
@@ -142,7 +142,7 @@ public class TestCycleController extends BaseController {
 //    }
 
 //    @PostMapping("queryIssueByIdOrName")
-//    public Resp<Map&lt;String, Object>> queryIssueByIdOrName(@RequestBody Issue issue) {
+//    public Resp<Map<String, Object>> queryIssueByIdOrName(@RequestBody Issue issue) {
 //        return testCycleService.queryIssueByIdOrName(issue);
 //    }
 //    /* WJK新增 END*/
@@ -155,7 +155,7 @@ public class TestCycleController extends BaseController {
 
     @Operation(summary="列表")
     @PostMapping("/list")
-    public Resp<PageInfo<TestCycle>> list(@RequestBody Map&lt;String, Object> param,
+    public Resp<PageInfo<TestCycle>> list(@RequestBody Map<String, Object> param,
                                          @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
                                          @RequestParam(value = "pageSize", required = false) Integer urlPageSize) {
         // 优先使用 URL 参数，如果没有则使用请求体参数
@@ -266,15 +266,15 @@ public class TestCycleController extends BaseController {
             throw new BaseException("测试周期ID不能为空");
         }
         /*** TestCaseParam tmpParam = new TestCaseParam();
-         List&lt;Long> caseIdList = this.testCycleJoinTestCaseService.getCaseIdListByCycleId(param.getTestCycleId();
+         List<Long> caseIdList = this.testCycleJoinTestCaseService.getCaseIdListByCycleId(param.getTestCycleId();
          if (CollUtil.isEmpty(caseIdList) {
          return new Resp.Builder<PageInfo<TestCase>>().setData(PageInfo.of(Collections.EMPTY_LIST).ok();
          }
          tmpParam.setTestCaseIdList(caseIdList);
          startPage();
-         List&lt;TestCase> testCaseList = testCaseService.listExtend(tmpParam);
+         List<TestCase> testCaseList = testCaseService.listExtend(tmpParam);
          **/
-        List&lt;TestCaseBisDto> testCaseAllByCycleId = testCaseService.getTestCaseAllByCycleId(param.getTestCycleId();
+        List<TestCaseBisDto> testCaseAllByCycleId = testCaseService.getTestCaseAllByCycleId(param.getTestCycleId();
         startPage();
         return new Resp.Builder<PageInfo<TestCaseBisDto>>().setData(PageInfo.of(testCaseAllByCycleId).ok();
     }
@@ -313,5 +313,6 @@ public class TestCycleController extends BaseController {
 
 
 
+}
 }
 }
