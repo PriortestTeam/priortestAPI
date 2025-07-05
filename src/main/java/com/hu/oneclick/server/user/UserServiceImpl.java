@@ -698,7 +698,7 @@ public class UserServiceImpl implements UserService {
                 return null;
             }
 
-            AuthLoginUser authLoginUser = new AuthLoginUser();
+            AuthLoginUser authLoginUser = newAuthLoginUser();
             authLoginUser.setSysUser(sysUser);
 
             System.out.println(">>> JWT Token - 获取用户信息成功");
@@ -809,3 +809,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 }
+```
+
+Removing incorrect `@Override` annotations.
