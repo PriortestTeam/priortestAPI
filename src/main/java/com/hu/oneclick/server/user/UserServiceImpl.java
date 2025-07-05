@@ -703,7 +703,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Resp<String> getUserActivNumber(String email) {
         SysUser sysUser = sysUserDao.queryByEmail(email);
-        return new Resp.Builder<String>().setData(String.valueOf(sysUser.getActivitiNumber())).ok();
+        return new Resp```java
+<String>().setData(String.valueOf(sysUser.getActivitiNumber())).ok();
     }
 
     /**
@@ -728,19 +729,19 @@ public class UserServiceImpl implements UserService {
         try {
             // 首先通过token查找SysUserToken
             SysUserToken userToken = sysUserTokenDao.selectByTokenValue(token);
-            
+
             System.out.println(">>> 4. Token查询完成");
             if (userToken == null) {
                 System.out.println(">>> 5. Token查询结果: null (未找到匹配的token)");
                 System.out.println(">>> 6. 可能原因: token不存在于数据库中或已过期");
                 return null;
             }
-            
+
             System.out.println(">>> 5. Token查询结果: 找到token");
             System.out.println(">>> 6. Token对应的用户ID: " + userToken.getUserId());
             System.out.println(">>> 7. Token状态: " + userToken.getStatus());
             System.out.println(">>> 8. Token剩余次数: " + userToken.getApiTimes());
-            
+
             // 然后通过userId查找用户
             System.out.println(">>> 9. 准备查询用户信息...");
             SysUser user = sysUserDao.queryById(userToken.getUserId());
@@ -759,13 +760,11 @@ public class UserServiceImpl implements UserService {
 
             System.out.println(">>> ===== UserServiceImpl.getUserByApiToken() 结束 =====");
             return user;
-
         } catch (Exception e) {
-            System.out.println(">>> ERROR: 数据库查询过程中发生异常");
-            System.out.println(">>> 异常类型: " + e.getClass().getName());
-            System.out.println(">>> 异常消息: " + e.getMessage());
+            System.out.println(">>> 异常: " + e.getMessage());
             e.printStackTrace();
-            throw e;
+            System.out.println(">>> ===== UserServiceImpl.getUserByApiToken() 异常结束 =====");
+            return null;
         }
     }
 }
