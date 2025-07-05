@@ -703,7 +703,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Resp<String> getUserActivNumber(String email) {
         SysUser sysUser = sysUserDao.queryByEmail(email);
-        return new Resp<String>().setData(String.valueOf(sysUser.getActivitiNumber())).ok();
+        return new Resp.Builder<String>().setData(String.valueOf(sysUser.getActivitiNumber())).ok();
     }
 
     /**
@@ -717,23 +717,5 @@ public class UserServiceImpl implements UserService {
     public Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId) {
         List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
         return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
-    }
-
-	public SysUser getUserByApiToken(String token) {
-        try {
-            // 首先通过token查找SysUserToken
-            SysUserToken userToken = sysUserTokenDao.selectByTokenValue(token);
-
-            if (userToken == null) {
-                return null;
-            }
-
-            // 然后通过userId查找用户
-            SysUser user = sysUserDao.queryById(userToken.getUserId());
-            return user;
-        } catch (Exception e) {
-            logger.error("查询用户时发生异常", e);
-            return null;
-        }
     }
 }
