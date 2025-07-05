@@ -216,6 +216,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new BadCredentialsException("JWT token has expired");
             }
 
+            // ======= 关键：验证JWT token是否为最新有效的token =======
+            System.out.println(">>> 开始验证JWT token是否为当前用户的最新有效token");
+            String redisKey = "LOGIN_JWT:" + subject;
+            
+            try {
+                // 从Redis获取当前用户的最新token
+                org.redisson.api.RBucket<String> bucket = redissonClient.getBucket(redisKey);
+                String currentValidToken = bucket.get();
+                
+                System.out.println(">>> Redis中存储的当前有效token: " + (currentValidToken != null ? currentValidToken.substring(0, Math.min(20, currentValidToken.length())) + "..." : "null"));
+                System.out.println(">>> 请求中的token: " + token.substring(0, Math.min(20, token.length())) + "...");
+                
+                if (currentValidToken == null) {
+                    System.out.println(">>> Redis中没有找到用户的有效token，可能已过期或被清除");
+                    throw new BadCredentialsException("No valid session found, please login again");
+                }
+                
+                if (!token.equals(currentValidToken)) {
+                    System.out.println(">>> Token不匹配！用户可能在其他地方重新登录了");
+                    throw new BadCredentialsException("Token has been invalidated by a newer login session");
+                }
+                
+                System.out.println(">>> JWT Token验证通过：token匹配，为当前有效的最新token");
+                
+            } catch (Exception redisException) {
+                System.out.println(">>> Redis验证过程中发生异常: " + redisException.getMessage());
+                throw new BadCredentialsException("Session validation failed: " + redisException.getMessage());
+            }
+
             System.out.println(">>> JWT Token验证成功，用户: " + subject);
 
             // 创建JwtAuthenticationToken对象以匹配JwtRefreshSuccessHandler的期望
