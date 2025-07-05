@@ -177,8 +177,15 @@ public class WebSecurityConfig {
                 protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
                         throws ServletException, IOException {
                     String path = request.getRequestURI();
-                    // 如果是登录请求或API token请求，跳过JWT过滤器
-                    if (path.equals("/api/login") || path.equals("/login") || path.startsWith("/api/apiAdpater/")) {
+                    // 如果是登录请求、API token请求或Swagger UI请求，跳过JWT过滤器
+                    if (path.equals("/api/login") || path.equals("/login") || 
+                        path.startsWith("/api/apiAdpater/") ||
+                        path.startsWith("/api/swagger-ui/") ||
+                        path.startsWith("/api/v3/api-docs") ||
+                        path.equals("/api/swagger-ui.html") ||
+                        path.startsWith("/swagger-ui/") ||
+                        path.startsWith("/v3/api-docs") ||
+                        path.equals("/swagger-ui.html")) {
                         System.out.println(">>> 跳过JWT过滤器，直接放行请求: " + path);
                         filterChain.doFilter(request, response);
                         return;
