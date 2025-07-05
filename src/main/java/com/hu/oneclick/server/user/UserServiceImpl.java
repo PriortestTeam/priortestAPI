@@ -719,27 +719,42 @@ public class UserServiceImpl implements UserService {
         return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
     }
 
-	@Override
-    public SysUser getUserByApiToken(String token) {
+	public SysUser getUserByApiToken(String token) {
         System.out.println(">>> ===== UserServiceImpl.getUserByApiToken() 开始 =====");
         System.out.println(">>> 1. 接收到的token: " + token);
         System.out.println(">>> 2. Token长度: " + token.length());
-        System.out.println(">>> 3. 准备调用 sysUserTokenDao.selectByToken()...");
+        System.out.println(">>> 3. 准备调用 sysUserTokenDao.selectByTokenValue()...");
 
         try {
-            SysUser user = sysUserTokenDao.selectByToken(token);
-
-            System.out.println(">>> 4. 数据库查询完成");
-            if (user == null) {
-                System.out.println(">>> 5. 查询结果: null (未找到匹配的用户)");
+            // 首先通过token查找SysUserToken
+            SysUserToken userToken = sysUserTokenDao.selectByTokenValue(token);
+            
+            System.out.println(">>> 4. Token查询完成");
+            if (userToken == null) {
+                System.out.println(">>> 5. Token查询结果: null (未找到匹配的token)");
                 System.out.println(">>> 6. 可能原因: token不存在于数据库中或已过期");
+                return null;
+            }
+            
+            System.out.println(">>> 5. Token查询结果: 找到token");
+            System.out.println(">>> 6. Token对应的用户ID: " + userToken.getUserId());
+            System.out.println(">>> 7. Token状态: " + userToken.getStatus());
+            System.out.println(">>> 8. Token剩余次数: " + userToken.getApiTimes());
+            
+            // 然后通过userId查找用户
+            System.out.println(">>> 9. 准备查询用户信息...");
+            SysUser user = sysUserDao.queryById(userToken.getUserId());
+
+            System.out.println(">>> 10. 用户查询完成");
+            if (user == null) {
+                System.out.println(">>> 11. 用户查询结果: null (未找到匹配的用户)");
+                System.out.println(">>> 12. 可能原因: 用户ID不存在或用户已被删除");
             } else {
-                System.out.println(">>> 5. 查询结果: 找到用户");
-                System.out.println(">>> 6. 用户ID: " + user.getId());
-                System.out.println(">>> 7. 用户Email: " + user.getEmail());
-                System.out.println(">>> 8. 用户用户名: " + user.getUsername());
-                System.out.println(">>> 9. 用户状态: " + user.getStatus());
-                System.out.println(">>> 10. 用户创建时间: " + user.getCreateTime());
+                System.out.println(">>> 11. 用户查询结果: 找到用户");
+                System.out.println(">>> 12. 用户ID: " + user.getId());
+                System.out.println(">>> 13. 用户Email: " + user.getEmail());
+                System.out.println(">>> 14. 用户状态: " + user.getStatus());
+                System.out.println(">>> 15. 用户创建时间: " + user.getCreateTime());
             }
 
             System.out.println(">>> ===== UserServiceImpl.getUserByApiToken() 结束 =====");
