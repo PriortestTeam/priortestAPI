@@ -179,7 +179,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Bearer Token认证 (JWT)
+     * Bearer Token认证 (JWT格式)
      */
     private Authentication attemptBearerTokenAuthentication(HttpServletRequest request) throws AuthenticationException {
         String header = request.getHeader("Authorization");
