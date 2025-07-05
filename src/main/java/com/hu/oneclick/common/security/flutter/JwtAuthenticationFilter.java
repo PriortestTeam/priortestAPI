@@ -98,25 +98,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
+            // 获取Authorization头
             String authHeader = request.getHeader("Authorization");
-            System.out.println(">>> Authorization Header: " + (authHeader != null ? authHeader.substring(0, Math.min(20, authHeader.length())) + "..." : "null"));
-
             if (authHeader == null || authHeader.trim().isEmpty()) {
-                System.out.println(">>> 缺少Authorization header");
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("{\"error\":\"Missing Authorization header\"}");
+                System.out.println(">>> 没有Authorization头，继续过滤链");
+                filterChain.doFilter(request, response);
                 return;
             }
 
-            Authentication authentication = null;
+            System.out.println(">>> Authorization头: " + authHeader.substring(0, Math.min(20, authHeader.length())) + "...");
 
+            Authentication authentication;
+
+            // 判断是 Bearer Token 还是 API Token
             if (authHeader.startsWith("Bearer ")) {
-                // Bearer Token (JWT)
-                String token = authHeader.substring(7).trim();
-                authentication = authenticateBearerToken(token);
-            } else {
-                // API Token (emailId + token)
+                System.out.println(">>> 检测到Bearer Token，使用JWT验证");
+                authentication = authenticateBearerToken(authHeader.substring(7).trim());
+            } else if (path.startsWith("/api/apiAdapter/")) {
+                System.out.println(">>> 检测到API Token访问 apiAdapter 接口，使用API Token验证");
                 authentication = authenticateApiToken(authHeader);
+            } else {
+                System.out.println(">>> 未知的认证方式或路径不匹配，拒绝访问");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid authentication method");
+                return;
             }
 
             if (authentication != null) {
@@ -201,14 +205,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             System.out.println(">>> API Token - EmailId: " + emailId);
 
-            // 简单验证，不查询数据库
+            // 基本格式验证
             if (emailId.isEmpty() || token.isEmpty()) {
                 throw new BadCredentialsException("EmailId or token is empty");
             }
 
+            // 简化验证逻辑，暂时跳过数据库查询
+            // TODO: 后续实现完整的 API Token 验证逻辑
             System.out.println(">>> API Token验证成功，用户: " + emailId);
 
-            // 创建简单的认证对象
+            // 创建认证对象
             UsernamePasswordAuthenticationToken authToken = 
                 new UsernamePasswordAuthenticationToken(emailId, null, new ArrayList<>());
 
