@@ -35,6 +35,15 @@ public class FeatureParam implements Serializable {
         queryWrapper.orderByDesc(Feature::getCreateTime);
         return queryWrapper;
     }
+
+    @Schema(description = "分页大小")
+    private Integer pageSize;
+
+    @Schema(description = "当前页")
+    private Integer currentPage;
+
+    @Schema(description = "项目ID")
+    private String projectId;
 }
 package com.hu.oneclick.model.param;
 
@@ -45,23 +54,23 @@ import java.util.Date;
 @Getter
 @Setter
 public class FeatureParam {
-    
+
     private Long id;
-    
+
     private String title;
-    
+
     private Long projectId;
-    
+
     private Date createTime;
-    
+
     public String getTitle() {
         return title;
     }
-    
+
     public Long getProjectId() {
         return projectId;
     }
-    
+
     public Date getCreateTime() {
         return createTime;
     }

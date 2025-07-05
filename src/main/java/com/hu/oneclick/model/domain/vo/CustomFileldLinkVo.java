@@ -71,36 +71,3 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
     }
 
 }
-package com.hu.oneclick.model.domain.vo;
-
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class CustomFileldLinkVo {
-    
-    private Long id;
-    
-    private String fieldNameEn;
-    
-    private Long customFieldId;
-    
-    private String fieldNameCn;
-    
-    private String fieldType;
-    
-    private String defaultValue;
-    
-    private String isRequired;
-    
-    private String isEnable;
-    
-    public String getFieldNameEn() {
-        return fieldNameEn;
-    }
-    
-    public Long getCustomFieldId() {
-        return customFieldId;
-    }
-}

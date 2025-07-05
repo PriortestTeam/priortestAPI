@@ -99,45 +99,45 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SysFunction {
-    
+
     private Long id;
-    
+
     private String name;
-    
+
     private String number;
-    
+
     private String icon;
-    
+
     private String url;
-    
+
     private String component;
-    
+
     private String pushBtn;
-    
+
     public Long getId() {
         return id;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public String getNumber() {
         return number;
     }
-    
+
     public String getIcon() {
         return icon;
     }
-    
+
     public String getUrl() {
         return url;
     }
-    
+
     public String getComponent() {
         return component;
     }
-    
+
     public String getPushBtn() {
         return pushBtn;
     }

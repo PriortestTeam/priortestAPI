@@ -4,8 +4,11 @@ import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 故事(Feature)实体类
@@ -63,36 +66,13 @@ public class Feature extends AssignBaseEntity implements Serializable {
 
     @Schema(description = "扩展数据")
     private String featureExpand;
-}
-package com.hu.oneclick.model.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import java.util.Date;
+    @Schema(description = "扩展信息")
+    private String extJson;
 
-@Getter
-@Setter
-public class Feature {
-    
-    private Long id;
-    
-    private String title;
-    
-    private Long projectId;
-    
+    @Schema(description = "创建时间")
     private Date createTime;
-    
-    private String description;
-    
-    public String getTitle() {
-        return title;
-    }
-    
-    public Long getProjectId() {
-        return projectId;
-    }
-    
-    public Date getCreateTime() {
-        return createTime;
-    }
+
+    @Schema(description = "更新时间")
+    private Date updateTime;
 }

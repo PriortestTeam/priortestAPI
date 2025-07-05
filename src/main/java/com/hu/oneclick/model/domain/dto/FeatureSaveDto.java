@@ -7,6 +7,8 @@ import lombok.Data;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 /**
  * 故事(Feature)实体类
  *
@@ -63,25 +65,16 @@ public class FeatureSaveDto {
      */
     @Schema(description = "自定义字段值")
     private JSONObject customFieldDatas;
-}
-package com.hu.oneclick.model.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+    /**
+     * 扩展信息
+     */
+    @Schema(description = "扩展信息")
+    private String extJson;
 
-@Getter
-@Setter
-public class FeatureSaveDto {
-    
-    private Long id;
-    
-    private String title;
-    
-    private Long projectId;
-    
-    private String description;
-    
-    public Long getId() {
-        return id;
-    }
+    /**
+     * 关联的自定义字段
+     */
+    @Schema(description = "关联的自定义字段")
+    private List<CustomFieldData> customFieldDataList;
 }

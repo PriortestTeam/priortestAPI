@@ -3,6 +3,8 @@ package com.hu.oneclick.model.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -48,38 +50,9 @@ public class RoleProjectFunctionDTO implements Serializable {
     @Schema(description = "功能权限")
     private List<FunctionModelDTO> functionList;
 
-}
-package com.hu.oneclick.model.domain.dto;
+    @Schema(description = "角色ID")
+    private String roleIdStr;
 
-import lombok.Getter;
-import lombok.Setter;
-import java.util.List;
-
-@Getter
-@Setter
-public class RoleProjectFunctionDTO {
-    
-    private Long roleId;
-    
-    private Long projectId;
-    
-    private Long userId;
-    
-    private List<Long> functionList;
-    
-    public Long getRoleId() {
-        return roleId;
-    }
-    
-    public Long getProjectId() {
-        return projectId;
-    }
-    
-    public Long getUserId() {
-        return userId;
-    }
-    
-    public List<Long> getFunctionList() {
-        return functionList;
-    }
+    @Schema(description = "项目ID")
+    private String projectIdStr;
 }
