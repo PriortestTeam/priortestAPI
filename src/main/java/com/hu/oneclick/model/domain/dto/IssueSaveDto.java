@@ -44,59 +44,45 @@ public class IssueSaveDto implements Serializable {
     private Date planFixDate;
 
     @Schema(description = "优先级")
-//    @NotBlank(message = "优先级不能为空")
     private String priority;
 
     @Schema(description = "环境")
-//    @NotBlank(message = "环境不能为空")
     private String env;
 
     @Schema(description = "浏览器")
-//    @NotBlank(message = "浏览器不能为空")
     private String browser;
 
     @Schema(description = "平台")
-//    @NotBlank(message = "平台不能为空")
     private String platform;
 
     @Schema(description = "版本")
-//    @NotBlank(message = "版本不能为空")
     private String issueVersion;
 
     @Schema(description = "用例分类")
-//    @NotBlank(message = "用例分类不能为空")
     private String caseCategory;
 
     @Schema(description = "描述")
-//    @NotBlank(message = "描述不能为空")
     private String description;
 
     @Schema(description = "状态")
-//    @NotBlank(message = "状态不能为空")
     private String issueStatus;
 
     @Schema(description = "模块")
-//    @NotBlank(message = "模块不能为空")
     private String module;
 
     @Schema(description = "当前负责人")
-//    @NotBlank(message = "当前负责人不能为空")
     private String reportTo;
 
     @Schema(description = "关联测试用例")
-//    @NotBlank(message = "关联测试用例不能为空")
     private String verifiedResult;
 
     @Schema(description = "严重程度")
-//    @NotBlank(message = "严重程度不能为空")
     private String severity;
 
     @Schema(description = "测试设备")
-//    @NotBlank(message = "测试设备不能为空")
     private String testDevice;
 
     @Schema(description = "缺陷修改版本号")
-//    @NotBlank(message = "缺陷修改版本号不能为空")
     private String fixVersion;
 
     /**

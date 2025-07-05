@@ -88,4 +88,20 @@ public class SysUserBusiness implements Serializable {
     private String userName;
 
     private static final long serialVersionUID = 1L;
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getBtnStr() {
+        return btnStr;
+    }
+
+    public String getInvisible() {
+        return invisible;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

@@ -1,22 +1,12 @@
 package com.hu.oneclick.model.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.List;
 
-/**
- * @author houaixia
- * 权限设置DTO
- */
-@Schema(description = "角色项目功能DTO")
 @Data
+@Schema(description = "角色项目功能DTO")
 public class RoleProjectFunctionDTO {
 
     @Schema(description = "角色ID")
@@ -29,29 +19,23 @@ public class RoleProjectFunctionDTO {
     private Long userId;
 
     @Schema(description = "功能列表")
-    private java.util.List<String> functionList;
+    private List<String> functionList;
 
-    @NotNull(message = "角色id不能为空")
     @Schema(description = "角色id")
     private Long  roleId;
 
-    @NotBlank(message = "角色名称不能为空")
     @Schema(description = "角色名称")
     private String roleName;
 
-    @NotNull(message = "项目id不能为空")
     @Schema(description = "项目id")
     private Long projectId;
 
-    @NotBlank(message = "项目名称不能为空")
     @Schema(description = "项目名称")
     private String projectName;
 
-    @NotNull(message = "用户id不能为空")
     @Schema(description = "用户id")
     private Long userId;
 
-    @NotBlank(message = "用户名称不能为空")
     @Schema(description = "用户名称")
     private String userName;
 
@@ -66,4 +50,92 @@ public class RoleProjectFunctionDTO {
 
     @Schema(description = "项目ID")
     private String projectIdStr;
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public List<String> getFunctionList() {
+        return functionList;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getRoleIdStr() {
+        return roleIdStr;
+    }
+
+    public String getProjectIdStr() {
+        return projectIdStr;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void setFunctionList(List<String> functionList) {
+        this.functionList = functionList;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public void setRoleIdStr(String roleIdStr) {
+        this.roleIdStr = roleIdStr;
+    }
+
+    public void setProjectIdStr(String projectIdStr) {
+        this.projectIdStr = projectIdStr;
+    }
+
+    public List<FunctionModelDTO> getFunctionList1() {
+        return functionList;
+    }
+
+    public void setFunctionList1(List<FunctionModelDTO> functionList) {
+        this.functionList = functionList;
+    }
 }

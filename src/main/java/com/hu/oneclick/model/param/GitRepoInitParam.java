@@ -2,11 +2,9 @@
 package com.hu.oneclick.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Schema(description = "Git仓库初始化参数")
 public class GitRepoInitParam {
     
@@ -14,8 +12,20 @@ public class GitRepoInitParam {
     private String repoName;
     
     @Schema(description = "项目ID")
-    private String projectId;
+    private Long projectId;
     
     @Schema(description = "项目名称")
     private String projectName;
+    
+    public String getRepoName() {
+        return repoName;
+    }
+    
+    public Long getProjectId() {
+        return projectId;
+    }
+    
+    public String getProjectName() {
+        return projectName;
+    }
 }

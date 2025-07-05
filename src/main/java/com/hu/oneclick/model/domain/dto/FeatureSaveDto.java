@@ -16,10 +16,11 @@ import java.util.List;
  * @since 2021-02-03 13:54:35
  */
 @Data
+@Schema(description = "特性保存DTO")
 public class FeatureSaveDto {
 
     @Schema(description = "ID")
-    private String id;
+    private Long id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @Schema(description = "主键id")
