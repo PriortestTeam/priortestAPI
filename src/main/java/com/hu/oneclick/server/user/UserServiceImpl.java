@@ -11,6 +11,8 @@ import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.RoleConstant;
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
+import com.hu.oneclick.common.security.JwtAuthenticationToken;
+import com.hu.oneclick.common.security.ApiToken;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.DateUtil;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
@@ -32,6 +34,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -258,10 +263,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<SysUser> queryUserInfo() {
-        AuthLoginUser userLoginInfo = jwtUserServiceImpl.getUserLoginInfo();
-        SysUser sysUser = userLoginInfo.getSysUser();
-        sysUser.setPassword("");
-        return new Resp.Builder<SysUser>().setData(sysUser).ok();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = null;
+
+        if (authentication instanceof ApiToken) {
+            ApiToken apiToken = (ApiToken) authentication;
+            userName = apiToken.getUserName();
+        } else if (authentication instanceof JwtAuthenticationToken) {
+            JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) authentication;
+            userName = jwtToken.getJwt().getSubject();
+        } else if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            userName = authentication.getName();
+        } else {
+            throw new BizException("不支持的认证类型: " + authentication.getClass().getName());
+        }
+
+        return new Resp.Builder<SysUser>().setData(sysUserDao.queryByEmail(userName)).ok();
     }
 
     @Override
@@ -686,8 +703,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<SysUser> queryByUserIdAndParentId(String masterId) {
         SysUser sysUser = new SysUser();
-        sysUser.setId(masterId);
-//        sysUser.setParentId(Long.valueOf(masterId));
+        sysUser.setId(masterId);//        sysUser.setParentId(Long.valueOf(masterId));
         return sysUserDao.queryAllIdOrParentId(sysUser);
     }
 
