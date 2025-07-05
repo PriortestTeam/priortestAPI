@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("leftJoin");
 
+
 public class LeftJoinController {
     private final SprintService sprintService;
     private final FeatureService featureService;

@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
  */
 @Service
 
+
 public class SubUserServiceImpl implements SubUserService {
     private final static Logger logger = LoggerFactory.getLogger(SubUserServiceImpl.class);
     private final JwtUserServiceImpl jwtUserServiceImpl;

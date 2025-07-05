@@ -8,6 +8,7 @@ import jakarta.annotation.Resource;
 import java.util.*;
 @Component
 
+
 public class QuartzManager {
     @Resource
     private Scheduler scheduler;

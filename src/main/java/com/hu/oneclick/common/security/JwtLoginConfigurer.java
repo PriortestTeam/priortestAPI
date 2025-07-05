@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
  * @author qingyang
  */
 
+
 public class JwtLoginConfigurer<T extends JwtLoginConfigurer<T, B>, B extends HttpSecurityBuilder<B>> extends AbstractHttpConfigurer<T, B> {
 	private final JwtAuthenticationFilter authFilter;
 	public JwtLoginConfigurer() {

@@ -22,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("systemConfig");
 
+
 public class SystemConfigController {
     @Autowired
     private SystemConfigService systemConfigService;

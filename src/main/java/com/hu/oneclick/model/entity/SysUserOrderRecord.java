@@ -12,6 +12,7 @@ import java.util.Date;
 @Schema(description = "com.hu.oneclick.model.domain.SysUserOrderRecord订单记录表")
 @Data
 
+
 public class SysUserOrderRecord implements Serializable {
     /**
      * id

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 
+
 public class ExecuteTestCaseRunDto {
     private Long testCaseId;
     private Long testCycleId;

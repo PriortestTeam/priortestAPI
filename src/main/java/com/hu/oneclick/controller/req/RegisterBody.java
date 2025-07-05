@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 
+
 public class RegisterBody {
   /**
    * 邮箱

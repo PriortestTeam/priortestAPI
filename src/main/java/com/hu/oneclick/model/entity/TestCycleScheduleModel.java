@@ -10,6 +10,7 @@ import java.util.Date;
 @Schema(description="com.hu.oneclick.model.entity.TestCycleScheduleModel");
 @Data
 
+
 public class TestCycleScheduleModel implements Serializable {
     private Integer id;
     /**

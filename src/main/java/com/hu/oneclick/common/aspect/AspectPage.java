@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Component
 @Aspect
 
+
 public class AspectPage {
     @Around("@annotation(com.hu.oneclick.model.annotation.Page)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {

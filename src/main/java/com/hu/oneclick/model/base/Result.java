@@ -5,6 +5,7 @@ import com.hu.oneclick.common.exception.BizException;
  * @author qingyang
  */
 
+
 public class Result {
     public static Resp<String> addResult(int count){
         if (count > 0){

@@ -27,6 +27,7 @@ import java.util.List;
  */
 @Service
 
+
 public class SettingPermissionServiceImpl implements SettingPermissionService {
     private final static Logger logger = LoggerFactory.getLogger(SettingPermissionServiceImpl.class);
     private final JwtUserServiceImpl jwtUserServiceImpl;

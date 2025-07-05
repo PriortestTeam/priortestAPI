@@ -15,6 +15,7 @@ import java.util.Map;
 @Getter
 @Schema(description = "构建Job")
 
+
 public class JenkinsBuildDto implements Serializable {
     private static final long serialVersionUID = 3308577719580670615L;
     @Schema(description = "任务名称")

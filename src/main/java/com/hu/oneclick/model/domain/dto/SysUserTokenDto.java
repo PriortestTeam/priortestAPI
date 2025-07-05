@@ -8,6 +8,7 @@ import java.util.Date;
  */
 @Data
 
+
 public class SysUserTokenDto {
     private Date expirationTime;
     private String tokenName;

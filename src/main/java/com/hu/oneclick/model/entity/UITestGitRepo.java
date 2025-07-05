@@ -7,6 +7,7 @@ import java.util.Date;
 @Data
 @TableName("uitest_git_repo");
 
+
 public class UITestGitRepo {
     @TableId
     private BigInteger id;

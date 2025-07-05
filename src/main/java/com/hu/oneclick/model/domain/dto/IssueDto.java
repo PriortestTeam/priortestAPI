@@ -4,6 +4,7 @@ import com.hu.oneclick.model.entity.Issue;
  * @author qingyang
  */
 
+
 public class IssueDto extends Issue {
     private ViewTreeDto viewTreeDto;
     private String filter;

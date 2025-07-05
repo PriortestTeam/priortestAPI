@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 @Data
 
+
 public class AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = -1025285783773774055L;
     //解决swagger获取id精度缺失问题,postman不会有这个问题

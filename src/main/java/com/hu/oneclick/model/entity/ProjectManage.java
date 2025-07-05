@@ -14,6 +14,7 @@ import java.util.Date;
 @TableName(value = "project");
 @EqualsAndHashCode(callSuper=false);
 
+
 public class ProjectManage extends AssignBaseEntity implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING);
     private Long roomId;

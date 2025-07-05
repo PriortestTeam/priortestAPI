@@ -13,6 +13,7 @@ import java.util.List;
 @MappedJdbcTypes(JdbcType.VARCHAR);
 @MappedTypes({List.class});
 
+
 public class ListTypeHandler extends BaseTypeHandler<List&lt;String>> {
     private static final String DELIM = ",";
     @Override

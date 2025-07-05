@@ -19,6 +19,7 @@ import java.util.Date;
 @Schema(description = "测试周期")
 @TableName("test_cycle");
 
+
 public class TestCycle extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = -5508923063848235392L;
     /**

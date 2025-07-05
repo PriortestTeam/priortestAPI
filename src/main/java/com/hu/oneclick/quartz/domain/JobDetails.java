@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 @Data
 
+
 public class JobDetails {
     private String cronExpression;
     private String jobClassName;

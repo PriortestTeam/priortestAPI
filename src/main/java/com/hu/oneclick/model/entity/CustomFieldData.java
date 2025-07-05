@@ -10,6 +10,7 @@ import java.util.Date;
 @Schema(description = "自定义字段数据实体")
 @Data
 
+
 public class CustomFieldData implements Serializable {
     private Integer id;
     /**

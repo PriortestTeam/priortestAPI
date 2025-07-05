@@ -5,6 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 @Data
 
+
 public class IssueStatusDto implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING);
     @Schema(description = "主键id")

@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 @Data
 
+
 public class ProjectManageParam implements Serializable {
     private Long roomId;
     public Wrapper<ProjectManage> getQueryCondition() {

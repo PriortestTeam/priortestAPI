@@ -16,6 +16,7 @@ import java.util.Map;
 @Component
 @Slf4j
 
+
 public class JenkinsManager {
     private static final JenkinsConfig jenkinsConfig = SpringUtil.getBean(JenkinsConfig.class);
     private JenkinsHttpClient jenkinsHttpClient = null;

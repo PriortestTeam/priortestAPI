@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 @Schema(description = "特性保存DTO")
 
+
 public class FeatureSaveDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING);
     @Schema(description = "主键id")

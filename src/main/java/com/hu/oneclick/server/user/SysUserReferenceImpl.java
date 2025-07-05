@@ -11,6 +11,7 @@ import java.util.Date;
  */
 @Service
 
+
 public class SysUserReferenceImpl implements SysUserReferenceService {
     @Autowired
     private SysUserReferenceDao sysUserReferenceDao;

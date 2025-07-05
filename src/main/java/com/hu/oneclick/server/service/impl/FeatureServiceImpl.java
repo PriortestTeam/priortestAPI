@@ -36,6 +36,7 @@ import cn.zhxu.bs.MapSearcher;
  */
 @Service
 
+
 public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> implements FeatureService {
     private final static Logger logger = LoggerFactory.getLogger(FeatureServiceImpl.class);
     @Resource

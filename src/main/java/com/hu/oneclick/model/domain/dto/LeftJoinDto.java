@@ -4,6 +4,7 @@ import lombok.Setter;
 @Setter
 @Getter
 
+
 public class LeftJoinDto {
     private String id;
     private String title;

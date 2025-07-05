@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 @Data
 
+
 public class SysCustomField implements Serializable {
     private static final long serialVersionUID = 680119388243867579L;
     private String id;

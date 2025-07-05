@@ -20,6 +20,7 @@ import java.util.List;
  */
 @Service
 
+
 public class SysUserOrderRecordImpl implements SysUserOrderRecordService {
     @Autowired
     private SysUserOrderRecordDao sysUserOrderRecordDao;

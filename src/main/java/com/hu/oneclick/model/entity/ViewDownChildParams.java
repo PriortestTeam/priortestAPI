@@ -10,6 +10,7 @@ import java.util.Date;
  */
 @Data
 
+
 public class ViewDownChildParams implements Serializable {
     private static final long serialVersionUID = 848798611045855488L;
     private String id;

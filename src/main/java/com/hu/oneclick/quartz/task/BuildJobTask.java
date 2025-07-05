@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
  */
 @Slf4j
 
+
 public class BuildJobTask extends QuartzJobBean {
     @Resource
     private JenkinsManager jenkinsManager;

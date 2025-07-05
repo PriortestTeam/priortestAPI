@@ -11,6 +11,7 @@ import java.util.List;
  * @author qingyang
  */
 
+
 public class SubUserPermissionDto implements VerifyParam,Serializable {
     private static final long serialVersionUID = -4201137787088714363L;
     /**

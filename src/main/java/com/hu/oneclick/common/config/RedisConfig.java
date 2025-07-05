@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 
+
 public class RedisConfig {
     private final RedisProperties redisProperties;
     @Value("${spring.redis.host:43.139.159.146}") // Use the provided IP, default to localhost if not set

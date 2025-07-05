@@ -22,6 +22,7 @@ import java.util.List;
 @Schema(description = "测试用例")
 @TableName("test_case");
 
+
 public class TestCase extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = 114802398790239711L;
     /**

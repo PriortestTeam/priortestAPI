@@ -9,6 +9,7 @@ import java.util.List;
  * @author qingyang
  */
 
+
 public class AuthLoginUser implements UserDetails {
     /**
      * 登录用户的邮箱

@@ -36,6 +36,7 @@ import java.util.Map;
 @Tag(name = "复杂查询统一管理", description = "复杂查询统一管理相关接口");
 @Slf4j
 
+
 public class BeanSearchController {
     private static final Logger log = LoggerFactory.getLogger(BeanSearchController.class);
     /**

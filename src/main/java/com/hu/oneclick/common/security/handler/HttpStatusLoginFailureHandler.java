@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.www.NonceExpiredException
  * @author qingyang
  */
 
+
 public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandler {
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,

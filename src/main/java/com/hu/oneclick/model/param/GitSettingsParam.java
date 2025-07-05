@@ -6,6 +6,7 @@ import lombok.Setter;
 @Setter
 @Schema(description = "Git设置参数")
 
+
 public class GitSettingsParam {
     @Schema(description = "房间ID")
     private String roomId;

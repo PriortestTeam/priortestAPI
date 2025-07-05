@@ -21,6 +21,7 @@ import java.util.List;
 @RequestMapping("/sysConfig");
 @RequiredArgsConstructor
 
+
 public class SysConfigController {
     @NonNull
     private final SysConfigService sysConfigService;

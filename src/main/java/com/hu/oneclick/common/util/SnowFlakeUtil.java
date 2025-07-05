@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
  * 原作者 zzxadi https://github.com/zzxadi/Snowflake-IdWorker
  */
 
+
 public class SnowFlakeUtil {
     private final static Logger log = LoggerFactory.getLogger("SnowFlakeUtil");
     private final long id;

@@ -21,6 +21,7 @@ import java.util.List;
  */
 @Service
 
+
 public class PlatformUserServiceImpl implements PlatformUserService {
     private final static Logger logger = LoggerFactory.getLogger(SubUserServiceImpl.class);
     private final JwtUserServiceImpl jwtUserServiceImpl;

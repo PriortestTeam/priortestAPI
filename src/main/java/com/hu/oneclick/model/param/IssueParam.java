@@ -4,6 +4,7 @@ import lombok.Data;
 @Data
 @Schema(description = "问题查询参数")
 
+
 public class IssueParam {
     @Schema(description = "项目ID")
     private Long projectId;

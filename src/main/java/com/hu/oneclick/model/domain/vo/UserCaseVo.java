@@ -8,6 +8,7 @@ import java.io.Serializable;
 @Data
 @Schema(description = "用户故事返回对象")
 
+
 public class UserCaseVo implements Serializable {
     @Schema(description = "id")
     private long id;

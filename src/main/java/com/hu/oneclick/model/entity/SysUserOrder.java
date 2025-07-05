@@ -10,6 +10,7 @@ import java.util.Date;
  */
 @Data
 
+
 public class SysUserOrder implements Serializable {
     /**
      * 订单表id

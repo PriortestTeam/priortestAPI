@@ -16,6 +16,7 @@ import java.util.List;
  */
 @Service
 
+
 public class QueryFilterServiceImpl implements QueryFilterService {
     private final ViewDao viewDao;
     public QueryFilterServiceImpl(ViewDao viewDao) {

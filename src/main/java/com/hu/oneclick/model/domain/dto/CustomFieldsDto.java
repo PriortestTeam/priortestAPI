@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 @Data
 
+
 public class CustomFieldsDto {
     /**
      * fieldType 为集合中的任何一项，则 possibleValue 中不能包含 parentListId 值

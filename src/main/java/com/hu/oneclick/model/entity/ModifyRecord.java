@@ -13,6 +13,7 @@ import java.util.Date;
  * @since 2021-02-14 14:14:43
  */
 
+
 public class ModifyRecord extends BaseEntity implements Serializable, VerifyParam {
     private static final long serialVersionUID = 810875069044226355L;
     /**

@@ -12,6 +12,7 @@ import java.util.List;
  * @since 2020-12-05 20:02:02
  */
 
+
 public class FieldText extends CustomField implements Serializable {
     private static final long serialVersionUID = 613936107743960355L;
     private String customFieldId;

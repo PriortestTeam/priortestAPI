@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import com.alibaba.fastjson2.JSON;
 @Service
 
+
 public class SysCustomFieldServiceImpl implements SysCustomFieldService {
     private final static Logger logger = LoggerFactory.getLogger(SysCustomFieldServiceImpl.class);
     @Autowired

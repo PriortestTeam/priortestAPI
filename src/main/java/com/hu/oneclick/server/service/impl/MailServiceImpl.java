@@ -24,6 +24,7 @@ import java.io.File;
  */
 @Service
 
+
 public class MailServiceImpl  implements MailService {
     private final static Logger logger = LoggerFactory.getLogger(MailServiceImpl.class);
     //template模板引擎

@@ -18,6 +18,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper=false);
 
+
 public class Project extends BaseEntity implements VerifyParam, Serializable {
     private static final long serialVersionUID = -54866876049537399L;
     /**

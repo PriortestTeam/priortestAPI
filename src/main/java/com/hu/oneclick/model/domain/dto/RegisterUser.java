@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author qingyang
  */
 
+
 public class RegisterUser extends SysUser implements VerifyParam {
     private String emailCode;
     @Override

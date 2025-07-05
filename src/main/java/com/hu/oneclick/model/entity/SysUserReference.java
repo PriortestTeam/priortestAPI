@@ -10,6 +10,7 @@ import lombok.Data;
 @Schema(description="用户推荐表");
 @Data
 
+
 public class SysUserReference implements Serializable {
     /**
      * id

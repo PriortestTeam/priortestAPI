@@ -6,6 +6,7 @@ import lombok.Setter;
 @Setter
 @Schema(description = "关系查询参数")
 
+
 public class RelationParam {
     /** 对象id */
     @Schema(description = "对象id")

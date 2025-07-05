@@ -5,6 +5,7 @@ import lombok.Setter;
 @Getter
 @Setter
 
+
 public class CustomFieldPossBileDto {
     /**
      * 保留字段下划线格式

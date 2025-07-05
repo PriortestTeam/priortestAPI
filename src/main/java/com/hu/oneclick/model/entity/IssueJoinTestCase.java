@@ -7,6 +7,7 @@ import java.io.Serializable;
  * @since 2021-02-18 14:15:05
  */
 
+
 public class IssueJoinTestCase implements Serializable {
     private static final long serialVersionUID = 948868735634832580L;
     private String issueId;

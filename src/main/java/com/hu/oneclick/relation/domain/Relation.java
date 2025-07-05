@@ -18,6 +18,7 @@ import jakarta.validation.constraints.NotBlank;
 @TableName("relation");
 @Schema(description = "关系实体")
 
+
 public class Relation {
     /**
      * id

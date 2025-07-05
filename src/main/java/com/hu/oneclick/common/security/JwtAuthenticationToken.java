@@ -9,6 +9,7 @@ import java.util.Collections;
  * @author qingyang
  */
 
+
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 3981518947978158945L;
 	private UserDetails principal;

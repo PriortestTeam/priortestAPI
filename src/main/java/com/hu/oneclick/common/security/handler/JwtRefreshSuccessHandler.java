@@ -16,6 +16,7 @@ import java.util.Date;
  */
 @Component
 
+
 public class JwtRefreshSuccessHandler implements AuthenticationSuccessHandler {
 	/**
 	 * 刷新间隔5分钟

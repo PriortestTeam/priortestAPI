@@ -18,6 +18,7 @@ import java.util.List;
 @Service
 @Slf4j
 
+
 public class SysConfigServiceImpl implements SysConfigService {
     @NonNull
     private final SysConfigDao sysConfigDao;

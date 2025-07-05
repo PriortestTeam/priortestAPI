@@ -10,6 +10,7 @@ import java.io.IOException;
  */
 @Component
 
+
 public class HttpStatusLogoutSuccessHandler implements LogoutSuccessHandler {
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,

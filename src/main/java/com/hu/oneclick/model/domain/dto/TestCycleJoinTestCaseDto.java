@@ -13,6 +13,7 @@ import java.io.Serializable;
  */
 @Data
 
+
 public class TestCycleJoinTestCaseDto implements Serializable {
     private Long projectId;
     private Long testCycleId;

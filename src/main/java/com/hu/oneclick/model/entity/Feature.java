@@ -16,6 +16,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper=false);
 
+
 public class Feature extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = 495256750642592776L;
     /**

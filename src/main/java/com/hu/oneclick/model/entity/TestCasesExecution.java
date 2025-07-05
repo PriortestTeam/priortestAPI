@@ -20,6 +20,7 @@ import java.util.Date;
 @Component
 @TableName(value ="test_cases_execution");
 
+
 public class TestCasesExecution extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2641443521395154160L;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = " GMT+8");

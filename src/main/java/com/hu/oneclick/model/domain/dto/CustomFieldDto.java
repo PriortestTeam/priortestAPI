@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 
+
 public class CustomFieldDto {
     /**
      * 作用范围，范围以逗号分隔

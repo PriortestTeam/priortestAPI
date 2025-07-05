@@ -23,6 +23,7 @@ import java.util.Objects;
  */
 @Component
 
+
 public class TokenClearLogoutHandler implements LogoutHandler {
     private final JwtUserServiceImpl jwtUserServiceImpl;
     public TokenClearLogoutHandler(JwtUserServiceImpl jwtUserServiceImpl) {

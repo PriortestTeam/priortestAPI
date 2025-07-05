@@ -19,6 +19,7 @@ import java.util.Map;
 @Tag(name = "API - jenkins", description = "API - jenkins相关接口");
 @Slf4j
 
+
 public class JenkinsController {
     @Resource
     private JenkinsManager jenkinsManager;

@@ -10,6 +10,7 @@ import java.util.List;
  * @author qingyang
  */
 
+
 public class FieldRichText extends CustomField implements Serializable {
     private static final long serialVersionUID = 613936107743960355L;
     private String customFieldId;

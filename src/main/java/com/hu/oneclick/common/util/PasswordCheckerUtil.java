@@ -8,6 +8,7 @@ import java.util.Set;
  * 密码规则
  */
 
+
 public class PasswordCheckerUtil {
     // 包含大写字母
     private boolean upperCase = true;

@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Data
 @Schema(description = "用户业务信息表")
 
+
 public class SysUserBusiness implements Serializable {
     /**
      * 主键

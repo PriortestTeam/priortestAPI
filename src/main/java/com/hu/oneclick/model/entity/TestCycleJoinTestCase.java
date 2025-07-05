@@ -9,6 +9,7 @@ import java.io.Serializable;
 @Data
 @Component
 
+
 public class TestCycleJoinTestCase extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = 3210170197758676763L;
     private Long projectId;

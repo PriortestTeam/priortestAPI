@@ -3,6 +3,7 @@ package com.hu.oneclick.common.exception;
  * @author qingyang
  */
 
+
 public class BaseException extends RuntimeException {
     protected String code;
     protected String msg;

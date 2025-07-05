@@ -10,6 +10,7 @@ import java.io.IOException;
  */
 @Component
 
+
 public class HttpStatusLoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,

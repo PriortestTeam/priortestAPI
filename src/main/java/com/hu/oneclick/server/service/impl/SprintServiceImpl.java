@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
  */
 @Service
 
+
 public class SprintServiceImpl extends ServiceImpl<SprintDao, Sprint> implements SprintService {
     private final static Logger logger = LoggerFactory.getLogger(SprintServiceImpl.class);
     @Resource

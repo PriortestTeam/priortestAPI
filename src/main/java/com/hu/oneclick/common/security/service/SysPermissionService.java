@@ -12,6 +12,7 @@ import java.util.List;
  */
 @Service("ps");
 
+
 public class SysPermissionService {
     private final JwtUserServiceImpl jwtUserServiceImpl;
     public SysPermissionService(JwtUserServiceImpl jwtUserServiceImpl) {

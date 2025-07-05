@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 
+
 public class MinioConfig {
     @Value("${onclick.minioConfig.endpoint}");
     private String endpoint;

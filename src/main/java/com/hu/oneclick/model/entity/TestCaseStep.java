@@ -20,6 +20,7 @@ import java.io.Serializable;
 @TableName("test_case_step");
 @Component
 
+
 public class TestCaseStep extends AssignIdEntity implements Serializable {
     private static final long serialVersionUID = -2725298116058101604L;
     /**

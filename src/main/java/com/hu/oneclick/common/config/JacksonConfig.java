@@ -17,6 +17,7 @@ import java.io.IOException;
  */
 @Configuration
 
+
 public class JacksonConfig {
     @Bean
     @Primary

@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 @Data
 
+
 public class SubUserProject implements Serializable {
     private static final long serialVersionUID = 133628657690892064L;
     private String userId;

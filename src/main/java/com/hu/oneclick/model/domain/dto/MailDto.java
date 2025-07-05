@@ -8,6 +8,7 @@ import java.util.Map;
  */
 @Data
 
+
 public class MailDto {
     //邮件标题
     private String title;

@@ -14,6 +14,7 @@ import java.util.List;
 @Schema(description = "测试周期计划关联表")
 @TableName("test_cycle_plan");
 
+
 public class TestCyclePlan extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = -6797066177766223569L;
     /**

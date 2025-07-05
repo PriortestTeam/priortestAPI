@@ -25,6 +25,7 @@ import java.util.List;
 @Slf4j
 @Tag(name = "通用关系关联", description = "通用关系关联相关接口");
 
+
 public class RelationController extends BaseController {
     @Resource
     private RelationService relationService;

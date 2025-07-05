@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "jenkins");
 
+
 public class JenkinsConfig {
     private String url;
     private String username;

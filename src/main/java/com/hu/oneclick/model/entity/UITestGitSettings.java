@@ -11,6 +11,7 @@ import java.sql.Date;
 @Data
 @TableName("uitest_git_settings");
 
+
 public class UITestGitSettings {
     @TableId
     private BigInteger id;

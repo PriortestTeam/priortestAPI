@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 @Data
 
+
 public class RoleFunction implements Serializable {
     private static final long serialVersionUID = 418948698502600249L;
     /**

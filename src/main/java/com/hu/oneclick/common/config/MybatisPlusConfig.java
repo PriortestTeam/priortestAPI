@@ -16,6 +16,7 @@ import java.util.List;
 @EnableTransactionManagement(proxyTargetClass = true);
 @Configuration
 
+
 public class MybatisPlusConfig {
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {

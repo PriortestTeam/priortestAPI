@@ -25,6 +25,7 @@ import java.util.Map;
 @Schema(description = "视图实体")
 @TableName("view");
 
+
 public class View extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = 2648094842570049550L;
     private Long id;

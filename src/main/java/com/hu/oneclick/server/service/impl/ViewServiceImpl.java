@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
  */
 @Service
 
+
 public class ViewServiceImpl extends ServiceImpl<ViewDao, View> implements ViewService {
     private final static Logger logger = LoggerFactory.getLogger(ViewServiceImpl.class);
     @Resource

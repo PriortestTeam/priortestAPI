@@ -7,6 +7,7 @@ import java.util.Map;
 @Data
 @Schema(description = "签收参数")
 
+
 public class SignOffParam {
     @Schema(description = "项目id", example = "1234567890");
     @NotNull

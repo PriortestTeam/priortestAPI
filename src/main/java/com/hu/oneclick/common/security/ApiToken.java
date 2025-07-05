@@ -6,6 +6,7 @@ import java.util.Collection;
  * @author masiyi
  */
 
+
 public class ApiToken implements Authentication {
     private Boolean isAuth;
     private String tokenName;

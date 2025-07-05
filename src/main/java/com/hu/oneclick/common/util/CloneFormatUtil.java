@@ -7,6 +7,7 @@ package com.hu.oneclick.common.util;
  * @Version 1.0
  **/
 
+
 public class CloneFormatUtil {
     /**
      * 克隆标题格式

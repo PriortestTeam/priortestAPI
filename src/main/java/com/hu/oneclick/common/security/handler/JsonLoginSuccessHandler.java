@@ -17,6 +17,7 @@ import java.util.Map;
  */
 @Component
 
+
 public class JsonLoginSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtUserServiceImpl jwtUserServiceImpl;
     public JsonLoginSuccessHandler(JwtUserServiceImpl jwtUserServiceImpl) {

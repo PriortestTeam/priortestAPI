@@ -39,6 +39,7 @@ import com.hu.oneclick.model.entity.SysUser;
  * 2. API Token: 用户生成的token，用于API访问，格式：emailId + token
  */
 
+
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();

@@ -4,6 +4,7 @@ import com.hu.oneclick.model.entity.SysProjectPermission;
  * @author qingyang
  */
 
+
 public class SysProjectPermissionDto extends SysProjectPermission {
     /**
      * 权限标识符

@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=false);
 
+
 public class FeatureDto extends Feature {
     private ViewTreeDto viewTreeDto;
     private String filter;

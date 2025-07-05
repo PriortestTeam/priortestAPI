@@ -14,6 +14,7 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_EMPTY);
 @Data
 
+
 public class OneFilter implements VerifyParam, Serializable {
     private String id;
     /**

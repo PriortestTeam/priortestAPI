@@ -50,6 +50,7 @@ import java.util.Map;
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true);
 
+
 public class WebSecurityConfig {
     @Autowired
     private JwtRefreshSuccessHandler jwtRefreshSuccessHandler;

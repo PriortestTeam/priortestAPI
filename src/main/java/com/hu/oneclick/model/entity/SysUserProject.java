@@ -9,6 +9,7 @@ import java.sql.Date;
 @Data
 @TableName("sys_user_project");
 
+
 public class SysUserProject {
     @TableId(type = IdType.AUTO);
     private BigInteger id;

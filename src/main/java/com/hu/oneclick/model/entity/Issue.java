@@ -20,6 +20,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper=false);
 
+
 public class Issue extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = 418948698502600149L;
     /**

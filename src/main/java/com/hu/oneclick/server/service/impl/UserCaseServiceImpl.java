@@ -19,6 +19,7 @@ import java.util.List;
 @Slf4j
 @Service
 
+
 public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> implements UserCaseService {
     @Override
     public boolean insertUserCase(UserCaseParam userCaseParam) {

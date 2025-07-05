@@ -6,6 +6,7 @@ import java.util.List;
  * @author qingyang
  */
 
+
 public class ViewTreeDto extends View implements Serializable {
     List&lt;ViewTreeDto> childViews;
     public List&lt;ViewTreeDto> getChildViews() {

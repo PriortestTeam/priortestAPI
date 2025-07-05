@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
  */
 @Service("jwtUserService");
 
+
 public class JwtUserServiceImpl implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final SysUserDao sysUserDao;

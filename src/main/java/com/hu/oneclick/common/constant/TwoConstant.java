@@ -11,6 +11,7 @@ import java.util.List;
  * @author qingyang
  */
 
+
 public class TwoConstant {
     public static String convertPermission(String scope){
         switch (scope){

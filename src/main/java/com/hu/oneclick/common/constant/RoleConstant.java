@@ -1,5 +1,6 @@
 package com.hu.oneclick.common.constant;
 
+
 public class RoleConstant {
     /**
      * 项目管理人员

@@ -18,6 +18,7 @@ import java.util.Base64;
 import java.util.List;
 @Service
 
+
 public class GitMangerServiceImpl implements GitMangerService {
     private final UITestGitSettingsDao uiTestGitSettingsDao;
     private final UITestGitRepoDao uiTestGitRepoDao;

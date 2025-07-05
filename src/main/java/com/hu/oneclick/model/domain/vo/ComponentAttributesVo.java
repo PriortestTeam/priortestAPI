@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 
+
 public class ComponentAttributesVo {
     private String scope;
     private Long scopeId;

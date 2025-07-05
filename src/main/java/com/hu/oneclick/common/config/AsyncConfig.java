@@ -12,6 +12,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync//开启异步调用
 @Configuration
 
+
 public class AsyncConfig {
     private static final int MAX_POOL_SIZE = 32;
     private static final int CORE_POOL_SIZE = 16;

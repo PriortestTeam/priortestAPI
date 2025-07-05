@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/apiAdpater");
 @Slf4j
 
+
 public class ApiAdpaderController {
     @Autowired
     private IssueService issueService;
