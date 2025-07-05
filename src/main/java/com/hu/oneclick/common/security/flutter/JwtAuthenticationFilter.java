@@ -77,12 +77,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         System.out.println(">>> JwtAuthenticationFilter.afterPropertiesSet() 完成初始化");
     }
 
+    private static final ThreadLocal<HttpServletRequest> REQUEST_HOLDER = new ThreadLocal<>();
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         System.out.println(">>> [" + request.getMethod() + "] JwtAuthenticationFilter 收到请求: " + request.getRequestURI());
         String path = request.getRequestURI();
+        
+        // 将请求存储到ThreadLocal中，供authenticateApiToken使用
+        REQUEST_HOLDER.set(request);
 
         // 检查是否是需要跳过JWT验证的路径（登录、Swagger等）
         if (isPermissivePath(path)) {
@@ -156,7 +161,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"error\":\"Authentication failed\",\"message\":\"" + e.getMessage() + "\"}");
             return;
+        } finally {
+            // 清理ThreadLocal
+            REQUEST_HOLDER.remove();
         }
+    }
+    
+    private HttpServletRequest getCurrentRequest() {
+        return REQUEST_HOLDER.get();
     }
 
     private boolean isPermissivePath(String path) {
@@ -227,17 +239,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println(">>> 接收到的API Token: " + apiToken);
             System.out.println(">>> API Token长度: " + apiToken.length());
 
-            // API Token格式: emailId + token，用空格分隔
-            String[] parts = apiToken.split(" ", 2);
-            System.out.println(">>> 分割后的部分数量: " + parts.length);
-
-            if (parts.length != 2) {
-                System.out.println(">>> 错误: API Token格式无效，期望格式: 'emailId token'");
-                throw new BadCredentialsException("Invalid API token format. Expected: 'emailId token'");
+            // 从request中获取emailId header
+            HttpServletRequest currentRequest = getCurrentRequest();
+            String emailId = null;
+            String token = apiToken.trim();
+            
+            if (currentRequest != null) {
+                emailId = currentRequest.getHeader("emailId");
+                System.out.println(">>> 从emailId header获取到: " + emailId);
             }
+            
+            // 如果没有emailId header，尝试解析原来的格式 (emailId + token用空格分隔)
+            if (emailId == null || emailId.trim().isEmpty()) {
+                System.out.println(">>> 未找到emailId header，尝试解析空格分隔格式");
+                String[] parts = apiToken.split(" ", 2);
+                System.out.println(">>> 分割后的部分数量: " + parts.length);
 
-            String emailId = parts[0].trim();
-            String token = parts[1].trim();
+                if (parts.length != 2) {
+                    System.out.println(">>> 错误: API Token格式无效，期望: 1) Authorization header + emailId header, 或 2) 'emailId token'格式");
+                    throw new BadCredentialsException("Invalid API token format. Expected: Authorization header + emailId header, or 'emailId token' format");
+                }
+
+                emailId = parts[0].trim();
+                token = parts[1].trim();
+            }
 
             System.out.println(">>> 解析结果 - EmailId: '" + emailId + "'");
             System.out.println(">>> 解析结果 - Token: '" + token.substring(0, Math.min(10, token.length())) + "...'");
