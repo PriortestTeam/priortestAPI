@@ -18,10 +18,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.annotation.Resource;
 import java.util.ArrayList;
@@ -41,6 +40,7 @@ import java.util.Map;
 @Slf4j
 public class BeanSearchController {
 
+    private static final Logger log = LoggerFactory.getLogger(BeanSearchController.class);
     /**
      * 注入 Map 检索器，它检索出来的数据以 Map 对象呈现
      */

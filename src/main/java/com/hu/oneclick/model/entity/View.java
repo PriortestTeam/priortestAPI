@@ -81,6 +81,22 @@ public class View extends AssignBaseEntity implements Serializable {
 
     private Integer level;
 
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
     @Schema(description = "Default:0, 自渲染1")
 //    @TableField(exist = false)
     private Integer isAuto;

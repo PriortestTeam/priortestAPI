@@ -35,6 +35,38 @@ public class OneFilter implements VerifyParam, Serializable {
      */
     private String andOr;
 
+    public String getFieldNameEn() {
+        return fieldNameEn;
+    }
+
+    public void setFieldNameEn(String fieldNameEn) {
+        this.fieldNameEn = fieldNameEn;
+    }
+
+    public String getSourceVal() {
+        return sourceVal;
+    }
+
+    public void setSourceVal(String sourceVal) {
+        this.sourceVal = sourceVal;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
+    public String getAndOr() {
+        return andOr;
+    }
+
+    public void setAndOr(String andOr) {
+        this.andOr = andOr;
+    }
+
     /**
      * 根据type，类型确定sourceVal 值
      */

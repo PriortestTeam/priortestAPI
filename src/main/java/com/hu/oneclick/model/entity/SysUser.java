@@ -119,4 +119,228 @@ public class SysUser extends BaseEntity implements Serializable {
      */
     private String userClass;
     private Long roomId;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Date getRegisterDate() {
+        return registerDate;
+    }
+
+    public void setRegisterDate(Date registerDate) {
+        this.registerDate = registerDate;
+    }
+
+    public String getContactNo() {
+        return contactNo;
+    }
+
+    public void setContactNo(String contactNo) {
+        this.contactNo = contactNo;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getProfession() {
+        return profession;
+    }
+
+    public void setProfession(String profession) {
+        this.profession = profession;
+    }
+
+    public String getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(String industry) {
+        this.industry = industry;
+    }
+
+    public Date getCloseDate() {
+        return closeDate;
+    }
+
+    public void setCloseDate(Date closeDate) {
+        this.closeDate = closeDate;
+    }
+
+    public Integer getActiveState() {
+        return activeState;
+    }
+
+    public void setActiveState(Integer activeState) {
+        this.activeState = activeState;
+    }
+
+    public Integer getEnable() {
+        return enable;
+    }
+
+    public void setEnable(Integer enable) {
+        this.enable = enable;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
+    }
+
+    public Integer getManager() {
+        return manager;
+    }
+
+    public void setManager(Integer manager) {
+        this.manager = manager;
+    }
+
+    public Date getActiviDate() {
+        return activitiDate;
+    }
+
+    public void setActiviDate(Date activitiDate) {
+        this.activitiDate = activitiDate;
+    }
+
+    public Integer getActiviNumber() {
+        return activitiNumber;
+    }
+
+    public void setActiviNumber(Integer activitiNumber) {
+        this.activitiNumber = activitiNumber;
+    }
+
+    public Date getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(Date expireDate) {
+        this.expireDate = expireDate;
+    }
+
+    public Integer getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(Integer delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Integer getSysRoleId() {
+        return sysRoleId;
+    }
+
+    public void setSysRoleId(Integer sysRoleId) {
+        this.sysRoleId = sysRoleId;
+    }
+
+    public int getIsUseProject() {
+        return isUseProject;
+    }
+
+    public void setIsUseProject(int isUseProject) {
+        this.isUseProject = isUseProject;
+    }
+
+    public UserUseOpenProject getUserUseOpenProject() {
+        return userUseOpenProject;
+    }
+
+    public void setUserUseOpenProject(UserUseOpenProject userUseOpenProject) {
+        this.userUseOpenProject = userUseOpenProject;
+    }
+
+    public Object getUserDefaultProject() {
+        return userDefaultProject;
+    }
+
+    public void setUserDefaultProject(Object userDefaultProject) {
+        this.userDefaultProject = userDefaultProject;
+    }
+
+    public String getUserClass() {
+        return userClass;
+    }
+
+    public void setUserClass(String userClass) {
+        this.userClass = userClass;
+    }
+
+    public Long getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(Long roomId) {
+        this.roomId = roomId;
+    }
 }
