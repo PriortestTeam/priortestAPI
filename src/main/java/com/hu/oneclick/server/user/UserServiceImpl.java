@@ -1,3 +1,6 @@
+` tags.
+
+```java
 package com.hu.oneclick.server.user;
 
 import cn.hutool.core.bean.BeanUtil;
@@ -624,36 +627,36 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Boolean getUserAccountInfo(String emailId, String token) {
-        System.out.println("========== 数据库验证用户信息 开始 ==========");
-        System.out.println(">>> DB步骤1: 开始查询用户信息");
-        System.out.println(">>> DB步骤1: 查询EmailId: [" + emailId + "]");
-        System.out.println(">>> DB步骤1: 传入Token: [" + token + "]");
+        logger.info("========== 数据库验证用户信息 开始 ==========");
+        logger.info(">>> DB步骤1: 开始查询用户信息");
+        logger.info(">>> DB步骤1: 查询EmailId: [" + emailId + "]");
+        logger.info(">>> DB步骤1: 传入Token: [" + token + "]");
 
-        System.out.println(">>> DB步骤2: 执行SQL查询用户信息...");
+        logger.info(">>> DB步骤2: 执行SQL查询用户信息...");
         List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(emailId);
 
-        System.out.println(">>> DB步骤2: SQL查询结果 - 找到用户数量: " + sysUsers.size());
+        logger.info(">>> DB步骤2: SQL查询结果 - 找到用户数量: " + sysUsers.size());
 
         SysUser sysUser;
         if (sysUsers.isEmpty()) {
-            System.out.println(">>> DB步骤2: ❌ 未找到匹配的用户");
-            System.out.println("========== 数据库验证用户信息 结束 ==========");
+            logger.info(">>> DB步骤2: ❌ 未找到匹配的用户");
+            logger.info("========== 数据库验证用户信息 结束 ==========");
             return false;
         }
         sysUser = sysUsers.get(0);
 
-        System.out.println(">>> DB步骤3: ✅ 找到用户信息");
-        System.out.println(">>> DB步骤3: 用户ID: " + sysUser.getId());
-        System.out.println(">>> DB步骤3: 用户邮箱: " + sysUser.getEmail());
-        System.out.println(">>> DB步骤3: 用户角色ID: " + sysUser.getSysRoleId());
+        logger.info(">>> DB步骤3: ✅ 找到用户信息");
+        logger.info(">>> DB步骤3: 用户ID: " + sysUser.getId());
+        logger.info(">>> DB步骤3: 用户邮箱: " + sysUser.getEmail());
+        logger.info(">>> DB步骤3: 用户角色ID: " + sysUser.getSysRoleId());
 
-        System.out.println(">>> DB步骤4: 开始验证API Token");
-        System.out.println(">>> DB步骤4: 当前用户角色ID: " + sysUser.getSysRoleId());
+        logger.info(">>> DB步骤4: 开始验证API Token");
+        logger.info(">>> DB步骤4: 当前用户角色ID: " + sysUser.getSysRoleId());
 
         // 简化验证逻辑，先不检查API次数限制
-        System.out.println(">>> DB步骤5: 暂时跳过API次数验证，直接返回成功");
-        System.out.println(">>> DB步骤5: ✅ API Token验证通过");
-        System.out.println("========== 数据库验证用户信息 结束 ==========");
+        logger.info(">>> DB步骤5: 暂时跳过API次数验证，直接返回成功");
+        logger.info(">>> DB步骤5: ✅ API Token验证通过");
+        logger.info("========== 数据库验证用户信息 结束 ==========");
         return true;
 
         //如果不是平台管理人员，则是子账号
