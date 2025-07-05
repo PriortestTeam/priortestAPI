@@ -26,19 +26,19 @@ public class UserOrderController {
     @Autowired
     private UserOrderService userOrderService;
 
-    @Operation(summary = "新增订单"))
+    @Operation(summary = "新增订单")
     @PostMapping("insertOrder")
     public Resp<String> insertOrder(@RequestBody SysUserOrder sysUserOrder) {
         return userOrderService.insertOrder(sysUserOrder);
     }
 
-    @Operation(summary = "添加详细信息"))
+    @Operation(summary = "添加详细信息")
     @PostMapping("insertUserDetail")
     public Resp<String> insertUserDetail(@RequestBody SysUser sysUser) {
         return userOrderService.insertUserDetail(sysUser);
     }
 
-    @Operation(summary = "查询付款方式"))
+    @Operation(summary = "查询付款方式")
     @PostMapping("getPaymentMethod")
     public Resp<List<String>> getPaymentMethod() {
         return userOrderService.getPaymentMethod();

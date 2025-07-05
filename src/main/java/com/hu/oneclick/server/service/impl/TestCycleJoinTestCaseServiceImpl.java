@@ -164,7 +164,7 @@ public class TestCycleJoinTestCaseServiceImpl extends
     @Transactional
     public void deleteInstance(TestCycleJoinTestCaseSaveDto dto) {
 //        List<Long> testCasesIds = new ArrayList<>();
-//
+
 //        for (Long testCaseId : dto.getTestCaseIds()) {
 //            // 删除关联的test_cycle_join_test_case表
 //            this.testCycleJoinTestCaseDao.deleteByParam(dto.getProjectId(), dto.getTestCycleId(),
@@ -174,7 +174,7 @@ public class TestCycleJoinTestCaseServiceImpl extends
 //        testCasesIds = Arrays.asList(dto.getTestCaseIds());
 ////        //删除关联的relation表
 ////        this.relationService.removeBatchByTestCaseIds(testCasesIds);
-//
+
 //        // 删除test_cases_execution表
 //        testCycleTcDao.delete(
 //            new LambdaQueryWrapper<TestCasesExecution>().in(TestCasesExecution::getTestCaseId,

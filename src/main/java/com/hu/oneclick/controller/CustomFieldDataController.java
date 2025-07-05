@@ -6,10 +6,10 @@ import com.hu.oneclick.model.entity.SysCustomField;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * @author MaSiyi
@@ -33,7 +33,7 @@ public class CustomFieldDataController {
      * @Date: 2021/12/29
      */
     @PostMapping("getAllCustomField")
-    @Operation(summary = "新建时获取所有用户字段"))
+    @Operation(summary = "新建时获取所有用户字段")
     public Resp<List<Object>> getAllCustomField(@RequestBody CustomFieldDto customFieldDto) {
         return customFieldDataService.getAllCustomField(customFieldDto);
     }
@@ -48,7 +48,7 @@ public class CustomFieldDataController {
      * @Date: 2021/11/17
      */
     @GetMapping("getAllSysCustomField")
-    @Operation(summary = "新建时获取所有系统字段"))
+    @Operation(summary = "新建时获取所有系统字段")
     public Resp<List<SysCustomField>> getAllSysCustomField(@RequestParam String scope) {
         return customFieldDataService.getAllSysCustomField(scope);
     }

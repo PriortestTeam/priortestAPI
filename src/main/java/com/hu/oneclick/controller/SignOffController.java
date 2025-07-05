@@ -64,41 +64,41 @@ public class SignOffController {
     }
 
     @PostMapping("/generate")
-    @Operation(summary = "生成pdf文档"))
+    @Operation(summary = "生成pdf文档")
     public Object generate(@RequestBody SignOffParam signOffParam) {
         return pdfGenerateService.generatePdf(signOffParam);
     }
 
 
     @PostMapping("/upload")
-    @Operation(summary = "文件上传"))
+    @Operation(summary = "文件上传")
     public Resp<String> upload(@RequestBody MultipartFile file) {
         return projectService.upload(file);
     }
 
     @GetMapping("/delete")
-    @Operation(summary = "文件删除"))
+    @Operation(summary = "文件删除")
     public Resp<String> delete(@RequestParam String fileId) {
         return attachmentService.deleteAttachmentById(fileId);
     }
 
 
     @GetMapping("/getPdf")
-    @Operation(summary = "返回当前项目下产生的PDF列表"))
+    @Operation(summary = "返回当前项目下产生的PDF列表")
     public Resp<List<ProjectSignOff>> getPdf() {
         return signOffService.getPdf();
     }
 
 
     @GetMapping("/getUserAttachmentSign")
-    @Operation(summary = "访问用户签名文件路径"))
+    @Operation(summary = "访问用户签名文件路径")
     public Resp<List<Map<String, Object>>> getUserAttachmentSign() {
         return attachmentService.getUserAttachment();
     }
 
 
     @GetMapping("getProjectListByUser")
-    @Operation(summary = "获取当前用户下title列表"))
+    @Operation(summary = "获取当前用户下title列表")
     public Object getProjectListByUser() {
         return new Resp.Builder<>().setData(userProjectService.getUserProject()).ok();
     }

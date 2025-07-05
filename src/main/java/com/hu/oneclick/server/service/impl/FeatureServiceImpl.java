@@ -156,8 +156,8 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //        List<LeftJoinDto> select = featureDao.queryTitles(projectId, title, jwtUserService.getMasterId());
 //        return new Resp.Builder<List<LeftJoinDto>>().setData(select).totalSize(select.size()).ok();
 //    }
-//
-//
+
+
 //    /**
 //     * update feature custom
 //     *
@@ -170,7 +170,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //    public Resp<Feature> queryById(String id) {
 //        String masterId = jwtUserService.getMasterId();
 //        Feature feature = featureDao.queryById(id, masterId);
-//
+
 //        //查询自定义数据
 //        List<CustomFieldData> customFieldData = customFieldDataService.featureRenderingCustom(id);
 //        List<Sprint> sprints = queryBindSprintList(id);
@@ -179,7 +179,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //        feature.setCustomFieldDatas(customFieldData);
 //        return new Resp.Builder<Feature>().setData(feature).ok();
 //    }
-//
+
 //    private Integer analysisStatus(List<Sprint> sprints) {
 //        Date date = new Date();
 //        if (sprints == null
@@ -200,7 +200,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //                    beginDate = sprint.getStartDate();
 //                }
 //            }
-//
+
 //            //获取最近时间
 //            if (sprint.getEndDate() == null) {
 //                continue;
@@ -213,7 +213,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //                }
 //            }
 //        }
-//
+
 //        if (beginDate == null
 //                || endDate == null
 //                || !DateUtil.compareDate(endDate, date)) {
@@ -231,26 +231,26 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //        }
 //        return 0;
 //    }
-//
+
 //    @Override
 //    public Resp<List<Feature>> queryList(FeatureDto feature) {
 //        feature.queryListVerify();
 //        String masterId = jwtUserService.getMasterId();
 //        feature.setUserId(masterId);
-//
+
 //        feature.setFilter(queryFilterService.mysqlFilterProcess(feature.getViewTreeDto(), masterId));
-//
+
 //        List<Feature> select = featureDao.queryList(feature);
 //        select.forEach(this::accept);
 //        return new Resp.Builder<List<Feature>>().setData(select).total(select).ok();
 //    }
-//
+
 //    private void accept(Feature feature) {
 //        List<Sprint> sprints = queryBindSprintList(feature.getId());
 //        feature.setSprints(sprints);
 //        feature.setStatus(analysisStatus(sprints));
 //    }
-//
+
 //    /**
 //     * update customField
 //     *
@@ -290,13 +290,13 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //                    }
 //                }
 //            }
-//
-//
+
+
 ////            if (insertFlag > 0) {
 ////                List<CustomFieldData> customFieldDatas = feature.getCustomFieldDatas();
 ////                insertFlag = customFieldDataService.insertFeatureCustomData(customFieldDatas, feature);
 ////            }
-//
+
 //            return new Resp.Builder<String>().ok();
 //        } catch (BizException e) {
 //            logger.error("class: FeatureServiceImpl#insert,error []" + e.getMessage());
@@ -304,7 +304,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
 //        }
 //    }
-//
+
 //    @Override
 //    @Transactional(rollbackFor = Exception.class)
 //    public Resp<String> update(Feature feature) {
@@ -321,7 +321,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
 //        }
 //    }
-//
+
 //    /**
 //     * 更新关联的迭代表
 //     *
@@ -329,14 +329,14 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //     */
 //    private void updateFeatureJoinSprint(Feature feature) {
 //        featureJoinSprintDao.deleteByFeatureId(feature.getId());
-//
+
 //        if (feature.getSprints() == null || feature.getSprints().size() <= 0) {
 //            return;
 //        }
-//
+
 //        List<Sprint> sprints = feature.getSprints();
 //        List<FeatureJoinSprint> featureJoinSprints = new ArrayList<>(sprints.size());
-//
+
 //        Set<String> strings = new HashSet<>(sprints.size());
 //        for (Sprint sprint : sprints) {
 //            if (strings.contains(sprint.getId())) {
@@ -352,8 +352,8 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //        }
 //        Result.addResult(featureJoinSprintDao.inserts(featureJoinSprints));
 //    }
-//
-//
+
+
 //    @Override
 //    @Transactional(rollbackFor = Exception.class)
 //    public Resp<String> closeUpdate(String id) {
@@ -370,7 +370,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
 //        }
 //    }
-//
+
 //    @Override
 //    @Transactional(rollbackFor = Exception.class)
 //    public Resp<String> delete(String id) {
@@ -385,17 +385,17 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
 //        }
 //    }
-//
+
 //    @Override
 //    public Resp<List<Sprint>> queryBindSprints(String featureId) {
 //        List<Sprint> sprints = queryBindSprintList(featureId);
 //        return new Resp.Builder<List<Sprint>>().setData(sprints).total(sprints.size()).ok();
 //    }
-//
+
 //    private List<Sprint> queryBindSprintList(String featureId) {
 //        return featureJoinSprintDao.queryBindSprints(featureId);
 //    }
-//
+
 //    @Override
 //    @Transactional(rollbackFor = Exception.class)
 //    public Resp<String> bindSprintInsert(FeatureJoinSprint featureJoinSprint) {
@@ -413,20 +413,20 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
 //        }
 //    }
-//
+
 //    @Override
 //    @Transactional(rollbackFor = Exception.class)
 //    public Resp<String> bindSprintDelete(String sprint, String featureId) {
 //        return Result.deleteResult(featureJoinSprintDao.deleteById(featureId, sprint));
 //    }
-//
+
 //    @Override
 //    public Resp<List<Sprint>> querySprintList(String title) {
 //        String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
 //        List<Sprint> selects = sprintDao.querySprintList(title, projectId);
 //        return new Resp.Builder<List<Sprint>>().setData(selects).totalSize(selects.size()).ok();
 //    }
-//
+
 //    /**
 //     * 查重
 //     */
@@ -442,7 +442,7 @@ public class FeatureServiceImpl extends ServiceImpl<FeatureDao, Feature> impleme
 //            throw new BizException(SysConstantEnum.DATE_EXIST.getCode(), feature.getTitle() + SysConstantEnum.DATE_EXIST.getValue());
 //        }
 //    }
-//
+
 //    @Override
 //    public List<Feature> findAllByFeature(Feature feature) {
 //        return featureDao.findAllByFeature(feature);

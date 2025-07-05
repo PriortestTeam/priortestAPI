@@ -25,7 +25,7 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @EqualsAndHashCode(callSuper = true)
 @Data
-@Schema(description = "视图实体"))
+@Schema(description = "视图实体")
 @TableName("view")
 public class View extends AssignBaseEntity implements Serializable {
 
@@ -97,7 +97,7 @@ public class View extends AssignBaseEntity implements Serializable {
         this.level = level;
     }
 
-    @Schema(description = "Default:0, 自渲染1"))
+    @Schema(description = "Default:0, 自渲染1")
 //    @TableField(exist = false)
     private Integer isAuto;
 

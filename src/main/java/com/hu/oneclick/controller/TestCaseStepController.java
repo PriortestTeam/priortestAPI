@@ -39,7 +39,7 @@ public class TestCaseStepController extends BaseController {
     @Resource
     private RelationService relationService;
 
-    @Operation(summary="列表"))
+    @Operation(summary="列表")
     @PostMapping("/list")
     public Resp<PageInfo<TestCaseStep>> list(@RequestBody TestCaseStepParam param) {
         startPage();
@@ -47,7 +47,7 @@ public class TestCaseStepController extends BaseController {
         return new Resp.Builder<PageInfo<TestCaseStep>>().setData(PageInfo.of(testCaseStepList)).ok();
     }
 
-    @Operation(summary="新增"))
+    @Operation(summary="新增")
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated TestCaseStepSaveDto dto) {
         try {
@@ -59,7 +59,7 @@ public class TestCaseStepController extends BaseController {
         }
     }
 
-    @Operation(summary="修改"))
+    @Operation(summary="修改")
     @PutMapping("/update")
     public Resp<?> update(@RequestBody @Validated TestCaseStepSaveDto dto) {
         try {
@@ -71,14 +71,14 @@ public class TestCaseStepController extends BaseController {
         }
     }
 
-    @Operation(summary="详情"))
+    @Operation(summary="详情")
     @GetMapping("/info/{id}")
     public Resp<TestCaseStep> info(@PathVariable Long id) {
         TestCaseStep testCase = testCaseStepService.info(id);
         return new Resp.Builder<TestCaseStep>().setData(testCase).ok();
     }
 
-    @Operation(summary="删除"))
+    @Operation(summary="删除")
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
@@ -90,7 +90,7 @@ public class TestCaseStepController extends BaseController {
         return new Resp.Builder<TestCaseStep>().ok();
     }
 
-    @Operation(summary="查询测试用例关联的所有测试用例步骤"))
+    @Operation(summary="查询测试用例关联的所有测试用例步骤")
     @GetMapping("/of/testCase/{testCaseId}")
     public Resp<List<TestCaseStep>> getTestCaseSteps(@PathVariable Long testCaseId) {
 //        return new Resp.Builder<List<TestCaseStep>>().setData(testCaseStepService.lambdaQuery().eq(TestCaseStep::getTestCaseId, testCaseId).list()).ok();

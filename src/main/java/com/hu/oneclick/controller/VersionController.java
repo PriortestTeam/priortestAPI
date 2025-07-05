@@ -21,21 +21,21 @@ public class VersionController extends BaseController {
     @Autowired
     VersionService versionService;
 
-    @Operation(summary="增加"))
+    @Operation(summary="增加")
     @PostMapping("releaseCreation")
     public Resp releaseCreation(@Valid @RequestBody VersionRequestDto releaseCreationDto) {
         var id = versionService.releaseCreation(releaseCreationDto);
         return new Resp.Builder().setData(id).ok();
     }
 
-    @Operation(summary="修改"))
+    @Operation(summary="修改")
     @PutMapping("releaseModification")
     public Resp releaseModification(@Valid @RequestBody VersionRequestDto releaseModification) {
         versionService.releaseModification(releaseModification);
         return new Resp.Builder().ok();
     }
 
-    @Operation(summary="查询"))
+    @Operation(summary="查询")
     @GetMapping("getVersion")
     public Resp<VersionDto> getVersion(@RequestParam Long id) {
         VersionDto versionDto = versionService.getVersion(id);
@@ -43,7 +43,7 @@ public class VersionController extends BaseController {
     }
 
 
-    @Operation(summary="列表查询"))
+    @Operation(summary="列表查询")
     @PostMapping("getVersionList")
     public Resp<List<VersionDto>> getVersionList(@RequestBody VersionRequestDto releaseModification) {
         List<VersionDto> versionDto = versionService.getVersionList(releaseModification);

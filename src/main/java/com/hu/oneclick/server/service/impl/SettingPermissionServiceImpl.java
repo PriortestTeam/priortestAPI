@@ -92,7 +92,7 @@ public class SettingPermissionServiceImpl implements SettingPermissionService {
 //                        j.setIsSelect("1");
 //                    }
 //                });
-//
+
 //                //遍历子级
 //                List<SysOperationAuthority> childList = j.getChildList();
 //                if (childList != null){

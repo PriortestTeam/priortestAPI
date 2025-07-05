@@ -35,7 +35,7 @@ public class JobController {
         return (Class<? extends QuartzJobBean>) class1;
     }
 
-    @Operation(summary = "添加任务"))
+    @Operation(summary = "添加任务")
     @PostMapping(value = "/addJob")
     public Resp<?> addJob(@RequestBody @Validated JobSaveDto dto) {
         try {
@@ -47,7 +47,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation(summary = "更新任务"))
+    @Operation(summary = "更新任务")
     @PutMapping(value = "/updateJob")
     public Resp<?> updateJob(@RequestBody @Validated JobUpdateDto dto) {
         try {
@@ -59,7 +59,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation(summary = "任务详情"))
+    @Operation(summary = "任务详情")
     @GetMapping(value = "/jobInfo")
     public Resp<?> jobInfo(@RequestParam(value = "jobName") String jobName,
                            @RequestParam(value = "jobGroupName", defaultValue = "DEFAULT", required = false) String jobGroupName) {
@@ -72,7 +72,7 @@ public class JobController {
         }
     }
 
-    @Operation(summary = "暂停任务"))
+    @Operation(summary = "暂停任务")
     @PutMapping("/pauseJob")
     public Resp<?> pauseJob(@RequestBody @Validated JobOperateDto dto) {
         try {
@@ -84,7 +84,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation(summary = "恢复任务"))
+    @Operation(summary = "恢复任务")
     @PutMapping("/resumeJob")
     public Resp<?> resumeJob(@RequestBody @Validated JobOperateDto dto) {
         try {
@@ -96,7 +96,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation(summary = "删除任务"))
+    @Operation(summary = "删除任务")
     @DeleteMapping("/deleteJob")
     public Resp<?> deleteJob(@RequestBody @Validated JobOperateDto dto) {
         try {
@@ -108,7 +108,7 @@ public class JobController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation(summary = "查询任务列表"))
+    @Operation(summary = "查询任务列表")
     @GetMapping(value = "/queryJob")
     public Resp<?> queryJob() {
         try {

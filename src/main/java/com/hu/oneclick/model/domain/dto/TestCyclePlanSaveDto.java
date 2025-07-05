@@ -17,21 +17,21 @@ import java.io.Serializable;
  */
 @Setter
 @Getter
-@Schema(description = "测试计划保存DTO"))
+@Schema(description = "测试计划保存DTO")
 public class TestCyclePlanSaveDto implements Serializable {
 
     private static final long serialVersionUID = 5515234928549567892L;
 
-    @Schema(description = "测试周期id"))
+    @Schema(description = "测试周期id")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     @NotNull(message = "测试周期id不能为空")
     private Long testCycleId;
 
-    @Schema(description = "jenkins任务名"))
+    @Schema(description = "jenkins任务名")
     @NotBlank(message = "jenkins任务名")
     private String jenkinsJobName;
 
-    @Schema(description = "cron表达式"))
+    @Schema(description = "cron表达式")
     @NotBlank(message = "cron表达式不能为空")
     private String cronExpression;
 

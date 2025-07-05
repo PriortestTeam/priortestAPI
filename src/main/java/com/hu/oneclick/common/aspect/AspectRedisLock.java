@@ -1,5 +1,5 @@
 //package com.hu.oneclick.common.aspect;
-//
+
 //import com.hu.oneclick.model.annotation.Resubmit;
 //import org.aspectj.lang.ProceedingJoinPoint;
 //import org.aspectj.lang.annotation.Around;
@@ -12,26 +12,26 @@
 //import org.springframework.stereotype.Component;
 //import org.springframework.web.context.request.RequestContextHolder;
 //import org.springframework.web.context.request.ServletRequestAttributes;
-//
+
 //import jakarta.annotation.Resource;
 //import jakarta.servlet.http.HttpServletRequest;
 //import java.lang.reflect.Method;
 //import java.util.Objects;
 //import java.util.concurrent.TimeUnit;
-//
+
 ///**
 // * @author qingyang
 // */
 //@Component
 //@Aspect
 //public class AspectRedisLock {
-//
+
 //    private static final Logger logger = LoggerFactory.getLogger("AspectRedisLock");
-//
+
 //    /**
 //     * 锁超时时间
 //     */
-//
+
 //    @Resource
 //    RedissonClient redis;
 //    /**
@@ -39,7 +39,7 @@
 //     *
 //     * @param joinPoint
 //     */
-//
+
 //    @Around("@annotation(com.hu.oneclick.model.annotation.Resubmit)")
 //    public Object around(ProceedingJoinPoint joinPoint) {
 //        String appTokenKey = getAppTokenKey();
@@ -68,7 +68,7 @@
 //            lock.unlock();
 //        }
 //    }
-//
+
 //    /**
 //     * 获取 accessToken 的值
 //     * @return
@@ -77,7 +77,7 @@
 //        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
 //        return request.getHeader("accessToken");
 //    }
-//
+
 //    /**
 //     * 获取注解上的超时时间
 //     * @param joinPoint
@@ -89,6 +89,6 @@
 //        Resubmit annotation = method.getAnnotation(Resubmit.class);
 //        return annotation.delaySeconds();
 //    }
-//
-//
+
+
 //}

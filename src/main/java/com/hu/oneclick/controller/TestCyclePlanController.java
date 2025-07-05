@@ -59,7 +59,7 @@ public class TestCyclePlanController extends BaseController {
     private QuartzManager qtzManager;
 
 
-    @Operation(summary = "列表"))
+    @Operation(summary = "列表")
     @PostMapping("/list/{testCycleId}")
     public Resp<PageInfo<JobDetails>> list(@Parameter(description = "测试周期ID") @PathVariable Long testCycleId) {
         try {
@@ -71,7 +71,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @Operation(summary = "新增"))
+    @Operation(summary = "新增")
     @PostMapping("/save")
     public Resp<TestCyclePlan> save(@RequestBody @Validated TestCyclePlanSaveDto dto) {
         try {
@@ -101,7 +101,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @Operation(summary = "详情"))
+    @Operation(summary = "详情")
     @GetMapping("/info/{id}")
     public Resp<TestCyclePlan> info(@PathVariable Long id) {
         try {
@@ -121,7 +121,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @Operation(summary = "删除"))
+    @Operation(summary = "删除")
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
@@ -142,7 +142,7 @@ public class TestCyclePlanController extends BaseController {
         return new Resp.Builder<>().ok();
     }
 
-    @Operation(summary = "根据计划ID查询测试周期计划"))
+    @Operation(summary = "根据计划ID查询测试周期计划")
     @GetMapping("/{planId}")
     public Resp<TestCyclePlanSaveDto> getTestCyclePlan(@PathVariable("planId") Long planId) {
         try {
@@ -165,7 +165,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @Operation(summary = "创建测试周期计划"))
+    @Operation(summary = "创建测试周期计划")
     @PostMapping
     public Resp<TestCyclePlan> createTestCyclePlan(@RequestBody @Validated TestCyclePlanSaveDto dto) {
         try {
@@ -195,7 +195,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @Operation(summary = "更新测试周期计划"))
+    @Operation(summary = "更新测试周期计划")
     @PutMapping("/{planId}")
     public Resp<TestCyclePlan> updateTestCyclePlan(@PathVariable("planId") Long planId, @RequestBody @Validated TestCyclePlanSaveDto dto) {
         try {
@@ -220,7 +220,7 @@ public class TestCyclePlanController extends BaseController {
         }
     }
 
-    @Operation(summary = "删除测试周期计划"))
+    @Operation(summary = "删除测试周期计划")
     @DeleteMapping("/{planId}")
     public Resp<?> deleteTestCyclePlan(@PathVariable("planId") Long planId) {
         try {

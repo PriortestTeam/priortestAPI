@@ -23,7 +23,7 @@ public class SecurityUtil {
     //        throw new ServiceException("获取用户ID异常", HttpStatus.UNAUTHORIZED);
     //    }
     //}
-    //
+
     //public static Long getUserIdOrDefault() {
     //    try {
     //        return getUserId();
@@ -31,7 +31,7 @@ public class SecurityUtil {
     //        return UserConstants.DEFAULT_USER_ID;
     //    }
     //}
-    //
+
     ///**
     // * 获取部门ID
     // **/
@@ -42,7 +42,7 @@ public class SecurityUtil {
     //        throw new ServiceException("获取部门ID异常", HttpStatus.UNAUTHORIZED);
     //    }
     //}
-    //
+
     ///**
     // * 获取用户账户
     // **/

@@ -25,7 +25,7 @@ public class SysOrderDiscountController {
     @Autowired
     private SysOrderDiscountService sysOrderDiscountService;
 
-    @Operation(summary="计算订单价格"))
+    @Operation(summary="计算订单价格")
     @PostMapping("calculateOrderPrice")
     public Resp<Map<String, BigDecimal>> calculateOrderPrice(@RequestBody SysOrderDiscountDto sysOrderDiscountDto) {
         return sysOrderDiscountService.calculateOrderPrice(sysOrderDiscountDto);

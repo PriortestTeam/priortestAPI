@@ -35,7 +35,7 @@ public class FeatureController extends BaseController {
         this.featureService = featureService;
     }
 
-    @Operation(summary="列表"))
+    @Operation(summary="列表")
     @PostMapping("/list")
     public Resp<PageInfo<Feature>> list(@RequestBody Map<String, Object> param,
                                        @RequestParam(value = "pageNum", required = false) Integer urlPageNum,
@@ -78,7 +78,7 @@ public class FeatureController extends BaseController {
         }
     }
 
-    @Operation(summary="新增"))
+    @Operation(summary="新增")
     @PostMapping("/save")
     public Resp<?> save(@RequestBody @Validated FeatureSaveDto dto) {
         try {
@@ -90,7 +90,7 @@ public class FeatureController extends BaseController {
         }
     }
 
-    @Operation(summary="修改"))
+    @Operation(summary="修改")
     @PutMapping("/update")
     public Resp<Feature> update(@RequestBody @Validated FeatureSaveDto dto) {
         try {
@@ -105,14 +105,14 @@ public class FeatureController extends BaseController {
         }
     }
 
-    @Operation(summary="详情"))
+    @Operation(summary="详情")
     @GetMapping("/info/{id}")
     public Resp<Feature> info(@PathVariable Long id) {
         Feature feature = this.featureService.info(id);
         return new Resp.Builder<Feature>().setData(feature).ok();
     }
 
-    @Operation(summary="删除"))
+    @Operation(summary="删除")
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
         try {
@@ -125,7 +125,7 @@ public class FeatureController extends BaseController {
     }
 
 
-    @Operation(summary="克隆"))
+    @Operation(summary="克隆")
     @PostMapping("/clone")
     public Resp<?> clone(@RequestBody @Validated Long[] ids) {
         try {
@@ -137,7 +137,7 @@ public class FeatureController extends BaseController {
         }
     }
 
-    @Operation(summary="模糊查询故事标题"))
+    @Operation(summary="模糊查询故事标题")
     @GetMapping("/getFeatureByTitle")
     public Resp<List<Map<String, String>>> getFeatureByTitle(@RequestParam String title, @RequestParam Long projectId) {
         List<Map<String, String>> feature = this.featureService.getFeatureByTitle(title, projectId);

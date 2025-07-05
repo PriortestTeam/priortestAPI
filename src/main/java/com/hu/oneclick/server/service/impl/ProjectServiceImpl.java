@@ -132,7 +132,7 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
 //        project.setUserId(masterId);
-//
+
 //        project.setFilter(queryFilterService.mysqlFilterProcess(project.getViewTreeDto(), masterId));
 
 //        List<Project> projects = projectDao.queryAll(project);

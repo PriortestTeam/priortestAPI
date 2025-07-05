@@ -11,14 +11,14 @@ import java.io.Serializable;
  * 权限设置DTO
  */
 @Data
-@Schema(description = "权限设置DTO"))
+@Schema(description = "权限设置DTO")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FunctionModelDTO  implements Serializable {
 
-    @Schema(description = "模块id"))
+    @Schema(description = "模块id")
     private Integer funId;
 
-    @Schema(description = "功能字符串{'funId':40,'btnStr':'1,2,7'}）"))
+    @Schema(description = "功能字符串{'funId':40,'btnStr':'1,2,7'}）")
     private String btnStr;
 
 

@@ -12,21 +12,21 @@ import java.util.List;
 public interface IssueService extends IService<Issue> {
 
 //    Resp<Issue> queryById(String id);
-//
+
 //    Resp<List<Issue>> queryList(IssueDto issue);
-//
+
 //    Resp<String> insert(Issue issue);
-//
+
 //    Resp<String> update(Issue issue);
-//
+
 //    Resp<String> delete(String id);
-//
-//
-//
+
+
+
 //    Resp<List<Issue>> queryBindCaseList(String issueId);
-//
+
 //    Resp<String> bindCaseInsert(IssueJoinTestCase issueJoinTestCase);
-//
+
 //    Resp<String> bindCaseDelete(String testCaseId);
 
     /**

@@ -351,7 +351,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //        setSelectValue(rowValue.getJSONObject("automationCol"), testMethodMergeValues, testCase
     //                , errorTipsMap, "testMethod", true);
     //        ///判断是否新增或者更新，根据故事ID+ExternalID查询测试用例，如果存在则进行更新；
-    //
+
     //        //判断ExternalI是否存在，进行判断下一步是否更新
     //        if (jsonObject.containsKey("ifUpdateCase")) {
     //            JSONObject externalIdCol = rowValue.getJSONObject("externalIdCol");
@@ -372,17 +372,17 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //            //    }
     //            //}
     //        }
-    //
+
     //        //处理 Step
     //        List<TestCaseStep> testCaseSteps = new ArrayList<>();
     //        if (cellIndexObject.containsKey("stepCol")) {
     //            String setpValue = getCellValue(errorTipsMap,
     //                    rowValue.getJSONObject("stepCol"), true);
-    //
+
     //            //测试数据
     //            String cellTestDataValue = getCellValue(errorTipsMap,
     //                    rowValue.getJSONObject("stepTestDataCol"), true);
-    //
+
     //            //Expected Result 预期结果
     //            String cellExpectedResultValue = getCellValue(errorTipsMap,
     //                    rowValue.getJSONObject("stepExpectResultCol"), true);
@@ -393,7 +393,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //                String[] steps = setpValue.split(splitTestStep);
     //                String[] testDatas = cellTestDataValue.split(splitTestStep);
     //                String[] expectedResults = cellExpectedResultValue.split(splitTestStep);
-    //
+
     //                for (int i1 = 0; i1 < steps.length; i1++) {
     //                    int stepsLength = steps.length;
     //                    TestCaseStep testCaseStep = new TestCaseStep();
@@ -430,7 +430,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     //        testCases.add(testCase);
     //        //testCaseStepsMap.put(testCase.getId().replace("UPDATE", ""), testCaseSteps);
     //    }
-    //
+
     //    //判断是否异常,如出现异常，则全部进行操作db
     //    if (errorTipsMap.isEmpty()) {
     //        //判断是否新增或者更新，根据故事ID+ExternalID查询测试用例，如果存在则进行更新；
