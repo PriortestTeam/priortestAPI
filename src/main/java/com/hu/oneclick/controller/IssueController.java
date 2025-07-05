@@ -19,10 +19,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
+@Tag(name = "问题管理", description = "问题管理相关接口")
 @RestController
 @RequestMapping("issue")
-@Tag(name = "问题管理", description = "问题管理相关接口")
-@Slf4j
 public class IssueController extends BaseController {
 
     private final IssueService issueService;

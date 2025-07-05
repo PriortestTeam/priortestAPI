@@ -32,10 +32,10 @@ import java.util.*;
 /**
  * @author masiyi
  */
-@RestController
-@RequestMapping(value = "/function")
-@Tag(name = "功能管理", description = "功能管理相关接口")
 @Slf4j
+@Tag(name = "功能管理", description = "功能管理相关接口")
+@RestController
+@RequestMapping("function")
 public class FunctionController {
 
     @Autowired

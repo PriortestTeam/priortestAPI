@@ -23,6 +23,7 @@ import java.util.Map;
 /**
  * @author qingyang
  */
+@Slf4j
 @RestController
 @RequestMapping("feature")
 @Tag(name = "故事", description = "故事相关接口")
