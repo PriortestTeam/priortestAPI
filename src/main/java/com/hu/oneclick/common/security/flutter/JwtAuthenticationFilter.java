@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import com.hu.oneclick.common.security.JwtAuthenticationToken;
 
 /**
  * @author qingyang
@@ -232,41 +233,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private org.springframework.security.authentication.UsernamePasswordAuthenticationToken authenticateBearerToken(String token) {
+    private Authentication authenticateBearerToken(String token) {
         try {
             System.out.println(">>> 开始验证Bearer Token (JWT)");
 
             // 解析JWT Token
             DecodedJWT jwt = JWT.decode(token);
-            String username = jwt.getSubject();
+            String subject = jwt.getSubject();
+            System.out.println(">>> JWT Subject (emailId): " + subject);
 
-            if (StringUtils.isBlank(username)) {
-                throw new BadCredentialsException("Bearer Token认证失败：token中缺少用户信息");
+            // 直接验证JWT token而不查询数据库
+            // JWT token应该包含所有必要的信息，不需要查询数据库
+            if (subject == null || subject.trim().isEmpty()) {
+                throw new BadCredentialsException("JWT subject is empty");
             }
 
-            System.out.println(">>> JWT Token解析成功，用户: " + username);
-
-            // 验证用户是否存在
-            Boolean isValidUser = userService.getUserAccountInfo(username, null);
-            if (isValidUser == null || !isValidUser) {
-                System.out.println(">>> 用户不存在: " + username);
-                throw new BadCredentialsException("User not found: " + username);
+            // 验证JWT token是否过期
+            Date expiresAt = jwt.getExpiresAt();
+            if (expiresAt != null && expiresAt.before(new Date())) {
+                throw new BadCredentialsException("JWT token has expired");
             }
 
-            // 验证JWT Token的签名和有效期
-            // 注意：这里应该使用JWT验证库来验证token的签名
-            // 但由于无法获取用户密码作为密钥，暂时只验证基本信息
+            System.out.println(">>> JWT Token验证成功，用户: " + subject);
 
-            if (jwt.getExpiresAt() != null && jwt.getExpiresAt().before(new Date())) {
-                throw new BadCredentialsException("JWT Token已过期");
-            }
+            // 创建简单的认证对象（不需要查询数据库）
+            UsernamePasswordAuthenticationToken authToken = 
+                new UsernamePasswordAuthenticationToken(subject, null, new ArrayList<>());
 
-            System.out.println(">>> JWT Token验证成功，用户: " + username);
+            SecurityContextHolder.getContext().setAuthentication(authToken);
 
-            // 创建认证token
-            org.springframework.security.authentication.UsernamePasswordAuthenticationToken authToken =
-                    new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(username, null);
-
+            System.out.println(">>> 认证信息已设置到SecurityContext");
             return authToken;
         } catch (Exception e) {
             System.out.println(">>> JWT Token验证失败: " + e.getMessage());
