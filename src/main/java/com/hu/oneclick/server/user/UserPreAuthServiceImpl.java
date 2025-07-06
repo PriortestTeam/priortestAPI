@@ -10,7 +10,12 @@ import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.util.PasswordCheckerUtil;
+import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.controller.req.RegisterBody;
+import com.hu.oneclick.model.entity.SysUserOrder;
+import com.hu.oneclick.server.service.SystemConfigService;
+import org.springframework.beans.factory.annotation.Autowired;
+import java.math.BigDecimal;
 import com.hu.oneclick.dao.*;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
@@ -31,7 +36,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import com.hu.oneclick.common.util.SnowFlakeUtil;
 import cn.hutool.core.bean.BeanUtil;
 
 /**
@@ -71,6 +75,12 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
     @Value("${onclick.time.firstTime}")
     private long firstTime;
     private final JwtUserServiceImpl jwtUserServiceImpl;
+
+    @Autowired
+    private UserOrderService userOrderService;
+
+    @Autowired
+    private SystemConfigService systemConfigService;
 
 
     public UserPreAuthServiceImpl(SysUserDao sysUserDao, JwtUserServiceImpl jwtUserServiceImpl,
@@ -277,5 +287,31 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
         // 这里需要使用与原系统相同的密码加密方式
         // 通常使用BCrypt或其他加密算法
         return password; // 临时实现，需要根据实际加密方式修改
+    }
+
+    private void initOrder(String userId) {
+        SysUserOrder sysUserOrder = new SysUserOrder();
+        long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
+        sysUserOrder.setOrderId(orderId);
+        String apiCall = systemConfigService.getDateForKeyAndGroup("apiCall", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setApiCall(apiCall);
+
+        String dataStrorage = systemConfigService.getDateForKeyAndGroup("dataStrorage", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setDataStrorage(dataStrorage);
+
+        String subScription = systemConfigService.getDateForKeyAndGroup("subScription", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setSubScription(subScription);
+
+        String serviceDuration = systemConfigService.getDateForKeyAndGroup("serviceDuration", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setServiceDuration(serviceDuration);
+
+        String originalPrice = systemConfigService.getDateForKeyAndGroup("originalPrice", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setOriginalPrice(new BigDecimal(originalPrice));
+
+        String currentPrice = systemConfigService.getDateForKeyAndGroup("currentPrice", OneConstant.SystemConfigGroup.INITORDER);
+        sysUserOrder.setCurrentPrice(new BigDecimal(currentPrice));
+
+        sysUserOrder.setUserId(userId);
+        userOrderService.insertOrder(sysUserOrder);
     }
 }
