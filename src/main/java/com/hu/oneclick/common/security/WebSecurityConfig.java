@@ -193,6 +193,7 @@ public class WebSecurityConfig {
                     if (path.equals("/api/login") || path.equals("/login") || 
                         path.equals("/api/user/register") ||
                         path.equals("/api/user/forgetThePassword") ||
+                        path.equals("/api/user/forgetThePasswordIn") ||
                         path.equals("/api/user/applyForAnExtension") ||
                         path.equals("/api/user/getUserActivNumber") ||
                         path.equals("/api/user/applyForAnExtensionIn") ||
