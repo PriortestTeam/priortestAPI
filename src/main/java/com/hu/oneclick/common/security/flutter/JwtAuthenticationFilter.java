@@ -174,6 +174,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean isPermissivePath(String path) {
         return path.equals("/api/login") || 
                path.equals("/login") || 
+               path.equals("/api/user/register") ||
+               path.equals("/api/user/forgetThePassword") ||
                path.startsWith("/api/apiAdapter/") ||
                path.startsWith("/api/swagger-ui/") ||
                path.startsWith("/api/v3/api-docs") ||
