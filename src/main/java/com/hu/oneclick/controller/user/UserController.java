@@ -97,7 +97,7 @@ public class UserController {
     public Resp<String> forgetThePassword(@RequestBody java.util.Map<String, String> request) {
         String email = request.get("email");
         if (email == null || email.trim().isEmpty()) {
-            return new Resp<>(400, "邮箱参数不能为空", null);
+            return new Resp.Builder<String>().buildResult("400", "邮箱参数不能为空", 400);
         }
         return userService.forgetThePassword(email);
     }
