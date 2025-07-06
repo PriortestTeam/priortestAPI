@@ -54,8 +54,25 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
         System.out.println(">>> 请求方法: " + request.getMethod());
         System.out.println(">>> Content-Type: " + request.getContentType());
 
-        if (!MediaType.APPLICATION_JSON_VALUE.equalsIgnoreCase(request.getContentType())) {
-            System.out.println(">>> 不支持的Content-Type: " + request.getContentType());
+        // 使用Spring MediaType进行更规范的Content-Type检查
+        try {
+            if (request.getContentType() != null) {
+                MediaType contentType = MediaType.parseMediaType(request.getContentType());
+                if (!MediaType.APPLICATION_JSON.isCompatibleWith(contentType)) {
+                    System.out.println(">>> 不支持的Content-Type: " + request.getContentType());
+                    throw new HttpMediaTypeNotSupportedException(
+                        request.getContentType(), 
+                        Collections.singletonList(MediaType.APPLICATION_JSON));
+                }
+                System.out.println(">>> Content-Type验证通过");
+            } else {
+                System.out.println(">>> Content-Type为空，拒绝请求");
+                throw new HttpMediaTypeNotSupportedException(
+                    "Content-Type不能为空", 
+                    Collections.singletonList(MediaType.APPLICATION_JSON));
+            }
+        } catch (org.springframework.util.InvalidMediaTypeException e) {
+            System.out.println(">>> Content-Type格式无效: " + request.getContentType());
             throw new HttpMediaTypeNotSupportedException(
                 request.getContentType(), 
                 Collections.singletonList(MediaType.APPLICATION_JSON));
