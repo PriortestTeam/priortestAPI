@@ -94,7 +94,7 @@ public class UserController {
 
     @Operation(summary = "忘记密码填写邮箱")
     @PostMapping("forgetThePassword")
-    public Resp<String> forgetThePassword(@RequestParam String email) {
+    public Resp<String> forgetThePassword(@RequestParam(value = "email", required = true) String email) {
         return userService.forgetThePassword(email);
     }
 
