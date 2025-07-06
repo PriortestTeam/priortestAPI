@@ -53,6 +53,7 @@ spring:
         password: VPNTMNKMGNIQMVSS #这个密码是邮箱设置里SMTP服务生成的授权码
         default-encoding: UTF-8
 
+       
     # Quartz 配置 - 使用内存存储（适合本地开发）
     quartz:
         job-store-type: memory
@@ -120,6 +121,8 @@ onclick:
         firstTime: 30
         secondTime: 15
     dirPath: ${ONECLICK_PATH:/home/runner/workspace/}
+    template:
+        url: https://796efbdf-f3bc-4b03-a7d7-a611ca959732-00-1wiuctihnaal0.sisko.replit.dev:3001/#/
 
 prior-test:
     git:

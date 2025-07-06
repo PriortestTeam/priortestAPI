@@ -24,6 +24,15 @@ import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SystemConfigService;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -35,15 +44,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -85,6 +85,10 @@ public class UserServiceImpl implements UserService {
 
     @Value("${onclick.time.secondTime}")
     private long secondTime;
+
+     @Value("${onclick.template.url}")
+        private String templateUrl;
+    
 
     public UserServiceImpl(SysUserDao sysUserDao,
                            RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl,
@@ -139,7 +143,7 @@ public class UserServiceImpl implements UserService {
             
                     System.out.println(">>> 准备发送激活邮件到: " + email);
                     System.out.println(">>> 激活链接参数: " + linkStr);
-                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
+                    mailService.sendSimpleMail(email, "PriorTest 激活账号", templateUrl+"activate?email=" + email +
                         "&params=" + linkStr);
                     System.out.println(">>> 激活邮件发送完成");
                     return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
@@ -173,8 +177,13 @@ public class UserServiceImpl implements UserService {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
+                System.out.println(">>> 准备发送激活邮件到: " + email);
+                System.out.println(">>> 激活链接参数: ");
+                
+                mailService.sendSimpleMail(email, "PriorTest 激活账号", templateUrl + "activate?email=" + email +
                     "&params=" + linkStr);
+                 System.out.println(">>> 激活 发邮件完毕: ");
+                
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
@@ -483,9 +492,6 @@ public class UserServiceImpl implements UserService {
         }
 
         System.out.println(">>> 开始处理忘记密码，邮箱: " + email);
-        System.out.println(">>> 准备发送重置密码邮件");
-        System.out.println(">>> 重置密码邮件发送完成");
-        
         SysUser sysUser = sysUsers.get(0);
         Integer activeState = sysUser.getActiveState();
         if (OneConstant.ACTIVE_STATUS.TRIAL_EXPIRED.equals(activeState)) {
@@ -496,7 +502,9 @@ public class UserServiceImpl implements UserService {
         }
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://127.0.0.1:9529/#/findpwd?email=" + email + "&params=" + linkStr);
+          System.out.println(">>> 准备发送重置密码邮件");
+        mailService.sendSimpleMail(email, "PriorTest 忘记密码", templateUrl + "findpwd?email=" + email + "&params=" + linkStr);
+          System.out.println(">>> 重置密码邮件发送完成");
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -524,8 +532,12 @@ public class UserServiceImpl implements UserService {
         }
 
         String linkStr = RandomUtil.randomString(80);
+        
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick申请延期", "http://43.139.159.146/#/deferred?email=" + email + "&params=" + linkStr);
+        System.out.println(">>> 开始处理申请延期 邮箱: " + email);
+        mailService.sendSimpleMail(email, "PriorTest 申请延期", templateUrl + "deferred?email=" + email + "&params=" + linkStr);
+         System.out.println(">>> 处理完毕申请延期 邮箱: " + email);
+    
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -653,7 +665,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 查询用户和子用户
-     *
+     
      * @param masterId
      * @Param: [masterId]
      * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>
