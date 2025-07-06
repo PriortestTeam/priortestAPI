@@ -172,9 +172,82 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
         return activateAccount(activateAccountDto, OneConstant.PASSWORD.FORGETPASSWORD);
     }
 
-    private Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
-        // 这里需要实现 activateAccount 方法的逻辑
-        // 暂时返回成功，具体逻辑需要根据原有的 activateAccount 方法来实现
-        return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+    @Override
+    public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
+        try {
+            System.out.println(">>> UserPreAuthServiceImpl.activateAccount 被调用，激活类型: " + activation);
+            
+            String email = activateAccountDto.getEmail();
+            String params = activateAccountDto.getParams();
+            String password = activateAccountDto.getPassword();
+            
+            System.out.println(">>> 激活参数 - email: " + email + ", params: " + params);
+            
+            if (StringUtils.isEmpty(email)) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
+            }
+            
+            // 验证Redis中的参数
+            if (!redisClient.getBucket(params).isExists()) {
+                System.out.println(">>> 激活链接已过期或无效");
+                return new Resp.Builder<String>().buildResult("400", "激活链接已过期或无效");
+            }
+            
+            // 查询用户
+            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+            if (CollUtil.isEmpty(sysUsers)) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
+            }
+            
+            SysUser sysUser = sysUsers.get(0);
+            System.out.println(">>> 找到用户: " + sysUser.getUserName() + ", 当前状态: " + sysUser.getActiveState());
+            
+            // 根据激活类型处理
+            if (OneConstant.PASSWORD.ACTIVATION.equals(activation)) {
+                // 账户激活
+                if (OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
+                    sysUser.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE);
+                    sysUser.setPassword(encodePassword(password));
+                    sysUserDao.updateByEmail(sysUser);
+                    
+                    // 删除Redis中的激活参数
+                    redisClient.getBucket(params).delete();
+                    
+                    System.out.println(">>> 账户激活成功");
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), "账户激活成功");
+                } else {
+                    return new Resp.Builder<String>().buildResult("400", "账户状态异常，无法激活");
+                }
+            } else if (OneConstant.PASSWORD.FORGETPASSWORD.equals(activation)) {
+                // 忘记密码重置
+                if (OneConstant.ACTIVE_STATUS.ACTIVE.equals(sysUser.getActiveState())) {
+                    sysUser.setPassword(encodePassword(password));
+                    sysUserDao.updateByEmail(sysUser);
+                    
+                    // 删除Redis中的重置参数
+                    redisClient.getBucket(params).delete();
+                    
+                    System.out.println(">>> 密码重置成功");
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), "密码重置成功");
+                } else {
+                    return new Resp.Builder<String>().buildResult("400", "账户状态异常，无法重置密码");
+                }
+            }
+            
+            return new Resp.Builder<String>().buildResult("400", "未知的激活类型");
+            
+        } catch (Exception e) {
+            logger.error("class: UserPreAuthServiceImpl#activateAccount,error []" + e.getMessage(), e);
+            return new Resp.Builder<String>().buildResult("500", "系统错误: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 密码加密
+     */
+    private String encodePassword(String password) {
+        // 这里需要使用与原系统相同的密码加密方式
+        // 通常使用BCrypt或其他加密算法
+        return password; // 临时实现，需要根据实际加密方式修改
     }
 }

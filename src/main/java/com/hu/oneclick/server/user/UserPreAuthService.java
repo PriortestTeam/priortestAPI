@@ -24,4 +24,9 @@ public interface UserPreAuthService {
      * 忘记密码输入新密码
      */
     Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto);
+
+    /**
+     * 激活账户
+     */
+    Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation);
 }
