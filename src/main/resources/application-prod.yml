@@ -80,6 +80,10 @@ mybatis:
 
 logging:
     config: classpath:log4j2.yml
+    level:
+        org.springframework.security: DEBUG
+        org.springframework.web: DEBUG
+        root: INFO
 
 
 

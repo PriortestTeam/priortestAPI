@@ -180,11 +180,17 @@ public class WebSecurityConfig {
                     String path = request.getRequestURI();
                     String method = request.getMethod();
                     String authHeader = request.getHeader("Authorization");
+                    String contentType = request.getContentType();
                     
                     System.out.println(">>> ========== WebSecurityConfig 过滤器 ==========");
                     System.out.println(">>> 请求路径: " + path);
                     System.out.println(">>> 请求方法: " + method);
+                    System.out.println(">>> Content-Type: " + contentType);
                     System.out.println(">>> Authorization头: " + (authHeader != null ? authHeader.substring(0, Math.min(20, authHeader.length())) + "..." : "null"));
+                    System.out.println(">>> 请求参数:");
+                    request.getParameterMap().forEach((key, values) -> {
+                        System.out.println(">>>   " + key + " = " + String.join(", ", values));
+                    });
                     
                     // 如果是登录请求、API token请求或Swagger UI请求，跳过JWT过滤器
                     if (path.equals("/api/login") || path.equals("/login") || 
@@ -197,7 +203,10 @@ public class WebSecurityConfig {
                         path.startsWith("/v3/api-docs") ||
                         path.equals("/swagger-ui.html")) {
                         System.out.println(">>> 跳过JWT过滤器，直接放行请求: " + path);
+                        System.out.println(">>> 请求进入过滤链之前的状态码: " + response.getStatus());
                         filterChain.doFilter(request, response);
+                        System.out.println(">>> 过滤链处理完成后的状态码: " + response.getStatus());
+                        System.out.println(">>> 是否已提交响应: " + response.isCommitted());
                         return;
                     }
                     

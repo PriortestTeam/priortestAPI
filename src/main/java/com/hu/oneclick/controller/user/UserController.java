@@ -95,11 +95,25 @@ public class UserController {
     @Operation(summary = "忘记密码填写邮箱")
     @PostMapping("forgetThePassword")
     public Resp<String> forgetThePassword(@RequestBody java.util.Map<String, String> request) {
+        System.out.println(">>> ========== UserController.forgetThePassword 被调用 ==========");
+        System.out.println(">>> 接收到的请求体: " + request);
+        System.out.println(">>> 请求体类型: " + (request != null ? request.getClass().getName() : "null"));
+        System.out.println(">>> 请求体大小: " + (request != null ? request.size() : 0));
+        
         String email = request.get("email");
+        System.out.println(">>> 提取的email: " + email);
+        
         if (email == null || email.trim().isEmpty()) {
+            System.out.println(">>> 邮箱参数为空，返回400错误");
             return new Resp.Builder<String>().buildResult("400", "邮箱参数不能为空", 400);
         }
-        return userService.forgetThePassword(email);
+        
+        System.out.println(">>> 调用userService.forgetThePassword，email: " + email);
+        Resp<String> result = userService.forgetThePassword(email);
+        System.out.println(">>> userService返回结果: " + result);
+        System.out.println(">>> ========== UserController.forgetThePassword 执行完成 ==========");
+        
+        return result;
     }
 
     @Operation(summary = "忘记密码输入密码")
