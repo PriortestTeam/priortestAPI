@@ -2,7 +2,7 @@
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.common.enums.SysConstantEnum;
-import com.hu.oneclick.common.util.RandomUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.dao.RoomDao;
 import com.hu.oneclick.dao.SysUserDao;
