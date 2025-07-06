@@ -29,6 +29,8 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -217,8 +219,12 @@ public class WebSecurityConfig {
                 }
             }, UsernamePasswordAuthenticationFilter.class)
             .logout(logout -> logout
-                .logoutUrl("/api/logout")
-                .logoutSuccessHandler(httpStatusLogoutSuccessHandler))
+                    .logoutUrl("/api/logout")
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout", "POST"))
+                    .addLogoutHandler(tokenClearLogoutHandler)
+                    .logoutSuccessHandler(httpStatusLogoutSuccessHandler)
+                    .permitAll()
+                )
             .headers(headers -> headers
                 .frameOptions(frame -> frame.deny())
                 .addHeaderWriter(new StaticHeadersWriter("X-Content-Security-Policy", "script-src 'self'")));
