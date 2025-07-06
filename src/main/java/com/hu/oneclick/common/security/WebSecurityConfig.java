@@ -152,6 +152,8 @@ public class WebSecurityConfig {
                     "/api/login",
                     "/login",
                     "/api/register",
+                    "/api/user/register",
+                    "/api/user/forgetThePassword",
                     "/api/swagger-ui.html",
                     "/api/swagger-ui/**",
                     "/api/v3/api-docs/**",
