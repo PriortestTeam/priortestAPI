@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
                 System.out.println(">>> 准备发送激活邮件到: " + email);
-                System.out.println(">>> 激活链接参数: ");
+                System.out.println(">>> 激活链接参数: " +linkStr);
                 
                 mailService.sendSimpleMail(email, "PriorTest 激活账号", templateUrl + "activate?email=" + email +
                     "&params=" + linkStr);
@@ -502,7 +502,8 @@ public class UserServiceImpl implements UserService {
         }
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-          System.out.println(">>> 准备发送重置密码邮件");
+          System.out.println(">>> 准备发送忘记密码邮件");
+          System.out.println(">>> 准备发送忘记密码激活链接参数 " +linkStr);
         mailService.sendSimpleMail(email, "PriorTest 忘记密码", templateUrl + "findpwd?email=" + email + "&params=" + linkStr);
           System.out.println(">>> 重置密码邮件发送完成");
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
