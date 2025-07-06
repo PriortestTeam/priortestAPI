@@ -169,7 +169,7 @@ public class WebSecurityConfig {
             )
             // 先添加登录过滤器
             .addFilterBefore(jsonAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            // 然后添加JWT过滤器，但是排除登录和API token路径
+            // 添加自定义过滤器来处理JWT认证，但排除白名单路径
             .addFilterBefore(new OncePerRequestFilter() {
                 @Override
                 protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -189,7 +189,7 @@ public class WebSecurityConfig {
                         System.out.println(">>>   " + key + " = " + String.join(", ", values));
                     });
 
-                    // 如果是登录请求、API token请求或Swagger UI请求，跳过JWT过滤器
+                    // 如果是白名单路径，完全跳过JWT验证
                     if (path.equals("/api/login") || path.equals("/login") || 
                         path.equals("/api/user/register") ||
                         path.equals("/api/user/forgetThePassword") ||
@@ -202,18 +202,14 @@ public class WebSecurityConfig {
                         path.startsWith("/swagger-ui/") ||
                         path.startsWith("/v3/api-docs") ||
                         path.equals("/swagger-ui.html")) {
-                        System.out.println(">>> 跳过JWT过滤器，直接放行请求: " + path);
-                        System.out.println(">>> 请求进入过滤链之前的状态码: " + response.getStatus());
+                        System.out.println(">>> 完全跳过JWT验证，直接放行请求: " + path);
                         filterChain.doFilter(request, response);
-                        System.out.println(">>> 过滤链处理完成后的状态码: " + response.getStatus());
-                        System.out.println(">>> 是否已提交响应: " + response.isCommitted());
                         return;
                     }
 
-                    System.out.println(">>> 使用JWT过滤器处理请求: " + path);
-                    // 否则，使用JWT过滤器处理
+                    System.out.println(">>> 需要JWT验证，使用JWT过滤器: " + path);
+                    // 对于其他路径，使用JWT过滤器处理
                     jwtAuthFilter.doFilter(request, response, filterChain);
-                    System.out.println(">>> JWT过滤器处理完成，响应状态: " + response.getStatus());
                 }
             }, UsernamePasswordAuthenticationFilter.class)
             .logout(logout -> logout
