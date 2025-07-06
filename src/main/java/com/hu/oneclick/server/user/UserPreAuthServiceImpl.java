@@ -63,7 +63,7 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
         
         List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(registerBody.getEmail());
         if (!sysUsers.isEmpty()) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.EMAIL_ALREADY_EXISTS.getCode(), SysConstantEnum.EMAIL_ALREADY_EXISTS.getValue());
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.ALREADYHAS_USER.getCode(), SysConstantEnum.ALREADYHAS_USER.getValue());
         }
         
         // 查询公司房间是否存在  
@@ -111,7 +111,7 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
             // 发送激活邮件
             String activationUrl = templateUrl + "?params=" + linkStr + "&email=" + registerBody.getEmail();
             try {
-                mailService.sendSimpleMail(registerBody.getEmail(), "PriorTest 账户激活", activationUrl);
+                mailService.sendEmail(registerBody.getEmail(), "PriorTest 账户激活", activationUrl);
                 logger.info(">>> 激活 发邮件完毕: ");
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
             } catch (Exception e) {
