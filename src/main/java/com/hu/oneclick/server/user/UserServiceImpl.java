@@ -45,9 +45,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author qingyang
- */
 @Service
 public class UserServiceImpl implements UserService {
     private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -119,6 +116,8 @@ public class UserServiceImpl implements UserService {
             BeanUtils.copyProperties(registerBody, registerUser);
 
             String email = registerUser.getEmail();
+            System.out.println(">>> 开始注册用户，邮箱: " + email);
+            
             if (StringUtils.isEmpty(email)) {
                 throw new BizException(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
             }
@@ -137,10 +136,13 @@ public class UserServiceImpl implements UserService {
                     //邮箱链接失效
                     String linkStr = RandomUtil.randomString(80);
                     redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-                    // mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
-                    // "&params=" + linkStr);
-                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://796efbdf-f3bc-4b03-a7d7-a611ca959732-00-1wiuctihnaal0.sisko.replit.dev:3001/#/activate?email=" + email + "&params=" + linkStr);
-                    return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+            
+                    System.out.println(">>> 准备发送激活邮件到: " + email);
+                    System.out.println(">>> 激活链接参数: " + linkStr);
+                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
+                        "&params=" + linkStr);
+                    System.out.println(">>> 激活邮件发送完成");
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
                 }
             }
             // 先查询该用户是否已在room表，如果在，更新，无新增
@@ -171,10 +173,8 @@ public class UserServiceImpl implements UserService {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
-                System.out.println(">>> 准备发送激活邮件到: " + email);
-                System.out.println(">>> 激活链接: " + "http://796efbdf-f3bc-4b03-a7d7-a611ca959732-00-1wiuctihnaal0.sisko.replit.dev:3001/#/activate?email=" + email + "&params=" + linkStr);
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://796efbdf-f3bc-4b03-a7d7-a611ca959732-00-1wiuctihnaal0.sisko.replit.dev:3001/#/activate?email=" + email + "&params=" + linkStr);
-                System.out.println(">>> 激活邮件发送完成");
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
+                    "&params=" + linkStr);
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
@@ -273,7 +273,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName) {
         List<SubUserDto> subUserDtos = CollUtil.newArrayList();
-//        List<SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
         return new Resp.Builder<List<SubUserDto>>().setData(subUserDtos).totalSize(subUserDtos.size()).ok();
     }
 
@@ -381,16 +380,7 @@ public class UserServiceImpl implements UserService {
             query.eq("user_id", userId);
             List<SysUserProject> userProjects = sysUserProjectDao.selectList(query);
             if (userProjects.isEmpty()) {
-//                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
-//                userUseOpenProject.setProjectId(project.getId());
-//                userUseOpenProject.setUserId(userId);
-//                userUseOpenProject.setTitle("");
-                //设置用户关联的项目
-//                subUserProject = new SubUserProject();
-//                subUserProject.setUserId(sysUser.getId());
-//                subUserProject.setProjectId(project.getId());
-//                subUserProject.setOpenProjectByDefaultId(project.getId());
-//                subUserProjectDao.insert(subUserProject);
+//               
 
                 Project project = new Project();
                 project.setUserId(userId);
@@ -491,6 +481,11 @@ public class UserServiceImpl implements UserService {
         if (sysUsers.isEmpty()) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
         }
+
+        System.out.println(">>> 开始处理忘记密码，邮箱: " + email);
+        System.out.println(">>> 准备发送重置密码邮件");
+        System.out.println(">>> 重置密码邮件发送完成");
+        
         SysUser sysUser = sysUsers.get(0);
         Integer activeState = sysUser.getActiveState();
         if (OneConstant.ACTIVE_STATUS.TRIAL_EXPIRED.equals(activeState)) {
@@ -501,7 +496,6 @@ public class UserServiceImpl implements UserService {
         }
         String linkStr = RandomUtil.randomString(80);
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-        // mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?email=" + email + "&params=" + linkStr);
         mailService.sendSimpleMail(email, "OneClick忘记密码", "http://127.0.0.1:9529/#/findpwd?email=" + email + "&params=" + linkStr);
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
@@ -631,23 +625,6 @@ public class UserServiceImpl implements UserService {
         }
         sysUser = sysUsers.get(0);
 
-        //如果不是平台管理人员，则是子账号
-        /*if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
-            //查询是否有权限
-            SysUser parentUser = sysUserDao.queryById(sysUser.getParentId().toString());
-            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId());
-            if (sysUserTokens.isEmpty()) {
-                return false;
-            }
-            for (SysUserToken sysUserToken : sysUserTokens) {
-
-                if (sysUserToken.getApi_times() > 0) {
-                    sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
-                }
-
-            }
-            return true;
-        } else */
         {
             //主账号
             List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
@@ -687,4 +664,35 @@ public class UserServiceImpl implements UserService {
     public List<SysUser> queryByUserIdAndParentId(String masterId) {
         SysUser sysUser = new SysUser();
         sysUser.setId(masterId);
-//
+//        sysUser.setParentId(Long.valueOf(masterId));
+        return sysUserDao.queryAllIdOrParentId(sysUser);
+    }
+
+    /**
+     * 返回用户的激活次数
+     *
+     * @param email
+     * @Param: [email]
+     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
+     * @Author: MaSiyi
+     * @Date: 2021/12/18
+     */
+    @Override
+    public Resp<String> getUserActivNumber(String email) {
+        SysUser sysUser = sysUserDao.queryByEmail(email);
+        return new Resp.Builder<String>().setData(String.valueOf(sysUser.getActivitiNumber())).ok();
+    }
+
+    /**
+     * @param projectId 项目id
+     * @return Resp<List < Map < String, Object>>>
+     * @description 通过项目ID获取用户信息
+     * @author Vince
+     * @createTime 2022/12/24 19:56
+     */
+    @Override
+    public Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId) {
+        List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
+        return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
+    }
+}
