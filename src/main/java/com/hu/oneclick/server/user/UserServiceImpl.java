@@ -139,10 +139,8 @@ public class UserServiceImpl implements UserService {
                     redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
                     // mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
                     // "&params=" + linkStr);
-                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
-                        "&params=" + linkStr);
-
-                    return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
+                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://796efbdf-f3bc-4b03-a7d7-a611ca959732-00-1wiuctihnaal0.sisko.replit.dev:3001/#/activate?email=" + email + "&params=" + linkStr);
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
                 }
             }
             // 先查询该用户是否已在room表，如果在，更新，无新增
@@ -173,8 +171,10 @@ public class UserServiceImpl implements UserService {
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
 
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
-                    "&params=" + linkStr);
+                System.out.println(">>> 准备发送激活邮件到: " + email);
+                System.out.println(">>> 激活链接: " + "http://796efbdf-f3bc-4b03-a7d7-a611ca959732-00-1wiuctihnaal0.sisko.replit.dev:3001/#/activate?email=" + email + "&params=" + linkStr);
+                mailService.sendSimpleMail(email, "OneClick激活账号", "http://796efbdf-f3bc-4b03-a7d7-a611ca959732-00-1wiuctihnaal0.sisko.replit.dev:3001/#/activate?email=" + email + "&params=" + linkStr);
+                System.out.println(">>> 激活邮件发送完成");
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
             }
             throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
@@ -687,35 +687,4 @@ public class UserServiceImpl implements UserService {
     public List<SysUser> queryByUserIdAndParentId(String masterId) {
         SysUser sysUser = new SysUser();
         sysUser.setId(masterId);
-//        sysUser.setParentId(Long.valueOf(masterId));
-        return sysUserDao.queryAllIdOrParentId(sysUser);
-    }
-
-    /**
-     * 返回用户的激活次数
-     *
-     * @param email
-     * @Param: [email]
-     * @return: com.hu.oneclick.model.base.Resp<java.lang.String>
-     * @Author: MaSiyi
-     * @Date: 2021/12/18
-     */
-    @Override
-    public Resp<String> getUserActivNumber(String email) {
-        SysUser sysUser = sysUserDao.queryByEmail(email);
-        return new Resp.Builder<String>().setData(String.valueOf(sysUser.getActivitiNumber())).ok();
-    }
-
-    /**
-     * @param projectId 项目id
-     * @return Resp<List < Map < String, Object>>>
-     * @description 通过项目ID获取用户信息
-     * @author Vince
-     * @createTime 2022/12/24 19:56
-     */
-    @Override
-    public Resp<List<Map<String, Object>>> listUserByProjectId(Long projectId) {
-        List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
-        return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
-    }
-}
+//
