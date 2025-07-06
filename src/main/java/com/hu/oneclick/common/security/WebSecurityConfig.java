@@ -165,7 +165,6 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/user/applyForAnExtension").permitAll()
                 .requestMatchers("/api/user/getUserActivNumber").permitAll()
                 .requestMatchers("/api/user/applyForAnExtensionIn").permitAll()
-                .requestMatchers("/api/user/getUserActivNumber").permitAll()
                 .anyRequest().authenticated()
             )
             // 先添加登录过滤器
@@ -194,6 +193,9 @@ public class WebSecurityConfig {
                     if (path.equals("/api/login") || path.equals("/login") || 
                         path.equals("/api/user/register") ||
                         path.equals("/api/user/forgetThePassword") ||
+                        path.equals("/api/user/applyForAnExtension") ||
+                        path.equals("/api/user/getUserActivNumber") ||
+                        path.equals("/api/user/applyForAnExtensionIn") ||
                         path.startsWith("/api/swagger-ui/") ||
                         path.startsWith("/api/v3/api-docs") ||
                         path.equals("/api/swagger-ui.html") ||
