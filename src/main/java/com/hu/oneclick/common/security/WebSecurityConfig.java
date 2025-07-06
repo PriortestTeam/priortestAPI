@@ -188,6 +188,8 @@ public class WebSecurityConfig {
                     
                     // 如果是登录请求、API token请求或Swagger UI请求，跳过JWT过滤器
                     if (path.equals("/api/login") || path.equals("/login") || 
+                        path.equals("/api/user/register") ||
+                        path.equals("/api/user/forgetThePassword") ||
                         path.startsWith("/api/swagger-ui/") ||
                         path.startsWith("/api/v3/api-docs") ||
                         path.equals("/api/swagger-ui.html") ||
