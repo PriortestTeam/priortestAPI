@@ -162,6 +162,10 @@ public class WebSecurityConfig {
                     "/public/**",
                     "/actuator/**"
                 ).permitAll()
+                .requestMatchers("/api/user/applyForAnExtension").permitAll()
+                .requestMatchers("/api/user/getUserActivNumber").permitAll()
+                .requestMatchers("/api/user/applyForAnExtensionIn").permitAll()
+                .requestMatchers("/api/user/getUserActivNumber").permitAll()
                 .anyRequest().authenticated()
             )
             // 先添加登录过滤器
@@ -175,7 +179,7 @@ public class WebSecurityConfig {
                     String method = request.getMethod();
                     String authHeader = request.getHeader("Authorization");
                     String contentType = request.getContentType();
-                    
+
                     System.out.println(">>> ========== WebSecurityConfig 过滤器 ==========");
                     System.out.println(">>> 请求路径: " + path);
                     System.out.println(">>> 请求方法: " + method);
@@ -185,7 +189,7 @@ public class WebSecurityConfig {
                     request.getParameterMap().forEach((key, values) -> {
                         System.out.println(">>>   " + key + " = " + String.join(", ", values));
                     });
-                    
+
                     // 如果是登录请求、API token请求或Swagger UI请求，跳过JWT过滤器
                     if (path.equals("/api/login") || path.equals("/login") || 
                         path.equals("/api/user/register") ||
@@ -203,7 +207,7 @@ public class WebSecurityConfig {
                         System.out.println(">>> 是否已提交响应: " + response.isCommitted());
                         return;
                     }
-                    
+
                     System.out.println(">>> 使用JWT过滤器处理请求: " + path);
                     // 否则，使用JWT过滤器处理
                     jwtAuthFilter.doFilter(request, response, filterChain);
