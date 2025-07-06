@@ -60,7 +60,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 设置默认的白名单URL
         this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/login"));
         this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/register"));
-        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/logout"));
+        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/logout", "POST"));
+        this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/api/logout", "GET"));
         this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/swagger-ui/**"));
         this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/v3/api-docs/**"));
         this.permissiveRequestMatchers.add(new AntPathRequestMatcher("/swagger-resources/**"));
