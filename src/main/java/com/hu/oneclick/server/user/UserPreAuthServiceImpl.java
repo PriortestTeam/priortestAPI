@@ -2,7 +2,13 @@
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.common.enums.SysConstantEnum;
+import com.hu.oneclick.common.exception.BizException;
+import com.hu.oneclick.common.constant.OneConstant;
+import com.hu.oneclick.common.constant.RoleConstant;
+import com.hu.oneclick.common.util.SnowFlakeUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.bean.BeanUtil;
 import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.dao.RoomDao;
 import com.hu.oneclick.dao.SysUserDao;
@@ -13,11 +19,15 @@ import com.hu.oneclick.server.service.MailService;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -50,76 +60,84 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
     
-    @Value("${onclick.time.firstTime}")
-    private Integer firstTime;
-    
     @Override
-    public Resp<String> register(RegisterBody registerBody) {
-        logger.info(">>> 开始注册用户，邮箱: {}", registerBody.getEmail());
-        
-        if (StringUtils.isEmpty(registerBody.getEmail())) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
-        }
-        
-        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(registerBody.getEmail());
-        if (!sysUsers.isEmpty()) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.ALREADYHAS_USER.getCode(), SysConstantEnum.ALREADYHAS_USER.getValue());
-        }
-        
-        // 查询公司房间是否存在  
-        Room room = roomDao.queryByCompanyNameAndUserEmail(registerBody.getCompany(), registerBody.getEmail());
-        if (room == null) {
-            // 创建新房间
-            room = new Room();
-            room.setCreateName(registerBody.getUserName());
-            room.setCreateUserEmail(registerBody.getEmail());
-            room.setCompanyName(registerBody.getCompany());
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> register(final RegisterBody registerBody) {
+        try {
+            final SysUser registerUser = new SysUser();
+            BeanUtils.copyProperties(registerBody, registerUser);
+
+            String email = registerUser.getEmail();
+            System.out.println(">>> 开始注册用户，邮箱: " + email);
             
-            // 设置过期时间为30天后
-            long expiredTime = System.currentTimeMillis() + (long) firstTime * 24 * 60 * 60 * 1000;
-            room.setExpiredDate(new Date(expiredTime));
-            
-            room.setType(1);
-            room.setModifyName(registerBody.getUserName());
-            roomDao.insert(room);
-        }
-        
-        // 创建用户
-        SysUser sysUser = new SysUser();
-        sysUser.setEmail(registerBody.getEmail());
-        sysUser.setUserName(registerBody.getUserName());
-        sysUser.setContactNo(registerBody.getContactNo());
-        sysUser.setCompany(registerBody.getCompany());
-        sysUser.setProfession(registerBody.getProfession());
-        sysUser.setIndustry(registerBody.getIndustry());
-        sysUser.setActiveState(5); // 未激活状态
-        sysUser.setSysRoleId(4); // 默认角色
-        sysUser.setRoomId(room.getId());
-        sysUser.setPhoto(defaultPhoto);
-        
-        int result = sysUserDao.insert(sysUser);
-        if (result > 0) {
-            logger.info(">>> 准备发送激活邮件到: {}", registerBody.getEmail());
-            
-            // 生成激活链接
-            String linkStr = RandomUtil.randomString(80);
-            logger.info(">>> 激活链接参数: {}", linkStr);
-            
-            // 将激活码存储到Redis，30分钟过期
-            redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-            
-            // 发送激活邮件
-            String activationUrl = templateUrl + "?params=" + linkStr + "&email=" + registerBody.getEmail();
-            try {
-                mailService.sendEmail(registerBody.getEmail(), "PriorTest 账户激活", activationUrl);
-                logger.info(">>> 激活 发邮件完毕: ");
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
-            } catch (Exception e) {
-                logger.error(">>> 发送激活邮件失败: ", e);
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.FAILED.getCode(), "邮件发送失败");
+            if (StringUtils.isEmpty(email)) {
+                throw new BizException(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
             }
-        } else {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.FAILED.getCode(), "数据库操作失败");
+
+            SysUser user = new SysUser();
+            BeanUtils.copyProperties(registerUser, user);
+            //检查数据库是否已存在用户
+            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+            if (!CollUtil.isEmpty(sysUsers)) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
+            }
+            for (SysUser sysUser : sysUsers) {
+                if (!OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
+                } else if (OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
+                    //邮箱链接失效
+                    String linkStr = RandomUtil.randomString(80);
+                    redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+            
+                    System.out.println(">>> 准备发送激活邮件到: " + email);
+                    System.out.println(">>> 激活链接参数: " + linkStr);
+                    mailService.sendSimpleMail(email, "PriorTest 激活账号", templateUrl+"activate?email=" + email +
+                        "&params=" + linkStr);
+                    System.out.println(">>> 激活邮件发送完成");
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
+                }
+            }
+            // 先查询该用户是否已在room表，如果在，更新，无新增
+            Room room = roomDao.queryByCompanyNameAndUserEmail(registerUser.getCompany(), email);
+            if (null == room) {
+                room = new Room();
+                room.setId(SnowFlakeUtil.getFlowIdInstance().nextId());
+                room.setCompanyName(registerUser.getCompany());
+                room.setCreateName(registerUser.getUserName());
+                room.setCreateUserEmail(email);
+                room.setDeleteFlag(false);
+                room.setModifyName(registerUser.getUserName());
+                room.setType(OneConstant.ACTIVE_STATUS.TRIAL);
+                room.setExpiredDate(Date.from(LocalDateTime.now().plusDays(OneConstant.TRIAL_DAYS).atZone(ZoneId.systemDefault()).toInstant()));
+                roomDao.insertRoom(room);
+            } else {
+                BeanUtil.copyProperties(registerUser, room);
+                room.setCreateUserEmail(email);
+                roomDao.updateRoom(room);
+            }
+            user.setRoomId(room.getId());
+            //设置默认头像
+            user.setPhoto(defaultPhoto);
+            user.setSysRoleId(RoleConstant.ADMIN_PLAT);
+            user.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION);
+
+            if (sysUserDao.insert(user) > 0) {
+                String linkStr = RandomUtil.randomString(80);
+                redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+
+                System.out.println(">>> 准备发送激活邮件到: " + email);
+                System.out.println(">>> 激活链接参数: " +linkStr);
+                
+                mailService.sendSimpleMail(email, "PriorTest 激活账号", templateUrl + "activate?email=" + email +
+                    "&params=" + linkStr);
+                 System.out.println(">>> 激活 发邮件完毕: ");
+                
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
+            }
+            throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
+        } catch (BizException e) {
+            logger.error("class: UserServiceImpl#register,error []" + e.getMessage());
+            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
 }
