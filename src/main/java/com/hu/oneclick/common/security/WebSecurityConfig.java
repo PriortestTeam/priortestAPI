@@ -223,8 +223,8 @@ public class WebSecurityConfig {
                 }
             }, UsernamePasswordAuthenticationFilter.class)
             .logout(logout -> logout
-                    .logoutUrl("/api/logout")
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout", "POST"))
+                    .logoutUrl("/logout")
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
                     .addLogoutHandler(tokenClearLogoutHandler)
                     .logoutSuccessHandler(httpStatusLogoutSuccessHandler)
                     .permitAll()
