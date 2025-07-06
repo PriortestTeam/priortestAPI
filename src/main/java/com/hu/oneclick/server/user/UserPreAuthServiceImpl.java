@@ -14,6 +14,7 @@ import com.hu.oneclick.common.util.SnowFlakeUtil;
 import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.model.entity.SysUserOrder;
 import com.hu.oneclick.server.service.SystemConfigService;
+import com.hu.oneclick.server.service.UserOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import com.hu.oneclick.dao.*;
