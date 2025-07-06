@@ -19,4 +19,9 @@ public interface UserPreAuthService {
      * 忘记密码
      */
     Resp<String> forgetThePassword(String email);
+
+    /**
+     * 忘记密码输入新密码
+     */
+    Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto);
 }

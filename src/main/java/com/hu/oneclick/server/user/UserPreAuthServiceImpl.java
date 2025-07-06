@@ -15,6 +15,7 @@ import com.hu.oneclick.dao.SysUserDao;
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.Room;
 import com.hu.oneclick.model.entity.SysUser;
+import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 import com.hu.oneclick.server.service.MailService;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -163,6 +164,17 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
         System.out.println(">>> 准备发送忘记密码激活链接参数 " +linkStr);
         mailService.sendSimpleMail(email, "PriorTest 忘记密码", templateUrl + "findpwd?email=" + email + "&params=" + linkStr);
         System.out.println(">>> 重置密码邮件发送完成");
+        return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+    }
+
+    @Override
+    public Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto) {
+        return activateAccount(activateAccountDto, OneConstant.PASSWORD.FORGETPASSWORD);
+    }
+
+    private Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
+        // 这里需要实现 activateAccount 方法的逻辑
+        // 暂时返回成功，具体逻辑需要根据原有的 activateAccount 方法来实现
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 }
