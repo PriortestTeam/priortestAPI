@@ -15,6 +15,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.http.InvalidMediaTypeException;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,7 +49,7 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
         throws AuthenticationException, IOException, ServletException {
-        
+
         System.out.println(">>> 进入 attemptAuthentication 方法");
         System.out.println(">>> 请求URI: " + request.getRequestURI());
         System.out.println(">>> 请求方法: " + request.getMethod());
@@ -71,7 +72,7 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
                     "Content-Type不能为空", 
                     Collections.singletonList(MediaType.APPLICATION_JSON));
             }
-        } catch (org.springframework.util.InvalidMediaTypeException e) {
+        } catch (InvalidMediaTypeException e) {
             System.out.println(">>> Content-Type格式无效: " + request.getContentType());
             throw new HttpMediaTypeNotSupportedException(
                 request.getContentType(), 
@@ -80,7 +81,7 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
 
         String body = StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8);
         System.out.println(">>> 请求体: " + body);
-        
+
         String username = null, password = null, masterIdentifier = null;
 
         if (StringUtils.hasText(body)) {
@@ -122,7 +123,7 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
         System.out.println(">>> 开始认证");
         Authentication auth = this.getAuthenticationManager().authenticate(authRequest);
         System.out.println(">>> 认证完成: " + (auth.isAuthenticated() ? "成功" : "失败"));
-        
+
         return auth;
     }
 }

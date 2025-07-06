@@ -66,6 +66,9 @@ public class WebSecurityConfig {
     private HttpStatusLogoutSuccessHandler httpStatusLogoutSuccessHandler;
 
     @Autowired
+    private TokenClearLogoutHandler tokenClearLogoutHandler;
+
+    @Autowired
     private UserDetailsService userDetailsService;
 
     @Autowired
