@@ -8,6 +8,7 @@ import com.hu.oneclick.common.security.service.JwtAuthenticationProvider;
 import com.hu.oneclick.common.security.flutter.MyUsernamePasswordAuthenticationFilter;
 import com.hu.oneclick.common.security.flutter.JwtAuthenticationFilter;
 import com.hu.oneclick.common.security.handler.HttpStatusLoginFailureHandler;
+import com.hu.oneclick.common.security.handler.TokenClearLogoutHandler;
 import com.hu.oneclick.dao.SysUserTokenDao;
 import com.hu.oneclick.server.user.UserService;
 import org.redisson.api.RedissonClient;
