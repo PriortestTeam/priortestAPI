@@ -94,7 +94,11 @@ public class UserController {
 
     @Operation(summary = "忘记密码填写邮箱")
     @PostMapping("forgetThePassword")
-    public Resp<String> forgetThePassword(@RequestParam(value = "email", required = true) String email) {
+    public Resp<String> forgetThePassword(@RequestBody java.util.Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.trim().isEmpty()) {
+            return new Resp<>(400, "邮箱参数不能为空", null);
+        }
         return userService.forgetThePassword(email);
     }
 
