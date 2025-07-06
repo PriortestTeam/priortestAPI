@@ -88,14 +88,17 @@ public class UserServiceImpl implements UserService {
 
      @Value("${onclick.template.url}")
         private String templateUrl;
-    
+
+    private final UserPreAuthService userPreAuthService;
+
 
     public UserServiceImpl(SysUserDao sysUserDao,
                            RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl,
                            MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService,
                            SubUserProjectDao subUserProjectDao, UserOrderService userOrderService,
                            SystemConfigService systemConfigService, RoomDao roomDao, RoleFunctionDao roleFunctionDao,
-                           SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao, SysUserProjectDao sysUserProjectDao) {
+                           SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao, SysUserProjectDao sysUserProjectDao,
+                           UserPreAuthService userPreAuthService) {
         this.sysUserDao = sysUserDao;
         this.redisClient = redisClient;
         this.jwtUserServiceImpl = jwtUserServiceImpl;
@@ -110,87 +113,13 @@ public class UserServiceImpl implements UserService {
         this.sysUserBusinessDao = sysUserBusinessDao;
         this.sysRoleDao = sysRoleDao;
         this.sysUserProjectDao = sysUserProjectDao;
+        this.userPreAuthService = userPreAuthService;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Resp<String> register(final RegisterBody registerBody) {
-        try {
-            final SysUser registerUser = new SysUser();
-            BeanUtils.copyProperties(registerBody, registerUser);
-
-            String email = registerUser.getEmail();
-            System.out.println(">>> 开始注册用户，邮箱: " + email);
-            
-            if (StringUtils.isEmpty(email)) {
-                throw new BizException(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
-            }
-
-            SysUser user = new SysUser();
-            BeanUtils.copyProperties(registerUser, user);
-            //检查数据库是否已存在用户
-            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
-            if (!CollUtil.isEmpty(sysUsers)) {
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
-            }
-            for (SysUser sysUser : sysUsers) {
-                if (!OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
-                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
-                } else if (OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
-                    //邮箱链接失效
-                    String linkStr = RandomUtil.randomString(80);
-                    redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-            
-                    System.out.println(">>> 准备发送激活邮件到: " + email);
-                    System.out.println(">>> 激活链接参数: " + linkStr);
-                    mailService.sendSimpleMail(email, "PriorTest 激活账号", templateUrl+"activate?email=" + email +
-                        "&params=" + linkStr);
-                    System.out.println(">>> 激活邮件发送完成");
-                    return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
-                }
-            }
-            // 先查询该用户是否已在room表，如果在，更新，无新增
-            Room room = roomDao.queryByCompanyNameAndUserEmail(registerUser.getCompany(), email);
-            if (null == room) {
-                room = new Room();
-                room.setId(SnowFlakeUtil.getFlowIdInstance().nextId());
-                room.setCompanyName(registerUser.getCompany());
-                room.setCreateName(registerUser.getUserName());
-                room.setCreateUserEmail(email);
-                room.setDeleteFlag(false);
-                room.setModifyName(registerUser.getUserName());
-                room.setType(OneConstant.ACTIVE_STATUS.TRIAL);
-                room.setExpiredDate(Date.from(LocalDateTime.now().plusDays(OneConstant.TRIAL_DAYS).atZone(ZoneId.systemDefault()).toInstant()));
-                roomDao.insertRoom(room);
-            } else {
-                BeanUtil.copyProperties(registerUser, room);
-                room.setCreateUserEmail(email);
-                roomDao.updateRoom(room);
-            }
-            user.setRoomId(room.getId());
-            //设置默认头像
-            user.setPhoto(defaultPhoto);
-            user.setSysRoleId(RoleConstant.ADMIN_PLAT);
-            user.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION);
-
-            if (sysUserDao.insert(user) > 0) {
-                String linkStr = RandomUtil.randomString(80);
-                redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-
-                System.out.println(">>> 准备发送激活邮件到: " + email);
-                System.out.println(">>> 激活链接参数: " +linkStr);
-                
-                mailService.sendSimpleMail(email, "PriorTest 激活账号", templateUrl + "activate?email=" + email +
-                    "&params=" + linkStr);
-                 System.out.println(">>> 激活 发邮件完毕: ");
-                
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
-            }
-            throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
-        } catch (BizException e) {
-            logger.error("class: UserServiceImpl#register,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
-        }
+    public Resp<String> register(RegisterBody registerBody) {
+        // 委托给UserPreAuthService处理
+        return userPreAuthService.register(registerBody);
     }
 
     @Override
@@ -533,12 +462,12 @@ public class UserServiceImpl implements UserService {
         }
 
         String linkStr = RandomUtil.randomString(80);
-        
+
         redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
         System.out.println(">>> 开始处理申请延期 邮箱: " + email);
         mailService.sendSimpleMail(email, "PriorTest 申请延期", templateUrl + "deferred?email=" + email + "&params=" + linkStr);
          System.out.println(">>> 处理完毕申请延期 邮箱: " + email);
-    
+
         return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
     }
 
@@ -666,7 +595,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 查询用户和子用户
-     
+
      * @param masterId
      * @Param: [masterId]
      * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>
