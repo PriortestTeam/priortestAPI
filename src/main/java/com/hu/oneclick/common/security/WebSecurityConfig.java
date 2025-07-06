@@ -153,6 +153,7 @@ public class WebSecurityConfig {
                     "/register", 
                     "/user/register",
                     "/user/forgetThePassword",
+                    "/user/forgetThePasswordIn",
                     "/user/applyForAnExtension",
                     "/user/getUserActivNumber",
                     "/user/applyForAnExtensionIn",
