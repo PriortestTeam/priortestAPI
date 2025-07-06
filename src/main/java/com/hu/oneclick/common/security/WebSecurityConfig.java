@@ -149,23 +149,17 @@ public class WebSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers(
-                    "/api/login",
                     "/login",
-                    "/api/register",
-                    "/api/user/register",
-                    "/api/user/forgetThePassword",
-                    "/api/swagger-ui.html",
-                    "/api/swagger-ui/**",
-                    "/api/v3/api-docs/**",
-                    "/api/swagger-resources/**",
-                    "/api/webjars/**",
-                    "/api/auth/**",
-                    "/api/public/**",
+                    "/register", 
+                    "/user/register",
+                    "/user/forgetThePassword",
                     "/swagger-ui.html",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/swagger-resources/**",
                     "/webjars/**",
+                    "/auth/**",
+                    "/public/**",
                     "/actuator/**"
                 ).permitAll()
                 .anyRequest().authenticated()
