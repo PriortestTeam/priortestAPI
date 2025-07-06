@@ -2,6 +2,7 @@ package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.model.base.Resp;
+import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 
 /**
  * 用户登录前操作服务接口
