@@ -140,4 +140,50 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
+    
+    @Override
+    public Resp<String> forgetThePassword(String email) {
+        try {
+            System.out.println(">>> UserPreAuthServiceImpl.forgetThePassword 被调用，email: " + email);
+            
+            if (StringUtils.isEmpty(email)) {
+                System.out.println(">>> 邮箱为空，返回错误");
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
+            }
+            
+            // 查询用户是否存在
+            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+            if (CollUtil.isEmpty(sysUsers)) {
+                System.out.println(">>> 用户不存在，email: " + email);
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.USER_NOT_EXIST.getCode(), SysConstantEnum.USER_NOT_EXIST.getValue());
+            }
+            
+            SysUser sysUser = sysUsers.get(0);
+            System.out.println(">>> 找到用户: " + sysUser.getUserName() + ", 激活状态: " + sysUser.getActiveState());
+            
+            // 检查用户是否已激活
+            if (!OneConstant.ACTIVE_STATUS.ACTIVE.equals(sysUser.getActiveState())) {
+                System.out.println(">>> 用户未激活，无法重置密码");
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.USER_NOT_ACTIVATED.getCode(), SysConstantEnum.USER_NOT_ACTIVATED.getValue());
+            }
+            
+            // 生成重置链接
+            String linkStr = RandomUtil.randomString(80);
+            redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+            
+            System.out.println(">>> 准备发送重置密码邮件到: " + email);
+            System.out.println(">>> 重置链接参数: " + linkStr);
+            
+            // 发送重置密码邮件
+            String resetUrl = templateUrl + "reset-password?email=" + email + "&params=" + linkStr;
+            mailService.sendSimpleMail(email, "PriorTest 重置密码", resetUrl);
+            
+            System.out.println(">>> 重置密码邮件发送完成");
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+            
+        } catch (Exception e) {
+            logger.error("class: UserPreAuthServiceImpl#forgetThePassword,error []" + e.getMessage(), e);
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.SYSTEM_ERROR.getCode(), e.getMessage());
+        }
+    }
 }
