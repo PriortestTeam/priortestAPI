@@ -1,33 +1,27 @@
+
 package com.hu.oneclick.server.user;
 
 import com.hu.oneclick.controller.req.RegisterBody;
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.model.domain.dto.ActivateAccountDto;
 
 /**
  * 用户登录前操作服务接口
- *
+ * 处理用户注册、忘记密码、申请延期等登录前的所有操作
+ * 
  * @author oneclick
  */
 public interface UserPreAuthService {
-
+    
     /**
      * 用户注册
+     * 
+     * @param registerBody 注册信息
+     * @return 注册结果
      */
     Resp<String> register(RegisterBody registerBody);
-
-    /**
-     * 忘记密码
-     */
-    Resp<String> forgetThePassword(String email);
-
-    /**
-     * 忘记密码输入新密码
-     */
-    Resp<String> forgetThePasswordIn(ActivateAccountDto activateAccountDto);
-
-    /**
-     * 激活账户
-     */
-    Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation);
+    
+    // 后续会添加其他登录前的方法：
+    // Resp<String> forgetThePassword(ForgetPasswordDto dto);
+    // Resp<String> applyForAnExtension(ExtensionDto dto);
+    // 等等...
 }
