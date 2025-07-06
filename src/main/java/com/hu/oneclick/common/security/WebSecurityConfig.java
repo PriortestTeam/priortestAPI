@@ -153,6 +153,9 @@ public class WebSecurityConfig {
                     "/register", 
                     "/user/register",
                     "/user/forgetThePassword",
+                    "/user/applyForAnExtension",
+                    "/user/getUserActivNumber",
+                    "/user/applyForAnExtensionIn",
                     "/swagger-ui.html",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
@@ -162,9 +165,6 @@ public class WebSecurityConfig {
                     "/public/**",
                     "/actuator/**"
                 ).permitAll()
-                .requestMatchers("/api/user/applyForAnExtension").permitAll()
-                .requestMatchers("/api/user/getUserActivNumber").permitAll()
-                .requestMatchers("/api/user/applyForAnExtensionIn").permitAll()
                 .anyRequest().authenticated()
             )
             // 先添加登录过滤器
