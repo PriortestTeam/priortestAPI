@@ -47,7 +47,7 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		} else if (exception instanceof BadCredentialsException) {
 			// 密码错误的情况
 			response.setStatus(HttpStatus.FORBIDDEN.value());
-			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.PASSWORD_ERROR.getCode(), SysConstantEnum.PASSWORD_ERROR.getValue(), HttpStatus.FORBIDDEN.value()));
+			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.PASSWORD_ERROR.getValue()).buildResult(SysConstantEnum.PASSWORD_ERROR.getCode(), SysConstantEnum.PASSWORD_ERROR.getValue(), HttpStatus.FORBIDDEN.value()));
 		} else if (exception instanceof InternalAuthenticationServiceException) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.LOGIN_FAILED.getValue()).fail());
