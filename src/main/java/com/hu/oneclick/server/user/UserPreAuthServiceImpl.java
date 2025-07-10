@@ -87,7 +87,7 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
                 } else if (OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
                     //邮箱链接失效
                     String linkStr = RandomUtil.randomString(80);
-                    redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+                    redisClient.getBucket(linkStr).set("true", 15, TimeUnit.MINUTES);
             
                     System.out.println(">>> 准备发送激活邮件到: " + email);
                     System.out.println(">>> 激活链接参数: " + linkStr);
@@ -123,7 +123,7 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
 
             if (sysUserDao.insert(user) > 0) {
                 String linkStr = RandomUtil.randomString(80);
-                redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+                redisClient.getBucket(linkStr).set("true", 15, TimeUnit.MINUTES);
 
                 System.out.println(">>> 准备发送激活邮件到: " + email);
                 System.out.println(">>> 激活链接参数: " +linkStr);

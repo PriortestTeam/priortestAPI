@@ -430,7 +430,7 @@ public class UserServiceImpl implements UserService {
             return new Resp.Builder<String>().buildResult("400", "请先去激活账户");
         }
         String linkStr = RandomUtil.randomString(80);
-        redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+        redisClient.getBucket(linkStr).set("true", 15, TimeUnit.MINUTES);
           System.out.println(">>> 准备发送忘记密码邮件");
           System.out.println(">>> 准备发送忘记密码激活链接参数 " +linkStr);
         mailService.sendSimpleMail(email, "PriorTest 忘记密码", templateUrl + "findpwd?email=" + email + "&params=" + linkStr);
@@ -463,7 +463,7 @@ public class UserServiceImpl implements UserService {
 
         String linkStr = RandomUtil.randomString(80);
 
-        redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
+        redisClient.getBucket(linkStr).set("true", 15, TimeUnit.MINUTES);
         System.out.println(">>> 开始处理申请延期 邮箱: " + email);
         mailService.sendSimpleMail(email, "PriorTest 申请延期", templateUrl + "deferred?email=" + email + "&params=" + linkStr);
          System.out.println(">>> 处理完毕申请延期 邮箱: " + email);
