@@ -33,10 +33,13 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType("application/json;charset=UTF-8");
 		
-        // 如果 token 过期，exception中没有数据，返回认证失败结果
-        if (exception == null || exception.getCause() == null) {
-            System.out.println(">>> 处理路径: exception为null或cause为null");
-            result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).httpBadRequest().fail());
+        // 首先处理具体的异常类型
+        if (exception instanceof BadCredentialsException) {
+			// 密码错误的情况
+			System.out.println(">>> 处理路径: BadCredentialsException - 密码错误");
+			response.setStatus(HttpStatus.FORBIDDEN.value());
+			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.PASSWORD_ERROR.getCode(), SysConstantEnum.PASSWORD_ERROR.getValue(), HttpStatus.FORBIDDEN.value()));
+			System.out.println(">>> 密码错误响应: " + result);
         } else if (exception.getCause() instanceof BizException) {
             System.out.println(">>> 处理路径: BizException");
 			final BizException bizException = (BizException) exception.getCause();
@@ -51,12 +54,6 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
 				result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(code, message, HttpStatus.BAD_REQUEST.value()));
             }
-		} else if (exception instanceof BadCredentialsException) {
-			// 密码错误的情况
-			System.out.println(">>> 处理路径: BadCredentialsException - 密码错误");
-			response.setStatus(HttpStatus.FORBIDDEN.value());
-			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.PASSWORD_ERROR.getCode(), SysConstantEnum.PASSWORD_ERROR.getValue(), HttpStatus.FORBIDDEN.value()));
-			System.out.println(">>> 密码错误响应: " + result);
 		} else if (exception instanceof InternalAuthenticationServiceException) {
 			System.out.println(">>> 处理路径: InternalAuthenticationServiceException");
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -68,7 +65,10 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		} else if (exception instanceof UsernameNotFoundException) {
 			System.out.println(">>> 处理路径: UsernameNotFoundException");
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.USERNAME_ERROR.getValue()).fail());
-	    } else {
+	    } else if (exception == null) {
+            System.out.println(">>> 处理路径: exception为null");
+            result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).httpBadRequest().fail());
+        } else {
 			System.out.println(">>> 处理路径: 其他异常类型");
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).httpBadRequest().fail());
 		}
