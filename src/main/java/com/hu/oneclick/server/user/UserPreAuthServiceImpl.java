@@ -6,6 +6,8 @@ import com.hu.oneclick.common.exception.BizException;
 import com.hu.oneclick.common.constant.OneConstant;
 import com.hu.oneclick.common.constant.RoleConstant;
 import com.hu.oneclick.common.util.SnowFlakeUtil;
+import org.springframework.http.HttpStatus;
+import java.util.Objects;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.bean.BeanUtil;
@@ -168,6 +170,39 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
         } catch (Exception e) {
             logger.error("class: UserPreAuthServiceImpl#forgetThePassword,error []" + e.getMessage());
             return new Resp.Builder<String>().buildResult("500", "忘记密码处理失败");
+        }
+    }
+
+    @Override
+    public Resp<String> applyForAnExtension(String email) {
+        try {
+            // 这里需要检测用户一些信息
+            final SysUser sysUser = sysUserDao.queryByEmail(email);
+            if (Objects.isNull(sysUser)) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.EMAIL_NOT_EXIST.getCode(),
+                    SysConstantEnum.EMAIL_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
+            }
+            if (!"Trialer".equals(sysUser.getUserClass())) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_TRIALER_USER.getCode(),
+                    SysConstantEnum.NOT_TRIALER_USER.getValue(), HttpStatus.BAD_REQUEST.value());
+            }
+            final int activeNumber = Objects.nonNull(sysUser.getActivitiNumber()) ? sysUser.getActivitiNumber() : 0;
+            if (activeNumber >= 3) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.TRIALER_LIMIT.getCode(),
+                    SysConstantEnum.TRIALER_LIMIT.getValue(), HttpStatus.BAD_REQUEST.value());
+            }
+
+            String linkStr = RandomUtil.randomString(80);
+
+            redisClient.getBucket(linkStr).set("true", 15, TimeUnit.MINUTES);
+            System.out.println(">>> 开始处理申请延期 邮箱: " + email);
+            mailService.sendSimpleMail(email, "PriorTest 申请延期", templateUrl + "deferred?email=" + email + "&params=" + linkStr);
+            System.out.println(">>> 处理完毕申请延期 邮箱: " + email);
+
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+        } catch (Exception e) {
+            logger.error("class: UserPreAuthServiceImpl#applyForAnExtension,error []" + e.getMessage());
+            return new Resp.Builder<String>().buildResult("500", "申请延期处理失败");
         }
     }
 }

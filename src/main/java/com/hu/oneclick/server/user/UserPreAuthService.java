@@ -28,7 +28,14 @@ public interface UserPreAuthService {
      */
     Resp<String> forgetThePassword(String email);
     
+    /**
+     * 申请延期
+     * 
+     * @param email 用户邮箱
+     * @return 操作结果
+     */
+    Resp<String> applyForAnExtension(String email);
+    
     // 后续会添加其他登录前的方法：
-    // Resp<String> applyForAnExtension(ExtensionDto dto);
     // 等等...
 }
