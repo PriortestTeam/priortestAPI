@@ -120,10 +120,19 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
             username, password);
 
-        System.out.println(">>> 开始认证");
-        Authentication auth = this.getAuthenticationManager().authenticate(authRequest);
-        System.out.println(">>> 认证完成: " + (auth.isAuthenticated() ? "成功" : "失败"));
-
-        return auth;
+        try {
+            System.out.println(">>> 开始认证");
+            Authentication authResult = this.getAuthenticationManager().authenticate(authRequest);
+            System.out.println(">>> 认证成功");
+            return authResult;
+        } catch (AuthenticationException e) {
+            System.out.println(">>> ========== MyUsernamePasswordAuthenticationFilter 认证失败 ==========");
+            System.out.println(">>> 认证失败异常类型: " + e.getClass().getName());
+            System.out.println(">>> 认证失败异常消息: " + e.getMessage());
+            System.out.println(">>> 认证失败异常原因: " + (e.getCause() == null ? "null" : e.getCause().getClass().getName()));
+            System.out.println(">>> 即将调用 failureHandler 处理失败");
+            System.out.println(">>> =======================================================");
+            throw e;
+        }
     }
 }
