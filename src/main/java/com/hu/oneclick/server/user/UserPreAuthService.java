@@ -20,8 +20,15 @@ public interface UserPreAuthService {
      */
     Resp<String> register(RegisterBody registerBody);
     
+    /**
+     * 忘记密码
+     * 
+     * @param email 用户邮箱
+     * @return 操作结果
+     */
+    Resp<String> forgetThePassword(String email);
+    
     // 后续会添加其他登录前的方法：
-    // Resp<String> forgetThePassword(ForgetPasswordDto dto);
     // Resp<String> applyForAnExtension(ExtensionDto dto);
     // 等等...
 }

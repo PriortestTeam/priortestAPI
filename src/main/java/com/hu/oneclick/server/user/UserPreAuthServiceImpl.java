@@ -140,4 +140,34 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
             return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
         }
     }
+
+    @Override
+    public Resp<String> forgetThePassword(String email) {
+        try {
+            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
+            if (sysUsers.isEmpty()) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
+            }
+
+            System.out.println(">>> 开始处理忘记密码，邮箱: " + email);
+            SysUser sysUser = sysUsers.get(0);
+            Integer activeState = sysUser.getActiveState();
+            if (OneConstant.ACTIVE_STATUS.TRIAL_EXPIRED.equals(activeState)) {
+                return new Resp.Builder<String>().buildResult("400", "账户试用已过期");
+
+            } else if (OneConstant.ACTIVE_STATUS.ACTIVE_FAILED.equals(activeState) || OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(activeState)) {
+                return new Resp.Builder<String>().buildResult("400", "请先去激活账户");
+            }
+            String linkStr = RandomUtil.randomString(80);
+            redisClient.getBucket(linkStr).set("true", 15, TimeUnit.MINUTES);
+            System.out.println(">>> 准备发送忘记密码邮件");
+            System.out.println(">>> 准备发送忘记密码激活链接参数 " + linkStr);
+            mailService.sendSimpleMail(email, "PriorTest 忘记密码", templateUrl + "findpwd?email=" + email + "&params=" + linkStr);
+            System.out.println(">>> 重置密码邮件发送完成");
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+        } catch (Exception e) {
+            logger.error("class: UserPreAuthServiceImpl#forgetThePassword,error []" + e.getMessage());
+            return new Resp.Builder<String>().buildResult("500", "忘记密码处理失败");
+        }
+    }
 }
