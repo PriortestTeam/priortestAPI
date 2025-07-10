@@ -25,6 +25,7 @@ public enum SysConstantEnum {
     CREATE_SUB_USER_FAILED(SysConstantEnum.NUMBER + "011", "创建成员用户失败。"),
     CREATE_PLATFORM_USER_FAILED(SysConstantEnum.NUMBER + "011", "创建平台用户失败。"),
     LOGIN_FAILED(SysConstantEnum.NUMBER + "011", "用户名或密码错误。"),
+    PASSWORD_ERROR("4002", "密码错误，请重新输入。"),
     USERNAME_ERROR(SysConstantEnum.NUMBER + "011", "用户名异常。"),
     MASTER_ACCOUNT_ERROR(SysConstantEnum.NUMBER + "011", "主账号异常。"),
     SUB_USERNAME_ERROR(SysConstantEnum.NUMBER + "011", "您的成员列表已存在该用户。"),
