@@ -33,8 +33,17 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
             result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).httpBadRequest().fail());
         } else if (exception.getCause() instanceof BizException) {
 			final BizException bizException = (BizException) exception.getCause();
-			response.setStatus(bizException.getHttpCode());
-			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(bizException.getCode(), bizException.getMsg()));
+			String code = bizException.getCode();
+            String message = bizException.getMessage();
+
+            // 用户过期场景使用专门的HTTP状态码
+            if ("4001".equals(code)) {
+                response.setStatus(HttpStatus.PAYMENT_REQUIRED.value()); // 402
+				result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(code, message, HttpStatus.PAYMENT_REQUIRED.value()));
+            } else {
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+				result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(code, message, HttpStatus.BAD_REQUEST.value()));
+            }
 		} else if (exception instanceof BadCredentialsException || exception instanceof InternalAuthenticationServiceException) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.LOGIN_FAILED.getValue()).fail());
