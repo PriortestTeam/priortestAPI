@@ -169,6 +169,18 @@ public interface SysUserDao {
      */
     List<SysUser> queryByLikeEmail(@Param("email") String email);
 
+    /**
+     * 根据邮箱查询用户基本信息（仅用于验证用户存在性，忘记密码功能专用）
+     * 只查询必要字段以提高性能
+     */
+    SysUser queryUserBasicInfoByEmail(@Param("email") String email);
+
+    /**
+     * 仅更新用户密码（忘记密码功能专用）
+     * 只更新password和update_time字段以提高性能
+     */
+    int updateUserPasswordOnly(@Param("id") String id, @Param("password") String password);
+
     List<SysUserRoleDto> getAccountRole(String roomId, String roleId);
 
     List<Map<String, Object>> queryUsersByRoomId(@Param("roomId") BigInteger roomId, int pageNum, int pageSize);

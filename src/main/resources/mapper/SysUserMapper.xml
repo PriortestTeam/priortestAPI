@@ -636,6 +636,22 @@
         where email like CONCAT('%', #{email})
           and del_flag = 0
     </select>
+    
+    <!-- 忘记密码功能专用 - 根据邮箱查询用户基本信息（性能优化版本） -->
+    <select id="queryUserBasicInfoByEmail" resultMap="SysUserMap">
+        select id, email, user_name, del_flag, active_state
+        from oneclick.sys_user 
+        where email like CONCAT('%', #{email}) and del_flag = 0 
+        limit 1
+    </select>
+    
+    <!-- 忘记密码功能专用 - 仅更新用户密码（性能优化版本） -->
+    <update id="updateUserPasswordOnly">
+        update oneclick.sys_user 
+        set password = #{password}, update_time = NOW() 
+        where id = #{id} and del_flag = 0
+    </update>
+    
     <select id="getAccountRole" resultType="com.hu.oneclick.model.domain.dto.SysUserRoleDto">
         SELECT u.id        as id,
                u.email     as email,

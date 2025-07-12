@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,6 +92,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserPreAuthService userPreAuthService;
 
+    private final PasswordEncoder passwordEncoder;
+
 
     public UserServiceImpl(SysUserDao sysUserDao,
                            RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl,
@@ -98,7 +101,7 @@ public class UserServiceImpl implements UserService {
                            SubUserProjectDao subUserProjectDao, UserOrderService userOrderService,
                            SystemConfigService systemConfigService, RoomDao roomDao, RoleFunctionDao roleFunctionDao,
                            SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao, SysUserProjectDao sysUserProjectDao,
-                           UserPreAuthService userPreAuthService) {
+                           UserPreAuthService userPreAuthService, PasswordEncoder passwordEncoder) {
         this.sysUserDao = sysUserDao;
         this.redisClient = redisClient;
         this.jwtUserServiceImpl = jwtUserServiceImpl;
@@ -114,6 +117,7 @@ public class UserServiceImpl implements UserService {
         this.sysRoleDao = sysRoleDao;
         this.sysUserProjectDao = sysUserProjectDao;
         this.userPreAuthService = userPreAuthService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -300,13 +304,34 @@ public class UserServiceImpl implements UserService {
         System.out.println(">>> 邮箱: " + activateAccountDto.getEmail());
         System.out.println(">>> activation类型: " + activation);
 
-        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail());
-        System.out.println(">>> 查询到用户数量: " + sysUsers.size());
-        if (sysUsers.isEmpty()) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
-        }
-        SysUser sysUser = sysUsers.get(0);
-        System.out.println(">>> 开始执行verify方法，用户ID: " + sysUser.getId());
+            // 根据activation类型选择合适的查询方法
+            if (OneConstant.PASSWORD.FORGETPASSWORD.equals(activation)) {
+                // 忘记密码功能使用优化的查询方法
+                SysUser sysUser = sysUserDao.queryUserBasicInfoByEmail(activateAccountDto.getEmail());
+                System.out.println(">>> 使用优化查询，查询到用户: " + (sysUser != null ? "是" : "否"));
+
+                if (sysUser == null) {
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
+                }
+                System.out.println(">>> 开始执行verify方法，用户ID: " + sysUser.getId());
+                return verify(sysUser, activateAccountDto, activation);
+            } else {
+                // 其他功能继续使用原有方法
+                List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail());
+                System.out.println(">>> 查询到用户数量: " + sysUsers.size());
+
+                if (sysUsers.isEmpty()) {
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
+                }
+                SysUser sysUser = sysUsers.get(0);
+                System.out.println(">>> 开始执行verify方法，用户ID: " + sysUser.getId());
+                return verify(sysUser, activateAccountDto, activation);
+            }
+    }
+
+    private Resp<String> verify(SysUser sysUser, ActivateAccountDto activateAccountDto, String activation) {
+        System.out.println(">>> UserServiceImpl.verify() 开始执行");
+        System.out.println(">>> activation类型: " + activation);
 
         //申请延期不提示再次输入密码
         if (!activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
@@ -388,8 +413,14 @@ public class UserServiceImpl implements UserService {
 
         //忘记密码
         if (activation.equals(OneConstant.PASSWORD.FORGETPASSWORD)) {
-            // 忘记密码只需要更新密码，不需要修改其他状态
-            // 密码验证已经在前面的verify方法中完成
+            String encodedPassword = passwordEncoder.encode(activateAccountDto.getPassword());
+            // 使用优化的密码更新方法，只更新密码和更新时间
+            int updateResult = sysUserDao.updateUserPasswordOnly(sysUser.getId(), encodedPassword);
+            if (updateResult > 0) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+            } else {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.FAILED.getCode(), "密码更新失败");
+            }
         }
         sysUser.setPassword(encodePassword(activateAccountDto.getPassword()));
         if (sysUserDao.update(sysUser) == 0) {
