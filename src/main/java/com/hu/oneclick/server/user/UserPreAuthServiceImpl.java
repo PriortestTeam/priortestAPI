@@ -146,9 +146,9 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
                 roomDao.updateRoom(room);
             }
             user.setRoomId(room.getId());
-            //设置默认头像
-            user.setPhoto(defaultPhoto);
-            user.setSysRoleId(RoleConstant.ADMIN_PLAT);
+            //设置默认头像 - 没有
+           // user.setPhoto(defaultPhoto);
+            user.setSysRoleId(RoleConstant.ADMIN_PROJ); // 首次注册激活用户 角色ID:1
             user.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION);
 
             if (sysUserDao.insert(user) > 0) {
