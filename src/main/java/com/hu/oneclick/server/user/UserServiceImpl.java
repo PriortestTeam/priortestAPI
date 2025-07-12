@@ -290,7 +290,7 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             System.out.println(">>> UserServiceImpl.activateAccount() 发生异常: " + e.getMessage());
             logger.error("activateAccount error", e);
-            return new Resp.Builder<String>().buildResult(HttpStatus.BAD_REQUEST.value(), "操作失败");
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.FAILED.getCode(), "操作失败", HttpStatus.BAD_REQUEST.value());
         }
     }
 
