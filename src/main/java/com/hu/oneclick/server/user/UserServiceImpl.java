@@ -371,6 +371,12 @@ public class UserServiceImpl implements UserService {
                 throw new BizException(SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getCode(), SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getValue());
             }
         }
+
+        //忘记密码
+        if (activation.equals(OneConstant.PASSWORD.FORGETPASSWORD)) {
+            // 忘记密码只需要更新密码，不需要修改其他状态
+            // 密码验证已经在前面的verify方法中完成
+        }
         sysUser.setPassword(encodePassword(activateAccountDto.getPassword()));
         if (sysUserDao.update(sysUser) == 0) {
             throw new BizException(SysConstantEnum.UPDATE_FAILED.getCode(), SysConstantEnum.UPDATE_FAILED.getValue());
