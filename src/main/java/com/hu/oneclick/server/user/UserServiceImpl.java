@@ -649,4 +649,24 @@ public class UserServiceImpl implements UserService {
         List<Map<String, Object>> list = sysUserDao.listUserByProjectId(projectId);
         return new Resp.Builder<List<Map<String, Object>>>().setData(list).ok();
     }
+
+    private String verify(String activationType) {
+        System.out.println(">>> UserServiceImpl.verify() 开始执行");
+        System.out.println(">>> activation类型: " + activationType);
+
+        if (SysConstantEnum.FORGETPASSWORD.getCode().equals(activationType)) {
+            // 生成随机密码
+            String randomPassword = generateRandomPassword();
+
+            // 使用系统的PasswordEncoder（保持格式一致性）
+            String encodedPassword = passwordEncoder.encode(randomPassword);
+
+            // 存储到Redis（用于邮件发送）
+            redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.FORGET_PASSWORD_PREFIX + userId)
+                      .set(randomPassword, Duration.ofMinutes(30));
+
+            return encodedPassword;
+        }
+        return null;
+    }
 }
