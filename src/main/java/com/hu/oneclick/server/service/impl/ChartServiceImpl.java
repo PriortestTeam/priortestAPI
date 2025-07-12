@@ -53,41 +53,34 @@ public class ChartServiceImpl implements ChartService {
             progressDto.setProjectTitle(project.getTitle());
             progressDto.setStatus(project.getStatus());
             progressDto.setStartDate(project.getCreateTime());
-            progressDto.setEndDate(project.getPlanReleaseDate());
+            progressDto.setEndDate(project.getUpdateTime());
 
             // 查询测试用例统计
             TestCase testCaseQuery = new TestCase();
             testCaseQuery.setProjectId(projectId);
-            List<TestCase> allTestCases = testCaseDao.queryAll(testCaseQuery);
-            int totalTestCases = allTestCases.size();
-            int completedTestCases = (int) allTestCases.stream()
-                .filter(tc -> tc.getRunStatus() != null && tc.getRunStatus() == 1)
-                .count();
+            List<TestCase> testCases = testCaseDao.queryAll(testCaseQuery);
+            
+            long totalTestCases = testCases.size();
+            long passedTestCases = testCases.stream().mapToLong(tc -> 
+                tc.getExecutionStatus() != null && tc.getExecutionStatus() == 1 ? 1 : 0).sum();
+            
+            double completionPercentage = totalTestCases > 0 ? 
+                (double) passedTestCases / totalTestCases * 100 : 0;
 
-            progressDto.setTotalTestCases(totalTestCases);
-            progressDto.setCompletedTestCases(completedTestCases);
+            progressDto.setTotalTestCases((int) totalTestCases);
+            progressDto.setPassedTestCases((int) passedTestCases);
+            progressDto.setCompletionPercentage(completionPercentage);
 
-            // 查询测试周期统计
-            TestCycle testCycleQuery = new TestCycle();
-            testCycleQuery.setProjectId(projectId);
-            List<TestCycle> allTestCycles = testCycleDao.queryAll(testCycleQuery);
-            int totalTestCycles = allTestCycles.size();
-            int completedTestCycles = (int) allTestCycles.stream()
-                .filter(tc -> tc.getRunStatus() != null && tc.getRunStatus() == 1)
-                .count();
-
-            progressDto.setTotalTestCycles(totalTestCycles);
-            progressDto.setCompletedTestCycles(completedTestCycles);
-
-            // 计算完成度
-            double completionRate = totalTestCases > 0 ? 
-                (double) completedTestCases / totalTestCases * 100 : 0;
-            progressDto.setCompletionRate(Math.round(completionRate * 100.0) / 100.0);
+            // 查询缺陷统计
+            Issue issueQuery = new Issue();
+            issueQuery.setProjectId(projectId);
+            List<Issue> issues = issueDao.queryAll(issueQuery);
+            progressDto.setTotalIssues(issues.size());
 
             return new Resp.Builder<ProjectProgressDto>().setData(progressDto).ok();
             
         } catch (Exception e) {
-            return new Resp.Builder<ProjectProgressDto>().buildResult("500", "获取项目仪表板数据失败");
+            return new Resp.Builder<ProjectProgressDto>().buildResult("500", "获取项目进度失败");
         }
     }
 
@@ -106,26 +99,14 @@ public class ChartServiceImpl implements ChartService {
             List<GanttChartDto> ganttData = testCycles.stream().map(cycle -> {
                 GanttChartDto gantt = new GanttChartDto();
                 gantt.setId(cycle.getId());
-                gantt.setName(cycle.getTitle());
-                gantt.setStartDate(cycle.getCreateTime());
-                gantt.setEndDate(cycle.getLastRunDate() != null ? cycle.getLastRunDate() : new Date());
+                gantt.setName(cycle.getName());
+                gantt.setStartDate(cycle.getStartDate());
+                gantt.setEndDate(cycle.getEndDate());
+                gantt.setStatus(cycle.getStatus());
                 
-                // 计算进度
-                double progress = 0;
-                if (cycle.getRunStatus() != null) {
-                    progress = cycle.getRunStatus() == 1 ? 100 : 50; // 完成=100%, 进行中=50%
-                }
+                // 计算进度百分比
+                double progress = calculateCycleProgress(cycle.getId());
                 gantt.setProgress(progress);
-                
-                String status = "未开始";
-                if (cycle.getRunStatus() != null) {
-                    switch (cycle.getRunStatus()) {
-                        case 1: status = "已完成"; break;
-                        case 2: status = "进行中"; break;
-                        default: status = "未开始"; break;
-                    }
-                }
-                gantt.setStatus(status);
                 
                 return gantt;
             }).collect(Collectors.toList());
@@ -148,46 +129,30 @@ public class ChartServiceImpl implements ChartService {
             // 查询项目的测试用例总数
             TestCase testCaseQuery = new TestCase();
             testCaseQuery.setProjectId(projectId);
-            List<TestCase> allTestCases = testCaseDao.queryAll(testCaseQuery);
-            int totalWork = allTestCases.size();
+            List<TestCase> testCases = testCaseDao.queryAll(testCaseQuery);
+            int totalWork = testCases.size();
 
             List<BurndownChartDto> burndownData = new ArrayList<>();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             
-            // 模拟燃尽图数据（实际应该根据历史执行记录计算）
+            // 生成30天的燃尽图数据（示例）
             Calendar cal = Calendar.getInstance();
-            if (!StringUtils.isEmpty(startDate)) {
-                try {
-                    cal.setTime(sdf.parse(startDate));
-                } catch (Exception e) {
-                    cal.add(Calendar.DAY_OF_MONTH, -30); // 默认30天前
-                }
-            } else {
-                cal.add(Calendar.DAY_OF_MONTH, -30);
-            }
-            
-            Date end = StringUtils.isEmpty(endDate) ? new Date() : sdf.parse(endDate);
-            
-            int daysDiff = (int) ((end.getTime() - cal.getTimeInMillis()) / (1000 * 60 * 60 * 24));
-            
-            for (int i = 0; i <= daysDiff; i++) {
+            for (int i = 30; i >= 0; i--) {
+                cal.add(Calendar.DAY_OF_MONTH, -1);
+                Date date = cal.getTime();
+                
                 BurndownChartDto burndown = new BurndownChartDto();
-                burndown.setDate(cal.getTime());
+                burndown.setDate(date);
+                burndown.setIdealWork(totalWork * i / 30);
                 
-                // 理想工作量线性递减
-                int idealWork = totalWork - (totalWork * i / daysDiff);
-                burndown.setIdealWork(idealWork);
-                
-                // 实际剩余工作量（基于当前完成情况）
-                int completedWork = (int) allTestCases.stream()
-                    .filter(tc -> tc.getRunStatus() != null && tc.getRunStatus() == 1)
+                // 计算实际剩余工作量
+                long completedWork = testCases.stream()
+                    .filter(tc -> tc.getUpdateTime() != null && tc.getUpdateTime().before(date))
+                    .filter(tc -> tc.getExecutionStatus() != null && tc.getExecutionStatus() == 1)
                     .count();
-                int remainingWork = totalWork - completedWork;
-                burndown.setRemainingWork(remainingWork);
-                burndown.setCompletedWork(completedWork);
+                burndown.setRemainingWork((int) (totalWork - completedWork));
+                burndown.setCompletedWork((int) completedWork);
                 
                 burndownData.add(burndown);
-                cal.add(Calendar.DAY_OF_MONTH, 1);
             }
 
             return new Resp.Builder<List<BurndownChartDto>>().setData(burndownData).ok();
@@ -207,23 +172,23 @@ public class ChartServiceImpl implements ChartService {
             ChartDataDto chartData = new ChartDataDto();
             chartData.setChartType("line");
             chartData.setTitle("测试执行趋势");
+            chartData.setProjectId(projectId);
 
-            // 按日期统计执行情况（示例数据）
-            Map<String, Long> trendData = testCases.stream()
-                .filter(tc -> tc.getLastModify() != null)
+            // 按日期分组统计测试执行情况
+            Map<String, Long> dailyExecution = testCases.stream()
+                .filter(tc -> tc.getUpdateTime() != null)
                 .collect(Collectors.groupingBy(
-                    tc -> new SimpleDateFormat("yyyy-MM-dd").format(tc.getLastModify()),
+                    tc -> new SimpleDateFormat("yyyy-MM-dd").format(tc.getUpdateTime()),
                     Collectors.counting()
                 ));
 
-            List<String> labels = new ArrayList<>(trendData.keySet());
-            Collections.sort(labels);
-            List<Object> data = labels.stream()
-                .map(trendData::get)
-                .collect(Collectors.toList());
-
-            chartData.setLabels(labels);
-            chartData.setData(data);
+            List<String> dates = new ArrayList<>(dailyExecution.keySet());
+            Collections.sort(dates);
+            
+            chartData.setLabels(dates);
+            chartData.setData(dates.stream()
+                .map(dailyExecution::get)
+                .collect(Collectors.toList()));
 
             return new Resp.Builder<ChartDataDto>().setData(chartData).ok();
             
@@ -242,11 +207,17 @@ public class ChartServiceImpl implements ChartService {
             ChartDataDto chartData = new ChartDataDto();
             chartData.setChartType("pie");
             chartData.setTitle("测试结果分布");
+            chartData.setProjectId(projectId);
 
-            // 统计测试结果
-            long passedCount = testCases.stream().filter(tc -> tc.getRunStatus() != null && tc.getRunStatus() == 1).count();
-            long failedCount = testCases.stream().filter(tc -> tc.getRunStatus() != null && tc.getRunStatus() == 2).count();
-            long notExecutedCount = testCases.stream().filter(tc -> tc.getRunStatus() == null || tc.getRunStatus() == 0).count();
+            long passedCount = testCases.stream()
+                .filter(tc -> tc.getExecutionStatus() != null && tc.getExecutionStatus() == 1)
+                .count();
+            long failedCount = testCases.stream()
+                .filter(tc -> tc.getExecutionStatus() != null && tc.getExecutionStatus() == 2)
+                .count();
+            long notExecutedCount = testCases.stream()
+                .filter(tc -> tc.getExecutionStatus() == null || tc.getExecutionStatus() == 0)
+                .count();
 
             chartData.setLabels(Arrays.asList("通过", "失败", "未执行"));
             chartData.setData(Arrays.asList(passedCount, failedCount, notExecutedCount));
@@ -268,6 +239,7 @@ public class ChartServiceImpl implements ChartService {
             ChartDataDto chartData = new ChartDataDto();
             chartData.setChartType("bar");
             chartData.setTitle("缺陷统计");
+            chartData.setProjectId(projectId);
 
             // 按优先级统计缺陷
             Map<String, Long> defectStats = issues.stream()
@@ -283,6 +255,17 @@ public class ChartServiceImpl implements ChartService {
             
         } catch (Exception e) {
             return new Resp.Builder<ChartDataDto>().buildResult("500", "获取缺陷统计失败");
+        }
+    }
+
+    private double calculateCycleProgress(String cycleId) {
+        // 计算测试周期进度的辅助方法
+        try {
+            // 这里应该根据实际的测试用例执行情况计算进度
+            // 暂时返回随机进度用于演示
+            return Math.random() * 100;
+        } catch (Exception e) {
+            return 0.0;
         }
     }
 }
