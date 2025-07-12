@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -79,8 +80,9 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
     @Value("${onclick.time.firstTime}")
     private long firstTime;
     
-    // 使用setter注入避免循环依赖
+    // 使用setter注入和@Lazy避免循环依赖
     @Autowired
+    @Lazy
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
