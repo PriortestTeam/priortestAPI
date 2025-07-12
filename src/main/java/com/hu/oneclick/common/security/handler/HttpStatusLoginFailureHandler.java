@@ -35,11 +35,44 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		
         // 首先处理具体的异常类型
         if (exception instanceof BadCredentialsException) {
-			// 密码错误的情况
-			System.out.println(">>> 处理路径: BadCredentialsException - 密码错误");
-			response.setStatus(HttpStatus.UNAUTHORIZED.value());
-			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.PASSWORD_ERROR.getCode(), SysConstantEnum.PASSWORD_ERROR.getValue(), HttpStatus.UNAUTHORIZED.value()));
-			System.out.println(">>> 密码错误响应: " + result);
+			// 检查是否是因为用户不存在导致的BadCredentialsException
+			String exceptionMessage = exception.getMessage();
+			System.out.println(">>> BadCredentialsException 详细信息: " + exceptionMessage);
+			
+			// 通过异常消息判断是用户不存在还是密码错误
+			if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
+				// 这里需要进一步判断，我们可以通过日志来区分
+				// 由于Spring Security会将UsernameNotFoundException包装成BadCredentialsException
+				// 我们需要检查是否有"Failed to find user"的日志输出
+				System.out.println(">>> 处理路径: BadCredentialsException - 需要进一步判断用户不存在还是密码错误");
+				
+				// 简单的解决方案：检查异常的堆栈信息
+				boolean isUserNotFound = false;
+				Throwable cause = exception.getCause();
+				while (cause != null) {
+					if (cause instanceof UsernameNotFoundException) {
+						isUserNotFound = true;
+						break;
+					}
+					cause = cause.getCause();
+				}
+				
+				if (isUserNotFound) {
+					System.out.println(">>> 检测到是用户不存在的情况");
+					response.setStatus(HttpStatus.UNAUTHORIZED.value());
+					result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.USER_NOT_FOUND_401.getCode(), SysConstantEnum.USER_NOT_FOUND_401.getValue(), HttpStatus.UNAUTHORIZED.value()));
+					System.out.println(">>> 用户不存在响应: " + result);
+				} else {
+					System.out.println(">>> 确认是密码错误的情况");
+					response.setStatus(HttpStatus.UNAUTHORIZED.value());
+					result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.PASSWORD_ERROR.getCode(), SysConstantEnum.PASSWORD_ERROR.getValue(), HttpStatus.UNAUTHORIZED.value()));
+					System.out.println(">>> 密码错误响应: " + result);
+				}
+			} else {
+				System.out.println(">>> 处理路径: BadCredentialsException - 其他情况");
+				response.setStatus(HttpStatus.UNAUTHORIZED.value());
+				result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.PASSWORD_ERROR.getCode(), SysConstantEnum.PASSWORD_ERROR.getValue(), HttpStatus.UNAUTHORIZED.value()));
+			}
         } else if (exception.getCause() instanceof BizException) {
             System.out.println(">>> 处理路径: BizException");
 			final BizException bizException = (BizException) exception.getCause();
