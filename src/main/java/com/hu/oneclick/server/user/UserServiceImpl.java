@@ -310,15 +310,10 @@ public class UserServiceImpl implements UserService {
             sysUser.setExpireDate(new Date(time));
             String userId = sysUser.getId();
 
-            // TODO 如果OpenProjectByDefaultId为空，代表这个是注册的激活
-//            SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
-//            if (subUserProject == null || StringUtils.isEmpty(subUserProject.getOpenProjectByDefaultId())) {
-
             QueryWrapper<SysUserProject> query = Wrappers.query();
             query.eq("user_id", userId);
             List<SysUserProject> userProjects = sysUserProjectDao.selectList(query);
-            if (userProjects.isEmpty()) {
-//               
+            if (userProjects.isEmpty()) {            
 
                 Project project = new Project();
                 project.setUserId(userId);
