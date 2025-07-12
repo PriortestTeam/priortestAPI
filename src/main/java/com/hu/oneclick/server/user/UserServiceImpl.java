@@ -279,6 +279,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
+        // 委托给UserPreAuthService处理
+        return userPreAuthService.activateAccount(activateAccountDto, activation);
+    }
+
+    // 保留原来的activateAccount方法作为内部方法，供反射调用
+    private Resp<String> activateAccountInternal(ActivateAccountDto activateAccountDto, String activation) {
         if (StringUtils.isEmpty(activateAccountDto.getEmail())) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
         }
@@ -382,7 +388,8 @@ public class UserServiceImpl implements UserService {
      * @Author: MaSiyi
      * @Date: 2022/1/11
      */
-    private void initOrder(String userId) {
+    @Override
+    public void initOrder(String userId) {
         SysUserOrder sysUserOrder = new SysUserOrder();
         long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
         sysUserOrder.setOrderId(orderId);

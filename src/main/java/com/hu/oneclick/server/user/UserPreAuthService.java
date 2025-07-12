@@ -29,6 +29,15 @@ public interface UserPreAuthService {
     Resp<String> forgetThePassword(String email);
     
     /**
+     * 激活账户
+     * 
+     * @param activateAccountDto 激活账户信息
+     * @param activation 激活类型
+     * @return 操作结果
+     */
+    Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation);
+    
+    /**
      * 申请延期
      * 
      * @param email 用户邮箱
