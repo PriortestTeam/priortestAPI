@@ -256,7 +256,8 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
 
             PasswordCheckerUtil passwordChecker = new PasswordCheckerUtil();
             if (!passwordChecker.check(activateAccountDto.getPassword())) {
-                throw new BizException(SysConstantEnum.PASSWORD_RULES.getCode(), SysConstantEnum.PASSWORD_RULES.getValue());
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.PASSWORD_RULES_VALIDATION.getCode(), 
+                    SysConstantEnum.PASSWORD_RULES_VALIDATION.getValue(), HttpStatus.BAD_REQUEST.value());
             }
 
             //激活账号
