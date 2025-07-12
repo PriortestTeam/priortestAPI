@@ -185,7 +185,7 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
             if (!"Trialer".equals(sysUser.getUserClass())) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_TRIALER_USER.getCode(),
                     SysConstantEnum.NOT_TRIALER_USER.getValue(), HttpStatus.BAD_REQUEST.value());
-            }
+            }initOrder 
             final int activeNumber = Objects.nonNull(sysUser.getActivitiNumber()) ? sysUser.getActivitiNumber() : 0;
             if (activeNumber >= 3) {
                 return new Resp.Builder<String>().buildResult(SysConstantEnum.TRIALER_LIMIT.getCode(),
