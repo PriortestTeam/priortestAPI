@@ -52,8 +52,10 @@ public enum SysConstantEnum {
     // about user
     USER_EXPIRE_DATE("4001", "请采购服务，或请申请再次试用"),
     EMAIL_NOT_EXIST("400", "输入邮箱不存在"),
-    NOT_TRIALER_USER("400", "不是试用账号，不可以申请免费试用"),
-    TRIALER_LIMIT("400", "试用已达限，不可以再进行申请试用"),
+    NOT_TRIALER_USER(SysConstantEnum.NUMBER + "001", "不是试用账号，不可以申请免费试用"),
+    NOT_TRIALER_USER_FORBIDDEN("403001", "不是试用账号，不可以申请免费试用"),
+    TRIALER_LIMIT(SysConstantEnum.NUMBER + "001", "试用账号延期次数已用完"),
+    TRIALER_LIMIT_FORBIDDEN("403002", "试用账号延期次数已用完"),
 
     //成功
     SUCCESS(SysConstantEnum.NUMBER, "调用成功。"),

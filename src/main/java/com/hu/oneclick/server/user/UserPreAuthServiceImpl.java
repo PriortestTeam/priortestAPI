@@ -211,13 +211,13 @@ public class UserPreAuthServiceImpl implements UserPreAuthService {
                     SysConstantEnum.EMAIL_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
             }
             if (!"Trialer".equals(sysUser.getUserClass())) {
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_TRIALER_USER.getCode(),
-                    SysConstantEnum.NOT_TRIALER_USER.getValue(), HttpStatus.BAD_REQUEST.value());
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_TRIALER_USER_FORBIDDEN.getCode(),
+                    SysConstantEnum.NOT_TRIALER_USER_FORBIDDEN.getValue(), HttpStatus.FORBIDDEN.value());
             } 
             final int activeNumber = Objects.nonNull(sysUser.getActivitiNumber()) ? sysUser.getActivitiNumber() : 0;
             if (activeNumber >= 3) {
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.TRIALER_LIMIT.getCode(),
-                    SysConstantEnum.TRIALER_LIMIT.getValue(), HttpStatus.BAD_REQUEST.value());
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.TRIALER_LIMIT_FORBIDDEN.getCode(),
+                    SysConstantEnum.TRIALER_LIMIT_FORBIDDEN.getValue(), HttpStatus.FORBIDDEN.value());
             }
 
             String linkStr = RandomUtil.randomString(80);
