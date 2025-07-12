@@ -105,7 +105,7 @@ public class WebSecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
-        CustomDaoAuthenticationProvider provider = new CustomDaoAuthenticationProvider();
+        CustomDaoAuthenticationProvider provider = new CustomDaoAuthenticationProvider(userDetailsService, passwordEncoder());
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         // Allow empty passwords to be treated as {noop}
