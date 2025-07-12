@@ -13,12 +13,14 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Component;
 
 /**
  * @author qingyang
  */
+@Component
 public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandler {
 
 	@Override
