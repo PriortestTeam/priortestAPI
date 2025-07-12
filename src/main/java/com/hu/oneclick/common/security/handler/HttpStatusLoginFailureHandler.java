@@ -9,8 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -28,24 +26,24 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 		System.out.println(">>> 登录失败，异常信息: " + (exception == null ? "null" : exception.getMessage()));
 		System.out.println(">>> 异常类型: " + (exception == null ? "null" : exception.getClass().getName()));
 		System.out.println(">>> 异常原因: " + (exception == null || exception.getCause() == null ? "null" : exception.getCause().getClass().getName()));
-		
+
 		String result = "";
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType("application/json;charset=UTF-8");
-		
+
         // 首先处理具体的异常类型
         if (exception instanceof BadCredentialsException) {
 			// 检查是否是因为用户不存在导致的BadCredentialsException
 			String exceptionMessage = exception.getMessage();
 			System.out.println(">>> BadCredentialsException 详细信息: " + exceptionMessage);
-			
+
 			// 通过异常消息判断是用户不存在还是密码错误
 			if (exceptionMessage != null && exceptionMessage.contains("Bad credentials")) {
 				// 这里需要进一步判断，我们可以通过日志来区分
 				// 由于Spring Security会将UsernameNotFoundException包装成BadCredentialsException
 				// 我们需要检查是否有"Failed to find user"的日志输出
 				System.out.println(">>> 处理路径: BadCredentialsException - 需要进一步判断用户不存在还是密码错误");
-				
+
 				// 简单的解决方案：检查异常的堆栈信息
 				boolean isUserNotFound = false;
 				Throwable cause = exception.getCause();
@@ -56,7 +54,7 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 					}
 					cause = cause.getCause();
 				}
-				
+
 				if (isUserNotFound) {
 					System.out.println(">>> 检测到是用户不存在的情况");
 					response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -106,11 +104,11 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 			System.out.println(">>> 处理路径: 其他异常类型");
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).httpBadRequest().fail());
 		}
-		
+
 		System.out.println(">>> 最终响应HTTP状态码: " + response.getStatus());
 		System.out.println(">>> 最终响应内容: " + result);
 		System.out.println(">>> ===============================================");
-		
+
 		response.getWriter().write(result);
 	}
 

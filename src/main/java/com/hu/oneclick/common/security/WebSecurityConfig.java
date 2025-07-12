@@ -48,6 +48,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import com.hu.oneclick.common.security.service.JwtAuthenticationProvider;
+import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
+import com.hu.oneclick.common.security.service.CustomDaoAuthenticationProvider;
 
 /**
  * @author qingyang
@@ -102,7 +105,7 @@ public class WebSecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        CustomDaoAuthenticationProvider provider = new CustomDaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         // Allow empty passwords to be treated as {noop}
