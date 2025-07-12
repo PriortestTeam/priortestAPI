@@ -37,8 +37,8 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
         if (exception instanceof BadCredentialsException) {
 			// 密码错误的情况
 			System.out.println(">>> 处理路径: BadCredentialsException - 密码错误");
-			response.setStatus(HttpStatus.FORBIDDEN.value());
-			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.PASSWORD_ERROR.getCode(), SysConstantEnum.PASSWORD_ERROR.getValue(), HttpStatus.FORBIDDEN.value()));
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.PASSWORD_ERROR.getCode(), SysConstantEnum.PASSWORD_ERROR.getValue(), HttpStatus.UNAUTHORIZED.value()));
 			System.out.println(">>> 密码错误响应: " + result);
         } else if (exception.getCause() instanceof BizException) {
             System.out.println(">>> 处理路径: BizException");
@@ -63,8 +63,9 @@ public class HttpStatusLoginFailureHandler implements AuthenticationFailureHandl
 			System.out.println(">>> 处理路径: InsufficientAuthenticationException 或 NonceExpiredException");
 			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).fail());
 		} else if (exception instanceof UsernameNotFoundException) {
-			System.out.println(">>> 处理路径: UsernameNotFoundException");
-			result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.USERNAME_ERROR.getValue()).fail());
+			System.out.println(">>> 处理路径: UsernameNotFoundException - 用户名不存在");
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			result = JSONObject.toJSONString(new Resp.Builder<String>().buildResult(SysConstantEnum.USER_NOT_FOUND_401.getCode(), SysConstantEnum.USER_NOT_FOUND_401.getValue(), HttpStatus.UNAUTHORIZED.value()));
 	    } else if (exception == null) {
             System.out.println(">>> 处理路径: exception为null");
             result = JSONObject.toJSONString(new Resp.Builder<String>().setData(SysConstantEnum.AUTH_FAILED.getValue()).httpBadRequest().fail());
