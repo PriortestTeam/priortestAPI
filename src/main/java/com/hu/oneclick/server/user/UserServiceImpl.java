@@ -277,23 +277,34 @@ public class UserServiceImpl implements UserService {
         return jwtUserServiceImpl.encryptPassword(password);
     }
 
-    @Override
-    public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
-        // 委托给UserPreAuthService处理
-        return userPreAuthService.activateAccount(activateAccountDto, activation);
+    private Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
+        System.out.println(">>> UserServiceImpl.activateAccount() 开始执行");
+        System.out.println(">>> activation类型: " + activation);
+        try {
+            Resp<String> result = activateAccountInternal(activateAccountDto, activation);
+            System.out.println(">>> UserServiceImpl.activateAccount() 内部方法执行完成，返回: " + result);
+            return result;
+        } catch (Exception e) {
+            System.out.println(">>> UserServiceImpl.activateAccount() 发生异常: " + e.getMessage());
+            logger.error("activateAccount error", e);
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.FAIL.getCode(), SysConstantEnum.FAIL.getValue());
+        }
     }
 
     // 保留原来的activateAccount方法作为内部方法，供反射调用
     private Resp<String> activateAccountInternal(ActivateAccountDto activateAccountDto, String activation) {
-        if (StringUtils.isEmpty(activateAccountDto.getEmail())) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
-        }
-        //检查数据库是否已存在用户
+        System.out.println(">>> UserServiceImpl.activateAccountInternal() 开始执行");
+        System.out.println(">>> 邮箱: " + activateAccountDto.getEmail());
+        System.out.println(">>> activation类型: " + activation);
+
         List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail());
+        System.out.println(">>> 查询到用户数量: " + sysUsers.size());
         if (sysUsers.isEmpty()) {
             return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
         }
         SysUser sysUser = sysUsers.get(0);
+        System.out.println(">>> 开始执行verify方法，用户ID: " + sysUser.getId());
+       
         //申请延期不提示再次输入密码
         if (!activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
             if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
