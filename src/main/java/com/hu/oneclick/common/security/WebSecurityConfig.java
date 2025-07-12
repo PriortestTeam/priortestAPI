@@ -100,7 +100,13 @@ public class WebSecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // 使用DelegatingPasswordEncoder，保持{bcrypt}前缀格式一致
+        return new DelegatingPasswordEncoder("bcrypt", 
+            Map.of(
+                "bcrypt", new BCryptPasswordEncoder(),
+                "noop", NoOpPasswordEncoder.getInstance()
+            )
+        );
     }
 
     @Bean
@@ -108,13 +114,6 @@ public class WebSecurityConfig {
         CustomDaoAuthenticationProvider provider = new CustomDaoAuthenticationProvider(userDetailsService, passwordEncoder());
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
-        // Allow empty passwords to be treated as {noop}
-        provider.setPasswordEncoder(new DelegatingPasswordEncoder("bcrypt", 
-            Map.of(
-                "bcrypt", new BCryptPasswordEncoder(),
-                "noop", NoOpPasswordEncoder.getInstance()
-            )
-        ));
         return provider;
     }
 
