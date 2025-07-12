@@ -260,11 +260,12 @@ public class UserServiceImpl implements UserService {
      *
      * @param user
      */
-    private void updatePassword(SysUser user) {
+    private int updatePassword(SysUser user) {
         int update = sysUserDao.updatePassword(user);
         if (update <= 0) {
             throw new BizException(SysConstantEnum.FAILED.getCode(), SysConstantEnum.FAILED.getValue());
         }
+        return update;
     }
 
     /**
@@ -277,7 +278,9 @@ public class UserServiceImpl implements UserService {
         return jwtUserServiceImpl.encryptPassword(password);
     }
 
-    private Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
         System.out.println(">>> UserServiceImpl.activateAccount() 开始执行");
         System.out.println(">>> activation类型: " + activation);
         try {
@@ -287,7 +290,7 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             System.out.println(">>> UserServiceImpl.activateAccount() 发生异常: " + e.getMessage());
             logger.error("activateAccount error", e);
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.FAIL.getCode(), SysConstantEnum.FAIL.getValue());
+            return new Resp.Builder<String>().buildResult(HttpStatus.BAD_REQUEST.value(), "操作失败");
         }
     }
 
@@ -304,7 +307,7 @@ public class UserServiceImpl implements UserService {
         }
         SysUser sysUser = sysUsers.get(0);
         System.out.println(">>> 开始执行verify方法，用户ID: " + sysUser.getId());
-       
+
         //申请延期不提示再次输入密码
         if (!activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
             if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
