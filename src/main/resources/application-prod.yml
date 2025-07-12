@@ -122,7 +122,7 @@ onclick:
         secondTime: 15
     dirPath: ${ONECLICK_PATH:/home/runner/workspace/}
     template:
-        url: https://796efbdf-f3bc-4b03-a7d7-a611ca959732-00-1wiuctihnaal0.sisko.replit.dev:3001/#/
+        url: https://f6973b04-4826-4b6f-aed6-be81b666d792-00-ovmmm1atuwh2.kirk.replit.dev/
 
 prior-test:
     git:
