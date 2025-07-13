@@ -19,12 +19,15 @@ public enum SysConstantEnum {
     LIST_PARAM_EMPTY(SysConstantEnum.NUMBER + "001", "数组必须有至少一个值。"),
     LENGTH_LIMIT_EXCEEDED(SysConstantEnum.NUMBER + "001", "超出长度限制。"),
     PASSWORD_RULES(SysConstantEnum.NUMBER + "001", "密码由(数字、小写、大写字母、特殊字符！@#等)，最小8位，最大20位字符组成。"),
+    PASSWORD_RULES_VALIDATION("400001", "密码由(数字、小写、大写字母、特殊字符！@#等)，最小8位，最大20位字符组成。"),
     CREATE_SUB_USER_SUCCESS(SysConstantEnum.NUMBER, "创建成员用户成功。请提醒成员去邮箱激活账号"),
     CREATE_PLATFORM_USER_SUCCESS(SysConstantEnum.NUMBER, "创建平台用户成功。"),
     REGISTER_FAILED(SysConstantEnum.NUMBER + "011", "注册失败。"),
     CREATE_SUB_USER_FAILED(SysConstantEnum.NUMBER + "011", "创建成员用户失败。"),
     CREATE_PLATFORM_USER_FAILED(SysConstantEnum.NUMBER + "011", "创建平台用户失败。"),
     LOGIN_FAILED(SysConstantEnum.NUMBER + "011", "用户名或密码错误。"),
+    USER_NOT_FOUND_401("401001", "用户名不存在"),
+    PASSWORD_ERROR("4002", "密码错误，请重新输入。"),
     USERNAME_ERROR(SysConstantEnum.NUMBER + "011", "用户名异常。"),
     MASTER_ACCOUNT_ERROR(SysConstantEnum.NUMBER + "011", "主账号异常。"),
     SUB_USERNAME_ERROR(SysConstantEnum.NUMBER + "011", "您的成员列表已存在该用户。"),
@@ -48,10 +51,12 @@ public enum SysConstantEnum {
     DATA_NOT_FOUND("404", "查无记录"),
 
     // about user
-    USER_EXPIRE_DATE("400", "请采购服务，或请申请再次试用"),
+    USER_EXPIRE_DATE("4001", "请采购服务，或请申请再次试用"),
     EMAIL_NOT_EXIST("400", "输入邮箱不存在"),
-    NOT_TRIALER_USER("400", "不是试用账号，不可以申请免费试用"),
-    TRIALER_LIMIT("400", "试用已达限，不可以再进行申请试用"),
+    NOT_TRIALER_USER(SysConstantEnum.NUMBER + "001", "不是试用账号，不可以申请免费试用"),
+    NOT_TRIALER_USER_FORBIDDEN("403001", "不是试用账号，不可以申请免费试用"),
+    TRIALER_LIMIT(SysConstantEnum.NUMBER + "001", "试用账号延期次数已用完"),
+    TRIALER_LIMIT_FORBIDDEN("403002", "试用账号延期次数已用完"),
 
     //成功
     SUCCESS(SysConstantEnum.NUMBER, "调用成功。"),

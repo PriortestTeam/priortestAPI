@@ -26,13 +26,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
+import org.assertj.core.util.Arrays;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -304,7 +305,7 @@ public class ApiAdpaderController {
 
             LambdaQueryWrapper<TestCase> in = new LambdaQueryWrapper<TestCase>()
                 .eq(TestCase::getProjectId, dto.getProjectId())
-                .in(TestCase::getId, dto.getTestCaseIds());
+                .in(TestCase::getId, Arrays.asList(dto.getTestCaseIds()));
             List<TestCase> list1 = testCaseService.list(in);
             if (Objects.isNull(list1)) {
                 List<String> collect = list1.stream().map(l -> Convert.toStr(l.getId())).collect(Collectors.toList());

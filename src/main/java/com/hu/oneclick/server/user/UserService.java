@@ -84,6 +84,13 @@ public interface UserService {
     Resp<String> applyForAnExtensionIn(ActivateAccountDto activateAccountDto);
 
     /**
+     * 初始化用户订单
+     * 
+     * @param userId 用户ID
+     */
+    void initOrder(String userId);
+
+    /**
      * 删除用户
      *
      * @param id

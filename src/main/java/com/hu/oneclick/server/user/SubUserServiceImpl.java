@@ -57,6 +57,9 @@ public class SubUserServiceImpl implements SubUserService {
 
     @Value("${onclick.default.photo}")
     private String defaultPhoto;
+    
+    @Value("${onclick.template.url}")
+        private String templateUrl;
 
     public SubUserServiceImpl(JwtUserServiceImpl jwtUserServiceImpl, SysUserDao sysUserDao, SubUserProjectDao subUserProjectDao, ProjectDao projectDao,
                               MailService mailService, RedissonClient redisClient, RoleFunctionDao roleFunctionDao, SysUserBusinessDao sysUserBusinessDao,
@@ -185,8 +188,9 @@ public class SubUserServiceImpl implements SubUserService {
 
                 String linkStr = RandomUtil.randomString(80);
                 redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-
-                mailService.sendSimpleMail(oldEmail, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + oldEmail +
+               
+                
+                mailService.sendSimpleMail(oldEmail, "PriorTest 激活账号", templateUrl+"activate?email=" + oldEmail +
                     "&params=" + linkStr);
 
                 //2022/10/31 WangYiCheng 新增用户，根据角色，设置默认权限

@@ -2,8 +2,8 @@ package com.hu.oneclick.common.exception;
 
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.google.common.collect.Lists;
 import com.hu.oneclick.common.enums.SysConstantEnum;

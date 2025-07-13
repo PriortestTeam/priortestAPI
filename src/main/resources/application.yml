@@ -29,7 +29,7 @@ server:
     servlet:
         context-path: /api
 
-# SpringDoc OpenAPI 3 Configuration
+# SpringDoc OpenAPI 3 Configuration for Spring Boot 3.x
 springdoc:
     api-docs:
         path: /v3/api-docs
@@ -39,6 +39,8 @@ springdoc:
         enabled: true
     packages-to-scan: com.hu.oneclick.controller
     show-actuator: false
+    default-consumes-media-type: application/json
+    default-produces-media-type: application/json
 
 # MyBatis-plus
 mybatis-plus:

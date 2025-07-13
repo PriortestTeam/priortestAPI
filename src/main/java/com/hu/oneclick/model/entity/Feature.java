@@ -3,6 +3,7 @@ package com.hu.oneclick.model.entity;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * @since 2021-02-03 13:54:35
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class Feature extends AssignBaseEntity implements Serializable {
     private static final long serialVersionUID = 495256750642592776L;
 

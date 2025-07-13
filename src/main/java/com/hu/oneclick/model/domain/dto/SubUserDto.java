@@ -6,6 +6,7 @@ import com.hu.oneclick.common.util.PasswordCheckerUtil;
 import com.hu.oneclick.model.base.VerifyParam;
 import com.hu.oneclick.model.entity.SysUser;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -14,6 +15,7 @@ import java.io.Serializable;
  * @author qingyang
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class SubUserDto extends SysUser implements VerifyParam, Serializable {
 
     private static final long serialVersionUID = 1993189923318507589L;

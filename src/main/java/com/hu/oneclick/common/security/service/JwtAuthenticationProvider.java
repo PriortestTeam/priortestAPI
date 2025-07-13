@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +35,15 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 			throw new NonceExpiredException("Token expires");
 		}
 		String username = jwt.getSubject();
-		AuthLoginUser user = userService.getUserLoginInfo(username);
+		System.out.println(">>> JwtAuthenticationProvider.authenticate - 用户名: " + username);
+		AuthLoginUser user;
+		try {
+			user = userService.getUserLoginInfo(username);
+		} catch (UsernameNotFoundException e) {
+			System.out.println(">>> JwtAuthenticationProvider 捕获到 UsernameNotFoundException，直接抛出");
+			throw e;
+		}
+
 		if(user == null || user.getPassword()==null) {
 			throw new NonceExpiredException("Token expires");
 		}
@@ -46,6 +55,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                     .build();
             verifier.verify(jwt.getToken());
         } catch (Exception e) {
+			System.out.println(">>> JwtAuthenticationProvider 捕获到其他异常: " + e.getClass().getName());
             throw new BadCredentialsException("JWT token verify fail", e);
         }
 		return new JwtAuthenticationToken(user, jwt, user.getAuthorities());

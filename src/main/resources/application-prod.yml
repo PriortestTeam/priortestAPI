@@ -53,6 +53,7 @@ spring:
         password: VPNTMNKMGNIQMVSS #这个密码是邮箱设置里SMTP服务生成的授权码
         default-encoding: UTF-8
 
+       
     # Quartz 配置 - 使用内存存储（适合本地开发）
     quartz:
         job-store-type: memory
@@ -80,6 +81,10 @@ mybatis:
 
 logging:
     config: classpath:log4j2.yml
+    level:
+        org.springframework.security: DEBUG
+        org.springframework.web: DEBUG
+        root: INFO
 
 
 
@@ -91,8 +96,14 @@ springdoc:
     swagger-ui:
         path: /swagger-ui.html
         enabled: true
+        try-it-out-enabled: true
+        operations-sorter: alpha
+        tags-sorter: alpha
+        disable-swagger-default-url: true
     packages-to-scan: com.hu.oneclick.controller
     show-actuator: false
+    default-consumes-media-type: application/json
+    default-produces-media-type: application/json
 
 onclick:
     config:
@@ -110,6 +121,8 @@ onclick:
         firstTime: 30
         secondTime: 15
     dirPath: ${ONECLICK_PATH:/home/runner/workspace/}
+    template:
+        url: https://f6973b04-4826-4b6f-aed6-be81b666d792-00-ovmmm1atuwh2.kirk.replit.dev/
 
 prior-test:
     git:

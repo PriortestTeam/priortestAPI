@@ -24,17 +24,6 @@ import com.hu.oneclick.model.entity.*;
 import com.hu.oneclick.server.service.MailService;
 import com.hu.oneclick.server.service.ProjectService;
 import com.hu.oneclick.server.service.SystemConfigService;
-import org.apache.commons.lang3.StringUtils;
-import org.redisson.api.RBucket;
-import org.redisson.api.RedissonClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -44,10 +33,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author qingyang
- */
+
 @Service
 public class UserServiceImpl implements UserService {
     private final static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -89,12 +87,21 @@ public class UserServiceImpl implements UserService {
     @Value("${onclick.time.secondTime}")
     private long secondTime;
 
+     @Value("${onclick.template.url}")
+        private String templateUrl;
+
+    private final UserPreAuthService userPreAuthService;
+
+    private final PasswordEncoder passwordEncoder;
+
+
     public UserServiceImpl(SysUserDao sysUserDao,
                            RedissonClient redisClient, JwtUserServiceImpl jwtUserServiceImpl,
                            MailService mailService, SysUserTokenDao sysUserTokenDao, ProjectService projectService,
                            SubUserProjectDao subUserProjectDao, UserOrderService userOrderService,
                            SystemConfigService systemConfigService, RoomDao roomDao, RoleFunctionDao roleFunctionDao,
-                           SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao, SysUserProjectDao sysUserProjectDao) {
+                           SysUserBusinessDao sysUserBusinessDao, SysRoleDao sysRoleDao, SysUserProjectDao sysUserProjectDao,
+                           UserPreAuthService userPreAuthService, PasswordEncoder passwordEncoder) {
         this.sysUserDao = sysUserDao;
         this.redisClient = redisClient;
         this.jwtUserServiceImpl = jwtUserServiceImpl;
@@ -109,79 +116,14 @@ public class UserServiceImpl implements UserService {
         this.sysUserBusinessDao = sysUserBusinessDao;
         this.sysRoleDao = sysRoleDao;
         this.sysUserProjectDao = sysUserProjectDao;
+        this.userPreAuthService = userPreAuthService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Resp<String> register(final RegisterBody registerBody) {
-        try {
-            final SysUser registerUser = new SysUser();
-            BeanUtils.copyProperties(registerBody, registerUser);
-
-            String email = registerUser.getEmail();
-            if (StringUtils.isEmpty(email)) {
-                throw new BizException(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
-            }
-
-            SysUser user = new SysUser();
-            BeanUtils.copyProperties(registerUser, user);
-            //检查数据库是否已存在用户
-            List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
-            if (!CollUtil.isEmpty(sysUsers)) {
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
-            }
-            for (SysUser sysUser : sysUsers) {
-                if (!OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
-                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NO_DUPLICATE_REGISTER.getCode(), SysConstantEnum.NO_DUPLICATE_REGISTER.getValue());
-                } else if (OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(sysUser.getActiveState())) {
-                    //邮箱链接失效
-                    String linkStr = RandomUtil.randomString(80);
-                    redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-                    // mailService.sendSimpleMail(email, "OneClick激活账号", "http://124.71.142.223/#/activate?email=" + email +
-                    // "&params=" + linkStr);
-                    mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
-                        "&params=" + linkStr);
-
-                    return new Resp.Builder<String>().buildResult(SysConstantEnum.REREGISTER_SUCCESS.getCode(), SysConstantEnum.REREGISTER_SUCCESS.getValue());
-                }
-            }
-            // 先查询该用户是否已在room表，如果在，更新，无新增
-            Room room = roomDao.queryByCompanyNameAndUserEmail(registerUser.getCompany(), email);
-            if (null == room) {
-                room = new Room();
-                room.setId(SnowFlakeUtil.getFlowIdInstance().nextId());
-                room.setCompanyName(registerUser.getCompany());
-                room.setCreateName(registerUser.getUserName());
-                room.setCreateUserEmail(email);
-                room.setDeleteFlag(false);
-                room.setModifyName(registerUser.getUserName());
-                room.setType(OneConstant.ACTIVE_STATUS.TRIAL);
-                room.setExpiredDate(Date.from(LocalDateTime.now().plusDays(OneConstant.TRIAL_DAYS).atZone(ZoneId.systemDefault()).toInstant()));
-                roomDao.insertRoom(room);
-            } else {
-                BeanUtil.copyProperties(registerUser, room);
-                room.setCreateUserEmail(email);
-                roomDao.updateRoom(room);
-            }
-            user.setRoomId(room.getId());
-            //设置默认头像
-            user.setPhoto(defaultPhoto);
-            user.setSysRoleId(RoleConstant.ADMIN_PLAT);
-            user.setActiveState(OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION);
-
-            if (sysUserDao.insert(user) > 0) {
-                String linkStr = RandomUtil.randomString(80);
-                redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-
-                mailService.sendSimpleMail(email, "OneClick激活账号", "http://43.139.159.146/#/activate?email=" + email +
-                    "&params=" + linkStr);
-                return new Resp.Builder<String>().buildResult(SysConstantEnum.REGISTER_SUCCESS.getCode(), SysConstantEnum.REGISTER_SUCCESS.getValue());
-            }
-            throw new BizException(SysConstantEnum.REGISTER_FAILED.getCode(), SysConstantEnum.REGISTER_FAILED.getValue());
-        } catch (BizException e) {
-            logger.error("class: UserServiceImpl#register,error []" + e.getMessage());
-            return new Resp.Builder<String>().buildResult(e.getCode(), e.getMessage());
-        }
+    public Resp<String> register(RegisterBody registerBody) {
+        // 委托给UserPreAuthService处理
+        return userPreAuthService.register(registerBody);
     }
 
     @Override
@@ -273,7 +215,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Resp<List<SubUserDto>> queryByNameSubUsers(String subUserName) {
         List<SubUserDto> subUserDtos = CollUtil.newArrayList();
-//        List<SubUserDto> subUserDtos = sysUserDao.queryByNameSubUsers(jwtUserServiceImpl.getMasterId(), subUserName);
         return new Resp.Builder<List<SubUserDto>>().setData(subUserDtos).totalSize(subUserDtos.size()).ok();
     }
 
@@ -323,11 +264,12 @@ public class UserServiceImpl implements UserService {
      *
      * @param user
      */
-    private void updatePassword(SysUser user) {
+    private int updatePassword(SysUser user) {
         int update = sysUserDao.updatePassword(user);
         if (update <= 0) {
             throw new BizException(SysConstantEnum.FAILED.getCode(), SysConstantEnum.FAILED.getValue());
         }
+        return update;
     }
 
     /**
@@ -341,16 +283,56 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Resp<String> activateAccount(ActivateAccountDto activateAccountDto, String activation) {
-        if (StringUtils.isEmpty(activateAccountDto.getEmail())) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_DETECTED_EMAIL.getCode(), SysConstantEnum.NOT_DETECTED_EMAIL.getValue());
+        System.out.println(">>> UserServiceImpl.activateAccount() 开始执行");
+        System.out.println(">>> activation类型: " + activation);
+        try {
+            Resp<String> result = activateAccountInternal(activateAccountDto, activation);
+            System.out.println(">>> UserServiceImpl.activateAccount() 内部方法执行完成，返回: " + result);
+            return result;
+        } catch (Exception e) {
+            System.out.println(">>> UserServiceImpl.activateAccount() 发生异常: " + e.getMessage());
+            logger.error("activateAccount error", e);
+            return new Resp.Builder<String>().buildResult(SysConstantEnum.FAILED.getCode(), "操作失败", HttpStatus.BAD_REQUEST.value());
         }
-        //检查数据库是否已存在用户
-        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail());
-        if (sysUsers.isEmpty()) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
-        }
-        SysUser sysUser = sysUsers.get(0);
+    }
+
+    // 保留原来的activateAccount方法作为内部方法，供反射调用
+    private Resp<String> activateAccountInternal(ActivateAccountDto activateAccountDto, String activation) {
+        System.out.println(">>> UserServiceImpl.activateAccountInternal() 开始执行");
+        System.out.println(">>> 邮箱: " + activateAccountDto.getEmail());
+        System.out.println(">>> activation类型: " + activation);
+
+            // 根据activation类型选择合适的查询方法
+            if (OneConstant.PASSWORD.FORGETPASSWORD.equals(activation)) {
+                // 忘记密码功能使用优化的查询方法
+                SysUser sysUser = sysUserDao.queryUserBasicInfoByEmail(activateAccountDto.getEmail());
+                System.out.println(">>> 使用优化查询，查询到用户: " + (sysUser != null ? "是" : "否"));
+
+                if (sysUser == null) {
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
+                }
+                System.out.println(">>> 开始执行verify方法，用户ID: " + sysUser.getId());
+                return verify(sysUser, activateAccountDto, activation);
+            } else {
+                // 其他功能继续使用原有方法
+                List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(activateAccountDto.getEmail());
+                System.out.println(">>> 查询到用户数量: " + sysUsers.size());
+
+                if (sysUsers.isEmpty()) {
+                    return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
+                }
+                SysUser sysUser = sysUsers.get(0);
+                System.out.println(">>> 开始执行verify方法，用户ID: " + sysUser.getId());
+                return verify(sysUser, activateAccountDto, activation);
+            }
+    }
+
+    private Resp<String> verify(SysUser sysUser, ActivateAccountDto activateAccountDto, String activation) {
+        System.out.println(">>> UserServiceImpl.verify() 开始执行");
+        System.out.println(">>> activation类型: " + activation);
+
         //申请延期不提示再次输入密码
         if (!activation.equals(OneConstant.PASSWORD.APPLY_FOR_AN_EXTENSION)) {
             if (!activateAccountDto.getPassword().equals(activateAccountDto.getRePassword())) {
@@ -373,24 +355,10 @@ public class UserServiceImpl implements UserService {
             sysUser.setExpireDate(new Date(time));
             String userId = sysUser.getId();
 
-            // TODO 如果OpenProjectByDefaultId为空，代表这个是注册的激活
-//            SubUserProject subUserProject = subUserProjectDao.queryByUserId(userId);
-//            if (subUserProject == null || StringUtils.isEmpty(subUserProject.getOpenProjectByDefaultId())) {
-
             QueryWrapper<SysUserProject> query = Wrappers.query();
             query.eq("user_id", userId);
             List<SysUserProject> userProjects = sysUserProjectDao.selectList(query);
-            if (userProjects.isEmpty()) {
-//                UserUseOpenProject userUseOpenProject = new UserUseOpenProject();
-//                userUseOpenProject.setProjectId(project.getId());
-//                userUseOpenProject.setUserId(userId);
-//                userUseOpenProject.setTitle("");
-                //设置用户关联的项目
-//                subUserProject = new SubUserProject();
-//                subUserProject.setUserId(sysUser.getId());
-//                subUserProject.setProjectId(project.getId());
-//                subUserProject.setOpenProjectByDefaultId(project.getId());
-//                subUserProjectDao.insert(subUserProject);
+            if (userProjects.isEmpty()) {            
 
                 Project project = new Project();
                 project.setUserId(userId);
@@ -442,6 +410,18 @@ public class UserServiceImpl implements UserService {
                 throw new BizException(SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getCode(), SysConstantEnum.HAS_BEEN_ACTIVATED_ONCE.getValue());
             }
         }
+
+        //忘记密码
+        if (activation.equals(OneConstant.PASSWORD.FORGETPASSWORD)) {
+            String encodedPassword = passwordEncoder.encode(activateAccountDto.getPassword());
+            // 使用优化的密码更新方法，只更新密码和更新时间
+            int updateResult = sysUserDao.updateUserPasswordOnly(sysUser.getId(), encodedPassword);
+            if (updateResult > 0) {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+            } else {
+                return new Resp.Builder<String>().buildResult(SysConstantEnum.FAILED.getCode(), "密码更新失败");
+            }
+        }
         sysUser.setPassword(encodePassword(activateAccountDto.getPassword()));
         if (sysUserDao.update(sysUser) == 0) {
             throw new BizException(SysConstantEnum.UPDATE_FAILED.getCode(), SysConstantEnum.UPDATE_FAILED.getValue());
@@ -459,7 +439,8 @@ public class UserServiceImpl implements UserService {
      * @Author: MaSiyi
      * @Date: 2022/1/11
      */
-    private void initOrder(String userId) {
+    @Override
+    public void initOrder(String userId) {
         SysUserOrder sysUserOrder = new SysUserOrder();
         long orderId = SnowFlakeUtil.getFlowIdInstance().nextId();
         sysUserOrder.setOrderId(orderId);
@@ -487,23 +468,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> forgetThePassword(String email) {
-        List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(email);
-        if (sysUsers.isEmpty()) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOUSER_ERROR.getCode(), SysConstantEnum.NOUSER_ERROR.getValue());
-        }
-        SysUser sysUser = sysUsers.get(0);
-        Integer activeState = sysUser.getActiveState();
-        if (OneConstant.ACTIVE_STATUS.TRIAL_EXPIRED.equals(activeState)) {
-            return new Resp.Builder<String>().buildResult("400", "账户试用已过期");
-
-        } else if (OneConstant.ACTIVE_STATUS.ACTIVE_FAILED.equals(activeState) || OneConstant.ACTIVE_STATUS.ACTIVE_GENERATION.equals(activeState)) {
-            return new Resp.Builder<String>().buildResult("400", "请先去激活账户");
-        }
-        String linkStr = RandomUtil.randomString(80);
-        redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-        // mailService.sendSimpleMail(email, "OneClick忘记密码", "http://124.71.142.223/#/findpwd?email=" + email + "&params=" + linkStr);
-        mailService.sendSimpleMail(email, "OneClick忘记密码", "http://127.0.0.1:9529/#/findpwd?email=" + email + "&params=" + linkStr);
-        return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+        // 委托给UserPreAuthService处理
+        return userPreAuthService.forgetThePassword(email);
     }
 
     @Override
@@ -513,26 +479,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Resp<String> applyForAnExtension(String email) {
-        // 这里需要检测用户一些信息
-        final SysUser sysUser = sysUserDao.queryByEmail(email);
-        if (Objects.isNull(sysUser)) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.EMAIL_NOT_EXIST.getCode(),
-                SysConstantEnum.EMAIL_NOT_EXIST.getValue(), HttpStatus.BAD_REQUEST.value());
-        }
-        if (!"Trialer".equals(sysUser.getUserClass())) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.NOT_TRIALER_USER.getCode(),
-                SysConstantEnum.NOT_TRIALER_USER.getValue(), HttpStatus.BAD_REQUEST.value());
-        }
-        final int activeNumber = Objects.nonNull(sysUser.getActivitiNumber()) ? sysUser.getActivitiNumber() : 0;
-        if (activeNumber >= 3) {
-            return new Resp.Builder<String>().buildResult(SysConstantEnum.TRIALER_LIMIT.getCode(),
-                SysConstantEnum.TRIALER_LIMIT.getValue(), HttpStatus.BAD_REQUEST.value());
-        }
-
-        String linkStr = RandomUtil.randomString(80);
-        redisClient.getBucket(linkStr).set("true", 30, TimeUnit.MINUTES);
-        mailService.sendSimpleMail(email, "OneClick申请延期", "http://43.139.159.146/#/deferred?email=" + email + "&params=" + linkStr);
-        return new Resp.Builder<String>().buildResult(SysConstantEnum.SUCCESS.getCode(), SysConstantEnum.SUCCESS.getValue());
+        // 委托给UserPreAuthService处理
+        return userPreAuthService.applyForAnExtension(email);
     }
 
     @Override
@@ -631,23 +579,6 @@ public class UserServiceImpl implements UserService {
         }
         sysUser = sysUsers.get(0);
 
-        //如果不是平台管理人员，则是子账号
-        /*if (!sysUser.getSysRoleId().equals(RoleConstant.ADMIN_PLAT)) {
-            //查询是否有权限
-            SysUser parentUser = sysUserDao.queryById(sysUser.getParentId().toString());
-            List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserId(parentUser.getId());
-            if (sysUserTokens.isEmpty()) {
-                return false;
-            }
-            for (SysUserToken sysUserToken : sysUserTokens) {
-
-                if (sysUserToken.getApi_times() > 0) {
-                    sysUserTokenDao.decreaseApiTimes(sysUserToken.getId());
-                }
-
-            }
-            return true;
-        } else */
         {
             //主账号
             List<SysUserToken> sysUserTokens = sysUserTokenDao.selectByUserIdAndToken(sysUser.getId(), token);
@@ -676,7 +607,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 查询用户和子用户
-     *
+
      * @param masterId
      * @Param: [masterId]
      * @return: java.util.List<com.hu.oneclick.model.entity.SysUser>

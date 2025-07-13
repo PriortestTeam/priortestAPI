@@ -2,6 +2,7 @@ package com.hu.oneclick.model.entity;
 
 import com.hu.oneclick.model.base.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.Date;
  * @since 2020-11-14 23:32:42
  */
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class SysUser extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -67242942971294342L;
 

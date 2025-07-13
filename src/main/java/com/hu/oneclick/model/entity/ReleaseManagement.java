@@ -3,6 +3,7 @@ package com.hu.oneclick.model.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Date;
 
 @Data
 @TableName("release_management")
+@EqualsAndHashCode(callSuper=false)
 public class ReleaseManagement extends AssignBaseEntity implements Serializable {
 
     /**

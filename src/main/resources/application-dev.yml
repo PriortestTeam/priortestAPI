@@ -11,7 +11,7 @@ spring:
       min-idle: 5
       max-active: 10
       max-wait: 10000                                             #配置从连接池获取连接等待超时的时间
-      time-between-eviction-runs-millis: 600000                   #配置间隔多久启动一次DestroyThread，对连接池内的连接才进行一次检测，单位是毫秒。检测时:1.如果连接空闲并且超过minIdle以外的连接，如果空闲时间超过minEvictableIdleTimeMillis设置的值则直接物理关闭。2.在minIdle以内的不处理
+      time-between-eviction-runs-millis: 600000                   #配置间隔多久启动一次DestroyThread，对连接池内的连接才进行一次检测，对连接池内的连接才进行一次检测，单位是毫秒。检测时:1.如果连接空闲并且超过minIdle以外的连接，如果空闲时间超过minEvictableIdleTimeMillis设置的值则直接物理关闭。2.在minIdle以内的不处理
       min-evictable-idle-time-millis: 300000                      #配置一个连接在池中最大空闲时间，单位是毫秒
       test-on-borrow: true                                       #设置从连接池获取连接时是否检查连接有效性，true时，每次都检查;false时，不检查
       test-on-return: false                                       #设置往连接池归还连接时是否检查连接有效性，true时，每次都检查;false时，不检查
@@ -35,11 +35,10 @@ spring:
 
 
   redis:
-    host: 127.0.0.1
-#    host: 124.71.142.223
+    host: 43.139.159.146
     port: 6379
     ssl: false
-#    password: qingyang_redis
+    database: 3
   #email 配置
   mail:
     host: smtp.163.com
@@ -77,4 +76,3 @@ onclick:
     firstTime: 30
     secondTime: 15
   dirPath: /usr/oneclick/data/file/
-

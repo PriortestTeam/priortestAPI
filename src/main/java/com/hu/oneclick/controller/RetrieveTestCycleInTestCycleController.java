@@ -1,6 +1,6 @@
 package com.hu.oneclick.controller;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 import com.hu.oneclick.common.enums.SysConstantEnum;
 import com.hu.oneclick.common.exception.BizException;

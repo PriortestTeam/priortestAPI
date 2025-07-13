@@ -3,7 +3,7 @@ package com.hu.oneclick.quartz.domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
 

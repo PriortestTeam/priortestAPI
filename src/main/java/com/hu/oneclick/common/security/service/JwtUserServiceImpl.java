@@ -76,15 +76,18 @@ public class JwtUserServiceImpl implements UserDetailsService {
     public AuthLoginUser getUserLoginInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name;
-        // 管理员的token
-        if (org.springframework.util.StringUtils.isEmpty(authentication.getPrincipal())) {
-            // 这里的name为tokenname
+        
+        // 根据Authentication的实际类型进行处理
+        if (authentication instanceof ApiToken) {
+            // API Token认证
             ApiToken apiToken = (ApiToken) authentication;
             name = apiToken.getTokenName();
-        } else {
+        } else if (authentication instanceof JwtAuthenticationToken) {
+            // JWT认证
             DecodedJWT token = ((JwtAuthenticationToken) authentication).getToken();
-            // 这里的name为username
             name = token.getSubject();
+        } else {
+            throw new InsufficientAuthenticationException("Unsupported authentication type: " + authentication.getClass().getSimpleName());
         }
         // 将salt放到password字段返回
         RBucket<String> bucket = redisClient.getBucket(OneConstant.REDIS_KEY_PREFIX.LOGIN + name);
@@ -159,11 +162,15 @@ public class JwtUserServiceImpl implements UserDetailsService {
 
     @Override
     public AuthLoginUser loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println(">>> JwtUserServiceImpl.loadUserByUsername - 开始查找用户: " + username);
         List<SysUser> sysUsers = sysUserDao.queryByLikeEmail(username);
 
+        System.out.println(">>> 查询结果: " + (sysUsers.isEmpty() ? "用户不存在" : "找到 " + sysUsers.size() + " 个用户"));
+        
         AuthLoginUser authLoginUser = new AuthLoginUser();
         if (sysUsers.isEmpty()) {
-            throw new RuntimeException();
+            System.out.println(">>> 用户不存在，抛出 UsernameNotFoundException");
+            throw new UsernameNotFoundException("用户名不存在: " + username);
         }
         SysUser user = sysUsers.get(0);
         // 检查用户试用期是否过期
