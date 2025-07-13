@@ -22,6 +22,6 @@ public class CustomFieldPossBileDto {
     /**
      * 数据来源类型：system/project
      */
-    private String sourceType; possibleValue;
+    private String sourceType;
 
 }
