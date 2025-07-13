@@ -216,19 +216,20 @@
     </select>
 
     <select id="getPossBileWithProject" resultType="com.hu.oneclick.model.domain.dto.CustomFieldPossBileDto">
-        SELECT possible_value, custom_field_id 
+        SELECT possible_value, custom_field_id, 'system' as source_type
         FROM custom_fields 
-        WHERE (type = "sField" AND field_name_en = #{fieldName})
-           OR (project_id = #{projectId} AND field_name_cn = #{fieldName})
+        WHERE type = "sField" AND field_name_en = #{fieldName}
 
         UNION
 
-        SELECT cf2.possible_value, cf2.custom_field_id
+        SELECT cf2.possible_value, cf2.custom_field_id, 'project' as source_type
         FROM custom_fields cf1
         JOIN custom_fields cf2 ON cf1.custom_field_id = cf2.linked_custom_field_id
         WHERE cf1.type = "sField" 
           AND cf1.field_name_en = #{fieldName}
           AND cf2.type = "sCustom" 
           AND cf2.project_id = #{projectId}
+        
+        ORDER BY source_type
     </select>
 </mapper>

@@ -254,35 +254,37 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(new ArrayList<>()).ok();
         }
         
-        // 使用JSONObject来正确合并JSON数据
-        JSONObject mergedJson = new JSONObject();
+        String systemFieldValue = null;
+        String projectFieldValue = null;
         
+        // 根据sourceType分离系统字段和项目扩展字段
         for (CustomFieldPossBileDto dto : list) {
             if (dto.getPossibleValue() != null && !dto.getPossibleValue().trim().isEmpty()) {
-                try {
-                    JSONObject jsonObject = JSONObject.parseObject(dto.getPossibleValue());
-                    if (jsonObject != null) {
-                        // 将当前JSON对象的所有键值对合并到结果中
-                        mergedJson.putAll(jsonObject);
-                    }
-                } catch (Exception e) {
-                    // 如果解析失败，跳过这个值
-                    log.warn("解析possible_value失败: {}", dto.getPossibleValue(), e);
+                if ("system".equals(dto.getSourceType())) {
+                    systemFieldValue = dto.getPossibleValue();
+                } else if ("project".equals(dto.getSourceType())) {
+                    projectFieldValue = dto.getPossibleValue();
                 }
             }
         }
         
-        // 如果有合并的数据，返回结果
-        if (!mergedJson.isEmpty()) {
-            CustomFieldPossBileDto result = new CustomFieldPossBileDto();
-            result.setPossibleValue(mergedJson.toJSONString());
-            
-            List<CustomFieldPossBileDto> resultList = new ArrayList<>();
-            resultList.add(result);
-            return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(resultList).ok();
+        // 创建返回结果，去掉转义字符
+        CustomFieldPossBileDto result = new CustomFieldPossBileDto();
+        
+        if (systemFieldValue != null) {
+            // 去掉JSON字符串的转义字符
+            result.setPossibleValue(systemFieldValue.replace("\\\"", "\""));
         }
         
-        return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(new ArrayList<>()).ok();
+        if (projectFieldValue != null) {
+            // 去掉JSON字符串的转义字符
+            result.setPossibleValueChild(projectFieldValue.replace("\\\"", "\""));
+        }
+        
+        List<CustomFieldPossBileDto> resultList = new ArrayList<>();
+        resultList.add(result);
+        
+        return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(resultList).ok();
     }
 
     @Override
