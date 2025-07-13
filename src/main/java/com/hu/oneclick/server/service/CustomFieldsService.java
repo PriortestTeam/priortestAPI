@@ -37,4 +37,6 @@ public interface CustomFieldsService {
     List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId);
 
     Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName);
+    
+    Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName, String projectId);
 }

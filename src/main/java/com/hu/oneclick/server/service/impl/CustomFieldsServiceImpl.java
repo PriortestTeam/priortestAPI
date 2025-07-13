@@ -247,6 +247,52 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     }
 
     @Override
+    public Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName, String projectId) {
+        List<CustomFieldPossBileDto> list = customFieldsDao.getPossBileWithProject(fieldName, projectId);
+        
+        if (list.isEmpty()) {
+            return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(new ArrayList<>()).ok();
+        }
+        
+        // 合并所有possible_value
+        StringBuilder mergedValue = new StringBuilder();
+        boolean first = true;
+        
+        for (CustomFieldPossBileDto dto : list) {
+            if (dto.getPossibleValue() != null && !dto.getPossibleValue().trim().isEmpty()) {
+                if (!first) {
+                    // 移除JSON的开始和结束大括号进行合并
+                    String value = dto.getPossibleValue().trim();
+                    if (value.startsWith("{") && value.endsWith("}")) {
+                        value = value.substring(1, value.length() - 1);
+                    }
+                    mergedValue.append(", ").append(value);
+                } else {
+                    mergedValue.append(dto.getPossibleValue());
+                    first = false;
+                }
+            }
+        }
+        
+        // 如果有合并的数据，包装成完整的JSON
+        if (mergedValue.length() > 0) {
+            String finalValue = mergedValue.toString();
+            if (!finalValue.startsWith("{")) {
+                finalValue = "{" + finalValue + "}";
+            }
+            
+            CustomFieldPossBileDto result = new CustomFieldPossBileDto();
+            result.setPossibleValue(finalValue);
+            
+            List<CustomFieldPossBileDto> resultList = new ArrayList<>();
+            resultList.add(result);
+            return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(resultList).ok();
+        }
+        
+        return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(new ArrayList<>()).ok();
+    }
+
+    @Override
     public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
         List<CustomFileldLinkVo> dropDownBox = customFieldsDao.getDropDownBox(customFieldDto);
 

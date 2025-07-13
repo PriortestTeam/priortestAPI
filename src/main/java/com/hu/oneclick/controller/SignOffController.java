@@ -48,8 +48,8 @@ public class SignOffController {
 
 
     @GetMapping("/getProjectVersion")
-    public Resp<List<CustomFieldPossBileDto>> getProjectVersion() {
-        return customFieldsService.getPossBile("version");
+    public Resp<List<CustomFieldPossBileDto>> getProjectVersion(@RequestParam String projectId) {
+        return customFieldsService.getPossBile("version", projectId);
     }
 
 
