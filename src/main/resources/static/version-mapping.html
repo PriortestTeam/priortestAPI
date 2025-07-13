@@ -108,6 +108,50 @@
                     </div>
                 </div>
                 
+                <!-- 单个映射追加区域 -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-plus"></i> 追加单个版本映射</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="addReleaseId" class="form-label">发布版本ID *</label>
+                                <input type="number" class="form-control" id="addReleaseId" placeholder="输入发布版本ID" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="addReleaseVersion" class="form-label">发布版本号 *</label>
+                                <input type="text" class="form-control" id="addReleaseVersion" placeholder="如：v2.0.0" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="addEnv" class="form-label">环境 *</label>
+                                <select class="form-select" id="addEnv" required>
+                                    <option value="">选择环境</option>
+                                    <option value="dev">开发环境</option>
+                                    <option value="stg">测试环境</option>
+                                    <option value="prod">生产环境</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="addEnvVersion" class="form-label">环境版本号 *</label>
+                                <input type="text" class="form-control" id="addEnvVersion" placeholder="如：v2.0.1" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="addRemark" class="form-label">备注</label>
+                                <input type="text" class="form-control" id="addRemark" placeholder="可选备注信息">
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                            <button type="button" class="btn btn-outline-secondary" onclick="versionManager.clearAddForm()">
+                                <i class="bi bi-arrow-clockwise"></i> 重置
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="versionManager.addSingleMapping()">
+                                <i class="bi bi-plus-circle"></i> 追加映射
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 映射关系展示区域 -->
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">

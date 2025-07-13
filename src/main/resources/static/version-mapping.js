@@ -174,6 +174,54 @@ class VersionMappingManager {
         }
     }
 
+    // 追加单个版本映射
+    async addSingleMapping() {
+        const formData = {
+            projectId: parseInt(document.getElementById('projectId').value),
+            releaseId: parseInt(document.getElementById('addReleaseId').value),
+            releaseVersion: document.getElementById('addReleaseVersion').value,
+            env: document.getElementById('addEnv').value,
+            envVersion: document.getElementById('addEnvVersion').value,
+            remark: document.getElementById('addRemark').value || ''
+        };
+
+        if (!formData.projectId || !formData.releaseId || !formData.releaseVersion || !formData.env || !formData.envVersion) {
+            alert('请填写所有必填字段！');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${this.apiBase}/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('版本映射追加成功！');
+                this.clearAddForm();
+                this.loadMappings();
+            } else {
+                alert('追加失败：' + result.message);
+            }
+        } catch (error) {
+            console.error('追加版本映射失败:', error);
+            alert('追加失败，请检查网络连接');
+        }
+    }
+
+    // 清空追加表单
+    clearAddForm() {
+        document.getElementById('addReleaseId').value = '';
+        document.getElementById('addReleaseVersion').value = '';
+        document.getElementById('addEnv').value = '';
+        document.getElementById('addEnvVersion').value = '';
+        document.getElementById('addRemark').value = '';
+    }
+
     // 清空表单
     clearForm() {
         document.getElementById('releaseVersion').value = '';

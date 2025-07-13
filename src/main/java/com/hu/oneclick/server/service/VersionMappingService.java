@@ -17,6 +17,8 @@ public interface VersionMappingService {
      */
     void updateMapping(VersionMappingDto mappingDto);
     
+    void addMapping(VersionMappingDto mappingDto);
+    
     /**
      * 删除版本映射
      */

@@ -73,6 +73,18 @@ public class VersionMappingServiceImpl implements VersionMappingService {
     }
 
     @Override
+    public void addMapping(VersionMappingDto mappingDto) {
+        VersionMapping mapping = new VersionMapping();
+        BeanUtil.copyProperties(mappingDto, mapping);
+        mapping.setCreateTime(new java.util.Date());
+        mapping.setUpdateTime(new java.util.Date());
+        // 设置创建者ID，如果需要的话可以从上下文获取
+        // mapping.setCreateUserId(getCurrentUserId());
+        // mapping.setUpdateUserId(getCurrentUserId());
+        versionMappingDao.insert(mapping);
+    }
+
+    @Override
     public void deleteMapping(Long id) {
         versionMappingDao.deleteById(id);
     }

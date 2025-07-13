@@ -28,10 +28,10 @@ public class VersionMappingController extends BaseController {
         return new Resp.Builder().ok();
     }
 
-    @Operation(summary="更新版本映射")
-    @PutMapping("update")
-    public Resp updateMapping(@Valid @RequestBody VersionMappingDto mappingDto) {
-        versionMappingService.updateMapping(mappingDto);
+    @Operation(summary="追加版本映射")
+    @PostMapping("add")
+    public Resp addMapping(@Valid @RequestBody VersionMappingDto mappingDto) {
+        versionMappingService.addMapping(mappingDto);
         return new Resp.Builder().ok();
     }
 
