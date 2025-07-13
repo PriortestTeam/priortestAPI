@@ -1,19 +1,105 @@
 
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.hu.oneclick.dao.VersionMappingDao">
 
-    <select id="selectByReleaseId" resultType="com.hu.oneclick.model.entity.VersionMapping">
-        SELECT * FROM version_mapping 
-        WHERE release_id = #{releaseId}
-        ORDER BY env, env_version
+    <!-- 基础字段映射 -->
+    <sql id="Base_Column_List">
+        id, project_id, release_id, release_version, env, env_version, remark, 
+        create_time, update_time, create_user_id, update_user_id
+    </sql>
+
+    <!-- 插入版本映射 -->
+    <insert id="insert" parameterType="com.hu.oneclick.model.entity.VersionMapping">
+        INSERT INTO version_mapping (
+            project_id, release_id, release_version, env, env_version, remark,
+            create_time, update_time, create_user_id, update_user_id
+        ) VALUES (
+            #{projectId}, #{releaseId}, #{releaseVersion}, #{env}, #{envVersion}, #{remark},
+            #{createTime}, #{updateTime}, #{createUserId}, #{updateUserId}
+        )
+    </insert>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" parameterType="java.lang.Long" resultType="com.hu.oneclick.model.entity.VersionMapping">
+        SELECT <include refid="Base_Column_List"/>
+        FROM version_mapping
+        WHERE id = #{id}
     </select>
 
-    <select id="selectByProjectAndRelease" resultType="com.hu.oneclick.model.entity.VersionMapping">
-        SELECT * FROM version_mapping 
-        WHERE project_id = #{projectId} 
-        AND release_version = #{releaseVersion}
-        ORDER BY env, env_version
+    <!-- 查询所有版本映射 -->
+    <select id="selectAll" resultType="com.hu.oneclick.model.entity.VersionMapping">
+        SELECT <include refid="Base_Column_List"/>
+        FROM version_mapping
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据项目ID查询 -->
+    <select id="selectByProjectId" parameterType="java.lang.Long" resultType="com.hu.oneclick.model.entity.VersionMapping">
+        SELECT <include refid="Base_Column_List"/>
+        FROM version_mapping
+        WHERE project_id = #{projectId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据发布ID查询 -->
+    <select id="selectByReleaseId" parameterType="java.lang.Long" resultType="com.hu.oneclick.model.entity.VersionMapping">
+        SELECT <include refid="Base_Column_List"/>
+        FROM version_mapping
+        WHERE release_id = #{releaseId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据环境查询 -->
+    <select id="selectByEnv" parameterType="java.lang.String" resultType="com.hu.oneclick.model.entity.VersionMapping">
+        SELECT <include refid="Base_Column_List"/>
+        FROM version_mapping
+        WHERE env = #{env}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 更新版本映射 -->
+    <update id="updateById" parameterType="com.hu.oneclick.model.entity.VersionMapping">
+        UPDATE version_mapping SET
+            project_id = #{projectId},
+            release_id = #{releaseId},
+            release_version = #{releaseVersion},
+            env = #{env},
+            env_version = #{envVersion},
+            remark = #{remark},
+            update_time = #{updateTime},
+            update_user_id = #{updateUserId}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID删除 -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM version_mapping WHERE id = #{id}
+    </delete>
+
+    <!-- 条件查询 -->
+    <select id="selectByCondition" parameterType="com.hu.oneclick.model.domain.dto.VersionMappingDto" resultType="com.hu.oneclick.model.entity.VersionMapping">
+        SELECT <include refid="Base_Column_List"/>
+        FROM version_mapping
+        <where>
+            <if test="projectId != null">
+                AND project_id = #{projectId}
+            </if>
+            <if test="releaseId != null">
+                AND release_id = #{releaseId}
+            </if>
+            <if test="env != null and env != ''">
+                AND env = #{env}
+            </if>
+            <if test="releaseVersion != null and releaseVersion != ''">
+                AND release_version LIKE CONCAT('%', #{releaseVersion}, '%')
+            </if>
+            <if test="envVersion != null and envVersion != ''">
+                AND env_version LIKE CONCAT('%', #{envVersion}, '%')
+            </if>
+        </where>
+        ORDER BY create_time DESC
     </select>
 
 </mapper>
