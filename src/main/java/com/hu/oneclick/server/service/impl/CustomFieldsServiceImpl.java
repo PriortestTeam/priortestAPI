@@ -268,17 +268,29 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             }
         }
         
-        // 创建返回结果，去掉转义字符
+        // 创建返回结果，解析JSON并重新序列化以去掉转义字符
         CustomFieldPossBileDto result = new CustomFieldPossBileDto();
         
         if (systemFieldValue != null) {
-            // 去掉JSON字符串的转义字符
-            result.setPossibleValue(systemFieldValue.replace("\\\"", "\""));
+            try {
+                // 解析JSON字符串然后重新序列化，这样可以去掉所有转义字符
+                JSONObject jsonObject = JSONObject.parseObject(systemFieldValue);
+                result.setPossibleValue(jsonObject.toJSONString());
+            } catch (Exception e) {
+                log.warn("解析系统字段JSON失败: {}", systemFieldValue, e);
+                result.setPossibleValue(systemFieldValue);
+            }
         }
         
         if (projectFieldValue != null) {
-            // 去掉JSON字符串的转义字符
-            result.setPossibleValueChild(projectFieldValue.replace("\\\"", "\""));
+            try {
+                // 解析JSON字符串然后重新序列化，这样可以去掉所有转义字符
+                JSONObject jsonObject = JSONObject.parseObject(projectFieldValue);
+                result.setPossibleValueChild(jsonObject.toJSONString());
+            } catch (Exception e) {
+                log.warn("解析项目扩展字段JSON失败: {}", projectFieldValue, e);
+                result.setPossibleValueChild(projectFieldValue);
+            }
         }
         
         List<CustomFieldPossBileDto> resultList = new ArrayList<>();
