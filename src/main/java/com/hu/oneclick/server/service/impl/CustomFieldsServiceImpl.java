@@ -254,35 +254,28 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(new ArrayList<>()).ok();
         }
         
-        // 合并所有possible_value
-        StringBuilder mergedValue = new StringBuilder();
-        boolean first = true;
+        // 使用JSONObject来正确合并JSON数据
+        JSONObject mergedJson = new JSONObject();
         
         for (CustomFieldPossBileDto dto : list) {
             if (dto.getPossibleValue() != null && !dto.getPossibleValue().trim().isEmpty()) {
-                if (!first) {
-                    // 移除JSON的开始和结束大括号进行合并
-                    String value = dto.getPossibleValue().trim();
-                    if (value.startsWith("{") && value.endsWith("}")) {
-                        value = value.substring(1, value.length() - 1);
+                try {
+                    JSONObject jsonObject = JSONObject.parseObject(dto.getPossibleValue());
+                    if (jsonObject != null) {
+                        // 将当前JSON对象的所有键值对合并到结果中
+                        mergedJson.putAll(jsonObject);
                     }
-                    mergedValue.append(", ").append(value);
-                } else {
-                    mergedValue.append(dto.getPossibleValue());
-                    first = false;
+                } catch (Exception e) {
+                    // 如果解析失败，跳过这个值
+                    log.warn("解析possible_value失败: {}", dto.getPossibleValue(), e);
                 }
             }
         }
         
-        // 如果有合并的数据，包装成完整的JSON
-        if (mergedValue.length() > 0) {
-            String finalValue = mergedValue.toString();
-            if (!finalValue.startsWith("{")) {
-                finalValue = "{" + finalValue + "}";
-            }
-            
+        // 如果有合并的数据，返回结果
+        if (!mergedJson.isEmpty()) {
             CustomFieldPossBileDto result = new CustomFieldPossBileDto();
-            result.setPossibleValue(finalValue);
+            result.setPossibleValue(mergedJson.toJSONString());
             
             List<CustomFieldPossBileDto> resultList = new ArrayList<>();
             resultList.add(result);
