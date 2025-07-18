@@ -247,6 +247,59 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     }
 
     @Override
+    public Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName, String projectId) {
+        List<CustomFieldPossBileDto> list = customFieldsDao.getPossBileWithProject(fieldName, projectId);
+        
+        if (list.isEmpty()) {
+            return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(new ArrayList<>()).ok();
+        }
+        
+        String systemFieldValue = null;
+        String projectFieldValue = null;
+        
+        // 根据sourceType分离系统字段和项目扩展字段
+        for (CustomFieldPossBileDto dto : list) {
+            if (dto.getPossibleValue() != null && !dto.getPossibleValue().trim().isEmpty()) {
+                if ("system".equals(dto.getSourceType())) {
+                    systemFieldValue = dto.getPossibleValue();
+                } else if ("project".equals(dto.getSourceType())) {
+                    projectFieldValue = dto.getPossibleValue();
+                }
+            }
+        }
+        
+        // 创建返回结果，解析JSON并重新序列化以去掉转义字符
+        CustomFieldPossBileDto result = new CustomFieldPossBileDto();
+        
+        if (systemFieldValue != null) {
+            try {
+                // 解析JSON字符串然后重新序列化，这样可以去掉所有转义字符
+                JSONObject jsonObject = JSONObject.parseObject(systemFieldValue);
+                result.setPossibleValue(jsonObject.toJSONString());
+            } catch (Exception e) {
+                log.warn("解析系统字段JSON失败: {}", systemFieldValue, e);
+                result.setPossibleValue(systemFieldValue);
+            }
+        }
+        
+        if (projectFieldValue != null) {
+            try {
+                // 解析JSON字符串然后重新序列化，这样可以去掉所有转义字符
+                JSONObject jsonObject = JSONObject.parseObject(projectFieldValue);
+                result.setPossibleValueChild(jsonObject.toJSONString());
+            } catch (Exception e) {
+                log.warn("解析项目扩展字段JSON失败: {}", projectFieldValue, e);
+                result.setPossibleValueChild(projectFieldValue);
+            }
+        }
+        
+        List<CustomFieldPossBileDto> resultList = new ArrayList<>();
+        resultList.add(result);
+        
+        return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(resultList).ok();
+    }
+
+    @Override
     public Resp<List<CustomFileldLinkVo>> getDropDownBox(CustomFieldDto customFieldDto) {
         List<CustomFileldLinkVo> dropDownBox = customFieldsDao.getDropDownBox(customFieldDto);
 

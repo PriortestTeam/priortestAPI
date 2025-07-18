@@ -12,5 +12,16 @@ public class CustomFieldPossBileDto {
      */
     @JsonProperty("possible_value")
     private String possibleValue;
+    
+    /**
+     * 项目自定义扩展字段
+     */
+    @JsonProperty("possible_value_child")
+    private String possibleValueChild;
+    
+    /**
+     * 数据来源类型：system/project
+     */
+    private String sourceType;
 
 }

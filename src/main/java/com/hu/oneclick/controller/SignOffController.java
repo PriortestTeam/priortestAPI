@@ -42,14 +42,14 @@ public class SignOffController {
     PdfGenerateService pdfGenerateService;
 
     @GetMapping("/getProjectEnv")
-    public Resp<List<CustomFieldPossBileDto>> getProjectEnv() {
-        return customFieldsService.getPossBile("env");
+    public Resp<List<CustomFieldPossBileDto>> getProjectEnv(@RequestParam String projectId) {
+        return customFieldsService.getPossBile("env", projectId);
     }
 
 
     @GetMapping("/getProjectVersion")
-    public Resp<List<CustomFieldPossBileDto>> getProjectVersion() {
-        return customFieldsService.getPossBile("version");
+    public Resp<List<CustomFieldPossBileDto>> getProjectVersion(@RequestParam String projectId) {
+        return customFieldsService.getPossBile("version", projectId);
     }
 
 

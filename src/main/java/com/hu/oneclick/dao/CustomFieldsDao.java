@@ -46,4 +46,6 @@ public interface CustomFieldsDao extends BaseMapper<CustomFields> {
     List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId);
 
    List<CustomFieldPossBileDto> getPossBile(String fieldName);
+   
+   List<CustomFieldPossBileDto> getPossBileWithProject(@Param("fieldName") String fieldName, @Param("projectId") String projectId);
 }
