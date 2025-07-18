@@ -42,8 +42,8 @@ public class SignOffController {
     PdfGenerateService pdfGenerateService;
 
     @GetMapping("/getProjectEnv")
-    public Resp<List<CustomFieldPossBileDto>> getProjectEnv() {
-        return customFieldsService.getPossBile("env");
+    public Resp<List<CustomFieldPossBileDto>> getProjectEnv(@RequestParam String projectId) {
+        return customFieldsService.getPossBile("env", projectId);
     }
 
 
