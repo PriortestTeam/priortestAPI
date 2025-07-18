@@ -9,6 +9,7 @@ import com.hu.oneclick.model.domain.vo.CustomFileldLinkVo;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,7 +37,9 @@ public interface CustomFieldsService {
 
     List<CustomFileldLinkVo> getAllCustomListByScopeId(Long scopeId);
 
-    Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName);
-    
     Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName, String projectId);
+
+    Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName);
+
+    Resp<Map<String, Object>> getVersionAndEnvProject(String projectId);
 }

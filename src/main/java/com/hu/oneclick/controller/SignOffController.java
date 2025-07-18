@@ -58,6 +58,11 @@ public class SignOffController {
         return customFieldsService.getPossBile("issueStatus");
     }
 
+    @GetMapping("/getVersionAndEnvProject")
+    public Resp<Map<String, Object>> getVersionAndEnvProject(@RequestParam String projectId) {
+        return customFieldsService.getVersionAndEnvProject(projectId);
+    }
+
     @GetMapping("/getTestCycleDetail")
     public Resp<List<Map<String, String>>> getTestCycleVersion(@RequestParam String projectId, @RequestParam String env, @RequestParam String version) {
         return testCycleService.getTestCycleVersion(projectId, env, version);

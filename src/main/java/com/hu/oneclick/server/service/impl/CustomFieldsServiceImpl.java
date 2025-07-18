@@ -30,11 +30,20 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -181,7 +190,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
         // 特殊处理：当 scopeId=7000001 时，将 version 字段拆分成两个字段
         if (customFieldDto.getScopeId() != null && customFieldDto.getScopeId() == 7000001L) {
             List<CustomFileldLinkVo> processedFields = new ArrayList<>();
-            
+
             for (CustomFileldLinkVo field : fields) {
                 // 检查是否是 version 字段
                 if ("version".equals(field.getFieldNameEn())) {
@@ -190,7 +199,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                     issueVersionField.setFieldNameCn("发现版本");
                     issueVersionField.setFieldNameEn("issueVersion");
                     processedFields.add(issueVersionField);
-                    
+
                     // 创建修改版本字段
                     CustomFileldLinkVo fixVersionField = cloneCustomField(field);
                     fixVersionField.setFieldNameCn("修改版本");
@@ -202,13 +211,13 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                     processedFields.add(field);
                 }
             }
-            
+
             return new Resp.Builder<List<CustomFileldLinkVo>>().setData(processedFields).ok();
         }
 
         return new Resp.Builder<List<CustomFileldLinkVo>>().setData(fields).ok();
     }
-    
+
     /**
      * 克隆自定义字段对象
      */
@@ -247,16 +256,74 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
     }
 
     @Override
-    public Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName, String projectId) {
+    public Resp<Map<String, Object>> getVersionAndEnvProject(String projectId) {
+        try {
+            // 获取环境数据
+            Resp<List<CustomFieldPossBileDto>> envResp = getPossBile("env", projectId);
+            // 获取版本数据
+            Resp<List<CustomFieldPossBileDto>> versionResp = getPossBile("version", projectId);
+
+            // 构建返回结果
+            Map<String, Object> result = new HashMap<>();
+
+            // 处理环境数据
+            Map<String, Object> envData = new HashMap<>();
+            if (envResp.getData() != null && !envResp.getData().isEmpty()) {
+                List<String> possibleValues = new ArrayList<>();
+                List<String> possibleValueChildren = new ArrayList<>();
+
+                for (CustomFieldPossBileDto dto : envResp.getData()) {
+                    if (dto.getPossibleValue() != null) {
+                        possibleValues.add(dto.getPossibleValue());
+                    }
+                    if (dto.getPossibleValueChild() != null) {
+                        possibleValueChildren.add(dto.getPossibleValueChild());
+                    }
+                }
+
+                envData.put("possible_value", possibleValues);
+                envData.put("possible_value_child", possibleValueChildren);
+            }
+            result.put("env", envData);
+
+            // 处理版本数据
+            Map<String, Object> versionData = new HashMap<>();
+            if (versionResp.getData() != null && !versionResp.getData().isEmpty()) {
+                List<String> possibleValues = new ArrayList<>();
+                List<String> possibleValueChildren = new ArrayList<>();
+
+                for (CustomFieldPossBileDto dto : versionResp.getData()) {
+                    if (dto.getPossibleValue() != null) {
+                        possibleValues.add(dto.getPossibleValue());
+                    }
+                    if (dto.getPossibleValueChild() != null) {
+                        possibleValueChildren.add(dto.getPossibleValueChild());
+                    }
+                }
+
+                versionData.put("possible_value", possibleValues);
+                versionData.put("possible_value_child", possibleValueChildren);
+            }
+            result.put("version", versionData);
+
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+
+        } catch (Exception e) {
+            log.error("获取项目环境和版本信息失败: " + e.getMessage(), e);
+            return new Resp.Builder<Map<String, Object>>().fail();
+        }
+    }
+
+     public Resp<List<CustomFieldPossBileDto>> getPossBile(String fieldName, String projectId) {
         List<CustomFieldPossBileDto> list = customFieldsDao.getPossBileWithProject(fieldName, projectId);
-        
+
         if (list.isEmpty()) {
             return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(new ArrayList<>()).ok();
         }
-        
+
         String systemFieldValue = null;
         String projectFieldValue = null;
-        
+
         // 根据sourceType分离系统字段和项目扩展字段
         for (CustomFieldPossBileDto dto : list) {
             if (dto.getPossibleValue() != null && !dto.getPossibleValue().trim().isEmpty()) {
@@ -267,10 +334,10 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                 }
             }
         }
-        
+
         // 创建返回结果，解析JSON并重新序列化以去掉转义字符
         CustomFieldPossBileDto result = new CustomFieldPossBileDto();
-        
+
         if (systemFieldValue != null) {
             try {
                 // 解析JSON字符串然后重新序列化，这样可以去掉所有转义字符
@@ -281,7 +348,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                 result.setPossibleValue(systemFieldValue);
             }
         }
-        
+
         if (projectFieldValue != null) {
             try {
                 // 解析JSON字符串然后重新序列化，这样可以去掉所有转义字符
@@ -292,10 +359,10 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                 result.setPossibleValueChild(projectFieldValue);
             }
         }
-        
+
         List<CustomFieldPossBileDto> resultList = new ArrayList<>();
         resultList.add(result);
-        
+
         return new Resp.Builder<List<CustomFieldPossBileDto>>().setData(resultList).ok();
     }
 
