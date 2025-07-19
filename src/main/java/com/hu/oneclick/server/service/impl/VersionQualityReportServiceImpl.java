@@ -8,11 +8,340 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * 版本质量分析报表服务实现
+ */
+@Service
+public class VersionQualityReportServiceImpl implements VersionQualityReportService {
+
+    @Autowired
+    private IssueService issueService;
+
+    @Autowired
+    private TestCaseService testCaseService;
+
+    @Autowired
+    private TestCycleService testCycleService;
+
+    @Override
+    public Resp<Map<String, Object>> getQualityOverview(String projectId) {
+        Map<String, Object> result = new HashMap<>();
+        
+        // 这里可以实现项目质量总览逻辑
+        result.put("totalVersions", 5);
+        result.put("averageDefectDensity", 3.2);
+        result.put("averageTestCoverage", 85.5);
+        
+        return Resp.success(result);
+    }
+
+    @Override
+    public Resp<Map<String, Object>> getDefectDensity(String projectId, String releaseVersion) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // TODO: 实际应该从数据库查询，这里提供模拟数据
+            
+            // 模拟缺陷数据
+            int totalDefects = 15;
+            int executedTestCases = 450;
+            
+            // 计算缺陷密度 = (总缺陷数 / 实际执行测试用例数) × 100
+            double defectDensity = totalDefects * 100.0 / executedTestCases;
+            String formattedDensity = String.format("%.1f", defectDensity);
+            
+            // 确定等级
+            String level;
+            if (defectDensity <= 2) {
+                level = "优秀";
+            } else if (defectDensity <= 5) {
+                level = "良好";
+            } else if (defectDensity <= 10) {
+                level = "一般";
+            } else {
+                level = "需改进";
+            }
+            
+            result.put("defectDensity", formattedDensity);
+            result.put("level", level);
+            result.put("totalDefects", totalDefects);
+            result.put("executedTestCases", executedTestCases);
+            
+            // 模块缺陷分布数据
+            List<Map<String, Object>> moduleDefectDistribution = Arrays.asList(
+                createModuleDefectData("用户管理", 5, "#FF6B6B"),
+                createModuleDefectData("订单系统", 3, "#4ECDC4"),
+                createModuleDefectData("支付模块", 4, "#45B7D1"),
+                createModuleDefectData("报表模块", 2, "#96CEB4"),
+                createModuleDefectData("系统配置", 1, "#FECA57")
+            );
+            result.put("moduleDefectDistribution", moduleDefectDistribution);
+            
+        } catch (Exception e) {
+            return Resp.fail("获取缺陷密度数据失败: " + e.getMessage());
+        }
+
+        return Resp.success(result);
+    }
+
+    @Override
+    public Resp<Map<String, Object>> getTestCoverage(String projectId, String releaseVersion) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // TODO: 实际应该从数据库查询，这里提供模拟数据
+            
+            int totalStories = 25;
+            int coveredStories = 22;
+            
+            // 计算测试覆盖率 = (已覆盖故事数 / 版本总故事数) × 100%
+            double storyCoverage = coveredStories * 100.0 / totalStories;
+            
+            // 确定等级
+            String level;
+            if (storyCoverage >= 90) {
+                level = "优秀";
+            } else if (storyCoverage >= 80) {
+                level = "良好";
+            } else if (storyCoverage >= 70) {
+                level = "一般";
+            } else {
+                level = "需改进";
+            }
+            
+            result.put("storyCoverage", storyCoverage);
+            result.put("level", level);
+            result.put("totalStories", totalStories);
+            result.put("coveredStories", coveredStories);
+            
+            // 故事覆盖详情
+            List<Map<String, Object>> storyCoverageDetails = Arrays.asList(
+                createStoryCoverageData("用户注册功能", true, 8),
+                createStoryCoverageData("用户登录功能", true, 6),
+                createStoryCoverageData("密码重置功能", true, 4),
+                createStoryCoverageData("个人信息管理", true, 5),
+                createStoryCoverageData("订单创建流程", true, 12),
+                createStoryCoverageData("支付集成功能", false, 0),
+                createStoryCoverageData("订单查询功能", true, 7),
+                createStoryCoverageData("退款处理流程", false, 0),
+                createStoryCoverageData("报表生成功能", true, 9),
+                createStoryCoverageData("数据导出功能", false, 0)
+            );
+            result.put("storyCoverageDetails", storyCoverageDetails);
+            
+        } catch (Exception e) {
+            return Resp.fail("获取测试覆盖率数据失败: " + e.getMessage());
+        }
+
+        return Resp.success(result);
+    }
+
+    @Override
+    public Resp<Map<String, Object>> getDefectDistribution(String projectId, String releaseVersion) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // 缺陷严重程度分布
+            List<Map<String, Object>> severityDistribution = Arrays.asList(
+                createSeverityData("严重", 2, "#FF4757"),
+                createSeverityData("高", 4, "#FF6B35"),
+                createSeverityData("中", 6, "#F79F1F"),
+                createSeverityData("低", 3, "#2ED573")
+            );
+            result.put("severityDistribution", severityDistribution);
+            
+            // 环境缺陷分布
+            List<Map<String, Object>> envDefectDistribution = Arrays.asList(
+                createEnvDefectData("开发环境", 5, "#3742FA"),
+                createEnvDefectData("测试环境", 7, "#2F80ED"),
+                createEnvDefectData("预发布环境", 2, "#56CCF2"),
+                createEnvDefectData("生产环境", 1, "#6C5CE7")
+            );
+            result.put("envDefectDistribution", envDefectDistribution);
+            
+        } catch (Exception e) {
+            return Resp.fail("获取缺陷分布数据失败: " + e.getMessage());
+        }
+
+        return Resp.success(result);
+    }
+
+    @Override
+    public Resp<Map<String, Object>> getExecutionRate(String projectId, String releaseVersion) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // TODO: 实际应该从数据库查询，这里提供模拟数据
+            
+            int plannedTestCases = 500;
+            int executedTestCases = 450;
+            int passedTestCases = 385;
+            int failedTestCases = executedTestCases - passedTestCases;
+            
+            // 计算执行率 = (实际执行测试用例数 / 计划执行测试用例数) × 100%
+            double executionRate = executedTestCases * 100.0 / plannedTestCases;
+            
+            // 计算通过率 = (通过测试用例数 / 实际执行测试用例数) × 100%
+            double passRate = passedTestCases * 100.0 / executedTestCases;
+            
+            // 确定执行率等级
+            String executionLevel;
+            if (executionRate >= 95) {
+                executionLevel = "优秀";
+            } else if (executionRate >= 85) {
+                executionLevel = "良好";
+            } else if (executionRate >= 75) {
+                executionLevel = "一般";
+            } else {
+                executionLevel = "需改进";
+            }
+            
+            // 确定通过率等级
+            String passLevel;
+            if (passRate >= 95) {
+                passLevel = "优秀";
+            } else if (passRate >= 90) {
+                passLevel = "良好";
+            } else if (passRate >= 85) {
+                passLevel = "一般";
+            } else {
+                passLevel = "需改进";
+            }
+            
+            result.put("executionRate", executionRate);
+            result.put("passRate", passRate);
+            result.put("executionLevel", executionLevel);
+            result.put("passLevel", passLevel);
+            result.put("plannedTestCases", plannedTestCases);
+            result.put("executedTestCases", executedTestCases);
+            result.put("passedTestCases", passedTestCases);
+            result.put("failedTestCases", failedTestCases);
+            
+            // 测试执行趋势数据（最近7天）
+            List<Map<String, Object>> executionTrend = generateExecutionTrend();
+            result.put("executionTrend", executionTrend);
+            
+            // 测试周期执行详情
+            List<Map<String, Object>> cycleExecutionDetails = Arrays.asList(
+                createCycleExecutionData("功能测试周期1", 150, 145, 125, 20, 96.7, 86.2),
+                createCycleExecutionData("功能测试周期2", 120, 118, 105, 13, 98.3, 89.0),
+                createCycleExecutionData("集成测试周期", 100, 95, 85, 10, 95.0, 89.5),
+                createCycleExecutionData("回归测试周期", 130, 92, 80, 12, 70.8, 87.0)
+            );
+            result.put("cycleExecutionDetails", cycleExecutionDetails);
+            
+        } catch (Exception e) {
+            return Resp.fail("获取执行率数据失败: " + e.getMessage());
+        }
+
+        return Resp.success(result);
+    }
+
+    @Override
+    public Resp<Map<String, Object>> getVersionComparison(String projectId, String startVersion, String endVersion) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // 生成版本对比数据
+            List<Map<String, Object>> comparisonData = Arrays.asList(
+                createVersionComparisonData(startVersion, 3.3, 88.0, 90.0, 86.5, 15, 450, "良好"),
+                createVersionComparisonData(endVersion, 2.8, 92.0, 95.2, 89.2, 13, 465, "优秀")
+            );
+            
+            result.put("comparisonData", comparisonData);
+            
+        } catch (Exception e) {
+            return Resp.fail("获取版本对比数据失败: " + e.getMessage());
+        }
+
+        return Resp.success(result);
+    }
+
+    // 辅助方法
+    private Map<String, Object> createSeverityData(String severity, int count, String color) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("severity", severity);
+        data.put("count", count);
+        data.put("color", color);
+        return data;
+    }
+
+    private Map<String, Object> createEnvDefectData(String environment, int count, String color) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("environment", environment);
+        data.put("count", count);
+        data.put("color", color);
+        return data;
+    }
+
+    private Map<String, Object> createModuleDefectData(String module, int count, String color) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("module", module);
+        data.put("count", count);
+        data.put("color", color);
+        return data;
+    }
+
+    private Map<String, Object> createStoryCoverageData(String story, boolean covered, int testCaseCount) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("story", story);
+        data.put("covered", covered);
+        data.put("testCaseCount", testCaseCount);
+        return data;
+    }
+
+    private Map<String, Object> createCycleExecutionData(String cycleName, int plannedCases, 
+            int executedCases, int passedCases, int failedCases, double executionRate, double passRate) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("cycleName", cycleName);
+        data.put("plannedCases", plannedCases);
+        data.put("executedCases", executedCases);
+        data.put("passedCases", passedCases);
+        data.put("failedCases", failedCases);
+        data.put("executionRate", String.format("%.1f", executionRate));
+        data.put("passRate", String.format("%.1f", passRate));
+        return data;
+    }
+
+    private Map<String, Object> createVersionComparisonData(String version, double defectDensity, 
+            double testCoverage, double executionRate, double passRate, int totalDefects, 
+            int totalTestCases, String qualityLevel) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("version", version);
+        data.put("defectDensity", defectDensity);
+        data.put("testCoverage", testCoverage);
+        data.put("executionRate", executionRate);
+        data.put("passRate", passRate);
+        data.put("totalDefects", totalDefects);
+        data.put("totalTestCases", totalTestCases);
+        data.put("qualityLevel", qualityLevel);
+        return data;
+    }
+
+    private List<Map<String, Object>> generateExecutionTrend() {
+        List<Map<String, Object>> trend = new ArrayList<>();
+        LocalDate startDate = LocalDate.now().minusDays(6);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd");
+
+        // 模拟7天的执行趋势数据
+        double[] executionRates = {75.0, 82.5, 88.0, 90.5, 92.0, 89.5, 90.0};
+        double[] passRates = {80.0, 85.2, 87.8, 89.0, 88.5, 89.2, 86.2};
+
+        for (int i = 0; i < 7; i++) {
+            Map<String, Object> dayData = new HashMap<>();
+            dayData.put("date", startDate.plusDays(i).format(formatter));
+            dayData.put("executionRate", executionRates[i]);
+            dayData.put("passRate", passRates[i]);
+            trend.add(dayData);
+        }
+
+        return trend;
+    }服务实现
  */
 @Service
 public class VersionQualityReportServiceImpl implements VersionQualityReportService {
