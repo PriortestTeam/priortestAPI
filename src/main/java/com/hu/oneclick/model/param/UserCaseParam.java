@@ -46,8 +46,11 @@ public class UserCaseParam implements Serializable {
     @Schema(description = "所属故事ID")
     private long featureId;
 
+    @Schema(description = "版本")
+    private String version;
+
     @Schema(description = "备注")
-    private String remarks;
+    private String remarks;rks;
 
     @Schema(description = "创建时间")
     private java.util.Date createTime;

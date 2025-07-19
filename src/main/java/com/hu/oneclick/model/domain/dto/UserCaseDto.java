@@ -31,8 +31,10 @@ public class UserCaseDto extends AssignBaseEntity {
     private String usecaseExpand;
     private long featureId;
 
+    private String version;
+
     private String remarks;
 
-    private Date createTime;
+    private Date createTime;ate createTime;
 
 }
