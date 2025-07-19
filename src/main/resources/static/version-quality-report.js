@@ -1,8 +1,7 @@
-
 // 版本质量分析报表JavaScript
 class VersionQualityReport {
     constructor() {
-        this.apiBase = '/versionQualityReport';
+        this.apiBase = '/api/versionQualityReport';
         this.currentProjectId = null;
         this.currentVersion = null;
         this.charts = {};
@@ -29,19 +28,22 @@ class VersionQualityReport {
     // 加载项目列表
     async loadProjects() {
         try {
-            const response = await fetch('/project/list');
+            const response = await fetch('/api/project/list');
             const result = await response.json();
             const select = document.getElementById('projectSelect');
-            
+
             select.innerHTML = '<option value="">请选择项目</option>';
-            result.data.forEach(project => {
-                const option = document.createElement('option');
-                option.value = project.id;
-                option.textContent = project.projectName;
-                select.appendChild(option);
-            });
+            if (result.data && Array.isArray(result.data)) {
+                result.data.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.projectName || project.name;
+                    select.appendChild(option);
+                });
+            }
         } catch (error) {
             console.error('加载项目列表失败:', error);
+            this.showError('加载项目列表失败');
         }
     }
 
@@ -50,152 +52,169 @@ class VersionQualityReport {
         if (!this.currentProjectId) return;
 
         try {
-            const response = await fetch(`/release/getByProject/${this.currentProjectId}`);
+            const response = await fetch(`/api/signOff/getProjectVersion?projectId=${this.currentProjectId}`);
             const result = await response.json();
             const versionSelect = document.getElementById('versionSelect');
             const compareSelect = document.getElementById('compareVersionSelect');
-            
+
             versionSelect.innerHTML = '<option value="">请选择版本</option>';
             compareSelect.innerHTML = '<option value="">选择对比版本</option>';
-            
-            if (result.success && result.data) {
-                result.data.forEach(release => {
+
+            if (result.data && Array.isArray(result.data)) {
+                result.data.forEach(version => {
                     const option1 = document.createElement('option');
                     const option2 = document.createElement('option');
-                    option1.value = option2.value = release.version;
-                    option1.textContent = option2.textContent = release.version;
+                    option1.value = version.value || version.id;
+                    option1.textContent = version.label || version.name;
+                    option2.value = version.value || version.id;
+                    option2.textContent = version.label || version.name;
                     versionSelect.appendChild(option1);
                     compareSelect.appendChild(option2);
                 });
             }
         } catch (error) {
             console.error('加载版本列表失败:', error);
+            this.showError('加载版本列表失败');
         }
     }
 
-    // 生成质量报表
+    // 生成报表
     async loadReport() {
         if (!this.currentProjectId || !this.currentVersion) {
-            alert('请先选择项目和版本！');
+            this.showError('请先选择项目和版本');
             return;
         }
 
+        this.showLoading();
+
         try {
-            // 显示加载状态
-            this.showLoading();
-
-            // 并行加载所有数据
-            const [
-                defectDensityResp,
-                testCoverageResp,
-                defectDistributionResp,
-                executionRateResp
-            ] = await Promise.all([
-                fetch(`${this.apiBase}/getDefectDensity/${this.currentProjectId}/${this.currentVersion}`),
-                fetch(`${this.apiBase}/getTestCoverage/${this.currentProjectId}/${this.currentVersion}`),
-                fetch(`${this.apiBase}/getDefectDistribution/${this.currentProjectId}/${this.currentVersion}`),
-                fetch(`${this.apiBase}/getExecutionRate/${this.currentProjectId}/${this.currentVersion}`)
-            ]);
-
-            const [
-                defectDensityData,
-                testCoverageData,
-                defectDistributionData,
-                executionRateData
-            ] = await Promise.all([
-                defectDensityResp.json(),
-                testCoverageResp.json(),
-                defectDistributionResp.json(),
-                executionRateResp.json()
+            // 并行加载各种数据
+            const [defectData, coverageData, distributionData, executionData] = await Promise.all([
+                this.fetchDefectDensity(),
+                this.fetchTestCoverage(),
+                this.fetchDefectDistribution(),
+                this.fetchExecutionRate()
             ]);
 
             // 更新指标卡片
-            this.updateMetricCards(defectDensityData, testCoverageData, executionRateData);
+            this.updateMetricCards(defectData, coverageData, executionData);
 
             // 更新图表
-            this.updateCharts(defectDistributionData, executionRateData);
+            this.updateCharts(distributionData, executionData);
 
             // 更新详情表格
-            this.updateDetailTables(testCoverageData, executionRateData);
-
-            // 隐藏对比区域
-            document.getElementById('versionComparisonSection').style.display = 'none';
+            this.updateDetailTables();
 
         } catch (error) {
             console.error('生成报表失败:', error);
-            alert('生成报表失败，请检查网络连接');
+            this.showError('生成报表失败');
         } finally {
             this.hideLoading();
         }
     }
 
+    // 获取缺陷密度数据
+    async fetchDefectDensity() {
+        const response = await fetch(`${this.apiBase}/getDefectDensity/${this.currentProjectId}/${this.currentVersion}`);
+        return await response.json();
+    }
+
+    // 获取测试覆盖率数据
+    async fetchTestCoverage() {
+        const response = await fetch(`${this.apiBase}/getTestCoverage/${this.currentProjectId}/${this.currentVersion}`);
+        return await response.json();
+    }
+
+    // 获取缺陷分布数据
+    async fetchDefectDistribution() {
+        const response = await fetch(`${this.apiBase}/getDefectDistribution/${this.currentProjectId}/${this.currentVersion}`);
+        return await response.json();
+    }
+
+    // 获取执行率数据
+    async fetchExecutionRate() {
+        const response = await fetch(`${this.apiBase}/getExecutionRate/${this.currentProjectId}/${this.currentVersion}`);
+        return await response.json();
+    }
+
     // 更新指标卡片
-    updateMetricCards(defectDensityData, testCoverageData, executionRateData) {
-        if (defectDensityData.success) {
-            const data = defectDensityData.data;
-            document.getElementById('defectDensity').textContent = data.defectDensity || '0';
-            document.getElementById('defectDensityLevel').textContent = data.densityLevel || '-';
-            document.getElementById('defectDensityLevel').className = 
-                'level-badge ' + this.getLevelClass(data.densityLevel);
+    updateMetricCards(defectData, coverageData, executionData) {
+        // 更新缺陷密度
+        if (defectData.data) {
+            document.getElementById('defectDensity').textContent = defectData.data.density || '0';
+            this.updateLevelBadge('defectDensityLevel', defectData.data.level);
         }
 
-        if (testCoverageData.success) {
-            const data = testCoverageData.data;
-            document.getElementById('testCoverage').textContent = 
-                (data.storyCoverage || 0) + '%';
-            document.getElementById('testCoverageLevel').textContent = data.coverageLevel || '-';
-            document.getElementById('testCoverageLevel').className = 
-                'level-badge ' + this.getLevelClass(data.coverageLevel);
+        // 更新测试覆盖率
+        if (coverageData.data) {
+            document.getElementById('testCoverage').textContent = coverageData.data.coverage + '%' || '0%';
+            this.updateLevelBadge('testCoverageLevel', coverageData.data.coverageLevel);
         }
 
-        if (executionRateData.success) {
-            const data = executionRateData.data;
-            document.getElementById('executionRate').textContent = 
-                (data.executionRate || 0) + '%';
-            document.getElementById('executionRateLevel').textContent = data.executionLevel || '-';
-            document.getElementById('executionRateLevel').className = 
-                'level-badge ' + this.getLevelClass(data.executionLevel);
+        // 更新执行率
+        if (executionData.data) {
+            document.getElementById('executionRate').textContent = executionData.data.executionRate + '%' || '0%';
+            document.getElementById('passRate').textContent = executionData.data.passRate + '%' || '0%';
+            this.updateLevelBadge('executionRateLevel', executionData.data.executionLevel);
+            this.updateLevelBadge('passRateLevel', executionData.data.passLevel);
+        }
+    }
 
-            document.getElementById('passRate').textContent = 
-                (data.passRate || 0) + '%';
-            document.getElementById('passRateLevel').textContent = 
-                this.getPassRateLevel(data.passRate || 0);
-            document.getElementById('passRateLevel').className = 
-                'level-badge ' + this.getLevelClass(this.getPassRateLevel(data.passRate || 0));
+    // 更新等级徽章
+    updateLevelBadge(elementId, level) {
+        const badge = document.getElementById(elementId);
+        badge.textContent = level || '-';
+        badge.className = 'level-badge ' + this.getLevelClass(level);
+    }
+
+    // 获取等级样式类
+    getLevelClass(level) {
+        switch(level) {
+            case '优秀': return 'level-excellent';
+            case '良好': return 'level-good';
+            case '一般': return 'level-average';
+            case '需改进': return 'level-poor';
+            default: return 'level-average';
         }
     }
 
     // 更新图表
-    updateCharts(defectDistributionData, executionRateData) {
-        if (defectDistributionData.success) {
-            this.updateDefectSeverityChart(defectDistributionData.data.severityDistribution);
-            this.updateModuleDefectChart(defectDistributionData.data.moduleDistribution);
-            this.updateEnvDefectChart(defectDistributionData.data.envDistribution);
-            this.updateDefectTrendChart(defectDistributionData.data.defectTrend);
+    updateCharts(distributionData, executionData) {
+        // 销毁旧图表
+        Object.values(this.charts).forEach(chart => {
+            if (chart) chart.destroy();
+        });
+
+        // 创建缺陷严重程度分布饼图
+        if (distributionData.data && distributionData.data.severityDistribution) {
+            this.createDefectSeverityChart(distributionData.data.severityDistribution);
         }
 
-        if (executionRateData.success) {
-            this.updateExecutionTrendChart(executionRateData.data.cycleExecutionDetails);
+        // 创建测试执行趋势图
+        if (executionData.data && executionData.data.trendData) {
+            this.createExecutionTrendChart(executionData.data.trendData);
+        }
+
+        // 创建模块缺陷分布图
+        if (distributionData.data && distributionData.data.moduleDistribution) {
+            this.createModuleDefectChart(distributionData.data.moduleDistribution);
+        }
+
+        // 创建环境缺陷对比图
+        if (distributionData.data && distributionData.data.envDistribution) {
+            this.createEnvDefectChart(distributionData.data.envDistribution);
         }
     }
 
-    // 更新缺陷严重程度饼图
-    updateDefectSeverityChart(severityData) {
+    // 创建缺陷严重程度分布饼图
+    createDefectSeverityChart(data) {
         const ctx = document.getElementById('defectSeverityChart').getContext('2d');
-        
-        if (this.charts.defectSeverity) {
-            this.charts.defectSeverity.destroy();
-        }
-
-        const labels = Object.keys(severityData || {});
-        const data = Object.values(severityData || {});
-
         this.charts.defectSeverity = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: labels,
+                labels: data.map(item => item.severity),
                 datasets: [{
-                    data: data,
+                    data: data.map(item => item.count),
                     backgroundColor: [
                         '#FF6384',
                         '#36A2EB',
@@ -216,103 +235,25 @@ class VersionQualityReport {
         });
     }
 
-    // 更新模块缺陷柱图
-    updateModuleDefectChart(moduleData) {
-        const ctx = document.getElementById('moduleDefectChart').getContext('2d');
-        
-        if (this.charts.moduleDefect) {
-            this.charts.moduleDefect.destroy();
-        }
-
-        const labels = Object.keys(moduleData || {});
-        const data = Object.values(moduleData || {});
-
-        this.charts.moduleDefect = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '缺陷数量',
-                    data: data,
-                    backgroundColor: 'rgba(54, 162, 235, 0.8)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-
-    // 更新环境缺陷对比图
-    updateEnvDefectChart(envData) {
-        const ctx = document.getElementById('envDefectChart').getContext('2d');
-        
-        if (this.charts.envDefect) {
-            this.charts.envDefect.destroy();
-        }
-
-        const labels = Object.keys(envData || {});
-        const data = Object.values(envData || {});
-
-        this.charts.envDefect = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: [
-                        '#FF9F40',
-                        '#4BC0C0',
-                        '#36A2EB'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-
-    // 更新执行趋势图
-    updateExecutionTrendChart(cycleData) {
+    // 创建测试执行趋势图
+    createExecutionTrendChart(data) {
         const ctx = document.getElementById('executionTrendChart').getContext('2d');
-        
-        if (this.charts.executionTrend) {
-            this.charts.executionTrend.destroy();
-        }
-
-        const labels = (cycleData || []).map(cycle => cycle.cycleName);
-        const executionRates = (cycleData || []).map(cycle => cycle.executionRate);
-        const passRates = (cycleData || []).map(cycle => cycle.passRate);
-
         this.charts.executionTrend = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: labels,
+                labels: data.map(item => item.date),
                 datasets: [{
                     label: '执行率',
-                    data: executionRates,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1
+                    data: data.map(item => item.executionRate),
+                    borderColor: '#36A2EB',
+                    backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                    fill: true
                 }, {
                     label: '通过率',
-                    data: passRates,
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    tension: 0.1
+                    data: data.map(item => item.passRate),
+                    borderColor: '#4BC0C0',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    fill: true
                 }]
             },
             options: {
@@ -327,187 +268,129 @@ class VersionQualityReport {
         });
     }
 
+    // 创建模块缺陷分布图
+    createModuleDefectChart(data) {
+        const ctx = document.getElementById('moduleDefectChart').getContext('2d');
+        this.charts.moduleDefect = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.module),
+                datasets: [{
+                    label: '缺陷数量',
+                    data: data.map(item => item.count),
+                    backgroundColor: '#FF6384'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // 创建环境缺陷对比图
+    createEnvDefectChart(data) {
+        const ctx = document.getElementById('envDefectChart').getContext('2d');
+        this.charts.envDefect = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.env),
+                datasets: [{
+                    label: '缺陷数量',
+                    data: data.map(item => item.count),
+                    backgroundColor: '#FFCE56'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
     // 更新详情表格
-    updateDetailTables(testCoverageData, executionRateData) {
-        // 更新故事覆盖详情
-        if (testCoverageData.success) {
-            this.updateStoryCoverageDetails(testCoverageData.data.storyCoverageDetails);
-        }
-
-        // 更新测试周期执行详情
-        if (executionRateData.success) {
-            this.updateCycleExecutionTable(executionRateData.data.cycleExecutionDetails);
-        }
+    updateDetailTables() {
+        // 这里可以添加更新故事覆盖详情和测试周期详情的代码
+        // 根据实际API返回的数据格式来实现
     }
 
-    // 更新故事覆盖详情
-    updateStoryCoverageDetails(storyCoverageDetails) {
-        const container = document.getElementById('storyCoverageDetails');
-        
-        if (!storyCoverageDetails || storyCoverageDetails.length === 0) {
-            container.innerHTML = '<div class="text-center text-muted"><i class="bi bi-info-circle"></i><p>暂无故事数据</p></div>';
-            return;
-        }
-
-        let html = '';
-        storyCoverageDetails.forEach(story => {
-            const coverClass = story.isCovered ? 'covered' : 'not-covered';
-            const icon = story.isCovered ? 'check-circle' : 'x-circle';
-            html += `
-                <div class="story-coverage-item ${coverClass}">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <i class="bi bi-${icon}"></i>
-                            <strong>${story.storyTitle}</strong>
-                        </div>
-                        <div>
-                            <span class="badge bg-secondary">${story.testCaseCount} 个用例</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        container.innerHTML = html;
-    }
-
-    // 更新测试周期执行表格
-    updateCycleExecutionTable(cycleExecutionDetails) {
-        const tbody = document.querySelector('#cycleExecutionTable tbody');
-        
-        if (!cycleExecutionDetails || cycleExecutionDetails.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted"><i class="bi bi-info-circle"></i> 暂无测试周期数据</td></tr>';
-            return;
-        }
-
-        let html = '';
-        cycleExecutionDetails.forEach(cycle => {
-            html += `
-                <tr>
-                    <td>${cycle.cycleName}</td>
-                    <td>${cycle.planned}</td>
-                    <td>${cycle.executed}</td>
-                    <td>${cycle.passed}</td>
-                    <td>${cycle.failed}</td>
-                    <td><span class="badge ${this.getExecutionBadgeClass(cycle.executionRate)}">${cycle.executionRate}%</span></td>
-                    <td><span class="badge ${this.getPassBadgeClass(cycle.passRate)}">${cycle.passRate}%</span></td>
-                </tr>
-            `;
-        });
-        
-        tbody.innerHTML = html;
-    }
-
-    // 版本对比分析
+    // 版本对比
     async loadComparison() {
         const compareVersion = document.getElementById('compareVersionSelect').value;
         if (!this.currentProjectId || !this.currentVersion || !compareVersion) {
-            alert('请选择项目、当前版本和对比版本！');
+            this.showError('请选择项目、版本和对比版本');
             return;
         }
 
         try {
-            const response = await fetch(
-                `${this.apiBase}/getVersionComparison/${this.currentProjectId}?startVersion=${this.currentVersion}&endVersion=${compareVersion}`
-            );
+            const response = await fetch(`${this.apiBase}/getVersionComparison/${this.currentProjectId}?startV=${this.currentVersion}&endV=${compareVersion}`);
             const result = await response.json();
 
-            if (result.success) {
-                this.updateVersionComparisonTable(result.data.comparisonData);
-                document.getElementById('versionComparisonSection').style.display = 'block';
-            }
+            // 显示对比表格
+            document.getElementById('versionComparisonSection').style.display = 'block';
+            this.updateComparisonTable(result.data);
+
         } catch (error) {
             console.error('版本对比失败:', error);
-            alert('版本对比失败，请检查网络连接');
+            this.showError('版本对比失败');
         }
     }
 
-    // 更新版本对比表格
-    updateVersionComparisonTable(comparisonData) {
+    // 更新对比表格
+    updateComparisonTable(data) {
         const tbody = document.querySelector('#versionComparisonTable tbody');
-        
-        let html = '';
-        comparisonData.forEach(versionData => {
-            const qualityLevel = this.calculateQualityLevel(versionData);
-            html += `
-                <tr>
-                    <td><strong>${versionData.version}</strong></td>
-                    <td>${versionData.defectDensity}</td>
-                    <td>${versionData.testCoverage}%</td>
-                    <td>${versionData.executionRate}%</td>
-                    <td>${versionData.passRate}%</td>
-                    <td>${versionData.totalDefects}</td>
-                    <td>${versionData.totalTestCases}</td>
-                    <td><span class="level-badge ${this.getLevelClass(qualityLevel)}">${qualityLevel}</span></td>
-                </tr>
-            `;
-        });
-        
-        tbody.innerHTML = html;
-    }
+        tbody.innerHTML = '';
 
-    // 辅助方法
-    getLevelClass(level) {
-        switch(level) {
-            case '优秀': return 'level-excellent';
-            case '良好': return 'level-good';
-            case '一般': return 'level-average';
-            case '需改进': return 'level-poor';
-            default: return 'level-average';
+        if (data && Array.isArray(data)) {
+            data.forEach(version => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${version.version}</td>
+                    <td>${version.defectDensity}</td>
+                    <td>${version.testCoverage}%</td>
+                    <td>${version.executionRate}%</td>
+                    <td>${version.passRate}%</td>
+                    <td>${version.totalDefects}</td>
+                    <td>${version.totalCases}</td>
+                    <td><span class="level-badge ${this.getLevelClass(version.qualityLevel)}">${version.qualityLevel}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
         }
     }
 
-    getPassRateLevel(passRate) {
-        if (passRate >= 95) return '优秀';
-        else if (passRate >= 80) return '良好';
-        else if (passRate >= 60) return '一般';
-        else return '需改进';
+    // 导出报表
+    exportReport() {
+        if (!this.currentProjectId || !this.currentVersion) {
+            this.showError('请先生成报表后再导出');
+            return;
+        }
+
+        // 这里可以实现PDF导出功能
+        this.showInfo('导出功能开发中...');
     }
 
-    getExecutionBadgeClass(rate) {
-        if (rate >= 90) return 'bg-success';
-        else if (rate >= 70) return 'bg-warning';
-        else return 'bg-danger';
+    // 显示错误信息
+    showError(message) {
+        // 简单的错误提示实现
+        alert('错误: ' + message);
     }
 
-    getPassBadgeClass(rate) {
-        if (rate >= 95) return 'bg-success';
-        else if (rate >= 80) return 'bg-info';
-        else if (rate >= 60) return 'bg-warning';
-        else return 'bg-danger';
-    }
-
-    calculateQualityLevel(versionData) {
-        // 综合评估版本质量等级
-        const defectDensity = parseFloat(versionData.defectDensity);
-        const testCoverage = parseFloat(versionData.testCoverage);
-        const passRate = parseFloat(versionData.passRate);
-        
-        let score = 0;
-        if (defectDensity < 5) score += 25;
-        else if (defectDensity < 10) score += 20;
-        else if (defectDensity < 20) score += 15;
-        else score += 10;
-        
-        if (testCoverage >= 95) score += 25;
-        else if (testCoverage >= 80) score += 20;
-        else if (testCoverage >= 60) score += 15;
-        else score += 10;
-        
-        if (passRate >= 95) score += 25;
-        else if (passRate >= 80) score += 20;
-        else if (passRate >= 60) score += 15;
-        else score += 10;
-        
-        if (score >= 70) return '优秀';
-        else if (score >= 60) return '良好';
-        else if (score >= 50) return '一般';
-        else return '需改进';
+    // 显示信息
+    showInfo(message) {
+        alert('信息: ' + message);
     }
 
     // 显示加载状态
     showLoading() {
-        // 可以添加加载动画
         document.querySelectorAll('.metric-number').forEach(el => {
             el.textContent = '...';
         });
@@ -527,34 +410,34 @@ class VersionQualityReport {
             el.textContent = '-';
             el.className = 'level-badge level-average';
         });
-        
+
         // 销毁所有图表
         Object.values(this.charts).forEach(chart => {
             if (chart) chart.destroy();
         });
         this.charts = {};
-        
-        // 清空详情区域
-        document.getElementById('storyCoverageDetails').innerHTML = 
-            '<div class="text-center text-muted"><i class="bi bi-info-circle"></i><p>请选择版本查看故事覆盖详情</p></div>';
-        
-        document.querySelector('#cycleExecutionTable tbody').innerHTML = 
-            '<tr><td colspan="7" class="text-center text-muted"><i class="bi bi-info-circle"></i> 请选择版本查看测试周期详情</td></tr>';
-        
-        document.getElementById('versionComparisonSection').style.display = 'none';
-    }
 
-    // 导出报表
-    exportReport() {
-        if (!this.currentProjectId || !this.currentVersion) {
-            alert('请先生成报表！');
-            return;
-        }
-        
-        // TODO: 实现导出功能
-        alert('导出功能开发中...');
+        // 隐藏对比表格
+        document.getElementById('versionComparisonSection').style.display = 'none';
+
+        // 清空详情区域
+        document.getElementById('storyCoverageDetails').innerHTML = `
+            <div class="text-center text-muted">
+                <i class="bi bi-info-circle"></i>
+                <p>请选择版本查看故事覆盖详情</p>
+            </div>
+        `;
+
+        const tbody = document.querySelector('#cycleExecutionTable tbody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    <i class="bi bi-info-circle"></i> 请选择版本查看测试周期详情
+                </td>
+            </tr>
+        `;
     }
 }
 
-// 初始化版本质量分析报表
+// 初始化报表
 const qualityReport = new VersionQualityReport();

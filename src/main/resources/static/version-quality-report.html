@@ -298,3 +298,302 @@
     <script src="version-quality-report.js"></script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>版本质量分析报表</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        .metric-card.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .metric-card.warning {
+            background: linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%);
+        }
+        .metric-card.danger {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .level-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .level-excellent { background: #d4edda; color: #155724; }
+        .level-good { background: #d1ecf1; color: #0c5460; }
+        .level-average { background: #fff3cd; color: #856404; }
+        .level-poor { background: #f8d7da; color: #721c24; }
+        .version-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .story-coverage-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .covered { border-left-color: #28a745; background: #f8fff9; }
+        .not-covered { border-left-color: #dc3545; background: #fff8f8; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <!-- 侧边栏导航 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6><i class="bi bi-bar-chart"></i> 分析报表</h6>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action active">
+                            版本质量分析
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            环境稳定性分析
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            版本发布风险评估
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            测试资源优化
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            版本交付趋势
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2><i class="bi bi-graph-up"></i> 版本质量分析报表</h2>
+                        <p class="text-muted">评估每个发布版本的整体质量状况，支持多维度质量分析</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="qualityReport.exportReport()">
+                        <i class="bi bi-download"></i> 导出报表
+                    </button>
+                </div>
+
+                <!-- 版本选择器 -->
+                <div class="version-selector">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">项目</label>
+                            <select class="form-select" id="projectSelect">
+                                <option value="">请选择项目</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">发布版本</label>
+                            <select class="form-select" id="versionSelect">
+                                <option value="">请选择版本</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">对比版本（可选）</label>
+                            <select class="form-select" id="compareVersionSelect">
+                                <option value="">选择对比版本</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <button class="btn btn-success me-2" onclick="qualityReport.loadReport()">
+                                <i class="bi bi-search"></i> 生成报表
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="qualityReport.loadComparison()">
+                                <i class="bi bi-arrow-left-right"></i> 版本对比
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 质量指标卡片 -->
+                <div class="row" id="metricsCards">
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <div class="metric-label">
+                                <i class="bi bi-bug"></i> 缺陷密度
+                            </div>
+                            <div class="metric-number" id="defectDensity">-</div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="level-badge" id="defectDensityLevel">-</span>
+                                <small>缺陷/100用例</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card success">
+                            <div class="metric-label">
+                                <i class="bi bi-shield-check"></i> 测试覆盖率
+                            </div>
+                            <div class="metric-number" id="testCoverage">-</div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="level-badge" id="testCoverageLevel">-</span>
+                                <small>故事覆盖率</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card warning">
+                            <div class="metric-label">
+                                <i class="bi bi-play-circle"></i> 测试执行率
+                            </div>
+                            <div class="metric-number" id="executionRate">-</div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="level-badge" id="executionRateLevel">-</span>
+                                <small>执行/计划</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card danger">
+                            <div class="metric-label">
+                                <i class="bi bi-check-circle"></i> 测试通过率
+                            </div>
+                            <div class="metric-number" id="passRate">-</div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="level-badge" id="passRateLevel">-</span>
+                                <small>通过/执行</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表分析区域 -->
+                <div class="row">
+                    <!-- 缺陷分布饼图 -->
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5><i class="bi bi-pie-chart"></i> 缺陷严重程度分布</h5>
+                            <canvas id="defectSeverityChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- 测试执行趋势 -->
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5><i class="bi bi-graph-up"></i> 测试执行趋势</h5>
+                            <canvas id="executionTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- 模块缺陷分布 -->
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5><i class="bi bi-bar-chart"></i> 模块缺陷分布</h5>
+                            <canvas id="moduleDefectChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- 环境缺陷对比 -->
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5><i class="bi bi-layers"></i> 环境缺陷对比</h5>
+                            <canvas id="envDefectChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 故事测试覆盖详情 -->
+                <div class="chart-container">
+                    <h5><i class="bi bi-list-check"></i> 故事测试覆盖详情</h5>
+                    <div id="storyCoverageDetails">
+                        <div class="text-center text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            <p>请选择版本查看故事覆盖详情</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 测试周期执行详情 -->
+                <div class="chart-container">
+                    <h5><i class="bi bi-clock-history"></i> 测试周期执行详情</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="cycleExecutionTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>测试周期</th>
+                                    <th>计划用例</th>
+                                    <th>执行用例</th>
+                                    <th>通过用例</th>
+                                    <th>失败用例</th>
+                                    <th>执行率</th>
+                                    <th>通过率</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">
+                                        <i class="bi bi-info-circle"></i> 请选择版本查看测试周期详情
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 版本质量对比表 -->
+                <div class="chart-container" id="versionComparisonSection" style="display: none;">
+                    <h5><i class="bi bi-arrow-left-right"></i> 版本质量对比分析</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="versionComparisonTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>版本</th>
+                                    <th>缺陷密度</th>
+                                    <th>测试覆盖率</th>
+                                    <th>执行率</th>
+                                    <th>通过率</th>
+                                    <th>总缺陷数</th>
+                                    <th>总用例数</th>
+                                    <th>质量等级</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="version-quality-report.js"></script>
+</body>
+</html>
