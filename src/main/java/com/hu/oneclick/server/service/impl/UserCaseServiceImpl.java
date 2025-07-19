@@ -26,6 +26,9 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
     public boolean insertUserCase(UserCaseParam userCaseParam) {
         UserCaseDto entity = BeanUtil.copyProperties(userCaseParam, UserCaseDto.class);
 
+        // 手动设置创建时间
+        entity.setCreateTime(new Date());
+        
         // 保存自定义字段
         if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand())) {
             String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand());
