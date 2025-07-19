@@ -1,452 +1,169 @@
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.server.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.hu.oneclick.server.service.VersionQualityReportService;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * 版本质量分析报表服务实现
- */
 @Service
 public class VersionQualityReportServiceImpl implements VersionQualityReportService {
 
-    @Autowired
-    private ProjectService projectService;
-
-    @Autowired
-    private TestCaseService testCaseService;
-
-    @Autowired
-    private TestCycleService testCycleService;
-
-    @Autowired
-    private IssueService issueService;
-
-    @Autowired
-    private FeatureService featureService;
-
     @Override
-    public Resp<Map<String, Object>> getQualityOverview(String projectId) {
-        Map<String, Object> result = new HashMap<>();
-
+    public Resp<Map<String, Object>> getVersionQualityReport(String projectId, String version) {
         try {
-            // 这里可以实现项目质量总览逻辑
-            result.put("totalVersions", 5);
-            result.put("averageDefectDensity", 3.2);
-            result.put("averageTestCoverage", 85.5);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Resp.error("获取质量总览失败：" + e.getMessage());
-        }
+            Map<String, Object> result = new HashMap<>();
 
-        return Resp.ok(result);
-    }
+            // 模拟数据 - 基础质量指标
+            Map<String, Object> metrics = new HashMap<>();
 
-    @Override
-    public Resp<Map<String, Object>> getDefectDensity(String projectId, String releaseVersion) {
-        Map<String, Object> result = new HashMap<>();
+            // 缺陷密度计算: (版本总缺陷数 ÷ 版本实际执行测试用例数) × 100
+            int totalDefects = 15;
+            int executedTestCases = 120;
+            int plannedTestCases = 135;
+            double defectDensity = (double) totalDefects / executedTestCases * 100;
 
-        try {
-            // 获取版本总缺陷数
-            int totalDefects = getTotalDefects(projectId, releaseVersion);
+            // 测试覆盖率计算: (已覆盖故事数 ÷ 版本总故事数) × 100%
+            int totalStories = 25;
+            int coveredStories = 22;
+            double testCoverage = (double) coveredStories / totalStories * 100;
 
-            // 获取版本实际执行的测试用例数
-            int executedTestCases = getExecutedTestCases(projectId, releaseVersion);
+            // 测试执行率计算: (实际执行测试用例数 ÷ 计划执行测试用例数) × 100%
+            double executionRate = (double) executedTestCases / plannedTestCases * 100;
 
-            // 计算缺陷密度
-            double defectDensity = 0.0;
-            if (executedTestCases > 0) {
-                defectDensity = (double) totalDefects / executedTestCases * 100;
-            }
+            // 测试通过率计算: (通过测试用例数 ÷ 实际执行测试用例数) × 100%
+            int passedTestCases = 108;
+            double passRate = (double) passedTestCases / executedTestCases * 100;
 
-            // 设置质量等级
-            String level = getDefectDensityLevel(defectDensity);
+            metrics.put("defectDensity", Math.round(defectDensity * 100.0) / 100.0);
+            metrics.put("testCoverage", Math.round(testCoverage * 100.0) / 100.0);
+            metrics.put("executionRate", Math.round(executionRate * 100.0) / 100.0);
+            metrics.put("passRate", Math.round(passRate * 100.0) / 100.0);
 
-            result.put("defectDensity", Math.round(defectDensity * 100.0) / 100.0);
-            result.put("totalDefects", totalDefects);
-            result.put("executedTestCases", executedTestCases);
-            result.put("level", level);
-            result.put("formula", "缺陷密度 = (版本总缺陷数 ÷ 版本实际执行测试用例数) × 100");
+            result.put("metrics", metrics);
+
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return Resp.error("获取缺陷密度数据失败：" + e.getMessage());
+            return new Resp.Builder<Map<String, Object>>().buildResult("参数错误或数据获取失败");
         }
-
-        return Resp.ok(result);
     }
 
     @Override
-    public Resp<Map<String, Object>> getTestCoverage(String projectId, String releaseVersion) {
-        Map<String, Object> result = new HashMap<>();
-
+    public Resp<Map<String, Object>> getDefectSeverityDistribution(String projectId, String version) {
         try {
-            // 获取版本总故事数
-            int totalStories = getTotalStories(projectId, releaseVersion);
+            Map<String, Object> result = new HashMap<>();
 
-            // 获取已覆盖测试的故事数
-            int coveredStories = getCoveredStories(projectId, releaseVersion);
-
-            // 计算测试覆盖率
-            double coverage = 0.0;
-            if (totalStories > 0) {
-                coverage = (double) coveredStories / totalStories * 100;
-            }
-
-            String level = getTestCoverageLevel(coverage);
-
-            result.put("testCoverage", Math.round(coverage * 100.0) / 100.0);
-            result.put("totalStories", totalStories);
-            result.put("coveredStories", coveredStories);
-            result.put("level", level);
-            result.put("formula", "测试覆盖率 = (已覆盖故事数 ÷ 版本总故事数) × 100%");
-            result.put("storyCoverageDetails", getStoryCoverageDetails(projectId, releaseVersion));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Resp.error("获取测试覆盖率数据失败：" + e.getMessage());
-        }
-
-        return Resp.ok(result);
-    }
-
-    @Override
-    public Resp<Map<String, Object>> getDefectDistribution(String projectId, String releaseVersion) {
-        Map<String, Object> result = new HashMap<>();
-
-        try {
-            result.put("severityDistribution", getDefectSeverityDistribution(projectId, releaseVersion));
-            result.put("moduleDistribution", getModuleDefectDistribution(projectId, releaseVersion));
-            result.put("envDistribution", getEnvDefectDistribution(projectId, releaseVersion));
-            result.put("executionTrend", getTestExecutionTrend(projectId, releaseVersion));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Resp.error("获取缺陷分布数据失败：" + e.getMessage());
-        }
-
-        return Resp.ok(result);
-    }
-
-    @Override
-    public Resp<Map<String, Object>> getExecutionRate(String projectId, String releaseVersion) {
-        Map<String, Object> result = new HashMap<>();
-
-        try {
-            // 获取计划执行的测试用例数
-            int plannedTestCases = getPlannedTestCases(projectId, releaseVersion);
-
-            // 获取实际执行的测试用例数
-            int executedTestCases = getExecutedTestCases(projectId, releaseVersion);
-
-            // 获取通过的测试用例数
-            int passedTestCases = getPassedTestCases(projectId, releaseVersion);
-
-            // 计算执行率
-            double executionRate = 0.0;
-            if (plannedTestCases > 0) {
-                executionRate = (double) executedTestCases / plannedTestCases * 100;
-            }
-
-            // 计算通过率
-            double passRate = 0.0;
-            if (executedTestCases > 0) {
-                passRate = (double) passedTestCases / executedTestCases * 100;
-            }
-
-            String executionLevel = getExecutionRateLevel(executionRate);
-            String passLevel = getPassRateLevel(passRate);
-
-            result.put("executionRate", Math.round(executionRate * 100.0) / 100.0);
-            result.put("passRate", Math.round(passRate * 100.0) / 100.0);
-            result.put("plannedTestCases", plannedTestCases);
-            result.put("executedTestCases", executedTestCases);
-            result.put("passedTestCases", passedTestCases);
-            result.put("executionLevel", executionLevel);
-            result.put("passLevel", passLevel);
-            result.put("cycleExecutionDetails", getCycleExecutionDetails(projectId, releaseVersion));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Resp.error("获取测试执行率数据失败：" + e.getMessage());
-        }
-
-        return Resp.ok(result);
-    }
-
-    @Override
-    public Resp<Map<String, Object>> getVersionComparison(String projectId, String startVersion, String endVersion) {
-        Map<String, Object> result = new HashMap<>();
-
-        try {
-            List<Map<String, Object>> comparisonData = new ArrayList<>();
-
-            if (startVersion != null && !startVersion.isEmpty()) {
-                comparisonData.add(getVersionQualityData(projectId, startVersion));
-            }
-
-            if (endVersion != null && !endVersion.isEmpty()) {
-                comparisonData.add(getVersionQualityData(projectId, endVersion));
-            }
-
-            result.put("versionComparison", comparisonData);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Resp.error("获取版本对比数据失败：" + e.getMessage());
-        }
-
-        return Resp.ok(result);
-    }
-
-    // 私有辅助方法
-    private int getTotalDefects(String projectId, String releaseVersion) {
-        // 模拟数据，实际应从数据库查询
-        return 15;
-    }
-
-    private int getExecutedTestCases(String projectId, String releaseVersion) {
-        // 模拟数据，实际应从数据库查询
-        return 120;
-    }
-
-    private int getPlannedTestCases(String projectId, String releaseVersion) {
-        // 模拟数据，实际应从数据库查询
-        return 135;
-    }
-
-    private int getPassedTestCases(String projectId, String releaseVersion) {
-        // 模拟数据，实际应从数据库查询
-        return 112;
-    }
-
-    private int getTotalStories(String projectId, String releaseVersion) {
-        // 模拟数据，实际应从数据库查询
-        return 25;
-    }
-
-    private int getCoveredStories(String projectId, String releaseVersion) {
-        // 模拟数据，实际应从数据库查询
-        return 22;
-    }
-
-    private String getDefectDensityLevel(double density) {
-        if (density <= 2) return "优秀";
-        if (density <= 5) return "良好";
-        if (density <= 10) return "一般";
-        return "需改进";
-    }
-
-    private String getTestCoverageLevel(double coverage) {
-        if (coverage >= 90) return "优秀";
-        if (coverage >= 80) return "良好";
-        if (coverage >= 70) return "一般";
-        return "需改进";
-    }
-
-    private String getExecutionRateLevel(double rate) {
-        if (rate >= 95) return "优秀";
-        if (rate >= 85) return "良好";
-        if (rate >= 75) return "一般";
-        return "需改进";
-    }
-
-    private String getPassRateLevel(double rate) {
-        if (rate >= 95) return "优秀";
-        if (rate >= 90) return "良好";
-        if (rate >= 85) return "一般";
-        return "需改进";
-    }
-
-    private List<Map<String, Object>> getDefectSeverityDistribution(String projectId, String releaseVersion) {
-        List<Map<String, Object>> distribution = new ArrayList<>();
-        try {
             // 模拟缺陷严重程度分布数据
-            String[] severities = {"致命", "严重", "一般", "轻微"};
-            int[] counts = {2, 5, 6, 2};
+            List<String> labels = List.of("致命", "严重", "一般", "轻微");
+            List<Integer> data = List.of(2, 5, 6, 2);
+            List<String> colors = List.of("#dc3545", "#fd7e14", "#ffc107", "#28a745");
 
-            for (int i = 0; i < severities.length; i++) {
-                Map<String, Object> item = new HashMap<>();
-                item.put("severity", severities[i]);
-                item.put("count", counts[i]);
-                distribution.add(item);
-            }
+            result.put("labels", labels);
+            result.put("data", data);
+            result.put("colors", colors);
+
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取缺陷分布数据失败");
         }
-        return distribution;
     }
 
-    private List<Map<String, Object>> getModuleDefectDistribution(String projectId, String releaseVersion) {
-        List<Map<String, Object>> distribution = new ArrayList<>();
+    @Override
+    public Resp<Map<String, Object>> getExecutionTrend(String projectId, String version) {
         try {
-            // 模拟模块缺陷分布数据
-            String[] modules = {"用户管理", "项目管理", "测试管理", "报表模块", "系统设置"};
-            int[] counts = {4, 3, 5, 2, 1};
+            Map<String, Object> result = new HashMap<>();
 
-            for (int i = 0; i < modules.length; i++) {
-                Map<String, Object> item = new HashMap<>();
-                item.put("module", modules[i]);
-                item.put("count", counts[i]);
-                distribution.add(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return distribution;
-    }
-
-    private List<Map<String, Object>> getEnvDefectDistribution(String projectId, String releaseVersion) {
-        List<Map<String, Object>> distribution = new ArrayList<>();
-        try {
-            // 模拟环境缺陷分布数据
-            String[] envs = {"开发环境", "测试环境", "预发布环境"};
-            int[] counts = {8, 5, 2};
-
-            for (int i = 0; i < envs.length; i++) {
-                Map<String, Object> item = new HashMap<>();
-                item.put("env", envs[i]);
-                item.put("count", counts[i]);
-                distribution.add(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return distribution;
-    }
-
-    private List<Map<String, Object>> getStoryCoverageDetails(String projectId, String releaseVersion) {
-        List<Map<String, Object>> details = new ArrayList<>();
-        try {
-            // 模拟故事覆盖详情数据
-            String[] stories = {"用户登录功能", "项目创建功能", "测试用例管理", "缺陷管理", "报表生成", "权限管理", "系统配置"};
-            boolean[] covered = {true, true, true, true, true, false, false};
-            int[] testCases = {15, 12, 25, 18, 8, 0, 0};
-
-            for (int i = 0; i < stories.length; i++) {
-                Map<String, Object> item = new HashMap<>();
-                item.put("story", stories[i]);
-                item.put("covered", covered[i]);
-                item.put("testCaseCount", testCases[i]);
-                details.add(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return details;
-    }
-
-    private List<Map<String, Object>> getTestExecutionTrend(String projectId, String releaseVersion) {
-        List<Map<String, Object>> trend = new ArrayList<>();
-        try {
             // 模拟测试执行趋势数据
-            String[] dates = {"2024-01-15", "2024-01-16", "2024-01-17", "2024-01-18", "2024-01-19", "2024-01-20", "2024-01-21"};
-            double[] executionRates = {75.0, 80.5, 85.2, 88.7, 92.3, 95.1, 97.8};
-            double[] passRates = {92.5, 93.2, 94.1, 93.8, 95.5, 96.2, 97.1};
+            List<String> dates = List.of("2025-01-15", "2025-01-16", "2025-01-17", "2025-01-18", "2025-01-19", "2025-01-20", "2025-01-21");
+            List<Integer> planned = List.of(100, 110, 120, 125, 130, 135, 135);
+            List<Integer> executed = List.of(85, 95, 105, 110, 115, 120, 120);
+            List<Integer> passed = List.of(80, 88, 96, 102, 106, 108, 108);
 
-            for (int i = 0; i < dates.length; i++) {
-                Map<String, Object> item = new HashMap<>();
-                item.put("date", dates[i]);
-                item.put("executionRate", executionRates[i]);
-                item.put("passRate", passRates[i]);
-                trend.add(item);
-            }
+            result.put("dates", dates);
+            result.put("planned", planned);
+            result.put("executed", executed);
+            result.put("passed", passed);
+
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取执行趋势数据失败");
         }
-        return trend;
     }
 
-    private List<Map<String, Object>> getCycleExecutionDetails(String projectId, String releaseVersion) {
-        List<Map<String, Object>> details = new ArrayList<>();
+    @Override
+    public Resp<Map<String, Object>> getModuleDefectDistribution(String projectId, String version) {
         try {
-            // 模拟测试周期执行详情数据
-            String[] cycles = {"冒烟测试", "功能测试", "集成测试", "回归测试"};
-            int[] planned = {30, 45, 35, 25};
-            int[] executed = {28, 42, 33, 24};
-            int[] passed = {26, 38, 30, 22};
+            Map<String, Object> result = new HashMap<>();
 
-            for (int i = 0; i < cycles.length; i++) {
-                Map<String, Object> item = new HashMap<>();
-                item.put("cycle", cycles[i]);
-                item.put("planned", planned[i]);
-                item.put("executed", executed[i]);
-                item.put("passed", passed[i]);
-                item.put("failed", executed[i] - passed[i]);
+            // 模拟模块缺陷分布数据
+            List<String> modules = List.of("用户管理", "项目管理", "测试管理", "报表分析", "系统设置");
+            List<Integer> defectCounts = List.of(4, 3, 5, 2, 1);
 
-                double executionRate = planned[i] > 0 ? (double) executed[i] / planned[i] * 100 : 0;
-                double passRate = executed[i] > 0 ? (double) passed[i] / executed[i] * 100 : 0;
+            result.put("modules", modules);
+            result.put("defectCounts", defectCounts);
 
-                item.put("executionRate", Math.round(executionRate * 100.0) / 100.0);
-                item.put("passRate", Math.round(passRate * 100.0) / 100.0);
-                details.add(item);
-            }
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取模块缺陷分布失败");
         }
-        return details;
     }
 
-    private Map<String, Object> getVersionQualityData(String projectId, String version) {
-        Map<String, Object> data = new HashMap<>();
+    @Override
+    public Resp<Map<String, Object>> getEnvironmentDefectComparison(String projectId, String version) {
+        try {
+            Map<String, Object> result = new HashMap<>();
 
-        // 获取各项质量指标
-        int totalDefects = getTotalDefects(projectId, version);
-        int executedTestCases = getExecutedTestCases(projectId, version);
-        int totalStories = getTotalStories(projectId, version);
-        int coveredStories = getCoveredStories(projectId, version);
-        int plannedTestCases = getPlannedTestCases(projectId, version);
-        int passedTestCases = getPassedTestCases(projectId, version);
+            // 模拟环境缺陷对比数据
+            List<String> environments = List.of("开发环境", "测试环境", "预发布环境");
+            List<Integer> defectCounts = List.of(8, 5, 2);
+            List<String> colors = List.of("#17a2b8", "#ffc107", "#28a745");
 
-        double defectDensity = executedTestCases > 0 ? (double) totalDefects / executedTestCases * 100 : 0;
-        double testCoverage = totalStories > 0 ? (double) coveredStories / totalStories * 100 : 0;
-        double executionRate = plannedTestCases > 0 ? (double) executedTestCases / plannedTestCases * 100 : 0;
-        double passRate = executedTestCases > 0 ? (double) passedTestCases / executedTestCases * 100 : 0;
+            result.put("environments", environments);
+            result.put("defectCounts", defectCounts);
+            result.put("colors", colors);
 
-        data.put("version", version);
-        data.put("defectDensity", Math.round(defectDensity * 100.0) / 100.0);
-        data.put("testCoverage", Math.round(testCoverage * 100.0) / 100.0);
-        data.put("executionRate", Math.round(executionRate * 100.0) / 100.0);
-        data.put("passRate", Math.round(passRate * 100.0) / 100.0);
-        data.put("totalDefects", totalDefects);
-        data.put("totalTestCases", executedTestCases);
-        data.put("qualityLevel", getOverallQualityLevel(defectDensity, testCoverage, executionRate, passRate));
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
 
-        return data;
+        } catch (Exception e) {
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取环境缺陷对比失败");
+        }
     }
 
-    private String getOverallQualityLevel(double defectDensity, double testCoverage, double executionRate, double passRate) {
-        int excellentCount = 0;
-        int goodCount = 0;
-        int averageCount = 0;
+    @Override
+    public Resp<Map<String, Object>> getStoryCoverageDetails(String projectId, String version) {
+        try {
+            Map<String, Object> result = new HashMap<>();
 
-        // 统计各指标等级
-        if (defectDensity <= 2) excellentCount++;
-        else if (defectDensity <= 5) goodCount++;
-        else if (defectDensity <= 10) averageCount++;
+            // 模拟故事测试覆盖详情
+            List<Map<String, Object>> stories = new ArrayList<>();
 
-        if (testCoverage >= 90) excellentCount++;
-        else if (testCoverage >= 80) goodCount++;
-        else if (testCoverage >= 70) averageCount++;
+            String[] storyNames = {"用户登录功能", "项目创建功能", "测试用例管理", "缺陷管理", "报表生成", 
+                                 "权限管理", "数据导入导出", "通知提醒", "系统配置", "API接口"};
+            boolean[] coverageStatus = {true, true, true, true, true, true, true, false, false, false};
 
-        if (executionRate >= 95) excellentCount++;
-        else if (executionRate >= 85) goodCount++;
-        else if (executionRate >= 75) averageCount++;
+            for (int i = 0; i < storyNames.length; i++) {
+                Map<String, Object> story = new HashMap<>();
+                story.put("name", storyNames[i]);
+                story.put("covered", coverageStatus[i]);
+                story.put("testCaseCount", coverageStatus[i] ? (int)(Math.random() * 10 + 5) : 0);
+                stories.add(story);
+            }
 
-        if (passRate >= 95) excellentCount++;
-        else if (passRate >= 90) goodCount++;
-        else if (passRate >= 85) averageCount++;
+            result.put("stories", stories);
+            result.put("totalStories", stories.size());
+            result.put("coveredStories", (int) stories.stream().mapToLong(s -> (Boolean) s.get("covered") ? 1 : 0).sum());
 
-        // 综合评级
-        if (excellentCount >= 3) return "优秀";
-        if (excellentCount + goodCount >= 3) return "良好";
-        if (excellentCount + goodCount + averageCount >= 3) return "一般";
-        return "需改进";
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+
+        } catch (Exception e) {
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取故事覆盖详情失败");
+        }
     }
 }
