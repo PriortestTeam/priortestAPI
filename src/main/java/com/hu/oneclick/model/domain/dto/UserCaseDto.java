@@ -41,13 +41,13 @@ public class UserCaseDto {
     /**
      * 创建时间 - 自动填充
      */
-    @TableField(fill = FieldFill.INSERT)
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
     
     /**
-     * 创建用户ID - 自动填充
+     * 创建用户ID - 自动填充  
      */
-    @TableField(fill = FieldFill.INSERT)
+    @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 
 }
