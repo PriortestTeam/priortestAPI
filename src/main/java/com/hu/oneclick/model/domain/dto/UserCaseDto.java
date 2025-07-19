@@ -5,6 +5,8 @@ import com.hu.oneclick.model.base.AssignBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 @Data
 @TableName(value = "use_case")
 @EqualsAndHashCode(callSuper=false)
@@ -30,5 +32,7 @@ public class UserCaseDto extends AssignBaseEntity {
     private long featureId;
 
     private String remarks;
+
+    private Date createTime;
 
 }

@@ -46,4 +46,11 @@ public class UserCaseVo implements Serializable {
 
     @Schema(description = "备注")
     private String remarks;
+
+    @Schema(description = "创建时间")
+    private java.util.Date createTime;D")
+    private long featureId;
+
+    @Schema(description = "备注")
+    private String remarks;
 }
