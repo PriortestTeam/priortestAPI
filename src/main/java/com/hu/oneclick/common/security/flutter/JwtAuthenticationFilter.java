@@ -186,7 +186,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                path.equals("/api/swagger-ui.html") ||
                path.startsWith("/swagger-ui/") ||
                path.startsWith("/v3/api-docs") ||
-               path.equals("/swagger-ui.html");
+               path.equals("/swagger-ui.html") ||
+               path.endsWith(".html") ||
+               path.endsWith(".js") ||
+               path.endsWith(".css") ||
+               path.startsWith("/api/static/");
     }
 
     private boolean shouldSkipAuthentication(HttpServletRequest request) {
