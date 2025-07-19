@@ -14,7 +14,7 @@ import java.util.Map;
  * 版本质量分析报表控制器
  */
 @RestController
-@RequestMapping("/versionQualityReport")
+@RequestMapping("/api/versionQualityReport")
 @Tag(name = "版本质量分析", description = "版本质量分析报表相关接口")
 public class VersionQualityReportController {
 
