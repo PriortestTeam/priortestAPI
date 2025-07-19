@@ -26,28 +26,51 @@
             margin-bottom: 30px;
         }
         .metric-card {
-            background: white;
             padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             text-align: center;
-            transition: transform 0.3s ease;
-            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
         }
         .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+        .metric-card.card-purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .metric-card.card-blue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        .metric-card.card-green {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+        .metric-card.card-orange {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
         }
         .metric-value {
-            font-size: 2.5rem;
-            font-weight: bold;
+            font-size: 3rem;
+            font-weight: 700;
             margin: 15px 0;
-            color: #2c3e50;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .metric-label {
-            font-size: 1.1rem;
-            color: #6c757d;
-            margin-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            opacity: 0.8;
         }
         .chart-container {
             background: white;
@@ -293,29 +316,29 @@
 
                 <!-- 质量指标卡片 -->
                 <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="text-danger"><i class="bi bi-bug fs-1"></i></div>
+                    <div class="metric-card card-purple">
+                        <div class="metric-icon"><i class="bi bi-bug"></i></div>
                         <div class="metric-value" id="defectDensity">--</div>
                         <div class="metric-label">缺陷密度</div>
-                        <div class="level-badge level-average" id="defectDensityLevel">待分析</div>
+                        <div class="level-badge" id="defectDensityLevel" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">待分析</div>
                     </div>
-                    <div class="metric-card">
-                        <div class="text-success"><i class="bi bi-shield-check fs-1"></i></div>
+                    <div class="metric-card card-blue">
+                        <div class="metric-icon"><i class="bi bi-shield-check"></i></div>
                         <div class="metric-value" id="testCoverage">--</div>
                         <div class="metric-label">测试覆盖率</div>
-                        <div class="level-badge level-average" id="testCoverageLevel">待分析</div>
+                        <div class="level-badge" id="testCoverageLevel" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">待分析</div>
                     </div>
-                    <div class="metric-card">
-                        <div class="text-info"><i class="bi bi-play-circle fs-1"></i></div>
+                    <div class="metric-card card-green">
+                        <div class="metric-icon"><i class="bi bi-play-circle"></i></div>
                         <div class="metric-value" id="executionRate">--</div>
                         <div class="metric-label">执行率</div>
-                        <div class="level-badge level-average" id="executionRateLevel">待分析</div>
+                        <div class="level-badge" id="executionRateLevel" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">待分析</div>
                     </div>
-                    <div class="metric-card">
-                        <div class="text-warning"><i class="bi bi-check-square fs-1"></i></div>
+                    <div class="metric-card card-orange">
+                        <div class="metric-icon"><i class="bi bi-check-square"></i></div>
                         <div class="metric-value" id="passRate">--</div>
                         <div class="metric-label">通过率</div>
-                        <div class="level-badge level-average" id="passRateLevel">待分析</div>
+                        <div class="level-badge" id="passRateLevel" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">待分析</div>
                     </div>
                 </div>
 
