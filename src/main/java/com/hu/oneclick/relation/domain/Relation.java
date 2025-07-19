@@ -55,4 +55,18 @@ public class Relation extends AssignBaseEntity {
     @TableField(fill = FieldFill.INSERT)
     @Schema(description = "创建用户ID")
     private Long createUserId;
+
+    /** 重写父类的updateUserId字段，标记为非数据库字段 */
+    @Override
+    @TableField(exist = false)
+    public Long getUpdateUserId() {
+        return super.getUpdateUserId();
+    }
+
+    /** 重写父类的updateTime字段，标记为非数据库字段 */
+    @Override
+    @TableField(exist = false)
+    public Date getUpdateTime() {
+        return super.getUpdateTime();
+    }
 }
