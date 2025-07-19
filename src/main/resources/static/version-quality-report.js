@@ -1,4 +1,3 @@
-
 // 版本质量分析报表JavaScript
 class VersionQualityReport {
     constructor() {
@@ -37,14 +36,14 @@ class VersionQualityReport {
         try {
             const response = await fetch('/project/getProjectList');
             console.log('项目列表响应状态:', response.status);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
-            
+
             const result = await response.json();
             console.log('项目列表数据:', result);
-            
+
             const select = document.getElementById('projectSelect');
             if (!select) {
                 console.error('找不到项目选择器元素');
@@ -71,7 +70,7 @@ class VersionQualityReport {
         } catch (error) {
             console.error('加载项目列表失败:', error);
             this.showError('加载项目列表失败: ' + error.message);
-            
+
             // 添加备用项目选项
             const select = document.getElementById('projectSelect');
             if (select) {
@@ -192,7 +191,7 @@ class VersionQualityReport {
     // 更新指标卡片
     updateMetricsCards(defectData, coverageData, executionData) {
         // 缺陷密度
-        this.updateMetricCard('defectDensity', defectData.defectDensity || 0, defectData.level || '-');
+        this.updateDefectDensity(defectData);
 
         // 测试覆盖率
         this.updateMetricCard('testCoverage', (coverageData.storyCoverage || 0).toFixed(1) + '%', coverageData.level || '-');
@@ -214,7 +213,7 @@ class VersionQualityReport {
             levelEl.textContent = level;
             levelEl.className = 'level-badge ' + this.getLevelClass(level);
         }
-        
+
         // 动态设置卡片颜色
         if (cardEl) {
             // 移除所有等级相关的类
@@ -269,7 +268,7 @@ class VersionQualityReport {
 
     createDefectSeverityChart(data) {
         const ctx = document.getElementById('defectSeverityChart').getContext('2d');
-        
+
         if (this.charts.severity) {
             this.charts.severity.destroy();
         }
@@ -298,7 +297,7 @@ class VersionQualityReport {
 
     createExecutionTrendChart(data) {
         const ctx = document.getElementById('executionTrendChart').getContext('2d');
-        
+
         if (this.charts.trend) {
             this.charts.trend.destroy();
         }
@@ -340,7 +339,7 @@ class VersionQualityReport {
 
     createModuleDefectChart(data) {
         const ctx = document.getElementById('moduleDefectChart').getContext('2d');
-        
+
         if (this.charts.module) {
             this.charts.module.destroy();
         }
@@ -370,7 +369,7 @@ class VersionQualityReport {
 
     createEnvDefectChart(data) {
         const ctx = document.getElementById('envDefectChart').getContext('2d');
-        
+
         if (this.charts.env) {
             this.charts.env.destroy();
         }
@@ -400,7 +399,7 @@ class VersionQualityReport {
     // 更新故事覆盖详情
     updateStoryCoverageDetails(data) {
         const container = document.getElementById('storyCoverageDetails');
-        
+
         if (!data || data.length === 0) {
             container.innerHTML = '<div class="text-center text-muted"><i class="bi bi-info-circle"></i><p>暂无故事覆盖数据</p></div>';
             return;
@@ -411,7 +410,7 @@ class VersionQualityReport {
             const statusClass = item.covered ? 'covered' : 'not-covered';
             const statusIcon = item.covered ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger';
             const statusText = item.covered ? '已覆盖' : '未覆盖';
-            
+
             html += `
                 <div class="story-coverage-item ${statusClass}">
                     <div class="d-flex justify-content-between align-items-center">
@@ -434,7 +433,7 @@ class VersionQualityReport {
     // 更新测试周期执行详情表格
     updateCycleExecutionTable(data) {
         const tbody = document.querySelector('#cycleExecutionTable tbody');
-        
+
         if (!data || data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted"><i class="bi bi-info-circle"></i> 暂无测试周期数据</td></tr>';
             return;
@@ -479,7 +478,7 @@ class VersionQualityReport {
     // 更新版本对比表格
     updateVersionComparisonTable(data) {
         const tbody = document.querySelector('#versionComparisonTable tbody');
-        
+
         if (!data || data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted"><i class="bi bi-info-circle"></i> 暂无对比数据</td></tr>';
             return;
@@ -520,7 +519,7 @@ class VersionQualityReport {
         ['defectDensity', 'testCoverage', 'executionRate', 'passRate'].forEach(id => {
             const el = document.getElementById(id);
             const levelEl = document.getElementById(id + 'Level');
-            
+
             if (el) el.textContent = '-';
             if (levelEl) {
                 levelEl.textContent = '-';
@@ -537,7 +536,7 @@ class VersionQualityReport {
         // 清空详情区域
         document.getElementById('storyCoverageDetails').innerHTML = '<div class="text-center text-muted"><i class="bi bi-info-circle"></i><p>请选择版本查看故事覆盖详情</p></div>';
         document.querySelector('#cycleExecutionTable tbody').innerHTML = '<tr><td colspan="7" class="text-center text-muted"><i class="bi bi-info-circle"></i> 请选择版本查看测试周期详情</td></tr>';
-        
+
         // 隐藏对比区域
         document.getElementById('versionComparisonSection').style.display = 'none';
     }
@@ -573,7 +572,7 @@ class VersionQualityReport {
     // 显示错误信息
     showError(message) {
         console.error('错误:', message);
-        
+
         // 创建错误提示框
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed';
@@ -583,7 +582,7 @@ class VersionQualityReport {
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         document.body.appendChild(alertDiv);
-        
+
         // 5秒后自动移除
         setTimeout(() => {
             if (alertDiv.parentNode) {
@@ -595,7 +594,7 @@ class VersionQualityReport {
     // 显示成功信息
     showSuccess(message) {
         console.log('成功:', message);
-        
+
         // 创建成功提示框
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
@@ -605,13 +604,95 @@ class VersionQualityReport {
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         document.body.appendChild(alertDiv);
-        
+
         // 3秒后自动移除
         setTimeout(() => {
             if (alertDiv.parentNode) {
                 alertDiv.parentNode.removeChild(alertDiv);
             }
         }, 3000);
+    }
+
+    // 更新缺陷密度指标
+    updateDefectDensity(data) {
+        if (data) {
+            const defectDensityEl = document.getElementById('defectDensity');
+            const defectDensityLevelEl = document.getElementById('defectDensityLevel');
+            const defectDensityCardEl = document.getElementById('defectDensityCard');
+
+            // 显示主要的缺陷密度（基于独立用例）
+            if (defectDensityEl) defectDensityEl.textContent = data.caseBasedDensity + '%';
+            if (defectDensityLevelEl) {
+                defectDensityLevelEl.textContent = data.level || '未知';
+                defectDensityLevelEl.className = 'level-badge ' + this.getLevelClass(data.level);
+            }
+            if (defectDensityCardEl) {
+                this.updateCardLevel(defectDensityCardEl, data.level);
+
+                // 添加详细信息到卡片
+                const existingDetail = defectDensityCardEl.querySelector('.density-detail');
+                if (existingDetail) existingDetail.remove();
+
+                const detailDiv = document.createElement('div');
+                detailDiv.className = 'density-detail';
+                detailDiv.style.cssText = 'font-size: 11px; margin-top: 8px; opacity: 0.8;';
+                detailDiv.innerHTML = `
+                    <div>独立用例: ${data.caseBasedDensity}%</div>
+                    <div>执行次数: ${data.executionBasedDensity}%</div>
+                    <div>加权密度: ${data.weightedDensity}%</div>
+                `;
+                defectDensityCardEl.appendChild(detailDiv);
+            }
+
+            // 更新统计信息显示
+            this.updateDefectStatistics(data);
+        }
+    }
+
+    // 新增: 更新缺陷统计信息
+    updateDefectStatistics(data) {
+        const container = document.querySelector('.chart-container');
+        if (container) {
+            let statsDiv = container.querySelector('.defect-statistics');
+            if (!statsDiv) {
+                statsDiv = document.createElement('div');
+                statsDiv.className = 'defect-statistics';
+                statsDiv.style.cssText = 'background: #f8f9fa; border-radius: 8px; padding: 15px; margin: 15px 0;';
+                container.appendChild(statsDiv);
+            }
+
+            statsDiv.innerHTML = `
+                <h6><i class="bi bi-info-circle text-info"></i> 缺陷统计详情</h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <small class="text-muted">独立测试用例</small>
+                        <div class="fw-bold">${data.uniqueTestCases}个</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">总执行次数</small>
+                        <div class="fw-bold">${data.totalExecutions}次</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">测试周期数</small>
+                        <div class="fw-bold">${data.totalCycles}个</div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <small class="text-muted">独立缺陷数</small>
+                        <div class="fw-bold text-danger">${data.uniqueDefects}个</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">总缺陷实例</small>
+                        <div class="fw-bold text-warning">${data.totalDefectInstances}个</div>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">环境特定缺陷</small>
+                        <div class="fw-bold text-info">${data.environmentSpecificDefects}个</div>
+                    </div>
+                </div>
+            `;
+        }
     }
 }
 

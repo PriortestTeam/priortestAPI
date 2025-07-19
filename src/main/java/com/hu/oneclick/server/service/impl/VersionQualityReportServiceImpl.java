@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.model.base.Resp;
@@ -17,14 +16,14 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
     public Resp<Map<String, Object>> getQualityOverview(String projectId) {
         try {
             Map<String, Object> result = new HashMap<>();
-            
+
             // 模拟项目质量总览数据
             result.put("totalVersions", 5);
             result.put("averageDefectDensity", 8.5);
             result.put("averageTestCoverage", 85.2);
             result.put("totalDefects", 45);
             result.put("totalTestCases", 530);
-            
+
             return new Resp.Builder<Map<String, Object>>().setData(result).ok();
         } catch (Exception e) {
             return new Resp.Builder<Map<String, Object>>().buildResult("获取质量总览失败");
@@ -36,24 +35,47 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         try {
             Map<String, Object> result = new HashMap<>();
 
-            // 缺陷密度计算: (版本总缺陷数 ÷ 版本实际执行测试用例数) × 100
-            int totalDefects = 15;
-            int executedTestCases = 120;
-            int plannedTestCases = 135;
-            double defectDensity = (double) totalDefects / executedTestCases * 100;
+            // 获取基础数据
+            int uniqueTestCases = 45;          // 独立测试用例数（设计时的用例数）
+            int totalExecutions = 120;         // 总执行次数（包含多环境重复执行）
+            int totalCycles = 3;               // 测试周期数
+            int plannedTestCases = 135;        // 计划执行的用例数
 
-            result.put("defectDensity", Math.round(defectDensity * 100.0) / 100.0);
-            result.put("totalDefects", totalDefects);
-            result.put("executedTestCases", executedTestCases);
+            // 缺陷数据
+            int totalDefectInstances = 18;     // 总缺陷实例数（所有环境发现的缺陷）
+            int uniqueDefects = 12;            // 去重后的独立缺陷数
+            int environmentSpecificDefects = 6; // 环境特定缺陷数
+
+            // 方式1: 基于执行次数的缺陷密度 (传统方式)
+            double executionBasedDensity = (double) totalDefectInstances / totalExecutions * 100;
+
+            // 方式2: 基于独立用例的缺陷密度 (推荐方式)
+            double caseBasedDensity = (double) uniqueDefects / uniqueTestCases * 100;
+
+            // 方式3: 加权缺陷密度 (考虑环境因素)
+            double weightedDensity = ((double) uniqueDefects + environmentSpecificDefects * 0.5) / uniqueTestCases * 100;
+
+            result.put("defectDensity", Math.round(caseBasedDensity * 100.0) / 100.0);
+            result.put("executionBasedDensity", Math.round(executionBasedDensity * 100.0) / 100.0);
+            result.put("caseBasedDensity", Math.round(caseBasedDensity * 100.0) / 100.0);
+            result.put("weightedDensity", Math.round(weightedDensity * 100.0) / 100.0);
+
+            result.put("totalDefectInstances", totalDefectInstances);
+            result.put("uniqueDefects", uniqueDefects);
+            result.put("environmentSpecificDefects", environmentSpecificDefects);
+            result.put("uniqueTestCases", uniqueTestCases);
+            result.put("totalExecutions", totalExecutions);
+            result.put("totalCycles", totalCycles);
             result.put("plannedTestCases", plannedTestCases);
-            
+
             // 质量等级评估
             String level;
-            if (defectDensity < 5) {
+            double finalDefectDensity = caseBasedDensity; // 使用推荐的计算方式
+            if (finalDefectDensity < 5) {
                 level = "优秀";
-            } else if (defectDensity < 10) {
-                level = "良好"; 
-            } else if (defectDensity < 15) {
+            } else if (finalDefectDensity < 10) {
+                level = "良好";
+            } else if (finalDefectDensity < 15) {
                 level = "一般";
             } else {
                 level = "需改进";
@@ -87,7 +109,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             result.put("totalStories", totalStories);
             result.put("coveredStories", coveredStories);
             result.put("storyCoverage", Math.round(storyCoverage * 100.0) / 100.0);
-            
+
             // 质量等级
             String level;
             if (storyCoverage >= 95) {
@@ -155,7 +177,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             int executedCases = 120;
             int passedCases = 105;
             int failedCases = 15;
-            
+
             double executionRate = (double) executedCases / plannedCases * 100;
             double passRate = (double) passedCases / executedCases * 100;
 
@@ -271,7 +293,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         return data;
     }
 
-    private Map<String, Object> createCycleExecution(String cycleName, int plannedCases, int executedCases, 
+    private Map<String, Object> createCycleExecution(String cycleName, int plannedCases, int executedCases,
             int passedCases, int failedCases, double executionRate, double passRate) {
         Map<String, Object> data = new HashMap<>();
         data.put("cycleName", cycleName);
@@ -284,8 +306,8 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         return data;
     }
 
-    private Map<String, Object> createVersionComparison(String version, double defectDensity, 
-            double testCoverage, double executionRate, double passRate, 
+    private Map<String, Object> createVersionComparison(String version, double defectDensity,
+            double testCoverage, double executionRate, double passRate,
             int totalDefects, int totalTestCases, String qualityLevel) {
         Map<String, Object> data = new HashMap<>();
         data.put("version", version);

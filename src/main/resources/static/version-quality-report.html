@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -271,17 +270,6 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="formula-card">
-                                <h6><i class="bi bi-bug text-danger"></i> 缺陷密度</h6>
-                                <p class="mb-2"><strong>公式:</strong> (版本总缺陷数 ÷ 版本实际执行测试用例数) × 100</p>
-                                <small class="text-muted">衡量单位测试用例发现缺陷的数量，反映代码质量</small>
-                                <div class="mt-2">
-                                    <span class="badge bg-success me-1">优秀: < 1</span>
-                                    <span class="badge bg-info me-1">良好: 1-3</span>
-                                    <span class="badge bg-warning me-1">一般: 3-5</span>
-                                    <span class="badge bg-danger">需改进: > 5</span>
-                                </div>
-                            </div>
-                            <div class="formula-card">
                                 <h6><i class="bi bi-check-circle text-success"></i> 测试覆盖率</h6>
                                 <p class="mb-2"><strong>公式:</strong> (已覆盖故事数 ÷ 总故事数) × 100%</p>
                                 <small class="text-muted">衡量功能需求的测试覆盖程度</small>
@@ -292,8 +280,6 @@
                                     <span class="badge bg-danger">需改进: < 75%</span>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
                             <div class="formula-card">
                                 <h6><i class="bi bi-play-circle text-info"></i> 测试执行率</h6>
                                 <p class="mb-2"><strong>公式:</strong> (实际执行测试用例数 ÷ 计划测试用例数) × 100%</p>
@@ -305,6 +291,8 @@
                                     <span class="badge bg-danger">需改进: < 80%</span>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="formula-card">
                                 <h6><i class="bi bi-check-square text-primary"></i> 测试通过率</h6>
                                 <p class="mb-2"><strong>公式:</strong> (通过测试用例数 ÷ 执行测试用例数) × 100%</p>
@@ -314,6 +302,34 @@
                                     <span class="badge bg-info me-1">良好: 90-94%</span>
                                     <span class="badge bg-warning me-1">一般: 85-89%</span>
                                     <span class="badge bg-danger">需改进: < 85%</span>
+                                </div>
+                            </div>
+                            <div class="formula-card">
+                                <h6><i class="bi bi-bug text-danger"></i> 缺陷密度计算方式</h6>
+
+                                <div class="mb-3">
+                                    <strong>方式1: 基于独立用例 (推荐)</strong>
+                                    <p class="mb-1"><strong>公式:</strong> (独立缺陷数 ÷ 独立测试用例数) × 100</p>
+                                    <small class="text-muted">考虑用例设计质量，忽略重复执行影响</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <strong>方式2: 基于执行次数</strong>
+                                    <p class="mb-1"><strong>公式:</strong> (总缺陷实例数 ÷ 总执行次数) × 100</p>
+                                    <small class="text-muted">反映实际执行中的缺陷发现率</small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <strong>方式3: 加权缺陷密度</strong>
+                                    <p class="mb-1"><strong>公式:</strong> (独立缺陷数 + 环境特定缺陷数×0.5) ÷ 独立用例数 × 100</p>
+                                    <small class="text-muted">平衡功能缺陷与环境特定缺陷的权重</small>
+                                </div>
+
+                                <div class="mt-2">
+                                    <span class="badge bg-success me-1">优秀: < 5</span>
+                                    <span class="badge bg-info me-1">良好: 5-10</span>
+                                    <span class="badge bg-warning me-1">一般: 10-15</span>
+                                    <span class="badge bg-danger">需改进: > 15</span>
                                 </div>
                             </div>
                         </div>
@@ -451,7 +467,7 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('页面DOM加载完成');
-            
+
             // 添加测试项目数据
             const projectSelect = document.getElementById('projectSelect');
             const projects = [
@@ -459,7 +475,7 @@
                 { id: 'project-002', name: '用户管理系统' },
                 { id: 'project-003', name: '订单处理系统' }
             ];
-            
+
             projects.forEach(project => {
                 const option = document.createElement('option');
                 option.value = project.id;
@@ -474,7 +490,7 @@
                 { id: 'v2.0.5', name: 'v2.0.5' },
                 { id: 'v2.0.0', name: 'v2.0.0' }
             ];
-            
+
             versions.forEach(version => {
                 const option = document.createElement('option');
                 option.value = version.id;
