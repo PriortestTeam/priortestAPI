@@ -48,6 +48,6 @@ public class UserCaseDto {
      * 创建用户ID - 自动填充
      */
     @TableField(fill = FieldFill.INSERT)
-    private Long createUserId;ate createTime;
+    private Long createUserId;
 
 }
