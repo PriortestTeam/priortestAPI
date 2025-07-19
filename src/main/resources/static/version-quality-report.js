@@ -31,11 +31,11 @@ class VersionQualityReport {
         });
     }
 
-    // 加载项目列表
+    // 加载项目列表  
     async loadProjects() {
         console.log('开始加载项目列表...');
         try {
-            const response = await fetch('/api/project/list');
+            const response = await fetch('/project/getProjectList');
             console.log('项目列表响应状态:', response.status);
             
             if (!response.ok) {
