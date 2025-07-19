@@ -3,6 +3,7 @@ package com.hu.oneclick.relation.service.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hu.oneclick.relation.dao.RelationDao;
 import com.hu.oneclick.relation.domain.Relation;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +69,22 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
 
     @Override
     public void saveRelationWithAppend(String objectId, String targetId, String category) {
-        this.saveRelation(objectId, targetId, category, null, false);
+        // 检查是否已存在相同的关系
+        List<Relation> existingRelations = relationDao.selectList(
+            new QueryWrapper<Relation>()
+                .eq("object_id", objectId)
+                .eq("target_id", targetId)
+                .eq("category", category)
+        );
+
+        if (existingRelations.isEmpty()) {
+            Relation relation = new Relation();
+            relation.setObjectId(objectId);
+            relation.setTargetId(targetId);
+            relation.setCategory(category);
+            // 使用MyBatis-Plus的save方法，会自动填充create_time和create_user_id
+            this.save(relation);
+        }
     }
 
     @Override
@@ -77,7 +94,30 @@ public class RelationServiceImpl extends ServiceImpl<RelationDao, Relation> impl
 
     @Override
     public void saveRelationBatchWithAppend(String objectId, List<String> targetIdList, String category) {
-        this.saveRelationBatch(objectId, targetIdList, category, null, false);
+        List<Relation> relationsToSave = new ArrayList<>();
+
+        for (String targetId : targetIdList) {
+            // 检查是否已存在相同的关系
+            List<Relation> existingRelations = relationDao.selectList(
+                new QueryWrapper<Relation>()
+                    .eq("object_id", objectId)
+                    .eq("target_id", targetId)
+                    .eq("category", category)
+            );
+
+            if (existingRelations.isEmpty()) {
+                Relation relation = new Relation();
+                relation.setObjectId(objectId);
+                relation.setTargetId(targetId);
+                relation.setCategory(category);
+                relationsToSave.add(relation);
+            }
+        }
+
+        if (!relationsToSave.isEmpty()) {
+            // 使用MyBatis-Plus的saveBatch方法，会自动填充create_time和create_user_id
+            this.saveBatch(relationsToSave);
+        }
     }
 
     @Override
