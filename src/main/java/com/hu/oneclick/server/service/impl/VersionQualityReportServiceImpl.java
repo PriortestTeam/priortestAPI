@@ -101,13 +101,18 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         try {
             Map<String, Object> result = new HashMap<>();
 
-            // 测试覆盖率数据
-            int totalStories = 25;
-            int coveredStories = 22;
+            // 故事覆盖率数据说明:
+            // 故事(User Story) = 功能需求的最小单位，如"用户登录"、"商品搜索"等
+            // 总故事数 = 本版本需要实现的所有功能故事
+            // 已覆盖故事数 = 有测试用例验证的故事数量
+            
+            int totalStories = 25;        // 本版本计划的总故事数
+            int coveredStories = 22;      // 已有测试用例覆盖的故事数
             double storyCoverage = (double) coveredStories / totalStories * 100;
 
             result.put("totalStories", totalStories);
             result.put("coveredStories", coveredStories);
+            result.put("uncoveredStories", totalStories - coveredStories);
             result.put("storyCoverage", Math.round(storyCoverage * 100.0) / 100.0);
 
             // 质量等级
@@ -123,11 +128,19 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             }
             result.put("level", level);
 
-            // 故事覆盖详情
+            // 故事覆盖详情示例
             List<Map<String, Object>> storyCoverageDetails = new ArrayList<>();
+            // 已覆盖的故事
             storyCoverageDetails.add(createStoryCoverage("用户注册功能", true, 8));
             storyCoverageDetails.add(createStoryCoverage("用户登录功能", true, 6));
-            storyCoverageDetails.add(createStoryCoverage("密码重置功能", true, 4));
+            storyCoverageDetails.add(createStoryCoverage("商品搜索功能", true, 12));
+            storyCoverageDetails.add(createStoryCoverage("购物车管理", true, 10));
+            storyCoverageDetails.add(createStoryCoverage("订单提交流程", true, 15));
+            
+            // 未覆盖的故事
+            storyCoverageDetails.add(createStoryCoverage("支付优化功能", false, 0));
+            storyCoverageDetails.add(createStoryCoverage("会员积分系统", false, 0));
+            storyCoverageDetails.add(createStoryCoverage("数据导出功能", false, 0));overage("密码重置功能", true, 4));
             storyCoverageDetails.add(createStoryCoverage("订单创建功能", true, 12));
             storyCoverageDetails.add(createStoryCoverage("支付处理功能", true, 10));
             storyCoverageDetails.add(createStoryCoverage("数据导出功能", false, 0));
