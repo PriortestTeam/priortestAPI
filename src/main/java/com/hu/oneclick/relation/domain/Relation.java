@@ -55,14 +55,4 @@ public class Relation extends AssignBaseEntity {
     @TableField(fill = FieldFill.INSERT)
     @Schema(description = "创建用户ID")
     private Long createUserId;
-
-    /** 更新用户ID */
-    @Schema(description = "更新用户ID")
-    @TableField(exist = false)
-    private String updateUserId;
-
-    /** 更新时间 */
-    @Schema(description = "更新时间")
-    @TableField(exist = false)
-    private Date updateTime;
 }
