@@ -33,23 +33,53 @@ class VersionQualityReport {
 
     // 加载项目列表
     async loadProjects() {
+        console.log('开始加载项目列表...');
         try {
             const response = await fetch('/api/project/list');
+            console.log('项目列表响应状态:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const result = await response.json();
+            console.log('项目列表数据:', result);
+            
             const select = document.getElementById('projectSelect');
+            if (!select) {
+                console.error('找不到项目选择器元素');
+                return;
+            }
 
             select.innerHTML = '<option value="">请选择项目</option>';
             if (result.data && Array.isArray(result.data)) {
+                console.log('找到', result.data.length, '个项目');
                 result.data.forEach(project => {
                     const option = document.createElement('option');
                     option.value = project.id;
                     option.textContent = project.projectName || project.name;
                     select.appendChild(option);
                 });
+            } else {
+                console.warn('项目数据格式不正确或为空:', result);
+                // 添加测试项目
+                const testOption = document.createElement('option');
+                testOption.value = 'test-project-1';
+                testOption.textContent = '测试项目（演示用）';
+                select.appendChild(testOption);
             }
         } catch (error) {
             console.error('加载项目列表失败:', error);
-            this.showError('加载项目列表失败');
+            this.showError('加载项目列表失败: ' + error.message);
+            
+            // 添加备用项目选项
+            const select = document.getElementById('projectSelect');
+            if (select) {
+                select.innerHTML = `
+                    <option value="">请选择项目</option>
+                    <option value="demo-project">演示项目</option>
+                `;
+            }
         }
     }
 
@@ -523,12 +553,46 @@ class VersionQualityReport {
 
     // 显示错误信息
     showError(message) {
-        alert('错误: ' + message);
+        console.error('错误:', message);
+        
+        // 创建错误提示框
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+        alertDiv.innerHTML = `
+            <i class="bi bi-exclamation-triangle"></i> <strong>错误:</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        
+        // 5秒后自动移除
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }
+        }, 5000);
     }
 
     // 显示成功信息
     showSuccess(message) {
-        alert('成功: ' + message);
+        console.log('成功:', message);
+        
+        // 创建成功提示框
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+        alertDiv.innerHTML = `
+            <i class="bi bi-check-circle"></i> <strong>成功:</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        
+        // 3秒后自动移除
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }
+        }, 3000);
     }
 }
 

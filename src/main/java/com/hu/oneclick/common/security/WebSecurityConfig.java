@@ -183,6 +183,8 @@ public class WebSecurityConfig {
                     "/**/*.css"
                 ).permitAll()
                 .requestMatchers("/api/versionQualityReport/**").permitAll()
+                .requestMatchers("/version-quality-report.html", "/version-quality-report.js").permitAll()
+                .requestMatchers("/version-mapping.html", "/version-mapping.js").permitAll()
                 .anyRequest().authenticated()
             )
             // 先添加登录过滤器
