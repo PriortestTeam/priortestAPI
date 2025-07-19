@@ -174,10 +174,7 @@ public class WebSecurityConfig {
                     "/auth/**",
                     "/public/**",
                     "/actuator/**", 
-                    "/static/**",
-                    "/**/*.html",
-                    "/**/*.js",
-                    "/**/*.css"
+                    "/static/**"
                 ).permitAll()
                 .requestMatchers("/api/versionQualityReport/**").permitAll()
                 .requestMatchers("/version-quality-report.html", "/version-quality-report.js").permitAll()
