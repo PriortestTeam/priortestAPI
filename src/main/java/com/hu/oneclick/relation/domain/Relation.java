@@ -56,11 +56,4 @@ public class Relation extends AssignBaseEntity {
     @Schema(description = "创建用户ID")
     private Long createUserId;
 
-    /** 标记父类的updateUserId字段为非数据库字段 */
-    @TableField(exist = false)
-    private Long updateUserId;
-
-    /** 标记父类的updateTime字段为非数据库字段 */
-    @TableField(exist = false)
-    private Date updateTime;
 }
