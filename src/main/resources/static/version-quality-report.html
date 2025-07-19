@@ -498,34 +498,36 @@
         });
 
         function loadMockData() {
-            // 更新质量指标（通过qualityReport对象来确保卡片颜色正确更新）
-            if (window.qualityReport) {
-                qualityReport.updateMetricCard('defectDensity', '2.3', '良好');
-                qualityReport.updateMetricCard('testCoverage', '87.5%', '良好');
-                qualityReport.updateMetricCard('executionRate', '92.3%', '良好');
-                qualityReport.updateMetricCard('passRate', '94.1%', '良好');
-            } else {
-                // 备用方案
-                document.getElementById('defectDensity').textContent = '2.3';
-                document.getElementById('defectDensityLevel').textContent = '良好';
-                document.getElementById('defectDensityLevel').className = 'level-badge level-good';
-                document.getElementById('defectDensityCard').className = 'metric-card level-good';
+            // 等待qualityReport对象完全初始化
+            setTimeout(() => {
+                if (window.qualityReport) {
+                    qualityReport.updateMetricCard('defectDensity', '2.3', '良好');
+                    qualityReport.updateMetricCard('testCoverage', '87.5%', '良好');
+                    qualityReport.updateMetricCard('executionRate', '92.3%', '良好');
+                    qualityReport.updateMetricCard('passRate', '94.1%', '良好');
+                } else {
+                    // 备用方案
+                    document.getElementById('defectDensity').textContent = '2.3';
+                    document.getElementById('defectDensityLevel').textContent = '良好';
+                    document.getElementById('defectDensityLevel').className = 'level-badge level-good';
+                    document.getElementById('defectDensityCard').className = 'metric-card level-good';
 
-                document.getElementById('testCoverage').textContent = '87.5%';
-                document.getElementById('testCoverageLevel').textContent = '良好';
-                document.getElementById('testCoverageLevel').className = 'level-badge level-good';
-                document.getElementById('testCoverageCard').className = 'metric-card level-good';
+                    document.getElementById('testCoverage').textContent = '87.5%';
+                    document.getElementById('testCoverageLevel').textContent = '良好';
+                    document.getElementById('testCoverageLevel').className = 'level-badge level-good';
+                    document.getElementById('testCoverageCard').className = 'metric-card level-good';
 
-                document.getElementById('executionRate').textContent = '92.3%';
-                document.getElementById('executionRateLevel').textContent = '良好';
-                document.getElementById('executionRateLevel').className = 'level-badge level-good';
-                document.getElementById('executionRateCard').className = 'metric-card level-good';
+                    document.getElementById('executionRate').textContent = '92.3%';
+                    document.getElementById('executionRateLevel').textContent = '良好';
+                    document.getElementById('executionRateLevel').className = 'level-badge level-good';
+                    document.getElementById('executionRateCard').className = 'metric-card level-good';
 
-                document.getElementById('passRate').textContent = '94.1%';
-                document.getElementById('passRateLevel').textContent = '良好';
-                document.getElementById('passRateLevel').className = 'level-badge level-good';
-                document.getElementById('passRateCard').className = 'metric-card level-good';
-            }
+                    document.getElementById('passRate').textContent = '94.1%';
+                    document.getElementById('passRateLevel').textContent = '良好';
+                    document.getElementById('passRateLevel').className = 'level-badge level-good';
+                    document.getElementById('passRateCard').className = 'metric-card level-good';
+                }
+            }, 100);
 
             // 更新故事覆盖详情
             const storyCoverageDetails = document.getElementById('storyCoverageDetails');

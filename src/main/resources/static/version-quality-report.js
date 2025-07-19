@@ -218,9 +218,9 @@ class VersionQualityReport {
         // 动态设置卡片颜色
         if (cardEl) {
             // 移除所有等级相关的类
-            cardEl.className = cardEl.className.replace(/level-\w+/g, '');
-            // 添加新的等级类
-            cardEl.classList.add(this.getCardLevelClass(level));
+            cardEl.className = cardEl.className.replace(/level-\w+/g, '').replace(/metric-card\s+/g, '');
+            // 添加基础类和新的等级类
+            cardEl.className = 'metric-card ' + this.getCardLevelClass(level);
         }
     }
 
