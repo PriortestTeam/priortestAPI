@@ -35,6 +35,6 @@ public class UserCaseDto extends AssignBaseEntity {
 
     private String remarks;
 
-    private Date createTime;ate createTime;
+    private Date createTime;
 
 }

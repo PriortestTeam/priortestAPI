@@ -50,7 +50,7 @@ public class UserCaseParam implements Serializable {
     private String version;
 
     @Schema(description = "备注")
-    private String remarks;rks;
+    private String remarks;
 
     @Schema(description = "创建时间")
     private java.util.Date createTime;
