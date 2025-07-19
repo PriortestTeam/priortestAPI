@@ -317,6 +317,16 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("executionRate", executionRate);
         data.put("passRate", passRate);
         return data;
+    }tionRate, double passRate) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("cycleName", cycleName);
+        data.put("plannedCases", plannedCases);
+        data.put("executedCases", executedCases);
+        data.put("passedCases", passedCases);
+        data.put("failedCases", failedCases);
+        data.put("executionRate", executionRate);
+        data.put("passRate", passRate);
+        return data;
     }
 
     private Map<String, Object> createVersionComparison(String version, double defectDensity,
