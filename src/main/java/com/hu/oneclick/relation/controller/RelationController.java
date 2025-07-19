@@ -6,6 +6,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.TestCaseStep;
 import com.hu.oneclick.relation.domain.Relation;
 import com.hu.oneclick.relation.domain.param.RelationParam;
+import com.hu.oneclick.relation.domain.param.RelationBatchParam;
 import com.hu.oneclick.relation.service.RelationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +58,18 @@ public class RelationController extends BaseController {
             return new Resp.Builder<>().ok();
         } catch (Exception e) {
             log.error("追加关系失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<>().fail();
+        }
+    }
+
+    @Operation(summary="批量追加关系")
+    @PostMapping("/saveBatch")
+    public Resp<?> saveBatch(@RequestBody @Validated RelationBatchParam param) {
+        try {
+            relationService.saveRelationBatchWithAppend(param.getObjectId(), param.getTargetIdList(), param.getCategory());
+            return new Resp.Builder<>().ok();
+        } catch (Exception e) {
+            log.error("批量追加关系失败，原因：" + e.getMessage(), e);
             return new Resp.Builder<>().fail();
         }
     }
