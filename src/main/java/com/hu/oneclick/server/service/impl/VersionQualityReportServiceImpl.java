@@ -140,9 +140,6 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             // 未覆盖的故事
             storyCoverageDetails.add(createStoryCoverage("支付优化功能", false, 0));
             storyCoverageDetails.add(createStoryCoverage("会员积分系统", false, 0));
-            storyCoverageDetails.add(createStoryCoverage("数据导出功能", false, 0));overage("密码重置功能", true, 4));
-            storyCoverageDetails.add(createStoryCoverage("订单创建功能", true, 12));
-            storyCoverageDetails.add(createStoryCoverage("支付处理功能", true, 10));
             storyCoverageDetails.add(createStoryCoverage("数据导出功能", false, 0));
             storyCoverageDetails.add(createStoryCoverage("报表生成功能", true, 8));
             storyCoverageDetails.add(createStoryCoverage("权限管理功能", true, 15));
@@ -308,16 +305,6 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
     private Map<String, Object> createCycleExecution(String cycleName, int plannedCases, int executedCases,
             int passedCases, int failedCases, double executionRate, double passRate) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("cycleName", cycleName);
-        data.put("plannedCases", plannedCases);
-        data.put("executedCases", executedCases);
-        data.put("passedCases", passedCases);
-        data.put("failedCases", failedCases);
-        data.put("executionRate", executionRate);
-        data.put("passRate", passRate);
-        return data;
-    }tionRate, double passRate) {
         Map<String, Object> data = new HashMap<>();
         data.put("cycleName", cycleName);
         data.put("plannedCases", plannedCases);
