@@ -40,6 +40,7 @@ public class Relation extends AssignBaseEntity {
 
     /** 标题（用于查询时关联显示） */
     @Schema(description = "标题")
+    @TableField(exist = false)
     private String title;
 
     /** 创建时间 */
