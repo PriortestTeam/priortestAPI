@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hu.oneclick.relation.dao.RelationDao">
+
+    <!-- 插入关系记录 -->
+    <insert id="insert" parameterType="com.hu.oneclick.relation.domain.Relation">
+        INSERT INTO relation (
+            id, 
+            object_id, 
+            target_id, 
+            category, 
+            ext_json,
+            create_time,
+            create_user_id
+        ) VALUES (
+            #{id}, 
+            #{objectId}, 
+            #{targetId}, 
+            #{category}, 
+            #{extJson},
+            #{createTime},
+            #{createUserId}
+        )
+    </insert>
+
+    <!-- 批量插入关系记录 -->
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO relation (
+            id, 
+            object_id, 
+            target_id, 
+            category, 
+            ext_json,
+            create_time,
+            create_user_id
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+        (
+            #{item.id}, 
+            #{item.objectId}, 
+            #{item.targetId}, 
+            #{item.category}, 
+            #{item.extJson},
+            #{item.createTime},
+            #{item.createUserId}
+        )
+        </foreach>
+    </insert>
 <!--    List<Relation> getRelationListByObjectIdAndTargetIdAndCategory(@Param("id") Long testCaseId);-->
     <select id="getRelationListByObjectIdAndTargetIdAndCategory" resultType="com.hu.oneclick.relation.domain.Relation">
         select `OBJECT_ID`, `TARGET_ID`
