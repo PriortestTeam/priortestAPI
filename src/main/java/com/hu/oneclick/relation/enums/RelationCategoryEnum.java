@@ -17,10 +17,14 @@ public enum RelationCategoryEnum {
     TEST_CASE_TO_STEP("测试用例与步骤关系", "TEST_CASE_TO_STEP"),
     /** 测试用例与迭代关系 */
     TEST_CASE_TO_SPRINT("测试用例与迭代关系", "TEST_CASE_TO_SPRINT"),
-    /** 测试用例与故事关系 */
-    TEST_CASE_TO_FEATURE("测试用例与故事关系", "TEST_CASE_TO_FEATURE"),
+    /** 故事与测试用例关系 */
+    FEATURE_TO_TEST_CASE("故事与测试用例关系", "FEATURE_TO_TEST_CASE"),
+    /** 故事场景与测试用例关系 */
+    USE_CASE_TO_TEST_CASE("故事场景与测试用例关系", "USE_CASE_TO_TEST_CASE"),
     /** 测试用例与缺陷关系 */
     TEST_CASE_TO_ISSUE("测试用例与缺陷关系", "TEST_CASE_TO_ISSUE"),
+    /** 缺陷与测试用例关系 */
+    ISSUE_TO_TEST_CASE("缺陷与测试用例关系", "ISSUE_TO_TEST_CASE"),
     /** 测试周期与故事关系 */
     TEST_CYCLE_TO_FEATURE("测试周期与故事关系", "TEST_CYCLE_TO_FEATURE"),
     /** 测试周期与迭代关系 */
