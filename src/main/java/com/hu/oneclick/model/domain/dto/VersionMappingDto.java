@@ -27,8 +27,11 @@ public class VersionMappingDto implements Serializable {
     private String envVersion;
     private String remark;
 
-    // 用于批量操作
-    @Schema(description = "动态环境版本映射")
-    // 动态环境版本映射，key为环境名称(dev/stg/online等)，value为该环境的版本列表
+    // 用于批量操作 - 多环境多版本
+    @Schema(description = "动态环境版本映射 - 用于批量创建")
     private Map<String, List<String>> envVersions;
+
+    // 用于单环境追加操作 - 单环境多版本
+    @Schema(description = "单环境版本列表 - 用于追加操作")
+    private List<String> versions;
 }

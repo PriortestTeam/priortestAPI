@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
@@ -29,15 +28,15 @@ public class VersionMappingServiceImpl implements VersionMappingService {
     public void batchCreateMapping(VersionMappingDto mappingDto) {
         // 先删除该发布版本的现有映射
         deleteMappingByRelease(mappingDto.getReleaseId());
-        
+
         List<VersionMapping> mappings = new ArrayList<>();
-        
+
         // 动态添加各环境版本映射
         if (mappingDto.getEnvVersions() != null && !mappingDto.getEnvVersions().isEmpty()) {
             for (Map.Entry<String, List<String>> envEntry : mappingDto.getEnvVersions().entrySet()) {
                 String envName = envEntry.getKey();
                 List<String> versions = envEntry.getValue();
-                
+
                 if (CollectionUtil.isNotEmpty(versions)) {
                     for (String version : versions) {
                         VersionMapping mapping = new VersionMapping();
@@ -52,7 +51,7 @@ public class VersionMappingServiceImpl implements VersionMappingService {
                 }
             }
         }
-        
+
         // 批量插入
         for (VersionMapping mapping : mappings) {
             versionMappingDao.insert(mapping);
@@ -67,15 +66,28 @@ public class VersionMappingServiceImpl implements VersionMappingService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addMapping(VersionMappingDto mappingDto) {
-        VersionMapping mapping = new VersionMapping();
-        BeanUtil.copyProperties(mappingDto, mapping);
-        mapping.setCreateTime(new java.util.Date());
-        mapping.setUpdateTime(new java.util.Date());
-        // 设置创建者ID，如果需要的话可以从上下文获取
-        // mapping.setCreateUserId(getCurrentUserId());
-        // mapping.setUpdateUserId(getCurrentUserId());
-        versionMappingDao.insert(mapping);
+        // 单个版本映射追加
+        if (mappingDto.getEnvVersion() != null) {
+            VersionMapping mapping = new VersionMapping();
+            BeanUtil.copyProperties(mappingDto, mapping);
+            versionMappingDao.insert(mapping);
+        }
+
+        // 单环境多版本追加
+        if (CollectionUtil.isNotEmpty(mappingDto.getVersions()) && mappingDto.getEnv() != null) {
+            for (String version : mappingDto.getVersions()) {
+                VersionMapping mapping = new VersionMapping();
+                mapping.setProjectId(mappingDto.getProjectId());
+                mapping.setReleaseId(mappingDto.getReleaseId());
+                mapping.setReleaseVersion(mappingDto.getReleaseVersion());
+                mapping.setEnv(mappingDto.getEnv());
+                mapping.setEnvVersion(version);
+                mapping.setRemark(mappingDto.getRemark());
+                versionMappingDao.insert(mapping);
+            }
+        }
     }
 
     @Override
