@@ -48,7 +48,6 @@ public class UserCaseDto {
      * 创建用户ID - 自动填充  
      */
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
-    private Long createUserId;ieldFill.INSERT)
     private Long createUserId;
 
 }
