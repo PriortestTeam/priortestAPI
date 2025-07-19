@@ -134,8 +134,8 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             result.put("storyCoverageDetails", storyCoverageDetails);
             
             // 覆盖率等级评估
-            String coverageLevel = evaluateCoverageLevel(storycoverage);
-            result.put("coverageLevel", coverageLevel);
+            String coverageLevel = evaluateCoverageLevel(storyCoverage);
+            result.put("coverageLevel", coverageLevel);Level);
             
             return new Resp.Builder<Map<String, Object>>().setData(result).ok();
         } catch (Exception e) {
