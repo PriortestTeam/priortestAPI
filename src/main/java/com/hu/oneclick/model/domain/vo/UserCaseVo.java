@@ -1,3 +1,4 @@
+
 package com.hu.oneclick.model.domain.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -49,9 +50,4 @@ public class UserCaseVo implements Serializable {
 
     @Schema(description = "创建时间")
     private java.util.Date createTime;
-} createTime;D")
-    private long featureId;
-
-    @Schema(description = "备注")
-    private String remarks;
 }
