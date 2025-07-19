@@ -43,7 +43,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         result.put("averageDefectDensity", 3.2);
         result.put("averageTestCoverage", 85.5);
 
-        return Resp.success(result);
+        return Resp.ok(result);
     }
 
     @Override
@@ -79,10 +79,10 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
         } catch (Exception e) {
             e.printStackTrace();
-            return Resp.fail("获取缺陷密度数据失败：" + e.getMessage());
+            return Resp.error("获取缺陷密度数据失败：" + e.getMessage());
         }
 
-        return Resp.success(result);
+        return Resp.ok(result);
     }
 
     @Override
@@ -116,10 +116,10 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
         } catch (Exception e) {
             e.printStackTrace();
-            return Resp.fail("获取测试覆盖率数据失败：" + e.getMessage());
+            return Resp.error("获取测试覆盖率数据失败：" + e.getMessage());
         }
 
-        return Resp.success(result);
+        return Resp.ok(result);
     }
 
     @Override
@@ -133,10 +133,10 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             result.put("executionTrend", getTestExecutionTrend(projectId, releaseVersion));
         } catch (Exception e) {
             e.printStackTrace();
-            return Resp.fail("获取缺陷分布数据失败：" + e.getMessage());
+            return Resp.error("获取缺陷分布数据失败：" + e.getMessage());
         }
 
-        return Resp.success(result);
+        return Resp.ok(result);
     }
 
     @Override
@@ -180,10 +180,10 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
         } catch (Exception e) {
             e.printStackTrace();
-            return Resp.fail("获取测试执行率数据失败：" + e.getMessage());
+            return Resp.error("获取测试执行率数据失败：" + e.getMessage());
         }
 
-        return Resp.success(result);
+        return Resp.ok(result);
     }
 
     @Override
@@ -209,10 +209,10 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
         } catch (Exception e) {
             e.printStackTrace();
-            return Resp.fail("获取版本对比数据失败：" + e.getMessage());
+            return Resp.error("获取版本对比数据失败：" + e.getMessage());
         }
 
-        return Resp.success(result);
+        return Resp.ok(result);
     }
 
     // 私有辅助方法
