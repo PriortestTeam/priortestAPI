@@ -6,6 +6,7 @@ import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.model.entity.TestCaseStep;
 import com.hu.oneclick.relation.domain.Relation;
 import com.hu.oneclick.relation.domain.param.RelationParam;
+import com.hu.oneclick.relation.domain.param.RelationBatchParam;
 import com.hu.oneclick.relation.service.RelationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
