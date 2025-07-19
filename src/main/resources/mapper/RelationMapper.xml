@@ -70,8 +70,8 @@
                r.target_id AS targetId,
                r.category,
                r.ext_json AS extJson,
-               r.create_time,
-               r.create_user_id,
+               r.create_time AS createTime,
+               r.create_user_id AS createUserId,
                CASE
                    WHEN r.category = 'FEATURE_TO_TEST_CASE' THEN tc.title
                    WHEN r.category = 'USE_CASE_TO_TEST_CASE' THEN tc.title
@@ -88,12 +88,12 @@
 
     <select id="getRelationListByTargetIdAndCategory" resultType="com.hu.oneclick.relation.domain.Relation">
         SELECT r.id,
-               r.object_id,
-               r.target_id,
+               r.object_id AS objectId,
+               r.target_id AS targetId,
                r.category,
-               r.ext_json,
-               r.create_time,
-               r.create_user_id,
+               r.ext_json AS extJson,
+               r.create_time AS createTime,
+               r.create_user_id AS createUserId,
                CASE
                    WHEN r.category = 'FEATURE_TO_TEST_CASE' THEN f.title
                    WHEN r.category = 'USE_CASE_TO_TEST_CASE' THEN uc.title
