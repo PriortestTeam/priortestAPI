@@ -173,13 +173,10 @@ public class WebSecurityConfig {
                     "/webjars/**",
                     "/auth/**",
                     "/public/**",
-                    "/actuator/**",
+                    "/actuator/**", 
                     "/static/**",
-                    "/*.html",
                     "/**/*.html",
-                    "/*.js",
                     "/**/*.js",
-                    "/*.css",
                     "/**/*.css"
                 ).permitAll()
                 .requestMatchers("/api/versionQualityReport/**").permitAll()
