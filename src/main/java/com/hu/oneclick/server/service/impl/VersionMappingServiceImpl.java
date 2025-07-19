@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -28,37 +28,30 @@ public class VersionMappingServiceImpl implements VersionMappingService {
     public void batchCreateMapping(VersionMappingDto mappingDto) {
         // 先删除该发布版本的现有映射
         deleteMappingByRelease(mappingDto.getReleaseId());
-        
+
         List<VersionMapping> mappings = new ArrayList<>();
-        
-        // 添加DEV版本映射
-        if (CollectionUtil.isNotEmpty(mappingDto.getDevVersions())) {
-            for (String devVersion : mappingDto.getDevVersions()) {
-                VersionMapping mapping = new VersionMapping();
-                mapping.setProjectId(mappingDto.getProjectId());
-                mapping.setReleaseId(mappingDto.getReleaseId());
-                mapping.setReleaseVersion(mappingDto.getReleaseVersion());
-                mapping.setEnv("dev");
-                mapping.setEnvVersion(devVersion);
-                mapping.setRemark(mappingDto.getRemark());
-                mappings.add(mapping);
+
+        // 动态添加各环境版本映射
+        if (mappingDto.getEnvVersions() != null && !mappingDto.getEnvVersions().isEmpty()) {
+            for (Map.Entry<String, List<String>> envEntry : mappingDto.getEnvVersions().entrySet()) {
+                String envName = envEntry.getKey();
+                List<String> versions = envEntry.getValue();
+
+                if (CollectionUtil.isNotEmpty(versions)) {
+                    for (String version : versions) {
+                        VersionMapping mapping = new VersionMapping();
+                        mapping.setProjectId(mappingDto.getProjectId());
+                        mapping.setReleaseId(mappingDto.getReleaseId());
+                        mapping.setReleaseVersion(mappingDto.getReleaseVersion());
+                        mapping.setEnv(envName);
+                        mapping.setEnvVersion(version);
+                        mapping.setRemark(mappingDto.getRemark());
+                        mappings.add(mapping);
+                    }
+                }
             }
         }
-        
-        // 添加STG版本映射
-        if (CollectionUtil.isNotEmpty(mappingDto.getStgVersions())) {
-            for (String stgVersion : mappingDto.getStgVersions()) {
-                VersionMapping mapping = new VersionMapping();
-                mapping.setProjectId(mappingDto.getProjectId());
-                mapping.setReleaseId(mappingDto.getReleaseId());
-                mapping.setReleaseVersion(mappingDto.getReleaseVersion());
-                mapping.setEnv("stg");
-                mapping.setEnvVersion(stgVersion);
-                mapping.setRemark(mappingDto.getRemark());
-                mappings.add(mapping);
-            }
-        }
-        
+
         // 批量插入
         for (VersionMapping mapping : mappings) {
             versionMappingDao.insert(mapping);
@@ -73,15 +66,28 @@ public class VersionMappingServiceImpl implements VersionMappingService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addMapping(VersionMappingDto mappingDto) {
-        VersionMapping mapping = new VersionMapping();
-        BeanUtil.copyProperties(mappingDto, mapping);
-        mapping.setCreateTime(new java.util.Date());
-        mapping.setUpdateTime(new java.util.Date());
-        // 设置创建者ID，如果需要的话可以从上下文获取
-        // mapping.setCreateUserId(getCurrentUserId());
-        // mapping.setUpdateUserId(getCurrentUserId());
-        versionMappingDao.insert(mapping);
+        // 单个版本映射追加
+        if (mappingDto.getEnvVersion() != null) {
+            VersionMapping mapping = new VersionMapping();
+            BeanUtil.copyProperties(mappingDto, mapping);
+            versionMappingDao.insert(mapping);
+        }
+
+        // 单环境多版本追加
+        if (CollectionUtil.isNotEmpty(mappingDto.getVersions()) && mappingDto.getEnv() != null) {
+            for (String version : mappingDto.getVersions()) {
+                VersionMapping mapping = new VersionMapping();
+                mapping.setProjectId(mappingDto.getProjectId());
+                mapping.setReleaseId(mappingDto.getReleaseId());
+                mapping.setReleaseVersion(mappingDto.getReleaseVersion());
+                mapping.setEnv(mappingDto.getEnv());
+                mapping.setEnvVersion(version);
+                mapping.setRemark(mappingDto.getRemark());
+                versionMappingDao.insert(mapping);
+            }
+        }
     }
 
     @Override
