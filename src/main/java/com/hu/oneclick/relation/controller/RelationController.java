@@ -61,6 +61,18 @@ public class RelationController extends BaseController {
         }
     }
 
+    @Operation(summary="批量追加关系")
+    @PostMapping("/saveBatch")
+    public Resp<?> saveBatch(@RequestBody @Validated RelationBatchParam param) {
+        try {
+            relationService.saveRelationBatchWithAppend(param.getObjectId(), param.getTargetIdList(), param.getCategory());
+            return new Resp.Builder<>().ok();
+        } catch (Exception e) {
+            log.error("批量追加关系失败，原因：" + e.getMessage(), e);
+            return new Resp.Builder<>().fail();
+        }
+    }
+
     @Operation(summary="删除")
     @DeleteMapping("/delete/{ids}")
     public Resp<?> delete(@PathVariable Long[] ids) {
