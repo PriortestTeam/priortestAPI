@@ -422,37 +422,262 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('页面DOM加载完成');
-            console.log('qualityReport对象:', typeof qualityReport !== 'undefined' ? qualityReport : '未定义');
+            
+            // 添加测试项目数据
+            const projectSelect = document.getElementById('projectSelect');
+            const projects = [
+                { id: 'project-001', name: '电商平台项目' },
+                { id: 'project-002', name: '用户管理系统' },
+                { id: 'project-003', name: '订单处理系统' }
+            ];
+            
+            projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.textContent = project.name;
+                projectSelect.appendChild(option);
+            });
 
-            // 确保JavaScript文件加载成功后再添加测试数据
-            if (typeof qualityReport !== 'undefined') {
-                console.log('质量报表对象已加载');
-            } else {
-                console.error('质量报表JavaScript未正确加载');
+            // 添加测试版本数据
+            const versionSelect = document.getElementById('versionSelect');
+            const versions = [
+                { id: 'v2.1.0', name: 'v2.1.0（当前版本）' },
+                { id: 'v2.0.5', name: 'v2.0.5' },
+                { id: 'v2.0.0', name: 'v2.0.0' }
+            ];
+            
+            versions.forEach(version => {
+                const option = document.createElement('option');
+                option.value = version.id;
+                option.textContent = version.name;
+                versionSelect.appendChild(option);
+            });
+
+            // 添加对比版本数据
+            const compareVersionSelect = document.getElementById('compareVersionSelect');
+            versions.forEach(version => {
+                const option = document.createElement('option');
+                option.value = version.id;
+                option.textContent = version.name;
+                compareVersionSelect.appendChild(option);
+            });
+
+            // 模拟加载测试数据
+            setTimeout(() => {
+                loadMockData();
+            }, 500);
+        });
+
+        function loadMockData() {
+            // 更新质量指标
+            document.getElementById('defectDensity').textContent = '2.3';
+            document.getElementById('defectDensityLevel').textContent = '良好';
+            document.getElementById('defectDensityLevel').className = 'level-badge level-good';
+
+            document.getElementById('testCoverage').textContent = '87.5%';
+            document.getElementById('testCoverageLevel').textContent = '良好';
+            document.getElementById('testCoverageLevel').className = 'level-badge level-good';
+
+            document.getElementById('executionRate').textContent = '92.3%';
+            document.getElementById('executionRateLevel').textContent = '良好';
+            document.getElementById('executionRateLevel').className = 'level-badge level-good';
+
+            document.getElementById('passRate').textContent = '94.1%';
+            document.getElementById('passRateLevel').textContent = '良好';
+            document.getElementById('passRateLevel').className = 'level-badge level-good';
+
+            // 更新故事覆盖详情
+            const storyCoverageDetails = document.getElementById('storyCoverageDetails');
+            storyCoverageDetails.innerHTML = `
+                <div class="story-coverage-item covered">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>用户登录功能</strong>
+                            <small class="text-muted d-block">Story ID: US-001</small>
+                        </div>
+                        <span class="badge bg-success">已覆盖</span>
+                    </div>
+                </div>
+                <div class="story-coverage-item covered">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>商品搜索功能</strong>
+                            <small class="text-muted d-block">Story ID: US-002</small>
+                        </div>
+                        <span class="badge bg-success">已覆盖</span>
+                    </div>
+                </div>
+                <div class="story-coverage-item not-covered">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>支付流程优化</strong>
+                            <small class="text-muted d-block">Story ID: US-003</small>
+                        </div>
+                        <span class="badge bg-danger">未覆盖</span>
+                    </div>
+                </div>
+                <div class="story-coverage-item covered">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>订单管理功能</strong>
+                            <small class="text-muted d-block">Story ID: US-004</small>
+                        </div>
+                        <span class="badge bg-success">已覆盖</span>
+                    </div>
+                </div>
+            `;
+
+            // 更新测试周期执行详情表格
+            const cycleExecutionTable = document.querySelector('#cycleExecutionTable tbody');
+            cycleExecutionTable.innerHTML = `
+                <tr>
+                    <td><strong>登录功能测试</strong></td>
+                    <td><span class="text-primary">45</span></td>
+                    <td><span class="text-info">42</span></td>
+                    <td><span class="text-success">38</span></td>
+                    <td><span class="text-danger">4</span></td>
+                    <td><span class="badge bg-success">93.3%</span></td>
+                    <td><span class="badge bg-success">90.5%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>商品管理测试</strong></td>
+                    <td><span class="text-primary">32</span></td>
+                    <td><span class="text-info">30</span></td>
+                    <td><span class="text-success">28</span></td>
+                    <td><span class="text-danger">2</span></td>
+                    <td><span class="badge bg-success">93.8%</span></td>
+                    <td><span class="badge bg-success">93.3%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>订单处理测试</strong></td>
+                    <td><span class="text-primary">28</span></td>
+                    <td><span class="text-info">25</span></td>
+                    <td><span class="text-success">22</span></td>
+                    <td><span class="text-danger">3</span></td>
+                    <td><span class="badge bg-warning">89.3%</span></td>
+                    <td><span class="badge bg-warning">88.0%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>支付功能测试</strong></td>
+                    <td><span class="text-primary">15</span></td>
+                    <td><span class="text-info">15</span></td>
+                    <td><span class="text-success">14</span></td>
+                    <td><span class="text-danger">1</span></td>
+                    <td><span class="badge bg-success">100.0%</span></td>
+                    <td><span class="badge bg-success">93.3%</span></td>
+                </tr>
+            `;
+
+            // 创建简单的图表（使用CSS模拟）
+            createMockCharts();
+        }
+
+        function createMockCharts() {
+            // 模拟缺陷严重程度分布图
+            const defectChart = document.getElementById('defectSeverityChart');
+            if (defectChart) {
+                defectChart.style.display = 'none';
+                const chartContainer = defectChart.parentElement;
+                chartContainer.innerHTML += `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="display: inline-block; margin: 10px;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: #dc3545; margin: 0 auto;"></div>
+                            <small>严重: 3个</small>
+                        </div>
+                        <div style="display: inline-block; margin: 10px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #ffc107; margin: 0 auto;"></div>
+                            <small>一般: 7个</small>
+                        </div>
+                        <div style="display: inline-block; margin: 10px;">
+                            <div style="width: 30px; height: 30px; border-radius: 50%; background: #28a745; margin: 0 auto;"></div>
+                            <small>轻微: 5个</small>
+                        </div>
+                    </div>
+                `;
             }
 
-            // 添加一些测试数据，确保页面有内容显示
-            setTimeout(() => {
-                const projectSelect = document.getElementById('projectSelect');
-                if (projectSelect && projectSelect.children.length <= 1) {
-                    console.log('添加测试项目数据');
-                    
-                    // 添加测试项目选项
-                    const projects = [
-                        { id: 'test-project-1', name: '测试项目1（演示用）' },
-                        { id: 'test-project-2', name: '测试项目2（演示用）' },
-                        { id: 'demo-project', name: '演示项目' }
-                    ];
-                    
-                    projects.forEach(project => {
-                        const option = document.createElement('option');
-                        option.value = project.id;
-                        option.textContent = project.name;
-                        projectSelect.appendChild(option);
-                    });
-                }
-            }, 1000);
-        });
+            // 模拟测试执行趋势图
+            const trendChart = document.getElementById('executionTrendChart');
+            if (trendChart) {
+                trendChart.style.display = 'none';
+                const chartContainer = trendChart.parentElement;
+                chartContainer.innerHTML += `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="height: 200px; border-left: 2px solid #ccc; border-bottom: 2px solid #ccc; position: relative; margin: 20px;">
+                            <div style="position: absolute; bottom: 0; left: 20%; width: 15%; height: 60%; background: linear-gradient(to top, #007bff, #4dabf7);"></div>
+                            <div style="position: absolute; bottom: 0; left: 40%; width: 15%; height: 80%; background: linear-gradient(to top, #007bff, #4dabf7);"></div>
+                            <div style="position: absolute; bottom: 0; left: 60%; width: 15%; height: 90%; background: linear-gradient(to top, #007bff, #4dabf7);"></div>
+                            <div style="position: absolute; bottom: -30px; left: 20%; font-size: 12px;">周1</div>
+                            <div style="position: absolute; bottom: -30px; left: 40%; font-size: 12px;">周2</div>
+                            <div style="position: absolute; bottom: -30px; left: 60%; font-size: 12px;">周3</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 模拟模块缺陷分布图
+            const moduleChart = document.getElementById('moduleDefectChart');
+            if (moduleChart) {
+                moduleChart.style.display = 'none';
+                const chartContainer = moduleChart.parentElement;
+                chartContainer.innerHTML += `
+                    <div style="padding: 20px;">
+                        <div style="margin: 10px 0;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="width: 80px; font-size: 12px;">用户模块</span>
+                                <div style="width: 60%; height: 20px; background: #e9ecef; margin: 0 10px; border-radius: 10px;">
+                                    <div style="width: 70%; height: 100%; background: #dc3545; border-radius: 10px;"></div>
+                                </div>
+                                <span style="font-size: 12px;">7个</span>
+                            </div>
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="width: 80px; font-size: 12px;">商品模块</span>
+                                <div style="width: 60%; height: 20px; background: #e9ecef; margin: 0 10px; border-radius: 10px;">
+                                    <div style="width: 50%; height: 100%; background: #ffc107; border-radius: 10px;"></div>
+                                </div>
+                                <span style="font-size: 12px;">5个</span>
+                            </div>
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="width: 80px; font-size: 12px;">订单模块</span>
+                                <div style="width: 60%; height: 20px; background: #e9ecef; margin: 0 10px; border-radius: 10px;">
+                                    <div style="width: 30%; height: 100%; background: #28a745; border-radius: 10px;"></div>
+                                </div>
+                                <span style="font-size: 12px;">3个</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 模拟环境缺陷对比图
+            const envChart = document.getElementById('envDefectChart');
+            if (envChart) {
+                envChart.style.display = 'none';
+                const chartContainer = envChart.parentElement;
+                chartContainer.innerHTML += `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="display: flex; justify-content: space-around; align-items: end; height: 200px; border-bottom: 2px solid #ccc;">
+                            <div style="text-align: center;">
+                                <div style="width: 50px; height: 120px; background: linear-gradient(to top, #28a745, #51cf66); margin-bottom: 10px;"></div>
+                                <small>开发环境<br>12个缺陷</small>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="width: 50px; height: 80px; background: linear-gradient(to top, #ffc107, #ffd43b); margin-bottom: 10px;"></div>
+                                <small>测试环境<br>8个缺陷</small>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="width: 50px; height: 40px; background: linear-gradient(to top, #dc3545, #ff6b6b); margin-bottom: 10px;"></div>
+                                <small>生产环境<br>3个缺陷</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
     </script>
 </body>
 </html>
