@@ -31,31 +31,24 @@ public class VersionMappingServiceImpl implements VersionMappingService {
         
         List<VersionMapping> mappings = new ArrayList<>();
         
-        // 添加DEV版本映射
-        if (CollectionUtil.isNotEmpty(mappingDto.getDevVersions())) {
-            for (String devVersion : mappingDto.getDevVersions()) {
-                VersionMapping mapping = new VersionMapping();
-                mapping.setProjectId(mappingDto.getProjectId());
-                mapping.setReleaseId(mappingDto.getReleaseId());
-                mapping.setReleaseVersion(mappingDto.getReleaseVersion());
-                mapping.setEnv("dev");
-                mapping.setEnvVersion(devVersion);
-                mapping.setRemark(mappingDto.getRemark());
-                mappings.add(mapping);
-            }
-        }
-        
-        // 添加STG版本映射
-        if (CollectionUtil.isNotEmpty(mappingDto.getStgVersions())) {
-            for (String stgVersion : mappingDto.getStgVersions()) {
-                VersionMapping mapping = new VersionMapping();
-                mapping.setProjectId(mappingDto.getProjectId());
-                mapping.setReleaseId(mappingDto.getReleaseId());
-                mapping.setReleaseVersion(mappingDto.getReleaseVersion());
-                mapping.setEnv("stg");
-                mapping.setEnvVersion(stgVersion);
-                mapping.setRemark(mappingDto.getRemark());
-                mappings.add(mapping);
+        // 动态添加各环境版本映射
+        if (mappingDto.getEnvVersions() != null && !mappingDto.getEnvVersions().isEmpty()) {
+            for (Map.Entry<String, List<String>> envEntry : mappingDto.getEnvVersions().entrySet()) {
+                String envName = envEntry.getKey();
+                List<String> versions = envEntry.getValue();
+                
+                if (CollectionUtil.isNotEmpty(versions)) {
+                    for (String version : versions) {
+                        VersionMapping mapping = new VersionMapping();
+                        mapping.setProjectId(mappingDto.getProjectId());
+                        mapping.setReleaseId(mappingDto.getReleaseId());
+                        mapping.setReleaseVersion(mappingDto.getReleaseVersion());
+                        mapping.setEnv(envName);
+                        mapping.setEnvVersion(version);
+                        mapping.setRemark(mappingDto.getRemark());
+                        mappings.add(mapping);
+                    }
+                }
             }
         }
         
