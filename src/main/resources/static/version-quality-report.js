@@ -207,11 +207,20 @@ class VersionQualityReport {
     updateMetricCard(metricId, value, level) {
         const valueEl = document.getElementById(metricId);
         const levelEl = document.getElementById(metricId + 'Level');
+        const cardEl = document.getElementById(metricId + 'Card');
 
         if (valueEl) valueEl.textContent = value;
         if (levelEl) {
             levelEl.textContent = level;
             levelEl.className = 'level-badge ' + this.getLevelClass(level);
+        }
+        
+        // 动态设置卡片颜色
+        if (cardEl) {
+            // 移除所有等级相关的类
+            cardEl.className = cardEl.className.replace(/level-\w+/g, '');
+            // 添加新的等级类
+            cardEl.classList.add(this.getCardLevelClass(level));
         }
     }
 
@@ -222,6 +231,16 @@ class VersionQualityReport {
             case '一般': return 'level-average';
             case '需改进': return 'level-poor';
             default: return 'level-average';
+        }
+    }
+
+    getCardLevelClass(level) {
+        switch (level) {
+            case '优秀': return 'level-excellent';
+            case '良好': return 'level-good';
+            case '一般': return 'level-average';
+            case '需改进': return 'level-poor';
+            default: return 'level-default';
         }
     }
 
