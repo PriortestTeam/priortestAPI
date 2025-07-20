@@ -962,7 +962,7 @@ class VersionQualityReport {
                     <td>${legacyBadge}</td>
                     <td>
                         <span class="badge ${defect.foundAfterRelease === 1 ? 'bg-warning' : 'bg-info'}">
-                            ${defect.foundAfterRelease === 1 ? '发布后发现' : '发布前发现'}
+                            ${defect.foundAfterRelease === 1 ? '发布后' : '发布前'}
                         </span>
                     </td>
                     <td>${defect.source}</td>

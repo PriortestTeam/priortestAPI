@@ -103,9 +103,9 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             // 发布前后对比分析
             Map<String, Object> phaseStats = new HashMap<>();
 
-            // 发布前发现的缺陷
+            // 发布前缺陷
             int preReleaseDefects = 8;
-            // 发布后发现的缺陷  
+            // 发布后缺陷  
             int postReleaseDefects = 4;
             // 遗留缺陷（历史版本引入，当前版本发现）
             int legacyDefects = 2;
@@ -158,9 +158,9 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             result.put("phaseStats", phaseStats);
             result.put("severityComparison", severityComparison);
 
-            // 发布后缺陷详细列表（包含完整的版本追踪信息）
+            // 发布后缺陷列表
             List<Map<String, Object>> postReleaseDefectsList = new ArrayList<>();
-            // 当前版本新引入的缺陷，发布后发现
+            // 当前版本新缺陷
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "登录页面响应缓慢", "性能", "严重", "2024-01-15", "生产环境用户反馈", 
                 "3.0.0.0", "3.0.0.0", 0, 1));
@@ -168,7 +168,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
                 "订单状态更新异常", "功能", "致命", "2024-01-18", "客服部门报告", 
                 "3.0.0.0", "3.0.0.0", 0, 1));
             
-            // 历史版本遗留的缺陷，在当前版本发布后才发现
+            // 历史版本遗留缺陷
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "移动端适配问题", "兼容性", "一般", "2024-01-20", "用户投诉", 
                 "3.0.0.0", "2.0.0", 1, 1));
@@ -176,7 +176,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
                 "数据导出格式错误", "功能", "轻微", "2024-01-22", "业务部门发现", 
                 "3.0.0.0", "2.5.0", 1, 1));
             
-            // 历史版本遗留的缺陷，在当前版本测试阶段发现（用于对比）
+            // 历史遗留缺陷（测试阶段发现）
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "权限验证逻辑缺陷", "安全", "严重", "2024-01-10", "测试团队发现", 
                 "3.0.0.0", "2.3.0", 1, 0));
@@ -207,10 +207,10 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             
             // 发现时机分析
             Map<String, Object> discoveryTimingAnalysis = new HashMap<>();
-            discoveryTimingAnalysis.put("postReleaseCount", 4); // 发布后发现的缺陷总数
-            discoveryTimingAnalysis.put("preReleaseCount", 1);  // 发布前发现的缺陷总数
-            discoveryTimingAnalysis.put("postReleaseNewDefects", 2); // 发布后发现的新缺陷
-            discoveryTimingAnalysis.put("postReleaseLegacyDefects", 2); // 发布后发现的遗留缺陷
+            discoveryTimingAnalysis.put("postReleaseCount", 4); // 发布后缺陷总数
+            discoveryTimingAnalysis.put("preReleaseCount", 1);  // 发布前缺陷总数
+            discoveryTimingAnalysis.put("postReleaseNewDefects", 2); // 发布后新缺陷
+            discoveryTimingAnalysis.put("postReleaseLegacyDefects", 2); // 发布后遗留缺陷
             discoveryTimingAnalysis.put("description", "缺陷发现时机分析");
             
             defectIntroductionAnalysis.put("discoveryTiming", discoveryTimingAnalysis);
@@ -511,9 +511,9 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         }
         
         if (foundAfterRelease == 1) {
-            discoveryDescription = "发布后发现";
+            discoveryDescription = "发布后";
         } else {
-            discoveryDescription = "发布前发现";
+            discoveryDescription = "发布前";
         }
         
         data.put("legacyDescription", legacyDescription);
