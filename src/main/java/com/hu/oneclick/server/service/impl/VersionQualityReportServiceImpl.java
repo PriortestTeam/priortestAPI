@@ -319,6 +319,11 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         }
     }
 
+    @Override
+    public Resp<Map<String, Object>> getPostReleaseDefects(String projectId, String releaseVersion) {
+        return getReleasePhaseDefects(projectId, releaseVersion);
+    }
+
     // 辅助方法
     private Map<String, Object> createModuleDefect(String module, int count) {
         Map<String, Object> data = new HashMap<>();
