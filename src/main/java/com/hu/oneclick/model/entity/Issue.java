@@ -164,6 +164,3 @@ public class Issue extends AssignBaseEntity implements Serializable {
     private String duration;
 
 }
-```
-
-Apply the change:
