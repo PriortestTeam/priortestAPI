@@ -109,10 +109,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             issue.setIntroducedVersion(dto.getIntroducedVersion());
         }
         if (dto.getIsLegacy() != null) {
-            issue.setIsLegacy(dto.getIsLegacy());
+            issue.setIsLegacy(dto.getIsLegacyAsInt());
         }
         if (dto.getFoundAfterRelease() != null) {
-            issue.setFoundAfterRelease(dto.getFoundAfterRelease());
+            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInt());
         }
 
         this.baseMapper.insert(issue);
@@ -155,10 +155,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             issue.setIntroducedVersion(dto.getIntroducedVersion());
         }
         if (dto.getIsLegacy() != null) {
-            issue.setIsLegacy(dto.getIsLegacy());
+            issue.setIsLegacy(dto.getIsLegacyAsInt());
         }
         if (dto.getFoundAfterRelease() != null) {
-            issue.setFoundAfterRelease(dto.getFoundAfterRelease());
+            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInt());
         }
 
         this.baseMapper.updateById(issue);

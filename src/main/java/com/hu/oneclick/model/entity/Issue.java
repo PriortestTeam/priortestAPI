@@ -90,10 +90,28 @@ public class Issue extends AssignBaseEntity implements Serializable {
     private String introducedVersion;
 
     @Schema(description = "是否为遗留问题")
-    private Boolean isLegacy;
+    private Integer isLegacy;
 
     @Schema(description = "发布后发现")
-    private Boolean foundAfterRelease;
+    private Integer foundAfterRelease;
+    
+    // 为前端提供字符串格式的getter方法
+    public String getIsLegacyStr() {
+        return isLegacy != null ? isLegacy.toString() : "0";
+    }
+    
+    public String getFoundAfterReleaseStr() {
+        return foundAfterRelease != null ? foundAfterRelease.toString() : "0";
+    }
+    
+    // 为前端提供字符串格式的setter方法
+    public void setIsLegacyStr(String isLegacyStr) {
+        this.isLegacy = (isLegacyStr != null && !isLegacyStr.isEmpty()) ? Integer.parseInt(isLegacyStr) : 0;
+    }
+    
+    public void setFoundAfterReleaseStr(String foundAfterReleaseStr) {
+        this.foundAfterRelease = (foundAfterReleaseStr != null && !foundAfterReleaseStr.isEmpty()) ? Integer.parseInt(foundAfterReleaseStr) : 0;
+    }
 
     @Schema(description = "severity")
     private String severity;

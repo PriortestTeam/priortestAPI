@@ -109,10 +109,33 @@ public class IssueSaveDto implements Serializable {
     private String introducedVersion;
 
     @Schema(description = "是否为遗留问题")
-    private Boolean isLegacy;
+    private String isLegacy;
 
     @Schema(description = "发布后发现")
-    private Boolean foundAfterRelease;
+    private String foundAfterRelease;
+    
+    // 转换为Integer的方法
+    public Integer getIsLegacyAsInt() {
+        if (isLegacy == null || isLegacy.isEmpty()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(isLegacy);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+    
+    public Integer getFoundAfterReleaseAsInt() {
+        if (foundAfterRelease == null || foundAfterRelease.isEmpty()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(foundAfterRelease);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 
 
     @Schema(description = "运行用例Id")

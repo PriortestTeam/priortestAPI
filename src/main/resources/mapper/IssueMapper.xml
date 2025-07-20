@@ -21,11 +21,11 @@
         <!--        <result property="version" column="version" jdbcType="VARCHAR"/>-->
         <result property="caseCategory" column="case_category" jdbcType="VARCHAR"/>
         <result property="releasePhase" column="release_phase" jdbcType="VARCHAR"/>
-        <result property="foundAfterRelease" column="found_after_release" jdbcType="BOOLEAN"/>
+        <result property="foundAfterRelease" column="found_after_release" jdbcType="INTEGER"/>
         <result property="releasedVersion" column="released_version" jdbcType="VARCHAR"/>
         <result property="issueVersion" column="issue_version" jdbcType="VARCHAR"/>
         <result property="introducedVersion" column="introduced_version" jdbcType="VARCHAR"/>
-        <result property="isLegacy" column="is_legacy" jdbcType="BOOLEAN"/>
+        <result property="isLegacy" column="is_legacy" jdbcType="INTEGER"/>
         <result property="fixVersion" column="fix_version" jdbcType="VARCHAR"/>
         <result property="severity" column="severity" jdbcType="VARCHAR"/>
         <result property="testDevice" column="test_device" jdbcType="VARCHAR"/>
