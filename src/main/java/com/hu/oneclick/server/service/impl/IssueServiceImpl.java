@@ -109,11 +109,13 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         if (dto.getIntroducedVersion() != null) {
             issue.setIntroducedVersion(dto.getIntroducedVersion());
         }
+
+        // 转换字符串字段为整数存储到数据库
         if (dto.getIsLegacy() != null) {
-            issue.setIsLegacy(dto.getIsLegacyAsInt());
+            issue.setIsLegacy(dto.getIsLegacyAsInteger());
         }
         if (dto.getFoundAfterRelease() != null) {
-            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInt());
+            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInteger());
         }
 
         this.baseMapper.insert(issue);
@@ -155,11 +157,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         if (dto.getIntroducedVersion() != null) {
             issue.setIntroducedVersion(dto.getIntroducedVersion());
         }
+         // 转换字符串字段为整数存储到数据库
         if (dto.getIsLegacy() != null) {
-            issue.setIsLegacy(dto.getIsLegacyAsInt());
+            issue.setIsLegacy(dto.getIsLegacyAsInteger());
         }
         if (dto.getFoundAfterRelease() != null) {
-            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInt());
+            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInteger());
         }
 
         this.baseMapper.updateById(issue);
@@ -220,14 +223,19 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     public Issue retrieveIssueStatusAsPerIssueId(Long projectId, Long issueId) {
         return this.getByIdAndProjectId(issueId, projectId);
     }
-    
-        // Helper method to convert fields to String
+
+    /**
+     * 转换字段为字符串格式，用于前端显示
+     */
     private void convertFieldsToString(Issue issue) {
+        // 转换 isLegacy 字段 (Integer -> String)
         if (issue.getIsLegacy() != null) {
             issue.setIsLegacyStr(String.valueOf(issue.getIsLegacy()));
         } else {
             issue.setIsLegacyStr("0"); // 默认值
         }
+
+        // 转换 foundAfterRelease 字段 (Integer -> String)
         if (issue.getFoundAfterRelease() != null) {
             issue.setFoundAfterReleaseStr(String.valueOf(issue.getFoundAfterRelease()));
         } else {

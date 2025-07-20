@@ -91,29 +91,23 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @Schema(description = "引入版本")
     private String introducedVersion;
 
-    @Schema(description = "是否遗留缺陷")
-    @JsonIgnore
+    @Schema(description = "是否为遗留问题(数据库存储0/1)")
     private Integer isLegacy;
 
-    @Schema(description = "发布后发现")
-    @JsonIgnore
+    @Schema(description = "发布后发现(数据库存储0/1)")
     private Integer foundAfterRelease;
-
-    // 为前端提供字符串格式的字段
-    @JsonProperty("isLegacy")
-    @Schema(description = "是否遗留缺陷(字符串格式)")
-    public String getIsLegacyStr() {
-        return isLegacy != null ? isLegacy.toString() : "0";
-    }
-
-    @JsonProperty("foundAfterRelease")
-    @Schema(description = "发布后发现(字符串格式)")
-    public String getFoundAfterReleaseStr() {
-        return foundAfterRelease != null ? foundAfterRelease.toString() : "0";
-    }
 
     @Schema(description = "severity")
     private String severity;
+
+    // 用于前端显示的字符串字段
+    @TableField(exist = false)
+    @Schema(description = "是否为遗留问题(字符串格式)")
+    private String isLegacyStr;
+
+    @TableField(exist = false)
+    @Schema(description = "发布后发现(字符串格式)")
+    private String foundAfterReleaseStr;
 
     @Schema(description = "测试设备")
     private String testDevice;
