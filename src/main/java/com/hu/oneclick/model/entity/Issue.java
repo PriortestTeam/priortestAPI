@@ -86,6 +86,15 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @Schema(description = "缺陷修改版本号")
     private String fixVersion;
 
+    @Schema(description = "引入版本")
+    private String introducedVersion;
+
+    @Schema(description = "是否为遗留问题")
+    private Boolean isLegacy;
+
+    @Schema(description = "发布后发现")
+    private Boolean foundAfterRelease; fixVersion;
+
     @Schema(description = "severity")
     private String severity;
 
