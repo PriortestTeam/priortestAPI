@@ -152,6 +152,63 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
     }
 
     @Override
+    public Resp<Map<String, Object>> getReleasePhaseDefects(String projectId, String releaseVersion) {
+        try {
+            Map<String, Object> result = new HashMap<>();
+
+            // 发布阶段缺陷统计
+            Map<String, Object> phaseStats = new HashMap<>();
+            
+            // 发布前发现的缺陷（测试阶段发现）
+            int preReleaseDefects = 8;  // 实际应从数据库查询
+            // 发布后发现的缺陷（生产环境发现）
+            int postReleaseDefects = 4;  // 实际应从数据库查询
+            
+            phaseStats.put("preReleaseDefects", preReleaseDefects);
+            phaseStats.put("postReleaseDefects", postReleaseDefects);
+            phaseStats.put("totalDefects", preReleaseDefects + postReleaseDefects);
+            
+            // 逃逸率计算：发布后发现的缺陷数 / 总缺陷数 * 100
+            double escapeRate = (double) postReleaseDefects / (preReleaseDefects + postReleaseDefects) * 100;
+            phaseStats.put("escapeRate", Math.round(escapeRate * 100.0) / 100.0);
+            
+            result.put("phaseStats", phaseStats);
+
+            // 发布后缺陷详细列表
+            List<Map<String, Object>> postReleaseDefectsList = new ArrayList<>();
+            postReleaseDefectsList.add(createPostReleaseDefect("登录页面响应缓慢", "性能", "严重", "2024-01-15", "生产环境用户反馈"));
+            postReleaseDefectsList.add(createPostReleaseDefect("订单状态更新异常", "功能", "致命", "2024-01-18", "客服部门报告"));
+            postReleaseDefectsList.add(createPostReleaseDefect("移动端适配问题", "兼容性", "一般", "2024-01-20", "用户投诉"));
+            postReleaseDefectsList.add(createPostReleaseDefect("数据导出格式错误", "功能", "轻微", "2024-01-22", "业务部门发现"));
+            
+            result.put("postReleaseDefects", postReleaseDefectsList);
+
+            // 缺陷来源分析
+            List<Map<String, Object>> defectSources = new ArrayList<>();
+            defectSources.add(createDefectSource("用户反馈", 6, "#ff6b6b"));
+            defectSources.add(createDefectSource("监控告警", 3, "#4ecdc4"));
+            defectSources.add(createDefectSource("客服报告", 2, "#45b7d1"));
+            defectSources.add(createDefectSource("业务部门", 1, "#96ceb4"));
+            
+            result.put("defectSources", defectSources);
+
+            // 发布质量趋势（最近几个版本）
+            List<Map<String, Object>> qualityTrend = new ArrayList<>();
+            qualityTrend.add(createQualityTrendData("v1.0", 5, 2, 28.6));
+            qualityTrend.add(createQualityTrendData("v1.1", 7, 3, 30.0));
+            qualityTrend.add(createQualityTrendData("v1.2", 6, 1, 14.3));
+            qualityTrend.add(createQualityTrendData("v1.3", 8, 4, 33.3));
+            qualityTrend.add(createQualityTrendData("v1.4", 8, 4, 33.3));
+            
+            result.put("qualityTrend", qualityTrend);
+
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+        } catch (Exception e) {
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取发布阶段缺陷分析失败");
+        }
+    }
+
+    @Override
     public Resp<Map<String, Object>> getDefectDistribution(String projectId, String releaseVersion) {
         try {
             Map<String, Object> result = new HashMap<>();
@@ -284,6 +341,33 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("severity", severity);
         data.put("count", count);
         data.put("color", color);
+        return data;
+    }
+
+    private Map<String, Object> createPostReleaseDefect(String title, String category, String severity, String foundDate, String source) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", title);
+        data.put("category", category);
+        data.put("severity", severity);
+        data.put("foundDate", foundDate);
+        data.put("source", source);
+        return data;
+    }
+
+    private Map<String, Object> createDefectSource(String source, int count, String color) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("source", source);
+        data.put("count", count);
+        data.put("color", color);
+        return data;
+    }
+
+    private Map<String, Object> createQualityTrendData(String version, int preRelease, int postRelease, double escapeRate) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("version", version);
+        data.put("preRelease", preRelease);
+        data.put("postRelease", postRelease);
+        data.put("escapeRate", escapeRate);
         return data;
     }
 

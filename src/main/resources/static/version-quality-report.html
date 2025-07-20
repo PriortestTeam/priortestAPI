@@ -369,6 +369,90 @@
                     </div>
                 </div>
 
+                <!-- 发布阶段缺陷追踪 -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="report-section">
+                            <h4><i class="bi bi-shield-exclamation text-warning"></i> 发布阶段缺陷追踪</h4>
+                            
+                            <!-- 发布质量指标卡片 -->
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="metric-card level-good">
+                                        <div class="metric-icon"><i class="bi bi-bug"></i></div>
+                                        <div class="metric-value" id="preReleaseDefects">8</div>
+                                        <div class="metric-label">发布前发现</div>
+                                        <div class="level-badge">测试阶段</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card level-poor">
+                                        <div class="metric-icon"><i class="bi bi-exclamation-triangle"></i></div>
+                                        <div class="metric-value" id="postReleaseDefects">4</div>
+                                        <div class="metric-label">发布后发现</div>
+                                        <div class="level-badge">生产环境</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card level-average">
+                                        <div class="metric-icon"><i class="bi bi-percent"></i></div>
+                                        <div class="metric-value" id="escapeRate">33.3%</div>
+                                        <div class="metric-label">缺陷逃逸率</div>
+                                        <div class="level-badge">需改进</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card level-good">
+                                        <div class="metric-icon"><i class="bi bi-graph-up"></i></div>
+                                        <div class="metric-value" id="testEffectiveness">66.7%</div>
+                                        <div class="metric-label">测试有效性</div>
+                                        <div class="level-badge">良好</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 发布后缺陷详情表格 -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6><i class="bi bi-list-ul"></i> 发布后缺陷详情</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="postReleaseDefectsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>缺陷标题</th>
+                                                    <th>类型</th>
+                                                    <th>严重程度</th>
+                                                    <th>发现日期</th>
+                                                    <th>发现来源</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- 动态填充 -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 缺陷来源分布图表 -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="chart-container">
+                                        <h6><i class="bi bi-pie-chart"></i> 发布后缺陷来源分布</h6>
+                                        <canvas id="defectSourceChart" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="chart-container">
+                                        <h6><i class="bi bi-graph-up"></i> 发布质量趋势</h6>
+                                        <canvas id="qualityTrendChart" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 图表区域 -->
                 <div class="row">
                     <div class="col-md-6">

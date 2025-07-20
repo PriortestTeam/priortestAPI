@@ -20,6 +20,9 @@
         <!--        <result property="platform" column="platform" jdbcType="VARCHAR"/>-->
         <!--        <result property="version" column="version" jdbcType="VARCHAR"/>-->
         <result property="caseCategory" column="case_category" jdbcType="VARCHAR"/>
+        <result property="releasePhase" column="release_phase" jdbcType="VARCHAR"/>
+        <result property="foundAfterRelease" column="found_after_release" jdbcType="BOOLEAN"/>
+        <result property="releasedVersion" column="released_version" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
@@ -28,7 +31,7 @@
     <select id="queryList" resultMap="IssueMap">
         select
         id, project_id, user_id, title, status, planned_release_date, close_date,
-        priority, env, browser, platform, version, case_category, create_time, update_time, description
+        priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, create_time, update_time, description
         from oneclick.issue
         <where>
             <if test="id != null">
@@ -69,6 +72,15 @@
             <if test="caseCategory != null and caseCategory != ''">
                 and case_category = #{caseCategory}
             </if>
+            <if test="releasePhase != null and releasePhase != ''">
+                and release_phase = #{releasePhase}
+            </if>
+            <if test="foundAfterRelease != null">
+                and found_after_release = #{foundAfterRelease}
+            </if>
+            <if test="releasedVersion != null and releasedVersion != ''">
+                and released_version = #{releasedVersion}
+            </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
             </if>
@@ -101,6 +113,9 @@
                platform,
                version,
                case_category,
+               release_phase,
+               found_after_release,
+               released_version,
                create_time,
                update_time,
                description
@@ -143,6 +158,15 @@
             </if>
             <if test="caseCategory != null and caseCategory != ''">
                 case_category = #{caseCategory},
+            </if>
+             <if test="releasePhase != null and releasePhase != ''">
+                release_phase = #{releasePhase},
+            </if>
+            <if test="foundAfterRelease != null">
+                found_after_release = #{foundAfterRelease},
+            </if>
+            <if test="releasedVersion != null and releasedVersion != ''">
+                released_version = #{releasedVersion},
             </if>
             <if test="description != null and description != ''">
                 description = #{description},
