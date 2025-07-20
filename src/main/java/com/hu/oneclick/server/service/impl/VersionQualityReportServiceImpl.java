@@ -109,8 +109,11 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             int postReleaseDefects = 4;
             int totalDefects = preReleaseDefects + postReleaseDefects;
 
+            phaseStats.put("preReleaseDefects", preReleaseDefects);
+            phaseStats.put("postReleaseDefects", postReleaseDefects);
+            phaseStats.put("totalDefects", totalDefects);
+
             // 核心指标计算
-            // 缺陷逃逸率 (发布后发现的缺陷数 / 总缺陷数 * 100)
             double escapeRate = totalDefects > 0 ? (double) postReleaseDefects / totalDefects * 100 : 0.0;
             double testEffectiveness = totalDefects > 0 ? (double) preReleaseDefects / totalDefects * 100 : 0.0;
 
