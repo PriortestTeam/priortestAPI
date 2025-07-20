@@ -39,4 +39,9 @@ public interface VersionQualityReportService {
      * 获取版本质量对比分析
      */
     Resp<Map<String, Object>> getVersionComparison(String projectId, String startVersion, String endVersion);
+
+    /**
+     * 获取发布后缺陷统计分析
+     */
+    Resp<Map<String, Object>> getPostReleaseDefects(String projectId, String releaseVersion);
 }
