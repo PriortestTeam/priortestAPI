@@ -23,6 +23,12 @@
         <result property="releasePhase" column="release_phase" jdbcType="VARCHAR"/>
         <result property="foundAfterRelease" column="found_after_release" jdbcType="BOOLEAN"/>
         <result property="releasedVersion" column="released_version" jdbcType="VARCHAR"/>
+        <result property="issueVersion" column="issue_version" jdbcType="VARCHAR"/>
+        <result property="introducedVersion" column="introduced_version" jdbcType="VARCHAR"/>
+        <result property="isLegacy" column="is_legacy" jdbcType="BOOLEAN"/>
+        <result property="fixVersion" column="fix_version" jdbcType="VARCHAR"/>
+        <result property="severity" column="severity" jdbcType="VARCHAR"/>
+        <result property="testDevice" column="test_device" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
@@ -31,7 +37,8 @@
     <select id="queryList" resultMap="IssueMap">
         select
         id, project_id, user_id, title, status, planned_release_date, close_date,
-        priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, create_time, update_time, description
+        priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, 
+        issue_version, introduced_version, is_legacy, fix_version, severity, test_device, create_time, update_time, description
         from oneclick.issue
         <where>
             <if test="id != null">
@@ -116,6 +123,12 @@
                release_phase,
                found_after_release,
                released_version,
+               issue_version,
+               introduced_version,
+               is_legacy,
+               fix_version,
+               severity,
+               test_device,
                create_time,
                update_time,
                description
@@ -167,6 +180,24 @@
             </if>
             <if test="releasedVersion != null and releasedVersion != ''">
                 released_version = #{releasedVersion},
+            </if>
+            <if test="issueVersion != null and issueVersion != ''">
+                issue_version = #{issueVersion},
+            </if>
+            <if test="introducedVersion != null and introducedVersion != ''">
+                introduced_version = #{introducedVersion},
+            </if>
+            <if test="isLegacy != null">
+                is_legacy = #{isLegacy},
+            </if>
+            <if test="fixVersion != null and fixVersion != ''">
+                fix_version = #{fixVersion},
+            </if>
+            <if test="severity != null and severity != ''">
+                severity = #{severity},
+            </if>
+            <if test="testDevice != null and testDevice != ''">
+                test_device = #{testDevice},
             </if>
             <if test="description != null and description != ''">
                 description = #{description},

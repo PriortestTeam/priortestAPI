@@ -93,7 +93,7 @@ public class Issue extends AssignBaseEntity implements Serializable {
     private Boolean isLegacy;
 
     @Schema(description = "发布后发现")
-    private Boolean foundAfterRelease; fixVersion;
+    private Boolean foundAfterRelease;
 
     @Schema(description = "severity")
     private String severity;
