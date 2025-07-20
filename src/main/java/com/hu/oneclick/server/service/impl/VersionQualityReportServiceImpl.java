@@ -221,7 +221,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             result.put("severityDistribution", severityDistribution);
 
             // 环境缺陷分布
-            List<Map<String, Object>> envDefectDistribution = newArrayList<>();
+            List<Map<String, Object>> envDefectDistribution = new ArrayList<>();
             envDefectDistribution.add(createEnvDefect("开发环境", 8, "#007bff"));
             envDefectDistribution.add(createEnvDefect("测试环境", 5, "#6f42c1"));
             envDefectDistribution.add(createEnvDefect("预发布环境", 2, "#20c997"));
