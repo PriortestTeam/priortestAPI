@@ -104,6 +104,17 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             issue.setIssueExpand(JSONUtil.toJsonStr(customFieldMap));
         }
 
+        // 直接从 DTO 中获取三个版本相关字段
+        if (dto.getIntroducedVersion() != null) {
+            issue.setIntroducedVersion(dto.getIntroducedVersion());
+        }
+        if (dto.getIsLegacy() != null) {
+            issue.setIsLegacy(dto.getIsLegacy());
+        }
+        if (dto.getFoundAfterRelease() != null) {
+            issue.setFoundAfterRelease(dto.getFoundAfterRelease());
+        }
+
         this.baseMapper.insert(issue);
         return issue;
     }
@@ -137,6 +148,17 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         // 保存自定义字段
         if (!customFieldMap.isEmpty()) {
             issue.setIssueExpand(JSONUtil.toJsonStr(customFieldMap));
+        }
+
+        // 直接从 DTO 中获取三个版本相关字段
+        if (dto.getIntroducedVersion() != null) {
+            issue.setIntroducedVersion(dto.getIntroducedVersion());
+        }
+        if (dto.getIsLegacy() != null) {
+            issue.setIsLegacy(dto.getIsLegacy());
+        }
+        if (dto.getFoundAfterRelease() != null) {
+            issue.setFoundAfterRelease(dto.getFoundAfterRelease());
         }
 
         this.baseMapper.updateById(issue);
@@ -215,23 +237,23 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         try {
             // 获取视图过滤参数
             Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
-            
+
             if (filterParams == null) {
                 // 如果没有过滤条件，返回空分页结果
                 return new PageInfo<>(new ArrayList<>());
             }
-            
+
             // 使用BeanSearcher进行查询，使用issue作为查询类
             Class<?> issueClass = Class.forName("com.hu.oneclick.model.entity.Issue");
-            
+
             // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
             List<Map<String, Object>> result = mapSearcher.searchAll(issueClass, filterParams);
-            
+
             // 转换为 Issue 对象
             List<Issue> issueList = result.stream()
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class))
                 .collect(Collectors.toList());
-            
+
             // 使用与 BeanSearchController 相同的分页处理方式
             return PageUtil.manualPaging(issueList);
         } catch (Exception e) {
@@ -253,14 +275,14 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
         // 2. 获取 projectId
         String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
-        
+
         // 3. 计算偏移量
         int offset = (pageNum - 1) * pageSize;
-        
+
         // 添加调试日志
         logger.info("queryByFieldAndValue - 分页参数: pageNum={}, pageSize={}, offset={}", pageNum, pageSize, offset);
         logger.info("queryByFieldAndValue - 查询参数: tableName={}, fieldNameEn={}, value={}, projectId={}", tableName, fieldNameEn, value, projectId);
-        
+
         // 4. 使用 DAO 方法查询数据
         List<Map<String, Object>> result = viewDao.queryRecordsByScope(
             tableName,
@@ -271,12 +293,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             offset,
             pageSize
         );
-        
+
         logger.info("queryByFieldAndValue - 查询结果数量: {}", result.size());
         if (!result.isEmpty()) {
             logger.info("queryByFieldAndValue - 第一条记录: {}", result.get(0));
         }
-        
+
         // 5. 查询总数
         long total = viewDao.countRecordsByScope(
             tableName,
@@ -285,12 +307,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             projectId,
             null
         );
-        
+
         logger.info("queryByFieldAndValue - 总记录数: {}", total);
-        
+
         // 6. 转 bean
         List<Issue> issueList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class)).collect(Collectors.toList());
-        
+
         // 7. 构造 PageInfo
         PageInfo<Issue> pageInfo = new PageInfo<>(issueList);
         pageInfo.setPageNum(pageNum);
@@ -301,10 +323,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
         pageInfo.setHasPreviousPage(pageNum > 1);
         pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
-        
+
         logger.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
                  pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage());
-        
+
         return pageInfo;
     }
 
@@ -316,7 +338,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             // 获取视图过滤参数
             Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
                 param.getViewId(), param.getProjectId().toString());
-            
+
             if (filterParams == null) {
                 // 如果获取过滤参数失败，回退到简单查询
                 logger.warn("获取视图过滤参数失败，回退到简单查询");
@@ -326,22 +348,22 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             // 使用BeanSearcher进行查询
             Class<?> issueClass = Class.forName("com.hu.oneclick.model.entity.Issue");
             List<Map<String, Object>> result = mapSearcher.searchAll(issueClass, filterParams);
-            
+
             // 转换为 Issue 对象
             List<Issue> issueList = result.stream()
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class))
                 .collect(Collectors.toList());
-            
+
             // 手动分页处理
             int total = issueList.size();
             int startIndex = (pageNum - 1) * pageSize;
             int endIndex = Math.min(startIndex + pageSize, total);
-            
+
             List<Issue> pageData = new ArrayList<>();
             if (startIndex < total) {
                 pageData = issueList.subList(startIndex, endIndex);
             }
-            
+
             PageInfo<Issue> pageInfo = new PageInfo<>(pageData);
             pageInfo.setPageNum(pageNum);
             pageInfo.setPageSize(pageSize);
