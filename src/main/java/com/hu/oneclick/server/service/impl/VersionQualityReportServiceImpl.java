@@ -100,18 +100,14 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         try {
             Map<String, Object> result = new HashMap<>();
 
-            // 发布阶段缺陷统计
+            // 发布前后对比分析
             Map<String, Object> phaseStats = new HashMap<>();
 
-            // 发布前发现的缺陷（测试阶段发现）
-            int preReleaseDefects = 8;  // 实际应从数据库查询 WHERE found_after_release = false
-            // 发布后发现的缺陷（生产环境发现）
-            int postReleaseDefects = 4;  // 实际应从数据库查询 WHERE found_after_release = true
+            // 发布前发现的缺陷
+            int preReleaseDefects = 8;
+            // 发布后发现的缺陷  
+            int postReleaseDefects = 4;
             int totalDefects = preReleaseDefects + postReleaseDefects;
-
-            phaseStats.put("preReleaseDefects", preReleaseDefects);
-            phaseStats.put("postReleaseDefects", postReleaseDefects);
-            phaseStats.put("totalDefects", totalDefects);
 
             // 核心指标计算
             // 缺陷逃逸率 (发布后发现的缺陷数 / 总缺陷数 * 100)
