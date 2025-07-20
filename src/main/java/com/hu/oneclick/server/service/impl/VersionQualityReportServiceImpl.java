@@ -116,7 +116,6 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             // 核心指标计算
             // 缺陷逃逸率 (发布后发现的缺陷数 / 总缺陷数 * 100)
             double escapeRate = totalDefects > 0 ? (double) postReleaseDefects / totalDefects * 100 : 0;
-            result.put("defectEscapeRate", Math.round(escapeRate * 100.0) / 100.0);
             double testEffectiveness = totalDefects > 0 ? (double) preReleaseDefects / totalDefects * 100 : 0;
 
             phaseStats.put("escapeRate", Math.round(escapeRate * 100.0) / 100.0);
