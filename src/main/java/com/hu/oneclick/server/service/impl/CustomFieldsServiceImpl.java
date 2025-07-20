@@ -210,7 +210,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                     // 创建引入版本字段（不必填）
                     CustomFileldLinkVo introducedVersionField = cloneCustomField(field);
                     introducedVersionField.setFieldNameCn("引入版本");
-                    introducedVersionField.setFieldNameEn("introduced_version");
+                    introducedVersionField.setFieldNameEn("introducedVersion");
                     introducedVersionField.setMandatory(0); // 设置为非必填
                     processedFields.add(introducedVersionField);
                 } else {
