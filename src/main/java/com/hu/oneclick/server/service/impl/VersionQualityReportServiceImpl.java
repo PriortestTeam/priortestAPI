@@ -205,11 +205,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             } else {
                 improvements.add("测试质量良好，继续保持");
             }
-            result.put("improvements", improvements);ateQualityTrendData("v1.2", 6, 1, 14.3));
-            qualityTrend.add(createQualityTrendData("v1.3", 8, 4, 33.3));
-            qualityTrend.add(createQualityTrendData("v1.4", 8, 4, 33.3));
-
-            result.put("qualityTrend", qualityTrend);
+            result.put("improvements", improvements);
 
             return new Resp.Builder<Map<String, Object>>().setData(result).ok();
         } catch (Exception e) {
