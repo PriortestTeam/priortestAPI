@@ -14,6 +14,7 @@ import com.hu.oneclick.server.service.UserCaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +27,9 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
     public boolean insertUserCase(UserCaseParam userCaseParam) {
         UserCaseDto entity = BeanUtil.copyProperties(userCaseParam, UserCaseDto.class);
 
+        // 手动设置创建时间
+        entity.setCreateTime(new Date());
+        
         // 保存自定义字段
         if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand())) {
             String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand());

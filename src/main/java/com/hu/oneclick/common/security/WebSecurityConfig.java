@@ -173,8 +173,12 @@ public class WebSecurityConfig {
                     "/webjars/**",
                     "/auth/**",
                     "/public/**",
-                    "/actuator/**"
+                    "/actuator/**", 
+                    "/static/**"
                 ).permitAll()
+                .requestMatchers("/api/versionQualityReport/**").permitAll()
+                .requestMatchers("/version-quality-report.html", "/version-quality-report.js").permitAll()
+                .requestMatchers("/version-mapping.html", "/version-mapping.js").permitAll()
                 .anyRequest().authenticated()
             )
             // 先添加登录过滤器
@@ -213,7 +217,11 @@ public class WebSecurityConfig {
                         path.equals("/api/swagger-ui.html") ||
                         path.startsWith("/swagger-ui/") ||
                         path.startsWith("/v3/api-docs") ||
-                        path.equals("/swagger-ui.html")) {
+                        path.equals("/swagger-ui.html") ||
+                        path.endsWith(".html") ||
+                        path.endsWith(".js") ||
+                        path.endsWith(".css") ||
+                        path.startsWith("/api/static/")) {
                         System.out.println(">>> 完全跳过JWT验证，直接放行请求: " + path);
                         filterChain.doFilter(request, response);
                         return;
