@@ -114,9 +114,11 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             phaseStats.put("totalDefects", totalDefects);
 
             // 核心指标计算
+            // 缺陷逃逸率 (发布后发现的缺陷数 / 总缺陷数 * 100)
             double escapeRate = totalDefects > 0 ? (double) postReleaseDefects / totalDefects * 100 : 0;
+            result.put("defectEscapeRate", Math.round(escapeRate * 100.0) / 100.0);
             double testEffectiveness = totalDefects > 0 ? (double) preReleaseDefects / totalDefects * 100 : 0;
-            
+
             phaseStats.put("escapeRate", Math.round(escapeRate * 100.0) / 100.0);
             phaseStats.put("testEffectiveness", Math.round(testEffectiveness * 100.0) / 100.0);
 
@@ -135,24 +137,24 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
             // 发布前后缺陷严重程度对比
             Map<String, Object> severityComparison = new HashMap<>();
-            
+
             // 发布前缺陷严重程度分布
             List<Map<String, Object>> preReleaseSeverity = new ArrayList<>();
             preReleaseSeverity.add(createSeverityData("致命", 1, "#dc3545"));
             preReleaseSeverity.add(createSeverityData("严重", 2, "#fd7e14"));
             preReleaseSeverity.add(createSeverityData("一般", 3, "#ffc107"));
             preReleaseSeverity.add(createSeverityData("轻微", 2, "#28a745"));
-            
+
             // 发布后缺陷严重程度分布
             List<Map<String, Object>> postReleaseSeverity = new ArrayList<>();
             postReleaseSeverity.add(createSeverityData("致命", 2, "#dc3545"));
             postReleaseSeverity.add(createSeverityData("严重", 1, "#fd7e14"));
             postReleaseSeverity.add(createSeverityData("一般", 1, "#ffc107"));
             postReleaseSeverity.add(createSeverityData("轻微", 0, "#28a745"));
-            
+
             severityComparison.put("preRelease", preReleaseSeverity);
             severityComparison.put("postRelease", postReleaseSeverity);
-            
+
             result.put("phaseStats", phaseStats);
             result.put("severityComparison", severityComparison);
 
@@ -180,7 +182,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             qualityTrend.add(createQualityTrendData("v1.9", 10, 3, 23.1));
             qualityTrend.add(createQualityTrendData("v2.0", 8, 4, 33.3));
             qualityTrend.add(createQualityTrendData("v2.1", 8, 4, 33.3));
-            
+
             result.put("qualityTrend", qualityTrend);
 
             // 发布后缺陷时间分布分析
@@ -188,7 +190,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             timeDistribution.add(createTimeDistribution("发布后1天", 2, "紧急问题"));
             timeDistribution.add(createTimeDistribution("发布后1周", 1, "用户反馈"));
             timeDistribution.add(createTimeDistribution("发布后1月", 1, "深度使用发现"));
-            
+
             result.put("timeDistribution", timeDistribution);
 
             // 测试改进建议
