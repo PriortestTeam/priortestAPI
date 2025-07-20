@@ -153,7 +153,7 @@ class VersionQualityReport {
 
             // 更新图表
             this.updateCharts(defectDistributionData.data, executionRateData.data, defectDensityData.data);
-            
+
             // 更新发布阶段图表
             this.updateReleasePhaseCharts(releasePhaseData.data);
 
@@ -629,20 +629,20 @@ class VersionQualityReport {
     updateReleasePhaseMetrics(data) {
         if (data && data.phaseStats) {
             const stats = data.phaseStats;
-            
+
             // 更新发布前后缺陷数量
             document.getElementById('preReleaseDefects').textContent = stats.preReleaseDefects;
             document.getElementById('postReleaseDefects').textContent = stats.postReleaseDefects;
-            
+
             // 更新逃逸率
             document.getElementById('escapeRate').textContent = stats.escapeRate + '%';
             document.getElementById('escapeRateLevel').textContent = stats.qualityLevel;
             document.getElementById('escapeRateLevel').className = 'level-badge ' + this.getLevelClass(stats.qualityLevel);
-            
+
             // 更新测试有效性
             document.getElementById('testEffectiveness').textContent = stats.testEffectiveness + '%';
             document.getElementById('testEffectivenessLevel').textContent = stats.testEffectiveness >= 70 ? '良好' : '需改进';
-            
+
             // 动态更新卡片颜色
             this.updateReleasePhaseCardColors(stats);
         }
@@ -653,7 +653,7 @@ class VersionQualityReport {
         // 逃逸率卡片颜色
         const escapeRateCard = document.querySelector('#escapeRate').closest('.metric-card');
         escapeRateCard.className = 'metric-card ' + this.getCardLevelClass(stats.qualityLevel);
-        
+
         // 测试有效性卡片颜色
         const effectivenessCard = document.querySelector('#testEffectiveness').closest('.metric-card');
         const effectivenessLevel = stats.testEffectiveness >= 70 ? '良好' : '需改进';
@@ -666,13 +666,13 @@ class VersionQualityReport {
             const stats = data.phaseStats;
             const insights = document.getElementById('qualityInsights');
             const suggestions = document.getElementById('suggestionsList');
-            
+
             // 更新洞察信息
             insights.innerHTML = `
                 <p><strong>风险提示：</strong> 发布后发现了 <span class="text-danger">${stats.postReleaseDefects}个缺陷</span>，逃逸率为 <span class="text-warning">${stats.escapeRate}%</span>，质量等级：<span class="badge ${this.getQualityBadgeClass(stats.qualityLevel)}">${stats.qualityLevel}</span></p>
                 <p><strong>对比分析：</strong> 相比发布前发现的${stats.preReleaseDefects}个缺陷，测试有效性为${stats.testEffectiveness}%。</p>
             `;
-            
+
             // 更新改进建议
             if (data.improvements && data.improvements.length > 0) {
                 suggestions.innerHTML = data.improvements.map(item => `<li>${item}</li>`).join('');
@@ -687,12 +687,12 @@ class VersionQualityReport {
             if (data.qualityTrend) {
                 this.createQualityTrendChart(data.qualityTrend);
             }
-            
+
             // 更新时间分布图
             if (data.timeDistribution) {
                 this.createTimeDistributionChart(data.timeDistribution);
             }
-            
+
             // 更新严重程度对比图
             if (data.severityComparison) {
                 this.createSeverityComparisonChart(data.severityComparison);
@@ -703,11 +703,11 @@ class VersionQualityReport {
     // 创建发布质量趋势图
     createQualityTrendChart(data) {
         const ctx = document.getElementById('qualityTrendChart').getContext('2d');
-        
+
         if (this.charts.qualityTrend) {
             this.charts.qualityTrend.destroy();
         }
-        
+
         this.charts.qualityTrend = new Chart(ctx, {
             type: 'line',
             data: {
@@ -760,11 +760,11 @@ class VersionQualityReport {
     // 创建时间分布图
     createTimeDistributionChart(data) {
         const ctx = document.getElementById('timeDistributionChart').getContext('2d');
-        
+
         if (this.charts.timeDistribution) {
             this.charts.timeDistribution.destroy();
         }
-        
+
         this.charts.timeDistribution = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -791,11 +791,11 @@ class VersionQualityReport {
     // 创建严重程度对比图
     createSeverityComparisonChart(data) {
         const ctx = document.getElementById('severityComparisonChart').getContext('2d');
-        
+
         if (this.charts.severityComparison) {
             this.charts.severityComparison.destroy();
         }
-        
+
         const severityLabels = ['致命', '严重', '一般', '轻微'];
         const preReleaseData = severityLabels.map(severity => {
             const item = data.preRelease.find(d => d.severity === severity);
@@ -805,7 +805,7 @@ class VersionQualityReport {
             const item = data.postRelease.find(d => d.severity === severity);
             return item ? item.count : 0;
         });
-        
+
         this.charts.severityComparison = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -927,12 +927,213 @@ class VersionQualityReport {
                         <small class="text-muted">总缺陷实例</small>
                         <div class="fw-bold text-warning">${data.totalDefectInstances}个</div>
                     </div>
-                    <div class="col-md-4">
+                    <div md-4">
                         <small class="text-muted">环境特定缺陷</small>
                         <div class="fw-bold text-info">${data.environmentSpecificDefects}个</div>
                     </div>
                 </div>
             `;
+        }
+    }
+
+    // 更新发布后缺陷表格
+    updatePostReleaseDefectsTable(defects) {
+        const tbody = document.querySelector('#postReleaseDefectsTable tbody');
+
+        if (!defects || defects.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted"><i class="bi bi-info-circle"></i> 暂无发布后缺陷数据</td></tr>';
+            return;
+        }
+
+        let html = '';
+        defects.forEach(defect => {
+            const legacyBadge = defect.isLegacy ? 
+                '<span class="badge bg-warning">遗留缺陷</span>' : 
+                '<span class="badge bg-primary">新引入</span>';
+
+            html += `
+                <tr>
+                    <td>${defect.title}</td>
+                    <td><span class="badge bg-info">${defect.category}</span></td>
+                    <td><span class="badge ${this.getSeverityBadgeClass(defect.severity)}">${defect.severity}</span></td>
+                    <td>${defect.foundDate}</td>
+                    <td><strong>${defect.foundVersion}</strong></td>
+                    <td><span class="text-muted">${defect.introducedVersion}</span></td>
+                    <td>${legacyBadge}</td>
+                    <td>${defect.source}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    // 更新缺陷引入版本分析
+    updateDefectIntroductionAnalysis(data) {
+        if (!data) return;
+
+        // 更新引入版本统计表
+        const tbody = document.querySelector('#defectIntroductionTable tbody');
+        if (data.versionStats && data.versionStats.length > 0) {
+            let html = '';
+            data.versionStats.forEach(stat => {
+                html += `
+                    <tr>
+                        <td><strong>${stat.version}</strong></td>
+                        <td><span class="badge bg-secondary">${stat.count}</span></td>
+                        <td><span class="text-muted">${stat.description}</span></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // 更新遗留缺陷信息
+        if (data.legacyDefects) {
+            document.getElementById('legacyDefectCount').textContent = data.legacyDefects.count;
+            document.getElementById('legacyDefectPercentage').textContent = data.legacyDefects.percentage + '%';
+            document.getElementById('legacyDefectDescription').textContent = data.legacyDefects.description;
+        }
+    }
+    // 更新发布阶段指标
+    updateReleasePhaseMetrics(data) {
+        if (data && data.phaseStats) {
+            const stats = data.phaseStats;
+
+            // 更新发布前后缺陷数量
+            document.getElementById('preReleaseDefects').textContent = stats.preReleaseDefects;
+            document.getElementById('postReleaseDefects').textContent = stats.postReleaseDefects;
+
+            // 更新逃逸率
+            document.getElementById('escapeRate').textContent = stats.escapeRate + '%';
+            document.getElementById('escapeRateLevel').textContent = stats.qualityLevel;
+            document.getElementById('escapeRateLevel').className = 'level-badge ' + this.getLevelClass(stats.qualityLevel);
+
+            // 更新测试有效性
+            document.getElementById('testEffectiveness').textContent = stats.testEffectiveness + '%';
+            document.getElementById('testEffectivenessLevel').textContent = stats.testEffectiveness >= 70 ? '良好' : '需改进';
+
+            // 动态更新卡片颜色
+            this.updateReleasePhaseCardColors(stats);
+        }
+    }
+
+    // 加载发布阶段缺陷数据并更新表格
+    async loadReleasePhaseDefects() {
+        if (!this.currentProjectId || !this.currentVersion) {
+            this.showError('请先选择项目和版本');
+            return;
+        }
+
+        try {
+            // 调用API获取发布阶段缺陷数据
+            const response = await fetch(`${this.apiBase}/getPostReleaseDefects/${this.currentProjectId}/${this.currentVersion}`);
+            const result = await response.json();
+
+            // 检查API是否成功返回数据
+            if (result.success && result.data) {
+                const data = result.data;
+
+                // 更新发布后缺陷表格
+                if (data.postReleaseDefects) {
+                    this.updatePostReleaseDefectsTable(data.postReleaseDefects);
+                }
+
+                // 更新缺陷引入版本分析
+                if (data.defectIntroductionAnalysis) {
+                    this.updateDefectIntroductionAnalysis(data.defectIntroductionAnalysis);
+                }
+            } else {
+                // 如果API返回错误，则显示错误信息
+                this.showError('加载发布阶段缺陷数据失败');
+            }
+        } catch (error) {
+            // 如果发生异常，则显示错误信息
+            console.error('加载发布阶段缺陷数据失败:', error);
+            this.showError('加载发布阶段缺陷数据失败');
+        }
+    }
+
+    // 更新发布阶段图表
+    updateReleasePhaseCharts(data) {
+        if (data) {
+            // 更新发布质量趋势图
+            if (data.qualityTrend) {
+                this.createQualityTrendChart(data.qualityTrend);
+            }
+
+            // 更新时间分布图
+            if (data.timeDistribution) {
+                this.createTimeDistributionChart(data.timeDistribution);
+            }
+
+            // 更新严重程度对比图
+            if (data.severityComparison) {
+                this.createSeverityComparisonChart(data.severityComparison);
+            }
+        }
+    }
+
+    // 修改loadReport方法，调用loadReleasePhaseDefects
+    async loadReport() {
+        if (!this.currentProjectId || !this.currentVersion) {
+            this.showError('请先选择项目和版本');
+            return;
+        }
+
+        this.showLoading(true);
+
+        try {
+            // 并行加载所有数据
+            const [
+                defectDensityResp,
+                testCoverageResp,
+                defectDistributionResp,
+                executionRateResp,
+                releasePhaseResp
+            ] = await Promise.all([
+                fetch(`${this.apiBase}/getDefectDensity/${this.currentProjectId}/${this.currentVersion}`),
+                fetch(`${this.apiBase}/getTestCoverage/${this.currentProjectId}/${this.currentVersion}`),
+                fetch(`${this.apiBase}/getDefectDistribution/${this.currentProjectId}/${this.currentVersion}`),
+                fetch(`${this.apiBase}/getExecutionRate/${this.currentProjectId}/${this.currentVersion}`),
+                // fetch(`${this.apiBase}/getPostReleaseDefects/${this.currentProjectId}/${this.currentVersion}`) // 移除这行，使用loadReleasePhaseDefects
+            ]);
+
+            const defectDensityData = await defectDensityResp.json();
+            const testCoverageData = await testCoverageResp.json();
+            const defectDistributionData = await defectDistributionResp.json();
+            const executionRateData = await executionRateResp.json();
+            // const releasePhaseData = await releasePhaseResp.json(); // 移除这行，使用loadReleasePhaseDefects
+
+            // 更新指标卡片
+            this.updateMetricsCards(defectDensityData.data, testCoverageData.data, executionRateData.data);
+
+            // 更新发布阶段指标
+            // this.updateReleasePhaseMetrics(releasePhaseData.data); // 移除这行，使用loadReleasePhaseDefects
+
+            // 更新图表
+            this.updateCharts(defectDistributionData.data, executionRateData.data, defectDensityData.data);
+
+            // 更新发布阶段图表
+            // this.updateReleasePhaseCharts(releasePhaseData.data); // 移除这行，使用loadReleasePhaseDefects
+
+            // 更新故事覆盖详情
+            this.updateStoryCoverageDetails(testCoverageData.data.storyCoverageDetails || []);
+
+            // 更新测试周期执行详情
+            this.updateCycleExecutionTable(executionRateData.data.cycleExecutionDetails || []);
+
+            // 更新质量洞察和改进建议
+            // this.updateQualityInsights(releasePhaseData.data); // 移除这行，使用loadReleasePhaseDefects
+
+            // 加载发布阶段缺陷数据
+            await this.loadReleasePhaseDefects();
+
+        } catch (error) {
+            console.error('加载报表数据失败:', error);
+            this.showError('加载报表数据失败');
+        } finally {
+            this.showLoading(false);
         }
     }
 }

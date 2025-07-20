@@ -374,7 +374,7 @@
                     <div class="col-12">
                         <div class="report-section">
                             <h4><i class="bi bi-shield-exclamation text-warning"></i> 发布阶段缺陷追踪</h4>
-                            
+
                             <!-- 发布质量指标卡片 -->
                             <div class="row mb-4">
                                 <div class="col-md-3">
@@ -432,57 +432,74 @@
                                 </div>
                             </div>
 
-                            <!-- 发布后缺陷详情表格 -->
+                            <!-- 发布后缺陷列表 -->
                             <div class="row mb-4">
                                 <div class="col-12">
-                                    <h6><i class="bi bi-list-ul"></i> 发布后缺陷详情</h6>
+                                    <h6><i class="bi bi-bug text-danger"></i> 发布后发现缺陷详情</h6>
                                     <div class="table-responsive">
-                                        <table class="table table-striped" id="postReleaseDefectsTable">
-                                            <thead>
+                                        <table class="table table-hover" id="postReleaseDefectsTable">
+                                            <thead class="table-light">
                                                 <tr>
                                                     <th>缺陷标题</th>
-                                                    <th>类型</th>
+                                                    <th>类别</th>
                                                     <th>严重程度</th>
                                                     <th>发现日期</th>
-                                                    <th>发现来源</th>
+                                                    <th>发现版本</th>
+                                                    <th>引入版本</th>
+                                                    <th>类型</th>
+                                                    <th>来源</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <!-- 动态填充 -->
+                                                <tr>
+                                                    <td colspan="8" class="text-center text-muted py-4">
+                                                        <i class="bi bi-info-circle fs-2"></i>
+                                                        <p class="mb-0 mt-2">请选择版本查看发布后缺陷详情</p>
+                                                    </td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 缺陷来源分布图表 -->
-                            <div class="row">
-                                <div class="col-md-4">
+                            <!-- 缺陷引入版本分析 -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
                                     <div class="chart-container">
-                                        <h6><i class="bi bi-pie-chart"></i> 发布后缺陷来源分布</h6>
-                                        <canvas id="defectSourceChart" width="400" height="300"></canvas>
+                                        <h6><i class="bi bi-clock-history text-warning"></i> 缺陷引入版本分析</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm" id="defectIntroductionTable">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>引入版本</th>
+                                                        <th>缺陷数量</th>
+                                                        <th>类型描述</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="3" class="text-center text-muted py-3">
+                                                            <i class="bi bi-info-circle"></i>
+                                                            <p class="mb-0 mt-1">暂无数据</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-6">
                                     <div class="chart-container">
-                                        <h6><i class="bi bi-graph-up"></i> 发布质量趋势</h6>
-                                        <canvas id="qualityTrendChart" width="400" height="300"></canvas>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="chart-container">
-                                        <h6><i class="bi bi-clock"></i> 发布后缺陷发现时间</h6>
-                                        <canvas id="timeDistributionChart" width="400" height="300"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 发布前后严重程度对比 -->
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <div class="chart-container">
-                                        <h6><i class="bi bi-bar-chart"></i> 发布前后缺陷严重程度对比</h6>
-                                        <canvas id="severityComparisonChart" width="800" height="400"></canvas>
+                                        <h6><i class="bi bi-archive text-info"></i> 遗留缺陷分析</h6>
+                                        <div id="legacyDefectInfo" class="text-center py-4">
+                                            <div class="display-6 text-muted" id="legacyDefectCount">-</div>
+                                            <div class="text-muted mb-2">遗留缺陷数量</div>
+                                            <div class="badge bg-secondary" id="legacyDefectPercentage">-%</div>
+                                            <p class="small text-muted mt-3" id="legacyDefectDescription">
+                                                遗留缺陷是指在历史版本就已存在，但直到当前版本才被发现的缺陷
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -693,7 +710,7 @@
                     </div>
                 </div>
                 <div class="story-coverage-item not-covered">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="div class="d-flex justify-content-between align-items-center">
                         <div>
                             <strong>支付流程优化</strong>
                             <small class="text-muted d-block">Story ID: US-003</small>

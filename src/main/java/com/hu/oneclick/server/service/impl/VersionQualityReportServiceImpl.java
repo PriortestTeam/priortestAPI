@@ -107,6 +107,8 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             int preReleaseDefects = 8;
             // 发布后发现的缺陷  
             int postReleaseDefects = 4;
+            // 遗留缺陷（历史版本引入，当前版本发现）
+            int legacyDefects = 2;
             int totalDefects = preReleaseDefects + postReleaseDefects;
 
             phaseStats.put("preReleaseDefects", preReleaseDefects);
@@ -156,14 +158,35 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             result.put("phaseStats", phaseStats);
             result.put("severityComparison", severityComparison);
 
-            // 发布后缺陷详细列表
+            // 发布后缺陷详细列表（包含引入版本信息）
             List<Map<String, Object>> postReleaseDefectsList = new ArrayList<>();
-            postReleaseDefectsList.add(createPostReleaseDefect("登录页面响应缓慢", "性能", "严重", "2024-01-15", "生产环境用户反馈"));
-            postReleaseDefectsList.add(createPostReleaseDefect("订单状态更新异常", "功能", "致命", "2024-01-18", "客服部门报告"));
-            postReleaseDefectsList.add(createPostReleaseDefect("移动端适配问题", "兼容性", "一般", "2024-01-20", "用户投诉"));
-            postReleaseDefectsList.add(createPostReleaseDefect("数据导出格式错误", "功能", "轻微", "2024-01-22", "业务部门发现"));
+            postReleaseDefectsList.add(createDetailedPostReleaseDefect("登录页面响应缓慢", "性能", "严重", "2024-01-15", "生产环境用户反馈", "3.0.0.0", "3.0.0.0", false));
+            postReleaseDefectsList.add(createDetailedPostReleaseDefect("订单状态更新异常", "功能", "致命", "2024-01-18", "客服部门报告", "3.0.0.0", "3.0.0.0", false));
+            postReleaseDefectsList.add(createDetailedPostReleaseDefect("移动端适配问题", "兼容性", "一般", "2024-01-20", "用户投诉", "3.0.0.0", "2.0.0", true));
+            postReleaseDefectsList.add(createDetailedPostReleaseDefect("数据导出格式错误", "功能", "轻微", "2024-01-22", "业务部门发现", "3.0.0.0", "2.5.0", true));
 
             result.put("postReleaseDefects", postReleaseDefectsList);
+
+            // 缺陷引入版本分析
+            Map<String, Object> defectIntroductionAnalysis = new HashMap<>();
+            
+            // 按引入版本分组统计
+            List<Map<String, Object>> introductionVersionStats = new ArrayList<>();
+            introductionVersionStats.add(createIntroductionVersionStat("3.0.0.0", 2, "当前版本引入"));
+            introductionVersionStats.add(createIntroductionVersionStat("2.5.0", 1, "历史版本遗留"));
+            introductionVersionStats.add(createIntroductionVersionStat("2.0.0", 1, "早期版本遗留"));
+            
+            defectIntroductionAnalysis.put("versionStats", introductionVersionStats);
+            
+            // 遗留缺陷分析
+            Map<String, Object> legacyDefectAnalysis = new HashMap<>();
+            legacyDefectAnalysis.put("count", legacyDefects);
+            legacyDefectAnalysis.put("percentage", totalDefects > 0 ? Math.round((double) legacyDefects / totalDefects * 100 * 100.0) / 100.0 : 0);
+            legacyDefectAnalysis.put("description", "这些缺陷在历史版本就已存在，但直到当前版本才被发现");
+            
+            defectIntroductionAnalysis.put("legacyDefects", legacyDefectAnalysis);
+            
+            result.put("defectIntroductionAnalysis", defectIntroductionAnalysis);
 
             // 缺陷来源分析
             List<Map<String, Object>> defectSources = new ArrayList<>();
@@ -416,6 +439,29 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("severity", severity);
         data.put("foundDate", foundDate);
         data.put("source", source);
+        return data;
+    }
+
+    private Map<String, Object> createDetailedPostReleaseDefect(String title, String category, String severity, 
+            String foundDate, String source, String foundVersion, String introducedVersion, boolean isLegacy) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", title);
+        data.put("category", category);
+        data.put("severity", severity);
+        data.put("foundDate", foundDate);
+        data.put("source", source);
+        data.put("foundVersion", foundVersion);
+        data.put("introducedVersion", introducedVersion);
+        data.put("isLegacy", isLegacy);
+        data.put("legacyDescription", isLegacy ? "遗留缺陷" : "新引入缺陷");
+        return data;
+    }
+
+    private Map<String, Object> createIntroductionVersionStat(String version, int count, String description) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("version", version);
+        data.put("count", count);
+        data.put("description", description);
         return data;
     }
 
