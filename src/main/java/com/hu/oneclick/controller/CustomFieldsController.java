@@ -32,8 +32,8 @@ import java.util.Set;
  */
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/customFields")
+@RequiredArgsConstructor
 public class CustomFieldsController {
 
     @NonNull

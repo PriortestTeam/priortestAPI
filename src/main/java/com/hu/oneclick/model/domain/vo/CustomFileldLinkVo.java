@@ -15,10 +15,17 @@ import java.io.Serializable;
  */
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class CustomFileldLinkVo extends CustomFileldLink implements Serializable {
+public class CustomFileldLinkVo implements Serializable {
 
     private static final long serialVersionUID = 870331260917684971L;
 
+    private Long customFieldLinkId;
+    private Long customFieldId;
+    private String defaultValue;
+    private String scope;
+    private Integer mandatory;
+    private Long scopeId;
+    private String scopeNameCn;
     private Long projectId;
     /**
      * 自定义字段类型
