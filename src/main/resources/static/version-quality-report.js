@@ -960,6 +960,11 @@ class VersionQualityReport {
                     <td><strong>${defect.foundVersion}</strong></td>
                     <td><span class="text-muted">${defect.introducedVersion}</span></td>
                     <td>${legacyBadge}</td>
+                    <td>
+                        <span class="badge ${defect.foundAfterRelease === 1 ? 'bg-warning' : 'bg-info'}">
+                            ${defect.foundAfterRelease === 1 ? '发布后发现' : '发布前发现'}
+                        </span>
+                    </td>
                     <td>${defect.source}</td>
                 </tr>
             `;

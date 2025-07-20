@@ -158,12 +158,28 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             result.put("phaseStats", phaseStats);
             result.put("severityComparison", severityComparison);
 
-            // 发布后缺陷详细列表（包含引入版本信息）
+            // 发布后缺陷详细列表（包含完整的版本追踪信息）
             List<Map<String, Object>> postReleaseDefectsList = new ArrayList<>();
-            postReleaseDefectsList.add(createDetailedPostReleaseDefect("登录页面响应缓慢", "性能", "严重", "2024-01-15", "生产环境用户反馈", "3.0.0.0", "3.0.0.0", false));
-            postReleaseDefectsList.add(createDetailedPostReleaseDefect("订单状态更新异常", "功能", "致命", "2024-01-18", "客服部门报告", "3.0.0.0", "3.0.0.0", false));
-            postReleaseDefectsList.add(createDetailedPostReleaseDefect("移动端适配问题", "兼容性", "一般", "2024-01-20", "用户投诉", "3.0.0.0", "2.0.0", true));
-            postReleaseDefectsList.add(createDetailedPostReleaseDefect("数据导出格式错误", "功能", "轻微", "2024-01-22", "业务部门发现", "3.0.0.0", "2.5.0", true));
+            // 当前版本新引入的缺陷，发布后发现
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "登录页面响应缓慢", "性能", "严重", "2024-01-15", "生产环境用户反馈", 
+                "3.0.0.0", "3.0.0.0", 0, 1));
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "订单状态更新异常", "功能", "致命", "2024-01-18", "客服部门报告", 
+                "3.0.0.0", "3.0.0.0", 0, 1));
+            
+            // 历史版本遗留的缺陷，在当前版本发布后才发现
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "移动端适配问题", "兼容性", "一般", "2024-01-20", "用户投诉", 
+                "3.0.0.0", "2.0.0", 1, 1));
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "数据导出格式错误", "功能", "轻微", "2024-01-22", "业务部门发现", 
+                "3.0.0.0", "2.5.0", 1, 1));
+            
+            // 历史版本遗留的缺陷，在当前版本测试阶段发现（用于对比）
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "权限验证逻辑缺陷", "安全", "严重", "2024-01-10", "测试团队发现", 
+                "3.0.0.0", "2.3.0", 1, 0));
 
             result.put("postReleaseDefects", postReleaseDefectsList);
 
@@ -174,17 +190,30 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             List<Map<String, Object>> introductionVersionStats = new ArrayList<>();
             introductionVersionStats.add(createIntroductionVersionStat("3.0.0.0", 2, "当前版本引入"));
             introductionVersionStats.add(createIntroductionVersionStat("2.5.0", 1, "历史版本遗留"));
+            introductionVersionStats.add(createIntroductionVersionStat("2.3.0", 1, "历史版本遗留"));
             introductionVersionStats.add(createIntroductionVersionStat("2.0.0", 1, "早期版本遗留"));
             
             defectIntroductionAnalysis.put("versionStats", introductionVersionStats);
             
-            // 遗留缺陷分析
+            // 遗留缺陷详细分析
             Map<String, Object> legacyDefectAnalysis = new HashMap<>();
-            legacyDefectAnalysis.put("count", legacyDefects);
-            legacyDefectAnalysis.put("percentage", totalDefects > 0 ? Math.round((double) legacyDefects / totalDefects * 100 * 100.0) / 100.0 : 0);
-            legacyDefectAnalysis.put("description", "这些缺陷在历史版本就已存在，但直到当前版本才被发现");
+            legacyDefectAnalysis.put("count", 3); // 遗留缺陷总数
+            legacyDefectAnalysis.put("foundAfterReleaseCount", 2); // 发布后发现的遗留缺陷
+            legacyDefectAnalysis.put("foundBeforeReleaseCount", 1); // 发布前发现的遗留缺陷
+            legacyDefectAnalysis.put("percentage", 5 > 0 ? Math.round((double) 3 / 5 * 100 * 100.0) / 100.0 : 0);
+            legacyDefectAnalysis.put("description", "历史版本遗留缺陷分析");
             
             defectIntroductionAnalysis.put("legacyDefects", legacyDefectAnalysis);
+            
+            // 发现时机分析
+            Map<String, Object> discoveryTimingAnalysis = new HashMap<>();
+            discoveryTimingAnalysis.put("postReleaseCount", 4); // 发布后发现的缺陷总数
+            discoveryTimingAnalysis.put("preReleaseCount", 1);  // 发布前发现的缺陷总数
+            discoveryTimingAnalysis.put("postReleaseNewDefects", 2); // 发布后发现的新缺陷
+            discoveryTimingAnalysis.put("postReleaseLegacyDefects", 2); // 发布后发现的遗留缺陷
+            discoveryTimingAnalysis.put("description", "缺陷发现时机分析");
+            
+            defectIntroductionAnalysis.put("discoveryTiming", discoveryTimingAnalysis);
             
             result.put("defectIntroductionAnalysis", defectIntroductionAnalysis);
 
@@ -454,6 +483,43 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("introducedVersion", introducedVersion);
         data.put("isLegacy", isLegacy);
         data.put("legacyDescription", isLegacy ? "遗留缺陷" : "新引入缺陷");
+        return data;
+    }
+
+    private Map<String, Object> createDetailedPostReleaseDefectWithTracking(String title, String category, String severity, 
+            String foundDate, String source, String foundVersion, String introducedVersion, 
+            int isLegacy, int foundAfterRelease) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", title);
+        data.put("category", category);
+        data.put("severity", severity);
+        data.put("foundDate", foundDate);
+        data.put("source", source);
+        data.put("foundVersion", foundVersion);
+        data.put("introducedVersion", introducedVersion);
+        data.put("isLegacy", isLegacy);
+        data.put("foundAfterRelease", foundAfterRelease);
+        
+        // 用于前端显示的描述
+        String legacyDescription;
+        String discoveryDescription;
+        
+        if (isLegacy == 1) {
+            legacyDescription = "遗留缺陷";
+        } else {
+            legacyDescription = "新引入缺陷";
+        }
+        
+        if (foundAfterRelease == 1) {
+            discoveryDescription = "发布后发现";
+        } else {
+            discoveryDescription = "发布前发现";
+        }
+        
+        data.put("legacyDescription", legacyDescription);
+        data.put("discoveryDescription", discoveryDescription);
+        data.put("detailedDescription", legacyDescription + " - " + discoveryDescription);
+        
         return data;
     }
 
