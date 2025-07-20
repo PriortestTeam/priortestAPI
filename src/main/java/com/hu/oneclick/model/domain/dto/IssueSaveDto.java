@@ -113,7 +113,7 @@ public class IssueSaveDto implements Serializable {
 
     @Schema(description = "发布后发现")
     private String foundAfterRelease;
-
+    
     // 转换为Integer的方法
     public Integer getIsLegacyAsInt() {
         if (isLegacy == null || isLegacy.isEmpty()) {
@@ -125,7 +125,7 @@ public class IssueSaveDto implements Serializable {
             return 0;
         }
     }
-
+    
     public Integer getFoundAfterReleaseAsInt() {
         if (foundAfterRelease == null || foundAfterRelease.isEmpty()) {
             return 0;
@@ -186,31 +186,5 @@ public class IssueSaveDto implements Serializable {
     @Schema(description = "备注信息")
     private String duration;
 
-    /**
-     * 字符串转整数的辅助方法
-     */
-    public Integer convertStringToInteger(String str) {
-        if (str == null || str.trim().isEmpty()) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(str.trim());
-        } catch (NumberFormatException e) {
-            return 0; // 转换失败时返回默认值0
-        }
-    }
 
-    /**
-     * 获取转换后的 isLegacy 整数值
-     */
-    public Integer getIsLegacyAsInteger() {
-        return convertStringToInteger(this.isLegacy);
-    }
-
-    /**
-     * 获取转换后的 foundAfterRelease 整数值
-     */
-    public Integer getFoundAfterReleaseAsInteger() {
-        return convertStringToInteger(this.foundAfterRelease);
-    }
 }

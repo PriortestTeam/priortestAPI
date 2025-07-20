@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
@@ -34,13 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import cn.zhxu.bs.MapSearcher;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
 public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements IssueService {
 
-    private static final Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 
     @Resource
     private IssueDao issueDao;
@@ -111,13 +108,11 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         if (dto.getIntroducedVersion() != null) {
             issue.setIntroducedVersion(dto.getIntroducedVersion());
         }
-
-        // 转换字符串字段为整数存储到数据库
         if (dto.getIsLegacy() != null) {
-            issue.setIsLegacy(dto.getIsLegacyAsInteger());
+            issue.setIsLegacy(dto.getIsLegacyAsInt());
         }
         if (dto.getFoundAfterRelease() != null) {
-            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInteger());
+            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInt());
         }
 
         this.baseMapper.insert(issue);
@@ -159,12 +154,11 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         if (dto.getIntroducedVersion() != null) {
             issue.setIntroducedVersion(dto.getIntroducedVersion());
         }
-         // 转换字符串字段为整数存储到数据库
         if (dto.getIsLegacy() != null) {
-            issue.setIsLegacy(dto.getIsLegacyAsInteger());
+            issue.setIsLegacy(dto.getIsLegacyAsInt());
         }
         if (dto.getFoundAfterRelease() != null) {
-            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInteger());
+            issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInt());
         }
 
         this.baseMapper.updateById(issue);
@@ -226,44 +220,18 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         return this.getByIdAndProjectId(issueId, projectId);
     }
 
-    /**
-     * 转换字段格式：将 Integer 字段转换为 String 返回给前端
-     */
-    private void convertFieldsToString(Issue issue) {
-        // 转换 isLegacy 字段 (Integer -> String)
-        if (issue.getIsLegacy() != null) {
-            issue.setIsLegacyStr(String.valueOf(issue.getIsLegacy()));
-        } else {
-            issue.setIsLegacyStr("0"); // 默认值
-        }
-
-        // 转换 foundAfterRelease 字段 (Integer -> String)
-        if (issue.getFoundAfterRelease() != null) {
-            issue.setFoundAfterReleaseStr(String.valueOf(issue.getFoundAfterRelease()));
-        } else {
-            issue.setFoundAfterReleaseStr("0"); // 默认值
-        }
-    }
-
-    @Override
-    public PageInfo<Issue> list(IssueParam param, int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<Issue> list = this.list(param.getQueryCondition());
-
-        // 转换字段格式
-        list.forEach(this::convertFieldsToString);
-
-        return new PageInfo<>(list);
-    }
     @Override
     public PageInfo<Issue> listWithViewFilter(IssueParam param, int pageNum, int pageSize) {
-        PageInfo<Issue> pageInfo = listWithViewFilterLogic(param, pageNum, pageSize);
-
-        // 转换字段格式
-        pageInfo.getList().forEach(this::convertFieldsToString);
-
-        return pageInfo;
+        // 检查是否需要应用视图过滤
+        if (viewFilterService.shouldApplyViewFilter(param.getViewId())) {
+            // 使用视图过滤进行查询
+            return listWithViewFilterLogic(param, pageNum, pageSize);
+        } else {
+            // 使用原有的简单查询逻辑
+            return list(param, pageNum, pageSize);
+        }
     }
+
     @Override
     public PageInfo<Issue> listWithBeanSearcher(String viewId, String projectId, int pageNum, int pageSize) {
         try {
@@ -271,14 +239,14 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
 
             if (filterParams == null) {
-                logger.warn("获取视图过滤参数失败，回退到简单查询");
-                IssueParam param = new IssueParam();
-                param.setProjectId(Long.parseLong(projectId));
-                return list(param, pageNum, pageSize);
+                // 如果没有过滤条件，返回空分页结果
+                return new PageInfo<>(new ArrayList<>());
             }
 
-            // 使用BeanSearcher进行查询
+            // 使用BeanSearcher进行查询，使用issue作为查询类
             Class<?> issueClass = Class.forName("com.hu.oneclick.model.entity.Issue");
+
+            // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
             List<Map<String, Object>> result = mapSearcher.searchAll(issueClass, filterParams);
 
             // 转换为 Issue 对象
@@ -286,41 +254,14 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class))
                 .collect(Collectors.toList());
 
-            // 转换字段格式
-            issueList.forEach(this::convertFieldsToString);
-
-            // 手动分页处理
-            int total = issueList.size();
-            int startIndex = (pageNum - 1) * pageSize;
-            int endIndex = Math.min(startIndex + pageSize, total);
-
-            List<Issue> pageData = new ArrayList<>();
-            if (startIndex < total) {
-                pageData = issueList.subList(startIndex, endIndex);
-            }
-
-            // 构建分页信息
-            PageInfo<Issue> pageInfo = new PageInfo<>();
-            pageInfo.setList(pageData);
-            pageInfo.setTotal(total);
-            pageInfo.setPageNum(pageNum);
-            pageInfo.setPageSize(pageSize);
-            pageInfo.setPages((int) Math.ceil((double) total / pageSize));
-            pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
-
-            logger.info("listWithBeanSearcher - 总记录数: {}, 当前页: {}, 每页大小: {}, 总页数: {}, 当前页数据量: {}", 
-                     total, pageNum, pageSize, pageInfo.getPages(), pageData.size());
-
-            return pageInfo;
-
+            // 使用与 BeanSearchController 相同的分页处理方式
+            return PageUtil.manualPaging(issueList);
         } catch (Exception e) {
-            logger.error("使用BeanSearcher查询失败: " + e.getMessage(), e);
-            // 出现异常时回退到普通查询
-            IssueParam param = new IssueParam();
-            param.setProjectId(Long.parseLong(projectId));
-            return list(param, pageNum, pageSize);
+            logger.error("使用BeanSearcher查询缺陷失败，viewId: {}, projectId: {}", viewId, projectId, e);
+            return new PageInfo<>(new ArrayList<>());
         }
     }
+
     @Override
     public PageInfo<Issue> queryByFieldAndValue(String fieldNameEn, String value, String scopeName, String scopeId, int pageNum, int pageSize) {
         // 1. 确定表名
@@ -370,25 +311,17 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         logger.info("queryByFieldAndValue - 总记录数: {}", total);
 
         // 6. 转 bean
-        List<Issue> issueList = result.stream()
-            .map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class))
-            .collect(Collectors.toList());
+        List<Issue> issueList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class)).collect(Collectors.toList());
 
-        // 转换字段格式
-        issueList.forEach(this::convertFieldsToString);
-
-        // 手动分页处理
-        int total = issueList.size();
-        int startIndex = (pageNum - 1) * pageSize;
-        int endIndex = Math.min(startIndex + pageSize, total);
-
-        // 构建分页信息
-        PageInfo<Issue> pageInfo = new PageInfo<>();
-        pageInfo.setList(issueList);
-        pageInfo.setTotal(total);
+        // 7. 构造 PageInfo
+        PageInfo<Issue> pageInfo = new PageInfo<>(issueList);
         pageInfo.setPageNum(pageNum);
         pageInfo.setPageSize(pageSize);
-        pageInfo.setPages((int) Math.ceil((double) total / pageSize));
+        pageInfo.setTotal(total);
+        pageInfo.setPages((int) ((total + pageSize - 1) / pageSize));
+        pageInfo.setIsFirstPage(pageNum == 1);
+        pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
+        pageInfo.setHasPreviousPage(pageNum > 1);
         pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
 
         logger.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
@@ -446,12 +379,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     /**
      * 简单的分页查询方法
      */
-    private List<Issue> list(IssueParam param) {
-        QueryWrapper<Issue> queryWrapper = new QueryWrapper<>();
-        if (param.getProjectId() != null) {
-            queryWrapper.eq("project_id", param.getProjectId());
-        }
-        // 添加其他查询条件
-        return this.baseMapper.selectList(queryWrapper);
+    private PageInfo<Issue> list(IssueParam param, int pageNum, int pageSize) {
+        // 手动设置分页参数
+        PageUtil.startPage(pageNum, pageSize);
+        List<Issue> dataList = this.list(param);
+        return PageInfo.of(dataList);
     }
 }
