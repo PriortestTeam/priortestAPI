@@ -24,6 +24,7 @@ import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.ViewFilterService;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,10 +81,29 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     public Issue add(IssueSaveDto dto) {
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
-        // 保存自定义字段
+
+        // 处理新增的三个字段：introduced_version, is_legacy, found_after_release
+        Map<String, Object> customFieldMap = new HashMap<>();
         if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            issue.setIssueExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+            customFieldMap = JSONUtil.toBean(JSONUtil.toJsonStr(dto.getCustomFieldDatas()), Map.class);
         }
+
+        // 检查并添加新字段到自定义字段数据中
+        if (dto.getIntroducedVersion() != null) {
+            customFieldMap.put("introduced_version", dto.getIntroducedVersion());
+        }
+        if (dto.getIsLegacy() != null) {
+            customFieldMap.put("is_legacy", dto.getIsLegacy());
+        }
+        if (dto.getFoundAfterRelease() != null) {
+            customFieldMap.put("found_after_release", dto.getFoundAfterRelease());
+        }
+
+        // 保存自定义字段
+        if (!customFieldMap.isEmpty()) {
+            issue.setIssueExpand(JSONUtil.toJsonStr(customFieldMap));
+        }
+
         this.baseMapper.insert(issue);
         return issue;
     }
@@ -96,10 +116,29 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
-        // 保存自定义字段
+
+        // 处理新增的三个字段：introduced_version, is_legacy, found_after_release
+        Map<String, Object> customFieldMap = new HashMap<>();
         if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            issue.setIssueExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+            customFieldMap = JSONUtil.toBean(JSONUtil.toJsonStr(dto.getCustomFieldDatas()), Map.class);
         }
+
+        // 检查并添加新字段到自定义字段数据中
+        if (dto.getIntroducedVersion() != null) {
+            customFieldMap.put("introduced_version", dto.getIntroducedVersion());
+        }
+        if (dto.getIsLegacy() != null) {
+            customFieldMap.put("is_legacy", dto.getIsLegacy());
+        }
+        if (dto.getFoundAfterRelease() != null) {
+            customFieldMap.put("found_after_release", dto.getFoundAfterRelease());
+        }
+
+        // 保存自定义字段
+        if (!customFieldMap.isEmpty()) {
+            issue.setIssueExpand(JSONUtil.toJsonStr(customFieldMap));
+        }
+
         this.baseMapper.updateById(issue);
         return issue;
     }

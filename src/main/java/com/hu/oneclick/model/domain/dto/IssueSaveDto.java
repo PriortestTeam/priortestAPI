@@ -105,6 +105,15 @@ public class IssueSaveDto implements Serializable {
     @Schema(description = "自定义字段值")
     private JSONObject customFieldDatas;
 
+    @Schema(description = "引入版本")
+    private String introducedVersion;
+
+    @Schema(description = "是否为遗留问题")
+    private Boolean isLegacy;
+
+    @Schema(description = "发布后发现")
+    private Boolean foundAfterRelease;
+
 
     @Schema(description = "运行用例Id")
     private long runcaseId;
