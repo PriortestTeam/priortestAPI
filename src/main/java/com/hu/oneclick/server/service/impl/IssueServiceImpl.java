@@ -34,11 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import cn.zhxu.bs.MapSearcher;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements IssueService {
 
-    private final static Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
 
     @Resource
     private IssueDao issueDao;
@@ -225,7 +227,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
     /**
-     * 转换字段为字符串格式，用于前端显示
+     * 转换字段格式：将 Integer 字段转换为 String 返回给前端
      */
     private void convertFieldsToString(Issue issue) {
         // 转换 isLegacy 字段 (Integer -> String)
