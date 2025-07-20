@@ -104,19 +104,57 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             Map<String, Object> phaseStats = new HashMap<>();
 
             // 发布前发现的缺陷（测试阶段发现）
-            int preReleaseDefects = 8;  // 实际应从数据库查询
+            int preReleaseDefects = 8;  // 实际应从数据库查询 WHERE found_after_release = false
             // 发布后发现的缺陷（生产环境发现）
-            int postReleaseDefects = 4;  // 实际应从数据库查询
+            int postReleaseDefects = 4;  // 实际应从数据库查询 WHERE found_after_release = true
+            int totalDefects = preReleaseDefects + postReleaseDefects;
 
             phaseStats.put("preReleaseDefects", preReleaseDefects);
             phaseStats.put("postReleaseDefects", postReleaseDefects);
-            phaseStats.put("totalDefects", preReleaseDefects + postReleaseDefects);
+            phaseStats.put("totalDefects", totalDefects);
 
-            // 逃逸率计算：发布后发现的缺陷数 / 总缺陷数 * 100
-            double escapeRate = (double) postReleaseDefects / (preReleaseDefects + postReleaseDefects) * 100;
+            // 核心指标计算
+            double escapeRate = totalDefects > 0 ? (double) postReleaseDefects / totalDefects * 100 : 0;
+            double testEffectiveness = totalDefects > 0 ? (double) preReleaseDefects / totalDefects * 100 : 0;
+            
             phaseStats.put("escapeRate", Math.round(escapeRate * 100.0) / 100.0);
+            phaseStats.put("testEffectiveness", Math.round(testEffectiveness * 100.0) / 100.0);
 
+            // 发布质量等级评定
+            String qualityLevel;
+            if (escapeRate < 10) {
+                qualityLevel = "优秀";
+            } else if (escapeRate < 20) {
+                qualityLevel = "良好";
+            } else if (escapeRate < 30) {
+                qualityLevel = "一般";
+            } else {
+                qualityLevel = "需改进";
+            }
+            phaseStats.put("qualityLevel", qualityLevel);
+
+            // 发布前后缺陷严重程度对比
+            Map<String, Object> severityComparison = new HashMap<>();
+            
+            // 发布前缺陷严重程度分布
+            List<Map<String, Object>> preReleaseSeverity = new ArrayList<>();
+            preReleaseSeverity.add(createSeverityData("致命", 1, "#dc3545"));
+            preReleaseSeverity.add(createSeverityData("严重", 2, "#fd7e14"));
+            preReleaseSeverity.add(createSeverityData("一般", 3, "#ffc107"));
+            preReleaseSeverity.add(createSeverityData("轻微", 2, "#28a745"));
+            
+            // 发布后缺陷严重程度分布
+            List<Map<String, Object>> postReleaseSeverity = new ArrayList<>();
+            postReleaseSeverity.add(createSeverityData("致命", 2, "#dc3545"));
+            postReleaseSeverity.add(createSeverityData("严重", 1, "#fd7e14"));
+            postReleaseSeverity.add(createSeverityData("一般", 1, "#ffc107"));
+            postReleaseSeverity.add(createSeverityData("轻微", 0, "#28a745"));
+            
+            severityComparison.put("preRelease", preReleaseSeverity);
+            severityComparison.put("postRelease", postReleaseSeverity);
+            
             result.put("phaseStats", phaseStats);
+            result.put("severityComparison", severityComparison);
 
             // 发布后缺陷详细列表
             List<Map<String, Object>> postReleaseDefectsList = new ArrayList<>();
@@ -138,9 +176,36 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
             // 发布质量趋势（最近几个版本）
             List<Map<String, Object>> qualityTrend = new ArrayList<>();
-            qualityTrend.add(createQualityTrendData("v1.0", 5, 2, 28.6));
-            qualityTrend.add(createQualityTrendData("v1.1", 7, 3, 30.0));
-            qualityTrend.add(createQualityTrendData("v1.2", 6, 1, 14.3));
+            qualityTrend.add(createQualityTrendData("v1.8", 12, 2, 14.3));
+            qualityTrend.add(createQualityTrendData("v1.9", 10, 3, 23.1));
+            qualityTrend.add(createQualityTrendData("v2.0", 8, 4, 33.3));
+            qualityTrend.add(createQualityTrendData("v2.1", 8, 4, 33.3));
+            
+            result.put("qualityTrend", qualityTrend);
+
+            // 发布后缺陷时间分布分析
+            List<Map<String, Object>> timeDistribution = new ArrayList<>();
+            timeDistribution.add(createTimeDistribution("发布后1天", 2, "紧急问题"));
+            timeDistribution.add(createTimeDistribution("发布后1周", 1, "用户反馈"));
+            timeDistribution.add(createTimeDistribution("发布后1月", 1, "深度使用发现"));
+            
+            result.put("timeDistribution", timeDistribution);
+
+            // 测试改进建议
+            List<String> improvements = new ArrayList<>();
+            if (escapeRate > 30) {
+                improvements.add("建议增加端到端测试覆盖");
+                improvements.add("加强用户场景测试");
+                improvements.add("提升测试环境与生产环境一致性");
+            } else if (escapeRate > 20) {
+                improvements.add("优化测试用例设计");
+                improvements.add("增加边界条件测试");
+            } else if (escapeRate > 10) {
+                improvements.add("加强回归测试");
+            } else {
+                improvements.add("测试质量良好，继续保持");
+            }
+            result.put("improvements", improvements);ateQualityTrendData("v1.2", 6, 1, 14.3));
             qualityTrend.add(createQualityTrendData("v1.3", 8, 4, 33.3));
             qualityTrend.add(createQualityTrendData("v1.4", 8, 4, 33.3));
 
@@ -372,6 +437,15 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("preRelease", preRelease);
         data.put("postRelease", postRelease);
         data.put("escapeRate", escapeRate);
+        data.put("totalDefects", preRelease + postRelease);
+        return data;
+    }
+
+    private Map<String, Object> createTimeDistribution(String timeRange, int count, String description) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("timeRange", timeRange);
+        data.put("count", count);
+        data.put("description", description);
         return data;
     }
 

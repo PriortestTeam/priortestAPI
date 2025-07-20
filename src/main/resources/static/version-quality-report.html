@@ -398,7 +398,7 @@
                                         <div class="metric-icon"><i class="bi bi-percent"></i></div>
                                         <div class="metric-value" id="escapeRate">33.3%</div>
                                         <div class="metric-label">缺陷逃逸率</div>
-                                        <div class="level-badge">需改进</div>
+                                        <div class="level-badge" id="escapeRateLevel">需改进</div>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -406,7 +406,28 @@
                                         <div class="metric-icon"><i class="bi bi-graph-up"></i></div>
                                         <div class="metric-value" id="testEffectiveness">66.7%</div>
                                         <div class="metric-label">测试有效性</div>
-                                        <div class="level-badge">良好</div>
+                                        <div class="level-badge" id="testEffectivenessLevel">良好</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 质量分析洞察 -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <h6><i class="bi bi-lightbulb"></i> 质量分析洞察</h6>
+                                        <div id="qualityInsights">
+                                            <p><strong>风险提示：</strong> 发布后发现了 <span class="text-danger">4个缺陷</span>，逃逸率为 <span class="text-warning">33.3%</span>，建议加强测试覆盖。</p>
+                                            <p><strong>对比分析：</strong> 相比发布前发现的8个缺陷，说明测试过程中发现了大部分问题，但仍有改进空间。</p>
+                                        </div>
+                                        <div id="improvementSuggestions">
+                                            <strong>改进建议：</strong>
+                                            <ul class="mb-0 mt-2" id="suggestionsList">
+                                                <li>建议增加端到端测试覆盖</li>
+                                                <li>加强用户场景测试</li>
+                                                <li>提升测试环境与生产环境一致性</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -436,16 +457,32 @@
 
                             <!-- 缺陷来源分布图表 -->
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="chart-container">
                                         <h6><i class="bi bi-pie-chart"></i> 发布后缺陷来源分布</h6>
                                         <canvas id="defectSourceChart" width="400" height="300"></canvas>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="chart-container">
                                         <h6><i class="bi bi-graph-up"></i> 发布质量趋势</h6>
                                         <canvas id="qualityTrendChart" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="chart-container">
+                                        <h6><i class="bi bi-clock"></i> 发布后缺陷发现时间</h6>
+                                        <canvas id="timeDistributionChart" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 发布前后严重程度对比 -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="chart-container">
+                                        <h6><i class="bi bi-bar-chart"></i> 发布前后缺陷严重程度对比</h6>
+                                        <canvas id="severityComparisonChart" width="800" height="400"></canvas>
                                     </div>
                                 </div>
                             </div>
