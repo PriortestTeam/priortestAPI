@@ -171,9 +171,9 @@ public class Issue extends AssignBaseEntity implements Serializable {
     private List<String> rootcauseCategory;
 
     /**
-     * 期间
+     * 存活时长(小时)
      */
-    @Schema(description = "期间")
-    private String duration;
+    @Schema(description = "存活时长(小时)")
+    private Integer duration;
 
 }
