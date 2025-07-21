@@ -252,23 +252,23 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             System.out.println("=== UTC转换失败: " + e.getMessage() + " ===");
         }
     }
-    
+
     private void convertAttributesDateFieldsToUTC(Issue issue, TimeZone userTZ) {
         if (issue.getIssueExpand() == null || issue.getIssueExpand().isEmpty()) {
             return;
         }
-    
+
         try {
             JSONObject issueExpandJson = JSONUtil.parseObj(issue.getIssueExpand());
             JSONArray attributes = issueExpandJson.getJSONArray("attributes");
-    
+
             if (attributes != null && !attributes.isEmpty()) {
                 for (Object attributeObj : attributes) {
                     if (attributeObj instanceof JSONObject) {
                         JSONObject attribute = (JSONObject) attributeObj;
                         String fieldType = attribute.getStr("fieldType");
                         String valueData = attribute.getStr("valueData");
-    
+
                         if ("date".equals(fieldType) && valueData != null && !valueData.isEmpty()) {
                             try {
                                 Date originalTime = cn.hutool.core.date.DateUtil.parse(valueData);
@@ -345,21 +345,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
         }
 
-        // 获取用户时区
+        // 计算duration（基于UTC时间）
+        calculateDuration(issue);
+
+        // 获取用户时区并转换UTC时间为用户本地时间
         String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== Issue info方法 - 获取到用户时区: " + userTimezone + " ===");
-
-        // 如果有用户时区信息，将UTC时间转换为用户本地时间
-        if (userTimezone != null && !userTimezone.isEmpty()) {
-            convertUTCToLocalTime(issue, userTimezone);
-        }
-
-        // 计算duration（必须在时区转换后）
-        calculateDuration(issue, userTimezone);
+        convertUTCToLocalTime(issue, userTimezone);
 
         // 转换字段格式，确保返回给前端的是字符串格式
         convertFieldsToString(issue);
-
         return issue;
     }
 
