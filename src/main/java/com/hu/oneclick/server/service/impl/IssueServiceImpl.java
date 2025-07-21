@@ -23,10 +23,11 @@ import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.ViewFilterService;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
@@ -457,41 +458,45 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== updateTime (数据库修改时间): " + issue.getUpdateTime() + " ===");
         System.out.println("=== closeDate (关闭时间): " + issue.getCloseDate() + " ===");
 
-        // Issue实体中没有单独的业务创建时间字段，暂时使用createTime
-        // 但需要确认这个时间是否是Issue的实际发生时间
-        Date issueCreateTime = issue.getCreateTime();
-
-        if (issueCreateTime == null) {
-            System.out.println("=== Issue创建时间为null，设置duration为0 ===");
+        if (issue.getCreateTime() == null) {
+            System.out.println("=== createTime为空，无法计算duration ===");
             issue.setDuration(0);
             return;
         }
 
+        // 使用GMT+8时区的当前时间
         Date endTime;
         if (issue.getCloseDate() != null) {
-            // 如果有关闭时间，使用关闭时间
-            System.out.println("=== 使用关闭时间计算duration ===");
             endTime = issue.getCloseDate();
+            System.out.println("=== 使用closeDate作为结束时间 ===");
         } else {
-            // 如果没有关闭时间，使用当前时间
-            System.out.println("=== 使用当前时间计算duration ===");
-            endTime = new Date();
-            System.out.println("=== 当前系统时间: " + endTime + " ===");
-            System.out.println("=== 当前系统时间(毫秒): " + endTime.getTime() + " ===");
-            System.out.println("=== Issue创建时间(毫秒): " + issueCreateTime.getTime() + " ===");
+            // 获取GMT+8时区的当前时间
+            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
+            endTime = calendar.getTime();
+            System.out.println("=== 使用当前时间(GMT+8)计算duration ===");
         }
 
-        // 计算时间差（毫秒）
-        long diffInMillis = endTime.getTime() - issueCreateTime.getTime();
-        // 转换为小时，确保不为负数
-        int durationHours = Math.max(0, (int) (diffInMillis / (1000 * 60 * 60)));
-
-        System.out.println("=== Issue创建时间: " + issueCreateTime + " ===");
+        System.out.println("=== 当前系统时间(GMT+8): " + endTime + " ===");
+        System.out.println("=== 当前系统时间(毫秒): " + endTime.getTime() + " ===");
+        System.out.println("=== Issue创建时间(毫秒): " + issue.getCreateTime().getTime() + " ===");
+        System.out.println("=== Issue创建时间: " + issue.getCreateTime() + " ===");
         System.out.println("=== 结束时间: " + endTime + " ===");
-        System.out.println("=== 时间差(毫秒): " + diffInMillis + " ===");
-        System.out.println("=== 计算得到duration: " + durationHours + " 小时 ===");
 
-        issue.setDuration(durationHours);
+        long diffInMillis = endTime.getTime() - issue.getCreateTime().getTime();
+        System.out.println("=== 时间差(毫秒): " + diffInMillis + " ===");
+
+        // 如果时间差为负数，说明创建时间比当前时间还晚，可能是时区问题
+        if (diffInMillis < 0) {
+            System.out.println("=== 警告：时间差为负数，可能存在时区问题，设置duration为0 ===");
+            issue.setDuration(0);
+            return;
+        }
+
+        // 转换为小时
+        int durationInHours = (int) (diffInMillis / (1000 * 60 * 60));
+        System.out.println("=== 计算得到duration: " + durationInHours + " 小时 ===");
+
+        issue.setDuration(durationInHours);
         System.out.println("=== Duration计算完成 ===");
     }
 }
