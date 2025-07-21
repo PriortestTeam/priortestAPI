@@ -178,6 +178,11 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== Duration进入convertFieldsToString前: " + issue.getDuration() + " ===");
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
         System.out.println("=== closeDate: " + issue.getCloseDate() + " ===");
+        
+        // 在convertFieldsToString中调用calculateDuration
+        System.out.println("=== 准备调用calculateDuration方法 ===");
+        calculateDuration(issue);
+        System.out.println("=== calculateDuration调用完成，Duration值: " + issue.getDuration() + " ===");
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
