@@ -273,6 +273,9 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class))
                 .collect(Collectors.toList());
 
+            // 转换字段格式，确保返回给前端的是字符串格式
+            issueList.forEach(this::convertFieldsToString);
+
             // 使用与 BeanSearchController 相同的分页处理方式
             return PageUtil.manualPaging(issueList);
         } catch (Exception e) {
@@ -332,6 +335,9 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         // 6. 转 bean
         List<Issue> issueList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class)).collect(Collectors.toList());
 
+        // 转换字段格式，确保返回给前端的是字符串格式
+        issueList.forEach(this::convertFieldsToString);
+
         // 7. 构造 PageInfo
         PageInfo<Issue> pageInfo = new PageInfo<>(issueList);
         pageInfo.setPageNum(pageNum);
@@ -383,6 +389,9 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 pageData = issueList.subList(startIndex, endIndex);
             }
 
+            // 转换字段格式，确保返回给前端的是字符串格式
+             pageData.forEach(this::convertFieldsToString);
+
             PageInfo<Issue> pageInfo = new PageInfo<>(pageData);
             pageInfo.setPageNum(pageNum);
             pageInfo.setPageSize(pageSize);
@@ -402,6 +411,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         // 手动设置分页参数
         PageUtil.startPage(pageNum, pageSize);
         List<Issue> dataList = this.list(param);
+
+         // 转换字段格式，确保返回给前端的是字符串格式
+        dataList.forEach(this::convertFieldsToString);
+
         return PageInfo.of(dataList);
     }
 }
