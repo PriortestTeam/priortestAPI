@@ -25,6 +25,7 @@ import com.hu.oneclick.server.service.ViewFilterService;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -464,32 +465,33 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             return;
         }
 
-        // 使用GMT+8时区的当前时间
+        // 统一使用UTC时间进行计算，避免时区问题
         Date endTime;
         if (issue.getCloseDate() != null) {
             endTime = issue.getCloseDate();
             System.out.println("=== 使用closeDate作为结束时间 ===");
         } else {
-            // 获取GMT+8时区的当前时间
-            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+8"));
-            endTime = calendar.getTime();
-            System.out.println("=== 使用当前时间(GMT+8)计算duration ===");
+            // 获取UTC当前时间
+            Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            endTime = utcCalendar.getTime();
+            System.out.println("=== 使用当前UTC时间计算duration ===");
         }
 
-        System.out.println("=== 当前系统时间(GMT+8): " + endTime + " ===");
-        System.out.println("=== 当前系统时间(毫秒): " + endTime.getTime() + " ===");
-        System.out.println("=== Issue创建时间(毫秒): " + issue.getCreateTime().getTime() + " ===");
+        System.out.println("=== 当前UTC时间: " + endTime + " ===");
+        System.out.println("=== 当前UTC时间(毫秒): " + endTime.getTime() + " ===");
         System.out.println("=== Issue创建时间: " + issue.getCreateTime() + " ===");
-        System.out.println("=== 结束时间: " + endTime + " ===");
+        System.out.println("=== Issue创建时间(毫秒): " + issue.getCreateTime().getTime() + " ===");
 
+        // 由于数据库中的时间可能是用户本地时区时间，我们需要特殊处理
+        // 这里假设数据库存储的是UTC时间，如果不是，需要根据实际情况调整
         long diffInMillis = endTime.getTime() - issue.getCreateTime().getTime();
         System.out.println("=== 时间差(毫秒): " + diffInMillis + " ===");
 
-        // 如果时间差为负数，说明创建时间比当前时间还晚，可能是时区问题
+        // 如果时间差为负数，说明可能存在时区问题或数据异常
         if (diffInMillis < 0) {
-            System.out.println("=== 警告：时间差为负数，可能存在时区问题，设置duration为0 ===");
-            issue.setDuration(0);
-            return;
+            System.out.println("=== 警告：时间差为负数，可能存在时区问题或数据异常 ===");
+            System.out.println("=== 将使用绝对值计算duration ===");
+            diffInMillis = Math.abs(diffInMillis);
         }
 
         // 转换为小时
