@@ -301,13 +301,18 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     @Override
     public Issue info(Long id) {
         Issue issue = this.baseMapper.selectById(id);
-        if (issue == null) {
-            throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
+        if (issue != null) {
+            // 获取用户时区
+            String userTimezone = TimezoneContext.getUserTimezone();
+
+            // 如果有用户时区信息，将UTC时间转换为用户本地时间
+            if (userTimezone != null && !userTimezone.isEmpty()) {
+                convertUTCToLocalTime(issue, userTimezone);
+            }
+
+            // 转换字段格式，确保返回给前端的是字符串格式
+            convertFieldsToString(issue);
         }
-
-        // 计算duration
-        calculateDuration(issue);
-
         return issue;
     }
 
@@ -618,5 +623,63 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
         issue.setDuration(durationInHours);
         System.out.println("=== Duration计算完成 ===");
+    }
+    
+     /**
+     * 将UTC时间转换为用户本地时间
+     */
+    private void convertUTCToLocalTime(Issue issue, String userTimezone) {
+        if (userTimezone == null || userTimezone.isEmpty()) {
+            System.out.println("=== 没有用户时区信息，跳过本地时间转换 ===");
+            return;
+        }
+
+        System.out.println("=== 开始本地时间转换，用户时区: " + userTimezone + " ===");
+
+        try {
+            TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
+
+            // 转换 createTime
+            if (issue.getCreateTime() != null) {
+                Date originalTime = issue.getCreateTime();
+                Date localTime = convertUTCToLocalTime(originalTime, userTZ);
+                issue.setCreateTime(localTime);
+                System.out.println("=== createTime转换: " + originalTime + " -> " + localTime + " ===");
+            }
+
+            // 转换 closeDate
+            if (issue.getCloseDate() != null) {
+                Date originalTime = issue.getCloseDate();
+                Date localTime = convertUTCToLocalTime(originalTime, userTZ);
+                issue.setCloseDate(localTime);
+                System.out.println("=== closeDate转换: " + originalTime + " -> " + localTime + " ===");
+            }
+
+            // 转换 planFixDate
+            if (issue.getPlanFixDate() != null) {
+                Date originalTime = issue.getPlanFixDate();
+                Date localTime = convertUTCToLocalTime(originalTime, userTZ);
+                issue.setPlanFixDate(localTime);
+                System.out.println("=== planFixDate转换: " + originalTime + " -> " + localTime + " ===");
+            }
+
+        } catch (Exception e) {
+            System.out.println("=== 本地时间转换失败: " + e.getMessage() + " ===");
+        }
+    }
+
+    /**
+     * 将UTC时间转换为用户本地时间
+     */
+    private Date convertUTCToLocalTime(Date utcTime, TimeZone userTZ) {
+        // 将UTC时间解释为UTC时区的时间，然后转换为用户时区
+        Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        utcCalendar.setTime(utcTime);
+
+        // 获取用户本地时间
+        Calendar localCalendar = Calendar.getInstance(userTZ);
+        localCalendar.setTimeInMillis(utcCalendar.getTimeInMillis());
+
+        return localCalendar.getTime();
     }
 }
