@@ -35,6 +35,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import cn.zhxu.bs.MapSearcher;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.BeanUtils;
+import com.hu.oneclick.common.util.TimezoneContext;
+import com.hu.oneclick.common.domain.Resp;
 
 @Service
 public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements IssueService {
@@ -95,9 +99,16 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
     @Override
+    @Transactional
     public Issue add(IssueSaveDto dto) {
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
+
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getTimezone();
+
+        // 转换日期到UTC
+        convertDatesToUTC(issue, userTimezone);
 
         // 处理新增的三个字段：introduced_version, is_legacy, found_after_release
         Map<String, Object> customFieldMap = new HashMap<>();
@@ -137,13 +148,21 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
     @Override
+    @Transactional
     public Issue edit(IssueSaveDto dto) {
         Issue entity = this.getByIdAndProjectId(dto.getId(), dto.getProjectId());
         if (null == entity) {
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
         }
+
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
+
+         // 获取用户时区
+        String userTimezone = TimezoneContext.getTimezone();
+
+        // 转换日期到UTC
+        convertDatesToUTC(issue, userTimezone);
 
         // 处理新增的三个字段：introduced_version, is_legacy, found_after_release
         Map<String, Object> customFieldMap = new HashMap<>();
@@ -184,6 +203,64 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         convertFieldsToString(issue);
 
         return issue;
+    }
+
+    /**
+     * 转换所有日期字段到UTC
+     */
+    private void convertDatesToUTC(Issue issue, String userTimezone) {
+        if (userTimezone == null || userTimezone.isEmpty()) {
+            System.out.println("=== 没有用户时区信息，跳过UTC转换 ===");
+            return;
+        }
+
+        System.out.println("=== 开始UTC转换，用户时区: " + userTimezone + " ===");
+
+        try {
+            TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
+
+            // 转换 createTime（如果是新建时，通常由数据库自动设置）
+            if (issue.getCreateTime() != null) {
+                Date originalTime = issue.getCreateTime();
+                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
+                issue.setCreateTime(utcTime);
+                System.out.println("=== createTime转换: " + originalTime + " -> " + utcTime + " ===");
+            }
+
+            // 转换 closeDate
+            if (issue.getCloseDate() != null) {
+                Date originalTime = issue.getCloseDate();
+                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
+                issue.setCloseDate(utcTime);
+                System.out.println("=== closeDate转换: " + originalTime + " -> " + utcTime + " ===");
+            }
+
+            // 转换 planFixDate
+            if (issue.getPlanFixDate() != null) {
+                Date originalTime = issue.getPlanFixDate();
+                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
+                issue.setPlanFixDate(utcTime);
+                System.out.println("=== planFixDate转换: " + originalTime + " -> " + utcTime + " ===");
+            }
+
+        } catch (Exception e) {
+            System.out.println("=== UTC转换失败: " + e.getMessage() + " ===");
+        }
+    }
+
+    /**
+     * 将用户本地时间转换为UTC时间
+     */
+    private Date convertLocalTimeToUTC(Date localTime, TimeZone userTZ) {
+        // 将本地时间解释为用户时区的时间，然后转换为UTC
+        Calendar localCalendar = Calendar.getInstance(userTZ);
+        localCalendar.setTime(localTime);
+
+        // 获取UTC时间
+        Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        utcCalendar.setTimeInMillis(localCalendar.getTimeInMillis());
+
+        return utcCalendar.getTime();
     }
 
     /**
