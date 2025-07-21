@@ -796,7 +796,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         this.save(clonedIssue);
 
         // // 转换字段格式，确保返回给前端的是字符串格式
-        convertFieldsToString(clonedIssue)
+        convertFieldsToString(clonedIssue);
 
         return clonedIssue;
     }
