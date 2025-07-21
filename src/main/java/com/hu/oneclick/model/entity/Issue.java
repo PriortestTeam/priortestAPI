@@ -44,11 +44,11 @@ public class Issue extends AssignBaseEntity implements Serializable {
      * 计划修复时间
      */
     @Schema(description = "计划修复时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Date planFixDate;
 
     @Schema(description = "关闭时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Date closeDate;
 
     @Schema(description = "关联测试用例")
