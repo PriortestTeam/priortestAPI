@@ -38,7 +38,7 @@ import cn.zhxu.bs.MapSearcher;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.BeanUtils;
 import com.hu.oneclick.common.util.TimezoneContext;
-import com.hu.oneclick.common.domain.Resp;
+import com.hu.oneclick.model.base.Resp;
 
 @Service
 public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements IssueService {
