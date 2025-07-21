@@ -67,7 +67,7 @@ public class CustomFileldLinkVo extends CustomFileldLink implements Serializable
         if ("fixVersion".equals(this.getFieldNameEn()) && super.getCustomFieldId() != null) {
             return super.getCustomFieldId().toString() + "000";
         }
-        if ("foundAfterRelease".equals(this.getFieldNameEn()) && super.getCustomFieldId() != null) {
+        if ("introducedVersion".equals(this.getFieldNameEn()) && super.getCustomFieldId() != null) {
             return super.getCustomFieldId().toString() + "111";
         }
         return super.getCustomFieldId();
