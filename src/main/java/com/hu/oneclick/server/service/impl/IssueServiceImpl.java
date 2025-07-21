@@ -398,6 +398,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
             // 转换字段格式，确保返回给前端的是字符串格式
             pageData.forEach(issue -> {
+                System.out.println("=== 处理Issue ID: " + issue.getId() + " ===");
                 // 计算duration
                 calculateDuration(issue);
                 // 转换字段格式
@@ -425,7 +426,13 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         List<Issue> dataList = this.list(param);
 
          // 转换字段格式，确保返回给前端的是字符串格式
-        dataList.forEach(this::convertFieldsToString);
+        dataList.forEach(issue -> {
+            System.out.println("=== 简单查询处理Issue ID: " + issue.getId() + " ===");
+            // 计算duration
+            calculateDuration(issue);
+            // 转换字段格式
+            convertFieldsToString(issue);
+        });
 
         return PageInfo.of(dataList);
     }
