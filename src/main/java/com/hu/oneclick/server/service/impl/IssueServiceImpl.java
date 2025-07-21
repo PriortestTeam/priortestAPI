@@ -371,7 +371,6 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         return baseMapper.updateById(issue);
     }
 
-    @Override
     public void clone(List<Long> ids) {
         List<Issue> issueList = new ArrayList<>();
         for (Long id : ids) {
