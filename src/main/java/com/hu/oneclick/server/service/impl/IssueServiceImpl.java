@@ -2,6 +2,8 @@ package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -243,8 +245,46 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 System.out.println("=== planFixDate转换: " + originalTime + " -> " + utcTime + " ===");
             }
 
+            // 转换 issueExpand 中 attributes 里的日期字段
+            convertAttributesDateFieldsToUTC(issue, userTZ);
+
         } catch (Exception e) {
             System.out.println("=== UTC转换失败: " + e.getMessage() + " ===");
+        }
+    }
+    
+    private void convertAttributesDateFieldsToUTC(Issue issue, TimeZone userTZ) {
+        if (issue.getIssueExpand() == null || issue.getIssueExpand().isEmpty()) {
+            return;
+        }
+    
+        try {
+            JSONObject issueExpandJson = JSONUtil.parseObj(issue.getIssueExpand());
+            JSONArray attributes = issueExpandJson.getJSONArray("attributes");
+    
+            if (attributes != null && !attributes.isEmpty()) {
+                for (Object attributeObj : attributes) {
+                    if (attributeObj instanceof JSONObject) {
+                        JSONObject attribute = (JSONObject) attributeObj;
+                        String fieldType = attribute.getStr("fieldType");
+                        String valueData = attribute.getStr("valueData");
+    
+                        if ("date".equals(fieldType) && valueData != null && !valueData.isEmpty()) {
+                            try {
+                                Date originalTime = cn.hutool.core.date.DateUtil.parse(valueData);
+                                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
+                                attribute.set("valueData", cn.hutool.core.date.DateUtil.format(utcTime, "yyyy-MM-dd HH:mm:ss"));
+                                System.out.println("=== Attribute日期字段转换: " + originalTime + " -> " + utcTime + " ===");
+                            } catch (Exception e) {
+                                System.out.println("=== Attribute日期字段转换失败: " + e.getMessage() + " ===");
+                            }
+                        }
+                    }
+                }
+                issue.setIssueExpand(issueExpandJson.toString());
+            }
+        } catch (Exception e) {
+            System.out.println("=== 处理attributes日期字段失败: " + e.getMessage() + " ===");
         }
     }
 
@@ -641,7 +681,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             return;
         }
 
-        System.out.println("=== 开始本地时间转换，用户时区: " + userTimezone + " ===");
+        System.out.println("=== 开始UTC到本地时间转换，用户时区: " + userTimezone + " ===");
 
         try {
             TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
@@ -670,8 +710,46 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 System.out.println("=== planFixDate转换: " + originalTime + " -> " + localTime + " ===");
             }
 
+            // 转换 issueExpand 中 attributes 里的日期字段
+            convertAttributesDateFieldsToLocalTime(issue, userTZ);
+
         } catch (Exception e) {
-            System.out.println("=== 本地时间转换失败: " + e.getMessage() + " ===");
+            System.out.println("=== UTC到本地时间转换失败: " + e.getMessage() + " ===");
+        }
+    }
+
+    private void convertAttributesDateFieldsToLocalTime(Issue issue, TimeZone userTZ) {
+        if (issue.getIssueExpand() == null || issue.getIssueExpand().isEmpty()) {
+            return;
+        }
+
+        try {
+            JSONObject issueExpandJson = JSONUtil.parseObj(issue.getIssueExpand());
+            JSONArray attributes = issueExpandJson.getJSONArray("attributes");
+
+            if (attributes != null && !attributes.isEmpty()) {
+                for (Object attributeObj : attributes) {
+                    if (attributeObj instanceof JSONObject) {
+                        JSONObject attribute = (JSONObject) attributeObj;
+                        String fieldType = attribute.getStr("fieldType");
+                        String valueData = attribute.getStr("valueData");
+
+                        if ("date".equals(fieldType) && valueData != null && !valueData.isEmpty()) {
+                            try {
+                                Date originalTime = cn.hutool.core.date.DateUtil.parse(valueData);
+                                Date localTime = convertUTCToLocalTime(originalTime, userTZ);
+                                attribute.set("valueData", cn.hutool.core.date.DateUtil.format(localTime, "yyyy-MM-dd HH:mm:ss"));
+                                System.out.println("=== Attribute日期字段转换: " + originalTime + " -> " + localTime + " ===");
+                            } catch (Exception e) {
+                                System.out.println("=== Attribute日期字段转换失败: " + e.getMessage() + " ===");
+                            }
+                        }
+                    }
+                }
+                issue.setIssueExpand(issueExpandJson.toString());
+            }
+        } catch (Exception e) {
+            System.out.println("=== 处理attributes日期字段失败: " + e.getMessage() + " ===");
         }
     }
 
