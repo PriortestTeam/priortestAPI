@@ -394,7 +394,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             }
 
             // 转换字段格式，确保返回给前端的是字符串格式
-             pageData.forEach(this::convertFieldsToString);
+            pageData.forEach(issue -> {
+                // 计算duration
+                calculateDuration(issue);
+                // 转换字段格式
+                convertFieldsToString(issue);
+            });
 
             PageInfo<Issue> pageInfo = new PageInfo<>(pageData);
             pageInfo.setPageNum(pageNum);
