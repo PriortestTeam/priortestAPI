@@ -3,6 +3,8 @@ package com.hu.oneclick.model.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hu.oneclick.config.ListTypeHandler;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -90,16 +92,20 @@ public class Issue extends AssignBaseEntity implements Serializable {
     private String introducedVersion;
 
     @Schema(description = "是否为遗留问题")
+    @JsonIgnore
     private Integer isLegacy;
 
     @Schema(description = "发布后发现")
+    @JsonIgnore
     private Integer foundAfterRelease;
     
     // 为前端提供字符串格式的getter方法
+    @JsonProperty("isLegacy")
     public String getIsLegacyStr() {
         return isLegacy != null ? isLegacy.toString() : "0";
     }
     
+    @JsonProperty("foundAfterRelease")
     public String getFoundAfterReleaseStr() {
         return foundAfterRelease != null ? foundAfterRelease.toString() : "0";
     }

@@ -162,7 +162,26 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
 
         this.baseMapper.updateById(issue);
+
+        // 转换字段格式，确保返回给前端的是字符串格式
+        convertFieldsToString(issue);
+
         return issue;
+    }
+
+    /**
+     * 转换字段格式：确保数据格式正确
+     * 由于使用了 @JsonProperty 注解，JSON 序列化会自动调用字符串格式的 getter 方法
+     */
+    private void convertFieldsToString(Issue issue) {
+        // 使用 @JsonProperty 注解后，Jackson 会自动序列化为字符串格式
+        // 这里只需要确保字段值不为 null
+        if (issue.getIsLegacy() == null) {
+            issue.setIsLegacy(0);
+        }
+        if (issue.getFoundAfterRelease() == null) {
+            issue.setFoundAfterRelease(0);
+        }
     }
 
     private Issue getByIdAndProjectId(Long id, Long projectId) {
