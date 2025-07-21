@@ -176,6 +176,7 @@ public class Issue extends AssignBaseEntity implements Serializable {
      * 存活时长(小时)
      */
     @Schema(description = "存活时长(小时)")
+    @JsonProperty("duration")
     private Integer duration;
 
 }

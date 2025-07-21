@@ -430,20 +430,37 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
     /**
-     * 计算缺陷的存活时长（duration），以小时为单位
-     *
-     * @param issue 缺陷对象
+     * 计算duration - 存活时长(小时)
      */
     private void calculateDuration(Issue issue) {
         if (issue.getCreateTime() != null) {
-            Date createTime = issue.getCreateTime();
-            Date now = new Date();
-            long durationMillis = now.getTime() - createTime.getTime();
-            double durationHours = (double) durationMillis / (60 * 60 * 1000);
-            // 将小时数向上取整转换为Integer类型
-            issue.setDuration((int) Math.ceil(durationHours));
+            Date endTime;
+            if (issue.getCloseDate() != null) {
+                // 如果有关闭时间，使用关闭时间
+                endTime = issue.getCloseDate();
+            } else {
+                // 如果没有关闭时间，使用当前时间
+                endTime = new Date();
+            }
+
+            long diffInMillis = endTime.getTime() - issue.getCreateTime().getTime();
+            long diffInHours = diffInMillis / (1000 * 60 * 60); // 转换为小时
+            int calculatedDuration = Math.max(0, (int) diffInHours); // 确保不为负数
+            issue.setDuration(calculatedDuration);
+
+            // 添加日志用于调试
+            System.out.println("=== Duration计算 ===");
+            System.out.println("Issue ID: " + issue.getId());
+            System.out.println("创建时间: " + issue.getCreateTime());
+            System.out.println("结束时间: " + endTime);
+            System.out.println("时间差(毫秒): " + diffInMillis);
+            System.out.println("时间差(小时): " + diffInHours);
+            System.out.println("设置的Duration: " + calculatedDuration);
         } else {
-            issue.setDuration(null); // 如果创建时间为空，则duration也为空
+            issue.setDuration(0);
+            System.out.println("=== Duration计算 ===");
+            System.out.println("Issue ID: " + issue.getId());
+            System.out.println("创建时间为空，设置Duration为0");
         }
     }
 }
