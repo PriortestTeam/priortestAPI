@@ -14,8 +14,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        System.out.println("=== WebMvcConfig: 注册时区拦截器，拦截路径: /api/** ===");
+        System.out.println("=== WebMvcConfig: 注册时区拦截器，拦截路径: /** ===");
         registry.addInterceptor(timezoneInterceptor)
-                .addPathPatterns("/api/**"); // 拦截所有API请求
+                .addPathPatterns("/**"); // 拦截所有请求，包括/api/**
     }
 }
