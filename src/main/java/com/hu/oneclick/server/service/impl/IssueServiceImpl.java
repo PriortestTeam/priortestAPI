@@ -442,13 +442,13 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
      */
     private void calculateDuration(Issue issue) {
         System.out.println("=== Duration计算 - Issue ID: " + issue.getId() + " ===");
-        
+
         if (issue.getCreateTime() == null) {
             System.out.println("=== createTime为null，无法计算duration ===");
             issue.setDuration(null);
             return;
         }
-        
+
         Date endTime;
         if (issue.getCloseDate() != null) {
             // 如果有关闭时间，使用关闭时间
@@ -459,42 +459,16 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             endTime = new Date();
             System.out.println("=== 使用当前时间计算duration ===");
         }
-        
+
         // 计算时间差（毫秒）
         long diffInMillis = endTime.getTime() - issue.getCreateTime().getTime();
         // 转换为小时
         int durationHours = (int) (diffInMillis / (1000 * 60 * 60));
-        
+
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
         System.out.println("=== endTime: " + endTime + " ===");
         System.out.println("=== 计算得到duration: " + durationHours + " 小时 ===");
-        
+
         issue.setDuration(durationHours);
-    }
-                endTime = issue.getCloseDate();
-            } else {
-                // 如果没有关闭时间，使用当前时间
-                endTime = new Date();
-            }
-
-            long diffInMillis = endTime.getTime() - issue.getCreateTime().getTime();
-            long diffInHours = diffInMillis / (1000 * 60 * 60); // 转换为小时
-            int calculatedDuration = Math.max(0, (int) diffInHours); // 确保不为负数
-            issue.setDuration(calculatedDuration);
-
-            // 添加日志用于调试
-            System.out.println("=== Duration计算 ===");
-            System.out.println("Issue ID: " + issue.getId());
-            System.out.println("创建时间: " + issue.getCreateTime());
-            System.out.println("结束时间: " + endTime);
-            System.out.println("时间差(毫秒): " + diffInMillis);
-            System.out.println("时间差(小时): " + diffInHours);
-            System.out.println("设置的Duration: " + calculatedDuration);
-        } else {
-            issue.setDuration(0);
-            System.out.println("=== Duration计算 ===");
-            System.out.println("Issue ID: " + issue.getId());
-            System.out.println("创建时间为空，设置Duration为0");
-        }
     }
 }
