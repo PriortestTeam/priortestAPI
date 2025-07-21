@@ -441,14 +441,24 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
     /**
-     * 计算duration - 存活时长(小时)
+     * 计算并设置Issue的duration（存活时长）
+     * 注意：应该使用Issue的业务创建时间，而不是数据库记录的创建时间
+     * 如果有关闭时间，使用关闭时间减去Issue创建时间
+     * 如果没有关闭时间，使用当前时间减去Issue创建时间
      */
     private void calculateDuration(Issue issue) {
-        System.out.println("=== Duration计算 - Issue ID: " + issue.getId() + " ===");
+        System.out.println("=== Duration计算开始 - Issue ID: " + issue.getId() + " ===");
+        System.out.println("=== createTime (数据库创建时间): " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime (数据库修改时间): " + issue.getUpdateTime() + " ===");
+        System.out.println("=== closeDate (关闭时间): " + issue.getCloseDate() + " ===");
 
-        if (issue.getCreateTime() == null) {
-            System.out.println("=== createTime为null，无法计算duration ===");
-            issue.setDuration(null);
+        // Issue实体中没有单独的业务创建时间字段，暂时使用createTime
+        // 但需要确认这个时间是否是Issue的实际发生时间
+        Date issueCreateTime = issue.getCreateTime();
+
+        if (issueCreateTime == null) {
+            System.out.println("=== Issue创建时间为null，设置duration为0 ===");
+            issue.setDuration(0);
             return;
         }
 
@@ -464,14 +474,16 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
 
         // 计算时间差（毫秒）
-        long diffInMillis = endTime.getTime() - issue.getCreateTime().getTime();
-        // 转换为小时
-        int durationHours = (int) (diffInMillis / (1000 * 60 * 60));
+        long diffInMillis = endTime.getTime() - issueCreateTime.getTime();
+        // 转换为小时，确保不为负数
+        int durationHours = Math.max(0, (int) (diffInMillis / (1000 * 60 * 60)));
 
-        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== endTime: " + endTime + " ===");
+        System.out.println("=== Issue创建时间: " + issueCreateTime + " ===");
+        System.out.println("=== 结束时间: " + endTime + " ===");
+        System.out.println("=== 时间差(毫秒): " + diffInMillis + " ===");
         System.out.println("=== 计算得到duration: " + durationHours + " 小时 ===");
 
         issue.setDuration(durationHours);
+        System.out.println("=== Duration计算完成 ===");
     }
 }
