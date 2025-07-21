@@ -1,56 +1,105 @@
 package com.hu.oneclick.common.util;
 
-import com.github.pagehelper.Page;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import cn.hutool.core.bean.BeanUtil;
+import com.hu.oneclick.common.page.PageDomain;
+import com.hu.oneclick.common.page.TableSupport;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 分页工具类
+ *
+ * @author xiaohai
+ * @date 2023/03/06
  */
-public class PageUtil {
+public class PageUtil extends PageHelper {
 
     /**
-     * 开始分页 - 无参数版本
+     * 设置请求分页数据
      */
     public static void startPage() {
-        // 默认分页参数
-        PageHelper.startPage(1, 10);
-    }
-
-    /**
-     * 开始分页
-     */
-    public static void startPage(int pageNum, int pageSize) {
+        PageDomain pageDomain = PageDomain.getPageDomain();
+        Integer pageNum = pageDomain.getPageNum();
+        Integer pageSize = pageDomain.getPageSize();
         PageHelper.startPage(pageNum, pageSize);
     }
 
     /**
-     * 清除分页
+     * 清理分页的线程变量
      */
     public static void clearPage() {
         PageHelper.clearPage();
     }
 
-    /**
-     * 手动分页
-     */
-    public static <T> PageInfo<T> manualPaging(List<T> list) {
-        return new PageInfo<>(list);
+    public static <E, T> PageInfo<T> convertPageInfo(List<E> list, Class<T> tClass) {
+        List<T> dto = new ArrayList<>();
+        if (CollUtil.isNotEmpty(list)) {
+            dto = list.stream().map(l -> BeanUtil.copyProperties(l, tClass)).collect(Collectors.toList());
+        }
+        PageInfo<E> of = PageInfo.of(list);
+        PageInfo<T> of1 = PageInfo.of(dto);
+        BeanUtil.copyProperties(of, of1, "list");
+        return of1;
     }
 
-    /**
-     * 转换分页信息
-     */
-    public static <E, T> PageInfo<T> convertPageInfo(List<E> sourceList, Class<T> targetClass) {
-        List<T> targetList = new ArrayList<>();
-        for (E source : sourceList) {
-            T target = BeanUtil.copyProperties(source, targetClass);
-            targetList.add(target);
+    public static <E> PageInfo<E> manualPaging(List<E> list) {
+        PageDomain pageDomain = TableSupport.buildPageRequest();
+        int pageNum = pageDomain.getPageNum() - 1;
+        if (pageNum < 0) {
+            pageNum = 0;
         }
-        return new PageInfo<>(targetList);
+        int pageSize = pageDomain.getPageSize();
+        int totalSize = 0;
+        int totalPage = 0;
+        // 计算总页数
+        totalSize = list.size();
+        totalPage = cn.hutool.core.util.PageUtil.totalPage(totalSize, pageSize);
+        if (pageNum <= totalPage) {
+            // 分页
+            list = CollUtil.page(pageNum, pageSize, list);
+        } else {
+            list = ListUtil.list(false);
+        }
+        PageInfo<E> of = PageInfo.of(list);
+        /**
+         * 是否为第一页
+         */
+        boolean isFirstPage = false;
+        /**
+         * 是否为最后一页
+         */
+        boolean isLastPage = false;
+        /**
+         * 是否有前一页
+         */
+        boolean hasPreviousPage = false;
+        /**
+         * 是否有下一页
+         */
+        boolean hasNextPage = false;
+        of.setTotal(totalSize);
+        of.setPages(totalPage);
+        of.setIsFirstPage(false);
+        of.setIsLastPage(false);
+        if (pageNum == 0) {
+            of.setIsFirstPage(true);
+        }
+        if (pageNum == totalPage - 1) {
+            of.setIsLastPage(true);
+        }
+        if (pageNum < totalPage - 1) {
+            of.setHasNextPage(true);
+        }
+        if (pageNum != 0) {
+            of.setHasPreviousPage(true);
+        }
+        return of;
     }
+
 }

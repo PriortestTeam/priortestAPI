@@ -1,7 +1,5 @@
 package com.hu.oneclick.common.util;
 
-import cn.hutool.core.bean.BeanUtil;
-
 /**
  * @ClassName CloneFormatUtil
  * @Description 克隆业务格式工具类
@@ -24,17 +22,5 @@ public class CloneFormatUtil {
      */
     public static String getCloneTitle(String title) {
         return String.format(CLONE_TITLE_FORMAT, title);
-    }
-    
-    /**
-     * 克隆对象
-     *
-     * @param source 源对象
-     * @param targetClass 目标类型
-     * @return 克隆的对象
-     */
-    public static <T> T cloneObject(Object source, Class<T> targetClass) {
-        return BeanUtil.copyProperties(source, targetClass);
-    }ing.format(CLONE_TITLE_FORMAT, title);
     }
 }
