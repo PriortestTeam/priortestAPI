@@ -1,3 +1,4 @@
+
 package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
@@ -63,7 +64,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
     private final ViewFilterService viewFilterService;
 
-    public IssueServiceImpl(JwtUserServiceImpl jwtUserService, 
+    public IssueServiceImpl(JwtUserServiceImpl jwtUserService,
                            ModifyRecordsService modifyRecordsService,
                            SysPermissionService sysPermissionService,
                            QueryFilterService queryFilterService,
@@ -75,6 +76,71 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         this.queryFilterService = queryFilterService;
         this.customFieldDataService = customFieldDataService;
         this.viewFilterService = viewFilterService;
+    }
+
+    @Override
+    public PageInfo<Issue> list(IssueParam param) {
+        // 实现列表查询逻辑
+        PageUtil.initPage(param);
+        
+        Issue issue = new Issue();
+        BeanUtil.copyProperties(param, issue);
+        
+        List<Issue> issues = issueDao.queryList(issue);
+        
+        // 获取用户时区信息
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== Issue列表查询 - 用户时区: " + userTimezone + " ===");
+        
+        // 为每个issue计算duration并转换字段格式
+        for (Issue issueItem : issues) {
+            calculateDuration(issueItem, userTimezone);
+            convertFieldsToString(issueItem);
+        }
+        
+        return new PageInfo<>(issues);
+    }
+
+    @Override
+    public Issue save(IssueSaveDto dto) {
+        Issue issue = new Issue();
+        BeanUtil.copyProperties(dto, issue);
+
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== Issue保存 - 用户时区: " + userTimezone + " ===");
+        
+        // 转换日期到UTC
+        convertDatesToUTC(issue, userTimezone);
+
+        // 保存到数据库
+        this.save(issue);
+        
+        // 记录修改历史
+        modifyRecordsService.saveModifyRecords(issue, "新增");
+        
+        return issue;
+    }
+
+    @Override
+    public Issue edit(IssueSaveDto dto) {
+        Issue issue = new Issue();
+        BeanUtil.copyProperties(dto, issue);
+
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== Issue编辑 - 用户时区: " + userTimezone + " ===");
+
+        // 转换日期到UTC
+        convertDatesToUTC(issue, userTimezone);
+
+        // 更新到数据库
+        this.updateById(issue);
+        
+        // 记录修改历史
+        modifyRecordsService.saveModifyRecords(issue, "编辑");
+        
+        return issue;
     }
 
     @Override
@@ -98,110 +164,56 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
     @Override
-    public void save(IssueSaveDto dto) {
-        Issue issue = new Issue();
-        BeanUtil.copyProperties(dto, issue);
-
-        // 获取用户时区
-        String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== 新增Issue - 用户时区: " + userTimezone + " ===");
-
-        // 转换日期到UTC
-        convertDatesToUTC(issue, userTimezone);
-
-        // 设置创建时间和修改时间
-        Date now = new Date();
-        issue.setCreateTime(now);
-        issue.setUpdateTime(now);
-        issue.setCreateUser(Long.parseLong(jwtUserService.getMasterId()));
-        issue.setUpdateUser(Long.parseLong(jwtUserService.getMasterId()));
-
-        this.save(issue);
-    }
-
-    @Override
-    public void edit(IssueSaveDto dto) {
-        Issue issue = this.getById(dto.getId());
-        if (issue == null) {
-            throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", dto.getId()));
-        }
-
-        BeanUtil.copyProperties(dto, issue);
-
-        // 获取用户时区
-        String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== 更新Issue - 用户时区: " + userTimezone + " ===");
-
-        // 转换日期到UTC
-        convertDatesToUTC(issue, userTimezone);
-
-        // 设置修改时间
-        issue.setUpdateTime(new Date());
-        issue.setUpdateUser(Long.parseLong(jwtUserService.getMasterId()));
-
-        this.updateById(issue);
-    }
-
-    @Override
-    public PageInfo<Issue> list(IssueParam param) {
-        List<Issue> issues = this.queryList(param);
-
-        // 获取用户时区信息
-        String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== Issue列表查询 - 用户时区: " + userTimezone + " ===");
-
-        // 为每个Issue计算duration和转换字段格式
-        for (Issue issue : issues) {
-            calculateDuration(issue, userTimezone);
-            convertFieldsToString(issue);
-        }
-
-        return new PageInfo<>(issues);
-    }
-
-    @Override
     public void clone(List<Long> ids) {
         for (Long id : ids) {
             Issue originalIssue = this.getById(id);
             if (originalIssue != null) {
-                Issue clonedIssue = new Issue();
-                BeanUtil.copyProperties(originalIssue, clonedIssue);
-                clonedIssue.setId(null); // 清除ID，让数据库自动生成新的
-                clonedIssue.setTitle(originalIssue.getTitle() + " (克隆)");
-                clonedIssue.setCreateTime(new Date());
-                clonedIssue.setUpdateTime(new Date());
-                clonedIssue.setCreateUser(Long.parseLong(jwtUserService.getMasterId()));
-                clonedIssue.setUpdateUser(Long.parseLong(jwtUserService.getMasterId()));
+                Issue clonedIssue = CloneFormatUtil.clone(originalIssue);
+                clonedIssue.setId(null); // 重置ID以便创建新记录
+                clonedIssue.setTitle(originalIssue.getTitle() + " (副本)");
                 this.save(clonedIssue);
             }
         }
     }
 
+    @Override
+    public void updateStatus(IssueStatusDto dto) {
+        Issue issue = this.getById(dto.getId());
+        if (issue != null) {
+            issue.setIssueStatus(dto.getIssueStatus());
+            issue.setVerifiedResult(dto.getVerifiedResult());
+            this.updateById(issue);
+            
+            // 记录修改历史
+            modifyRecordsService.saveModifyRecords(issue, "状态更新");
+        }
+    }
+
     /**
-     * 将用户本地时间转换为UTC时间存储到数据库
+     * 将用户本地时间转换为UTC时间存储
      */
     private void convertDatesToUTC(Issue issue, String userTimezone) {
         if (userTimezone == null || userTimezone.isEmpty()) {
-            System.out.println("=== 警告：没有提供用户时区信息，跳过时区转换 ===");
+            System.out.println("=== 警告：时区信息为空，跳过时区转换 ===");
             return;
         }
 
         try {
             TimeZone userTz = TimeZone.getTimeZone(userTimezone);
-            TimeZone utc = TimeZone.getTimeZone("UTC");
+            TimeZone utcTz = TimeZone.getTimeZone("UTC");
 
-            // 转换planFixDate
+            // 转换计划修复时间
             if (issue.getPlanFixDate() != null) {
-                Date utcPlanFixDate = convertToUTC(issue.getPlanFixDate(), userTz, utc);
-                issue.setPlanFixDate(utcPlanFixDate);
-                System.out.println("=== 计划修复时间转换: 用户时区 " + issue.getPlanFixDate() + " -> UTC " + utcPlanFixDate + " ===");
+                Date utcDate = convertToUTC(issue.getPlanFixDate(), userTz, utcTz);
+                issue.setPlanFixDate(utcDate);
+                System.out.println("=== 计划修复时间已转换为UTC ===");
             }
 
-            // 转换closeDate
+            // 转换关闭时间
             if (issue.getCloseDate() != null) {
-                Date utcCloseDate = convertToUTC(issue.getCloseDate(), userTz, utc);
-                issue.setCloseDate(utcCloseDate);
-                System.out.println("=== 关闭时间转换: 用户时区 " + issue.getCloseDate() + " -> UTC " + utcCloseDate + " ===");
+                Date utcDate = convertToUTC(issue.getCloseDate(), userTz, utcTz);
+                issue.setCloseDate(utcDate);
+                System.out.println("=== 关闭时间已转换为UTC ===");
             }
 
         } catch (Exception e) {
@@ -210,14 +222,17 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
     /**
-     * 将时间从用户时区转换为UTC
+     * 将日期从用户时区转换为UTC
      */
-    private Date convertToUTC(Date localDate, TimeZone fromTz, TimeZone toTz) {
+    private Date convertToUTC(Date localDate, TimeZone fromTimeZone, TimeZone toTimeZone) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(localDate);
-        calendar.setTimeZone(fromTz);
-
-        calendar.setTimeZone(toTz);
+        calendar.setTimeZone(fromTimeZone);
+        
+        long timeInMillis = calendar.getTimeInMillis();
+        calendar.setTimeZone(toTimeZone);
+        calendar.setTimeInMillis(timeInMillis);
+        
         return calendar.getTime();
     }
 
@@ -225,66 +240,37 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
      * 计算Issue存活时长
      */
     private void calculateDuration(Issue issue, String userTimezone) {
-        if (issue.getCreateTime() == null) {
+        try {
+            Date createTime = issue.getCreateTime();
+            Date closeTime = issue.getCloseDate();
+            Date currentTime = closeTime != null ? closeTime : new Date();
+
+            if (createTime != null) {
+                long diffInMillis = currentTime.getTime() - createTime.getTime();
+                long diffInHours = diffInMillis / (1000 * 60 * 60);
+                
+                if (diffInHours < 0) {
+                    System.out.println("=== 警告：时间差为负数，可能存在时区问题或数据异常 ===");
+                    issue.setDuration(0);
+                } else {
+                    issue.setDuration((int) diffInHours);
+                }
+                
+                System.out.println("=== Duration计算完成: " + issue.getDuration() + " 小时 ===");
+            } else {
+                issue.setDuration(0);
+            }
+        } catch (Exception e) {
+            System.err.println("=== Duration计算失败: " + e.getMessage() + " ===");
             issue.setDuration(0);
-            return;
         }
-
-        Date endTime;
-        if (issue.getCloseDate() != null) {
-            endTime = issue.getCloseDate();
-        } else {
-            endTime = new Date(); // 当前时间
-        }
-
-        // 计算时间差（单位：小时）
-        long durationMillis = endTime.getTime() - issue.getCreateTime().getTime();
-        int durationHours = (int) (durationMillis / (1000 * 60 * 60));
-
-        // 检查时间差是否为负数
-        if (durationHours < 0) {
-            System.out.println("=== 警告：时间差为负数，可能存在时区问题或数据异常 ===");
-            System.out.println("=== 创建时间: " + issue.getCreateTime() + ", 结束时间: " + endTime + " ===");
-            durationHours = 0;
-        }
-
-        issue.setDuration(durationHours);
-        System.out.println("=== Duration计算: " + durationHours + " 小时 (创建: " + issue.getCreateTime() + ", 结束: " + endTime + ") ===");
     }
 
     /**
      * 转换字段为字符串格式，确保前端能正确显示
      */
     private void convertFieldsToString(Issue issue) {
-        // 这里可以添加其他需要格式化的字段
-        if (issue.getIsLegacy() != null) {
-            // 已经在Entity中处理
-        }
-        if (issue.getFoundAfterRelease() != null) {
-            // 已经在Entity中处理
-        }
-    }
-
-    /**
-     * 查询Issue列表的具体实现
-     */
-    private List<Issue> queryList(IssueParam param) {
-        QueryWrapper<Issue> queryWrapper = new QueryWrapper<>();
-
-        // 添加查询条件
-        if (param.getProjectId() != null) {
-            queryWrapper.eq("project_id", param.getProjectId());
-        }
-        if (param.getTitle() != null && !param.getTitle().isEmpty()) {
-            queryWrapper.like("title", param.getTitle());
-        }
-        if (param.getIssueStatus() != null && !param.getIssueStatus().isEmpty()) {
-            queryWrapper.eq("issue_status", param.getIssueStatus());
-        }
-
-        // 按创建时间降序排列
-        queryWrapper.orderByDesc("create_time");
-
-        return this.list(queryWrapper);
+        // 这里可以添加任何需要特殊格式化的字段转换逻辑
+        // 例如将某些数字字段转换为字符串等
     }
 }
