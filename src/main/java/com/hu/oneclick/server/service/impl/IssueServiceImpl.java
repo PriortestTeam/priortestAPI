@@ -105,7 +105,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         BeanUtil.copyProperties(dto, issue);
 
         // 获取用户时区
-        String userTimezone = TimezoneContext.getTimezone();
+        String userTimezone = TimezoneContext.getUserTimezone();
 
         // 转换日期到UTC
         convertDatesToUTC(issue, userTimezone);
@@ -159,7 +159,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         BeanUtil.copyProperties(dto, issue);
 
          // 获取用户时区
-        String userTimezone = TimezoneContext.getTimezone();
+        String userTimezone = TimezoneContext.getUserTimezone();
 
         // 转换日期到UTC
         convertDatesToUTC(issue, userTimezone);

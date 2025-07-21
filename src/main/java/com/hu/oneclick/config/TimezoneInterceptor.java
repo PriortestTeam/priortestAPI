@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.config;
 
 import com.hu.oneclick.common.util.TimezoneContext;
@@ -17,18 +16,19 @@ public class TimezoneInterceptor implements HandlerInterceptor {
         if (timezone == null || timezone.isEmpty()) {
             timezone = request.getParameter("timezone");
         }
-        
+
         if (timezone != null && !timezone.isEmpty()) {
             // 存储到ThreadLocal中
             TimezoneContext.setUserTimezone(timezone);
         }
-        
+
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         // 清理ThreadLocal
-        TimezoneContext.clear();ServiceImpl.clearUserTimezone();
+        TimezoneContext.clear();
     }
 }
+```
