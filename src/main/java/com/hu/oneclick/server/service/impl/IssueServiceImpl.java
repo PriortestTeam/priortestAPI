@@ -301,18 +301,25 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     @Override
     public Issue info(Long id) {
         Issue issue = this.baseMapper.selectById(id);
-        if (issue != null) {
-            // 获取用户时区
-            String userTimezone = TimezoneContext.getUserTimezone();
-
-            // 如果有用户时区信息，将UTC时间转换为用户本地时间
-            if (userTimezone != null && !userTimezone.isEmpty()) {
-                convertUTCToLocalTime(issue, userTimezone);
-            }
-
-            // 转换字段格式，确保返回给前端的是字符串格式
-            convertFieldsToString(issue);
+        if (issue == null) {
+            throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
         }
+
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== Issue info方法 - 获取到用户时区: " + userTimezone + " ===");
+
+        // 如果有用户时区信息，将UTC时间转换为用户本地时间
+        if (userTimezone != null && !userTimezone.isEmpty()) {
+            convertUTCToLocalTime(issue, userTimezone);
+        }
+
+        // 计算duration（必须在时区转换后）
+        calculateDuration(issue, userTimezone);
+
+        // 转换字段格式，确保返回给前端的是字符串格式
+        convertFieldsToString(issue);
+
         return issue;
     }
 
@@ -624,9 +631,9 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         issue.setDuration(durationInHours);
         System.out.println("=== Duration计算完成 ===");
     }
-    
+
      /**
-     * 将UTC时间转换为用户本地时间
+     * 将UTC时间转换为用户本地时间（用于返回给前端显示）
      */
     private void convertUTCToLocalTime(Issue issue, String userTimezone) {
         if (userTimezone == null || userTimezone.isEmpty()) {
