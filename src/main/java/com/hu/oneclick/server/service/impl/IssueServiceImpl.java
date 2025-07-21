@@ -62,6 +62,21 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
     private final ViewFilterService viewFilterService;
 
+    // ThreadLocal存储用户时区信息
+    private static final ThreadLocal<String> USER_TIMEZONE = new ThreadLocal<>();
+
+    public static void setUserTimezone(String timezone) {
+        USER_TIMEZONE.set(timezone);
+    }
+
+    public static String getCurrentUserTimezone() {
+        return USER_TIMEZONE.get();
+    }
+
+    public static void clearUserTimezone() {
+        USER_TIMEZONE.remove();
+    }
+
 
     public IssueServiceImpl(JwtUserServiceImpl jwtUserService, ModifyRecordsService modifyRecordsService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService, CustomFieldDataService customFieldDataService, ViewFilterService viewFilterService) {
         this.jwtUserService = jwtUserService;
@@ -454,13 +469,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
      * 如果没有关闭时间，使用当前时间减去Issue创建时间
      */
     private void calculateDuration(Issue issue) {
-        System.out.println("=== Duration计算开始 - Issue ID: " + issue.getId() + " ===");
-        System.out.println("=== createTime (数据库创建时间): " + issue.getCreateTime() + " ===");
-        System.out.println("=== updateTime (数据库修改时间): " + issue.getUpdateTime() + " ===");
-        System.out.println("=== closeDate (关闭时间): " + issue.getCloseDate() + " ===");
+        calculateDuration(issue, null);
+    }
+
+    private void calculateDuration(Issue issue, String userTimezone) {
+        System.out.println("=== Duration计算开始 ===");
+        System.out.println("=== 用户时区: " + userTimezone + " ===");
 
         if (issue.getCreateTime() == null) {
-            System.out.println("=== createTime为空，无法计算duration ===");
+            System.out.println("=== createTime为null，无法计算duration ===");
             issue.setDuration(0);
             return;
         }
@@ -477,14 +494,38 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             System.out.println("=== 使用当前UTC时间计算duration ===");
         }
 
+        // 处理数据库中存储的时间
+        Date adjustedCreateTime = issue.getCreateTime();
+
+        // 如果数据库中存储的是用户本地时区时间，需要转换为UTC
+        if (userTimezone != null && !userTimezone.isEmpty()) {
+            try {
+                TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
+                TimeZone utcTZ = TimeZone.getTimeZone("UTC");
+
+                // 如果数据库存储的是用户本地时间，需要转换为UTC
+                // 这里假设数据库存储的是用户创建时的本地时间
+                Calendar userCalendar = Calendar.getInstance(userTZ);
+                userCalendar.setTime(issue.getCreateTime());
+
+                // 转换为UTC时间
+                long utcTime = userCalendar.getTimeInMillis() - userTZ.getOffset(userCalendar.getTimeInMillis()) + utcTZ.getOffset(userCalendar.getTimeInMillis());
+                adjustedCreateTime = new Date(utcTime);
+
+                System.out.println("=== 原始创建时间: " + issue.getCreateTime() + " ===");
+                System.out.println("=== 调整后UTC创建时间: " + adjustedCreateTime + " ===");
+            } catch (Exception e) {
+                System.out.println("=== 时区转换失败，使用原始时间: " + e.getMessage() + " ===");
+                adjustedCreateTime = issue.getCreateTime();
+            }
+        }
+
         System.out.println("=== 当前UTC时间: " + endTime + " ===");
         System.out.println("=== 当前UTC时间(毫秒): " + endTime.getTime() + " ===");
-        System.out.println("=== Issue创建时间: " + issue.getCreateTime() + " ===");
-        System.out.println("=== Issue创建时间(毫秒): " + issue.getCreateTime().getTime() + " ===");
+        System.out.println("=== 最终创建时间: " + adjustedCreateTime + " ===");
+        System.out.println("=== 最终创建时间(毫秒): " + adjustedCreateTime.getTime() + " ===");
 
-        // 由于数据库中的时间可能是用户本地时区时间，我们需要特殊处理
-        // 这里假设数据库存储的是UTC时间，如果不是，需要根据实际情况调整
-        long diffInMillis = endTime.getTime() - issue.getCreateTime().getTime();
+        long diffInMillis = endTime.getTime() - adjustedCreateTime.getTime();
         System.out.println("=== 时间差(毫秒): " + diffInMillis + " ===");
 
         // 如果时间差为负数，说明可能存在时区问题或数据异常
