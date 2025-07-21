@@ -174,9 +174,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
      * 由于使用了 @JsonProperty 注解，JSON 序列化会自动调用字符串格式的 getter 方法
      */
     private void convertFieldsToString(Issue issue) {
-        System.out.println("=== convertFieldsToString - Issue ID: " + issue.getId() + ", Duration进入前: " + issue.getDuration() + " ===");
+        System.out.println("=== convertFieldsToString开始 - Issue ID: " + issue.getId() + " ===");
+        System.out.println("=== Duration进入convertFieldsToString前: " + issue.getDuration() + " ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== closeDate: " + issue.getCloseDate() + " ===");
 
-        // 确保 isLegacy 和 foundAfterRelease 不为 null
+        // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
             issue.setIsLegacy(0);
         }
@@ -184,7 +187,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             issue.setFoundAfterRelease(0);
         }
 
-        System.out.println("=== convertFieldsToString - Issue ID: " + issue.getId() + ", Duration转换后: " + issue.getDuration() + " ===");
+        System.out.println("=== convertFieldsToString结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
     }
 
     private Issue getByIdAndProjectId(Long id, Long projectId) {
