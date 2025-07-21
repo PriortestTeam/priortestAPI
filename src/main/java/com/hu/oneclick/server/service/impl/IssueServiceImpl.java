@@ -470,10 +470,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== 计算得到duration: " + durationHours + " 小时 ===");
         
         issue.setDuration(durationHours);
-    }eateTime() != null) {
-            Date endTime;
-            if (issue.getCloseDate() != null) {
-                // 如果有关闭时间，使用关闭时间
+    }
                 endTime = issue.getCloseDate();
             } else {
                 // 如果没有关闭时间，使用当前时间
