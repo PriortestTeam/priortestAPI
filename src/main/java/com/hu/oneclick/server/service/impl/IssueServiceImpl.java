@@ -761,4 +761,44 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
         return localCalendar.getTime();
     }
+
+    @Override
+    public Issue clone(Long id) {
+        Issue issue = this.getById(id);
+        if (issue == null) {
+            throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
+        }
+
+        // 克隆Issue对象
+        Issue clonedIssue = new Issue();
+        BeanUtils.copyProperties(issue, clonedIssue);
+
+        // 重置ID和基础时间字段
+        clonedIssue.setId(null);
+        clonedIssue.setCreateTime(null);  // 让数据库自动设置为当前UTC时间
+        clonedIssue.setUpdateTime(null);  // 让数据库自动设置为当前UTC时间
+
+        // 获取用户时区信息
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== Clone操作 - 用户时区: " + userTimezone + " ===");
+
+        // 对业务时间字段进行时区转换（如果有的话）
+        // 注意：clone时业务时间字段可能需要保持原值或清空，根据业务需求决定
+        if (clonedIssue.getPlanFixDate() != null && userTimezone != null) {
+            // 如果计划修复时间需要保持，则进行时区转换
+            // 原Issue中的时间是UTC，需要转换为用户本地时间再转回UTC（确保时区一致性）
+            convertDatesToUTC(clonedIssue, userTimezone);
+        }
+
+        // 清空可能不需要复制的时间字段
+        clonedIssue.setCloseDate(null);  // 克隆的缺陷通常不应该有关闭时间
+
+        // 保存克隆的Issue
+        this.save(clonedIssue);
+
+        // // 转换字段格式，确保返回给前端的是字符串格式
+        convertFieldsToString(clonedIssue);
+
+        return clonedIssue;
+    }
 }
