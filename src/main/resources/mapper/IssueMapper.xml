@@ -32,13 +32,14 @@
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="duration" column="duration" jdbcType="INTEGER"/>
     </resultMap>
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="IssueMap">
         select
         id, project_id, user_id, title, status, planned_release_date, close_date,
         priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, 
-        issue_version, introduced_version, is_legacy, fix_version, severity, test_device, create_time, update_time, description
+        issue_version, introduced_version, is_legacy, fix_version, severity, test_device, create_time, update_time, description, duration
         from oneclick.issue
         <where>
             <if test="id != null">
@@ -131,7 +132,8 @@
                test_device,
                create_time,
                update_time,
-               description
+               description,
+               duration
         from oneclick.issue
         where id = #{id}
     </select>
@@ -201,6 +203,9 @@
             </if>
             <if test="description != null and description != ''">
                 description = #{description},
+            </if>
+            <if test="duration != null">
+                duration = #{duration},
             </if>
             update_time =NOW()
         </set>
