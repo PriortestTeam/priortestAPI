@@ -95,6 +95,50 @@ private Date convertLocalTimeToUTC(Date localTime, TimeZone userTZ) {
 /**
  * 将UTC时间转换为用户本地时间
  */
+private void convertUTCToLocalTime(Issue issue, String userTimezone) {
+    if (userTimezone == null || userTimezone.isEmpty()) {
+        System.out.println("=== 没有用户时区信息，跳过本地时间转换 ===");
+        return;
+    }
+
+    System.out.println("=== 开始UTC到本地时间转换，用户时区: " + userTimezone + " ===");
+
+    try {
+        TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
+
+        // 转换标准时间字段
+        if (issue.getCreateTime() != null) {
+            Date originalTime = issue.getCreateTime();
+            Date localTime = convertUTCToLocalTime(originalTime, userTZ);
+            issue.setCreateTime(localTime);
+            System.out.println("=== createTime转换: " + originalTime + " -> " + localTime + " ===");
+        }
+
+        if (issue.getCloseDate() != null) {
+            Date originalTime = issue.getCloseDate();
+            Date localTime = convertUTCToLocalTime(originalTime, userTZ);
+            issue.setCloseDate(localTime);
+            System.out.println("=== closeDate转换: " + originalTime + " -> " + localTime + " ===");
+        }
+
+        if (issue.getPlanFixDate() != null) {
+            Date originalTime = issue.getPlanFixDate();
+            Date localTime = convertUTCToLocalTime(originalTime, userTZ);
+            issue.setPlanFixDate(localTime);
+            System.out.println("=== planFixDate转换: " + originalTime + " -> " + localTime + " ===");
+        }
+
+        // 转换 attributes 中的日期字段
+        convertAttributesUTCToLocalTime(issue, userTZ);
+
+    } catch (Exception e) {
+        System.out.println("=== 本地时间转换失败: " + e.getMessage() + " ===");
+    }
+}
+
+/**
+ * 将UTC时间转换为用户本地时间（单个时间对象）
+ */
 private Date convertUTCToLocalTime(Date utcTime, TimeZone userTZ) {
     Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
     utcCalendar.setTime(utcTime);
@@ -104,6 +148,48 @@ private Date convertUTCToLocalTime(Date utcTime, TimeZone userTZ) {
 
     return localCalendar.getTime();
 }
+
+/**
+ * 转换 attributes 中的日期字段从UTC到用户本地时间
+ */
+private void convertAttributesUTCToLocalTime(Issue issue, TimeZone userTZ) {
+    if (issue.getIssueExpand() == null || issue.getIssueExpand().isEmpty()) {
+        return;
+    }
+
+    try {
+        JSONObject issueExpandJson = JSONUtil.parseObj(issue.getIssueExpand());
+        JSONArray attributes = issueExpandJson.getJSONArray("attributes");
+
+        if (attributes != null && !attributes.isEmpty()) {
+            for (Object attributeObj : attributes) {
+                if (attributeObj instanceof JSONObject) {
+                    JSONObject attribute = (JSONObject) attributeObj;
+                    String fieldType = attribute.getStr("fieldType");
+                    String valueData = attribute.getStr("valueData");
+
+                    if ("date".equals(fieldType) && valueData != null && !valueData.isEmpty()) {
+                        try {
+                            Date utcTime = cn.hutool.core.date.DateUtil.parse(valueData);
+                            Date localTime = convertUTCToLocalTime(utcTime, userTZ);
+                            String localTimeStr = cn.hutool.core.date.DateUtil.format(localTime, "yyyy-MM-dd HH:mm:ss");
+                            attribute.set("valueData", localTimeStr);
+                            
+                            System.out.println("=== attributes日期字段转换: " + valueData + " -> " + localTimeStr + " ===");
+                        } catch (Exception e) {
+                            System.out.println("=== attributes日期字段转换失败: " + e.getMessage() + " ===");
+                        }
+                    }
+                }
+            }
+            
+            // 更新 issueExpand
+            issue.setIssueExpand(issueExpandJson.toString());
+        }
+    } catch (Exception e) {
+        System.out.println("=== attributes时间转换失败: " + e.getMessage() + " ===");
+    }
+}
 ```
 
 ## 已实现的API
@@ -112,8 +198,8 @@ private Date convertUTCToLocalTime(Date utcTime, TimeZone userTZ) {
 - ✅ `/api/issue/save` - 新增时转换时区
 - ✅ `/api/issue/update` - 更新时转换时区  
 - ✅ `/api/issue/list` - 查询时计算duration（基于UTC）
+- ✅ `/api/issue/info/{id}` - 查询时转换UTC为用户本地时间
 - ❌ `/api/issue/clone` - 仅复制数据，不涉及时区
-- ❌ `/api/issue/info/{id}` - 仅查询详情，不做时区转换
 
 ## 在其他模块中应用时区转换
 
@@ -134,20 +220,60 @@ public void saveEntity(YourEntity entity) {
     // 保存到数据库
     this.baseMapper.insert(entity);
 }
+
+public YourEntity updateEntity(YourEntity entity) {
+    String userTimezone = TimezoneContext.getUserTimezone();
+    
+    // 更新操作：转换用户提交的时间字段到UTC
+    convertDatesToUTC(entity, userTimezone);
+    
+    // 更新数据库
+    this.baseMapper.updateById(entity);
+    
+    // 转换字段格式，确保返回给前端的是字符串格式
+    convertFieldsToString(entity);
+    
+    return entity;
+}
 ```
 
-### 步骤3: 在查询操作中处理时区（如果需要）
+### 步骤3: 在查询操作中处理时区
 ```java
 public List<YourEntity> queryEntities() {
     List<YourEntity> entities = this.baseMapper.selectList(null);
     
-    // 如果需要将UTC时间转换回用户本地时间
+    // 计算duration等业务逻辑（基于UTC时间）
+    entities.forEach(entity -> {
+        calculateDuration(entity);
+    });
+    
+    // 将UTC时间转换为用户本地时间返回给前端
     String userTimezone = TimezoneContext.getUserTimezone();
     entities.forEach(entity -> {
         convertUTCToLocalTime(entity, userTimezone);
     });
     
     return entities;
+}
+
+public YourEntity getEntityById(Long id) {
+    YourEntity entity = this.baseMapper.selectById(id);
+    
+    if (entity == null) {
+        throw new BaseException("记录不存在");
+    }
+    
+    // 计算业务字段（基于UTC时间）
+    calculateDuration(entity);
+    
+    // 获取用户时区并转换UTC时间为用户本地时间
+    String userTimezone = TimezoneContext.getUserTimezone();
+    convertUTCToLocalTime(entity, userTimezone);
+    
+    // 转换字段格式，确保返回给前端的是字符串格式
+    convertFieldsToString(entity);
+    
+    return entity;
 }
 ```
 
@@ -226,3 +352,4 @@ private void convertDatesToUTC(YourEntity entity, String userTimezone) {
 
 ## 版本历史
 - v1.0 - 2025-07-21: 初始版本，实现Issue模块时区转换功能
+- v1.1 - 2025-07-21: 完善查询时时区转换功能，支持Issue详情查询和attributes中日期字段转换
