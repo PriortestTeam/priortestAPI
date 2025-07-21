@@ -174,6 +174,8 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
      * 由于使用了 @JsonProperty 注解，JSON 序列化会自动调用字符串格式的 getter 方法
      */
     private void convertFieldsToString(Issue issue) {
+        // 确保时间格式的一致性（如果需要的话，可以在这里进行时区转换）
+
         // 使用 @JsonProperty 注解后，Jackson 会自动序列化为字符串格式
         // 这里只需要确保字段值不为 null
         if (issue.getIsLegacy() == null) {
