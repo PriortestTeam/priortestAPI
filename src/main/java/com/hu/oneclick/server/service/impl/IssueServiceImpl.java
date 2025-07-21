@@ -199,6 +199,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         if (issue == null) {
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
         }
+
+        // 计算duration
+        calculateDuration(issue);
+
         return issue;
     }
 
@@ -416,5 +420,22 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         dataList.forEach(this::convertFieldsToString);
 
         return PageInfo.of(dataList);
+    }
+
+    /**
+     * 计算缺陷的存活时长（duration），以小时为单位
+     *
+     * @param issue 缺陷对象
+     */
+    private void calculateDuration(Issue issue) {
+        if (issue.getCreateDate() != null) {
+            Date createDate = issue.getCreateDate();
+            Date now = new Date();
+            long durationMillis = now.getTime() - createDate.getTime();
+            double durationHours = (double) durationMillis / (60 * 60 * 1000);
+            issue.setDuration(durationHours); // 设置duration字段，假设Issue类中存在duration字段
+        } else {
+            issue.setDuration(null); // 如果创建时间为空，则duration也为空
+        }
     }
 }
