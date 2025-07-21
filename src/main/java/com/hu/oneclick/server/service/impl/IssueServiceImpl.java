@@ -174,16 +174,17 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
      * 由于使用了 @JsonProperty 注解，JSON 序列化会自动调用字符串格式的 getter 方法
      */
     private void convertFieldsToString(Issue issue) {
-        // 确保时间格式的一致性（如果需要的话，可以在这里进行时区转换）
+        System.out.println("=== convertFieldsToString - Issue ID: " + issue.getId() + ", Duration进入前: " + issue.getDuration() + " ===");
 
-        // 使用 @JsonProperty 注解后，Jackson 会自动序列化为字符串格式
-        // 这里只需要确保字段值不为 null
+        // 确保 isLegacy 和 foundAfterRelease 不为 null
         if (issue.getIsLegacy() == null) {
             issue.setIsLegacy(0);
         }
         if (issue.getFoundAfterRelease() == null) {
             issue.setFoundAfterRelease(0);
         }
+
+        System.out.println("=== convertFieldsToString - Issue ID: " + issue.getId() + ", Duration转换后: " + issue.getDuration() + " ===");
     }
 
     private Issue getByIdAndProjectId(Long id, Long projectId) {
