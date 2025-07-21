@@ -441,7 +441,36 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
      * 计算duration - 存活时长(小时)
      */
     private void calculateDuration(Issue issue) {
-        if (issue.getCreateTime() != null) {
+        System.out.println("=== Duration计算 - Issue ID: " + issue.getId() + " ===");
+        
+        if (issue.getCreateTime() == null) {
+            System.out.println("=== createTime为null，无法计算duration ===");
+            issue.setDuration(null);
+            return;
+        }
+        
+        Date endTime;
+        if (issue.getCloseDate() != null) {
+            // 如果有关闭时间，使用关闭时间
+            endTime = issue.getCloseDate();
+            System.out.println("=== 使用关闭时间计算duration ===");
+        } else {
+            // 如果没有关闭时间，使用当前时间
+            endTime = new Date();
+            System.out.println("=== 使用当前时间计算duration ===");
+        }
+        
+        // 计算时间差（毫秒）
+        long diffInMillis = endTime.getTime() - issue.getCreateTime().getTime();
+        // 转换为小时
+        int durationHours = (int) (diffInMillis / (1000 * 60 * 60));
+        
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== endTime: " + endTime + " ===");
+        System.out.println("=== 计算得到duration: " + durationHours + " 小时 ===");
+        
+        issue.setDuration(durationHours);
+    }eateTime() != null) {
             Date endTime;
             if (issue.getCloseDate() != null) {
                 // 如果有关闭时间，使用关闭时间
