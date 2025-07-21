@@ -574,7 +574,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         // 处理数据库中存储的时间
         Date adjustedCreateTime = issue.getCreateTime();
 
-        // 如果数据库中存储的是用户本地时区时间，需要转换为UTC
+        // 如果数据库中存储的时间是用户本地时区时间，需要转换为UTC
         if (userTimezone != null && !userTimezone.isEmpty()) {
             try {
                 TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
