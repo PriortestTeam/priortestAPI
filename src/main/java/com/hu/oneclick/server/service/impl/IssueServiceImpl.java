@@ -1,3 +1,6 @@
+The code adds timezone conversion and duration calculation to the /api/issue/info/{id} API.
+```
+```replit_final_file
 package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
@@ -305,8 +308,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
         }
 
-        // 计算duration
-        calculateDuration(issue);
+        // 获取用户时区信息
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== Issue详情查询 - 用户时区: " + userTimezone + " ===");
+
+        // 计算duration（基于UTC时间）
+        calculateDuration(issue, userTimezone);
+
+        // 转换字段格式，确保返回给前端的是字符串格式
+        convertFieldsToString(issue);
 
         return issue;
     }
