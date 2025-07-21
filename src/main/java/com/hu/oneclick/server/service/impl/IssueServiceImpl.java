@@ -428,12 +428,13 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
      * @param issue 缺陷对象
      */
     private void calculateDuration(Issue issue) {
-        if (issue.getCreateDate() != null) {
-            Date createDate = issue.getCreateDate();
+        if (issue.getCreateTime() != null) {
+            Date createTime = issue.getCreateTime();
             Date now = new Date();
-            long durationMillis = now.getTime() - createDate.getTime();
+            long durationMillis = now.getTime() - createTime.getTime();
             double durationHours = (double) durationMillis / (60 * 60 * 1000);
-            issue.setDuration(durationHours); // 设置duration字段，假设Issue类中存在duration字段
+            // 将小时数向上取整转换为Integer类型
+            issue.setDuration((int) Math.ceil(durationHours));
         } else {
             issue.setDuration(null); // 如果创建时间为空，则duration也为空
         }
