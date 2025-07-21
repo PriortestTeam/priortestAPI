@@ -178,7 +178,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== Duration进入convertFieldsToString前: " + issue.getDuration() + " ===");
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
         System.out.println("=== closeDate: " + issue.getCloseDate() + " ===");
-        
+
         // 在convertFieldsToString中调用calculateDuration
         System.out.println("=== 准备调用calculateDuration方法 ===");
         calculateDuration(issue);
@@ -470,12 +470,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         Date endTime;
         if (issue.getCloseDate() != null) {
             // 如果有关闭时间，使用关闭时间
-            endTime = issue.getCloseDate();
             System.out.println("=== 使用关闭时间计算duration ===");
+            endTime = issue.getCloseDate();
         } else {
             // 如果没有关闭时间，使用当前时间
-            endTime = new Date();
             System.out.println("=== 使用当前时间计算duration ===");
+            endTime = new Date();
+            System.out.println("=== 当前系统时间: " + endTime + " ===");
+            System.out.println("=== 当前系统时间(毫秒): " + endTime.getTime() + " ===");
+            System.out.println("=== Issue创建时间(毫秒): " + issueCreateTime.getTime() + " ===");
         }
 
         // 计算时间差（毫秒）
