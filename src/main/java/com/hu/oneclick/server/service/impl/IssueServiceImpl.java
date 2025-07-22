@@ -800,4 +800,21 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
         return clonedIssue;
     }
+
+    public void clone(List<Long> ids) {
+        List<Issue> issueList = new ArrayList<>();
+        for (Long id : ids) {
+            Issue issue = baseMapper.selectById(id);
+            if (issue == null) {
+                throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
+            }
+            Issue issueClone = new Issue();
+            BeanUtil.copyProperties(issue, issueClone);
+            issueClone.setId(null);
+            issueClone.setTitle(CloneFormatUtil.getCloneTitle(issueClone.getTitle()));
+            issueList.add(issueClone);
+        }
+        // 批量克隆
+        this.saveBatch(issueList);
+    }
 }
