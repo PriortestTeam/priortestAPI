@@ -1,3 +1,4 @@
+
 # 时区转换功能使用指南
 
 ## 概述
@@ -173,7 +174,7 @@ private void convertAttributesUTCToLocalTime(Issue issue, TimeZone userTZ) {
                             Date localTime = convertUTCToLocalTime(utcTime, userTZ);
                             String localTimeStr = cn.hutool.core.date.DateUtil.format(localTime, "yyyy-MM-dd HH:mm:ss");
                             attribute.set("valueData", localTimeStr);
-
+                            
                             System.out.println("=== attributes日期字段转换: " + valueData + " -> " + localTimeStr + " ===");
                         } catch (Exception e) {
                             System.out.println("=== attributes日期字段转换失败: " + e.getMessage() + " ===");
@@ -181,7 +182,7 @@ private void convertAttributesUTCToLocalTime(Issue issue, TimeZone userTZ) {
                     }
                 }
             }
-
+            
             // 更新 issueExpand
             issue.setIssueExpand(issueExpandJson.toString());
         }
@@ -190,33 +191,6 @@ private void convertAttributesUTCToLocalTime(Issue issue, TimeZone userTZ) {
     }
 }
 ```
-
-## API 端点时区处理
-
-### 1. 创建缺陷 (`POST /issue/add`)
-- **用户输入**: 本地时间 + 时区头信息
-- **处理**: 转换为UTC存储
-- **返回**: 用户本地时间格式
-
-### 2. 更新缺陷 (`PUT /issue/update`)
-- **用户输入**: 本地时间 + 时区头信息  
-- **处理**: 转换为UTC存储
-- **返回**: 用户本地时间格式
-
-### 3. 查询缺陷 (`GET /issue/info/{id}`)
-- **数据库**: UTC时间
-- **处理**: 转换为用户本地时间
-- **返回**: 用户本地时间格式
-
-### 4. 克隆缺陷 (`POST /issue/clone`)
-- **系统时间字段**:
-  - `createTime`: 使用当前UTC时间（新建时间）
-  - `updateTime`: 使用当前UTC时间（新建时间）
-- **业务时间字段**:
-  - `planFixDate`: 复制原数据（如果有用户时区则进行转换）
-  - `closeDate`: 清空（克隆的缺陷不应有关闭时间）
-- **自定义字段中的日期**: 复制原数据并进行时区转换
-- **返回**: 用户本地时间格式
 
 ## 已实现的API
 
@@ -239,26 +213,26 @@ String userTimezone = TimezoneContext.getUserTimezone();
 ```java
 public void saveEntity(YourEntity entity) {
     String userTimezone = TimezoneContext.getUserTimezone();
-
+    
     // 转换日期字段到UTC
     convertDatesToUTC(entity, userTimezone);
-
+    
     // 保存到数据库
     this.baseMapper.insert(entity);
 }
 
 public YourEntity updateEntity(YourEntity entity) {
     String userTimezone = TimezoneContext.getUserTimezone();
-
+    
     // 更新操作：转换用户提交的时间字段到UTC
     convertDatesToUTC(entity, userTimezone);
-
+    
     // 更新数据库
     this.baseMapper.updateById(entity);
-
+    
     // 转换字段格式，确保返回给前端的是字符串格式
     convertFieldsToString(entity);
-
+    
     return entity;
 }
 ```
@@ -267,38 +241,38 @@ public YourEntity updateEntity(YourEntity entity) {
 ```java
 public List<YourEntity> queryEntities() {
     List<YourEntity> entities = this.baseMapper.selectList(null);
-
+    
     // 计算duration等业务逻辑（基于UTC时间）
     entities.forEach(entity -> {
         calculateDuration(entity);
     });
-
+    
     // 将UTC时间转换为用户本地时间返回给前端
     String userTimezone = TimezoneContext.getUserTimezone();
     entities.forEach(entity -> {
         convertUTCToLocalTime(entity, userTimezone);
     });
-
+    
     return entities;
 }
 
 public YourEntity getEntityById(Long id) {
     YourEntity entity = this.baseMapper.selectById(id);
-
+    
     if (entity == null) {
         throw new BaseException("记录不存在");
     }
-
+    
     // 计算业务字段（基于UTC时间）
     calculateDuration(entity);
-
+    
     // 获取用户时区并转换UTC时间为用户本地时间
     String userTimezone = TimezoneContext.getUserTimezone();
     convertUTCToLocalTime(entity, userTimezone);
-
+    
     // 转换字段格式，确保返回给前端的是字符串格式
     convertFieldsToString(entity);
-
+    
     return entity;
 }
 ```
@@ -318,7 +292,7 @@ fetch('/api/your-module/save', {
     body: JSON.stringify(data)
 });
 
-// 方式 2: 请求参数
+// 方式2: 请求参数
 fetch('/api/your-module/save?timezone=Asia/Shanghai', {
     method: 'POST',
     headers: {
@@ -363,13 +337,13 @@ private void convertDatesToUTC(YourEntity entity, String userTimezone) {
 
     try {
         TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
-
+        
         // 转换你的时间字段
         if (entity.getYourDateField() != null) {
             Date utcTime = convertLocalTimeToUTC(entity.getYourDateField(), userTZ);
             entity.setYourDateField(utcTime);
         }
-
+        
     } catch (Exception e) {
         System.out.println("=== UTC转换失败: " + e.getMessage() + " ===");
     }
