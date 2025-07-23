@@ -68,6 +68,14 @@ public class IssueSaveService {
         System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
         
+        // 在返回给前端之前，将UTC时间转换为用户本地时间
+        System.out.println("=== 开始转换UTC时间为用户本地时间，用于返回前端 ===");
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        System.out.println("=== 转换后返回给前端的时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        
         return issue;
     }
 
@@ -107,6 +115,14 @@ public class IssueSaveService {
 
         // 更新数据库后，再次打印确认
         System.out.println("=== 更新数据库后的时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+
+        // 在返回给前端之前，将UTC时间转换为用户本地时间
+        System.out.println("=== 开始转换UTC时间为用户本地时间，用于返回前端 ===");
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        System.out.println("=== 转换后返回给前端的时间信息 ===");
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
         System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
