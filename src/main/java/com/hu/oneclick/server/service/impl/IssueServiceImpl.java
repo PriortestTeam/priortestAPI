@@ -74,6 +74,9 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     @Resource
     private IssueTimeConverter issueTimeConverter;
 
+    @Resource
+    private IssueDurationCalculator issueDurationCalculator;
+
     // ThreadLocal存储用户时区信息
     private static final ThreadLocal<String> USER_TIMEZONE = new ThreadLocal<>();
 
@@ -140,10 +143,11 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
 
 
-        // 在convertFieldsToString中调用calculateDuration
-        System.out.println("=== 准备调用calculateDuration方法 ===");
-        calculateDuration(issue);
-        System.out.println("=== calculateDuration调用完成，Duration值: " + issue.getDuration() + " ===");
+        // 在convertFieldsToString中调用IssueDurationCalculator
+        System.out.println("=== 准备调用IssueDurationCalculator.calculateDuration方法 ===");
+        String userTimezone = TimezoneContext.getUserTimezone();
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== IssueDurationCalculator.calculateDuration调用完成，Duration值: " + issue.getDuration() + " ===");
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
@@ -173,7 +177,8 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
 
         // 计算duration（基于UTC时间）
-        calculateDuration(issue);
+        String userTimezone = TimezoneContext.getUserTimezone();
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
 
         // 获取用户时区并转换UTC时间为用户本地时间
         String userTimezone = TimezoneContext.getUserTimezone();
@@ -359,10 +364,11 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             }
 
             // 转换字段格式，确保返回给前端的是字符串格式
+            String userTimezone = TimezoneContext.getUserTimezone();
             pageData.forEach(issue -> {
                 System.out.println("=== 处理Issue ID: " + issue.getId() + " ===");
                 // 计算duration
-                calculateDuration(issue);
+                issueDurationCalculator.calculateDuration(issue, userTimezone);
                 // 转换字段格式
                 convertFieldsToString(issue);
             });
@@ -388,10 +394,11 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         List<Issue> dataList = this.list(param);
 
          // 转换字段格式，确保返回给前端的是字符串格式
+        String userTimezone = TimezoneContext.getUserTimezone();
         dataList.forEach(issue -> {
             System.out.println("=== 简单查询处理Issue ID: " + issue.getId() + " ===");
             // 计算duration
-            calculateDuration(issue);
+            issueDurationCalculator.calculateDuration(issue, userTimezone);
             // 转换字段格式
             convertFieldsToString(issue);
         });
@@ -399,86 +406,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         return PageInfo.of(dataList);
     }
 
-    /**
-     * 计算并设置Issue的duration（存活时长）
-     * 注意：应该使用Issue的业务创建时间，而不是数据库记录的创建时间
-     * 如果有关闭时间，使用关闭时间减去Issue创建时间
-     * 如果没有关闭时间，使用当前时间减去Issue创建时间
-     */
-    private void calculateDuration(Issue issue) {
-        calculateDuration(issue, null);
-    }
-
-    private void calculateDuration(Issue issue, String userTimezone) {
-        System.out.println("=== Duration计算开始 ===");
-        System.out.println("=== 用户时区: " + userTimezone + " ===");
-
-        if (issue.getCreateTime() == null) {
-            System.out.println("=== createTime为null，无法计算duration ===");
-            issue.setDuration(0);
-            return;
-        }
-
-        // 统一使用UTC时间进行计算，避免时区问题
-        Date endTime;
-       /* if (issue.getCloseDate() != null) { // removed closeDate references
-            endTime = issue.getCloseDate();
-            System.out.println("=== 使用closeDate作为结束时间 ===");
-        } else {*/
-            // 获取UTC当前时间
-            Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            endTime = utcCalendar.getTime();
-            System.out.println("=== 使用当前UTC时间计算duration ===");
-        //}
-
-        // 处理数据库中存储的时间
-        Date adjustedCreateTime = issue.getCreateTime();
-
-        // 如果数据库中存储的时间是用户本地时区时间，需要转换为UTC
-        if (userTimezone != null && !userTimezone.isEmpty()) {
-            try {
-                TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
-                TimeZone utcTZ = TimeZone.getTimeZone("UTC");
-
-                // 如果数据库存储的是用户本地时间，需要转换为UTC
-                // 这里假设数据库存储的是用户创建时的本地时间
-                Calendar userCalendar = Calendar.getInstance(userTZ);
-                userCalendar.setTime(issue.getCreateTime());
-
-                // 转换为UTC时间
-                long utcTime = userCalendar.getTimeInMillis() - userTZ.getOffset(userCalendar.getTimeInMillis()) + utcTZ.getOffset(userCalendar.getTimeInMillis());
-                adjustedCreateTime = new Date(utcTime);
-
-                System.out.println("=== 原始创建时间: " + issue.getCreateTime() + " ===");
-                System.out.println("=== 调整后UTC创建时间: " + adjustedCreateTime + " ===");
-            } catch (Exception e) {
-                System.out.println("=== 时区转换失败，使用原始时间: " + e.getMessage() + " ===");
-                adjustedCreateTime = issue.getCreateTime();
-            }
-        }
-
-        System.out.println("=== 当前UTC时间: " + endTime + " ===");
-        System.out.println("=== 当前UTC时间(毫秒): " + endTime.getTime() + " ===");
-        System.out.println("=== 最终创建时间: " + adjustedCreateTime + " ===");
-        System.out.println("=== 最终创建时间(毫秒): " + adjustedCreateTime.getTime() + " ===");
-
-        long diffInMillis = endTime.getTime() - adjustedCreateTime.getTime();
-        System.out.println("=== 时间差(毫秒): " + diffInMillis + " ===");
-
-        // 如果时间差为负数，说明可能存在时区问题或数据异常
-        if (diffInMillis < 0) {
-            System.out.println("=== 警告：时间差为负数，可能存在时区问题或数据异常 ===");
-            System.out.println("=== 将使用绝对值计算duration ===");
-            diffInMillis = Math.abs(diffInMillis);
-        }
-
-        // 转换为小时
-        int durationInHours = (int) (diffInMillis / (1000 * 60 * 60));
-        System.out.println("=== 计算得到duration: " + durationInHours + " 小时 ===");
-
-        issue.setDuration(durationInHours);
-        System.out.println("=== Duration计算完成 ===");
-    }
+    
 
      
 }
