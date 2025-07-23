@@ -10,7 +10,7 @@
         <!--        <result property="author" column="author" jdbcType="VARCHAR"/>-->
         <result property="issueStatus" column="issue_status" jdbcType="INTEGER"/>
         <!--        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>-->
-        <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
+        
         <!--        <result property="testCase" column="test_case" jdbcType="INTEGER"/>-->
         <!--        <result property="testCycle" column="test_cycle" jdbcType="INTEGER"/>-->
         <!--        <result property="feature" column="feature" jdbcType="INTEGER"/>-->
@@ -37,7 +37,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="IssueMap">
         select
-        id, project_id, user_id, title, status, planned_release_date, close_date,
+        id, project_id, user_id, title, status, planned_release_date,
         priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, 
         issue_version, introduced_version, is_legacy, fix_version, severity, test_device, create_time, update_time, description, duration
         from oneclick.issue
@@ -58,9 +58,7 @@
             <if test="status != null">
                 and status = #{status}
             </if>
-            <if test="closeDate != null">
-                and close_date = #{closeDate}
-            </if>
+            
 
             <if test="priority != null and priority != ''">
                 and priority = #{priority}
@@ -114,7 +112,6 @@
                user_id,
                title,
                status,
-               close_date,
                priority,
                env,
                browser,
@@ -151,9 +148,7 @@
                 status = #{status},
             </if>
 
-            <if test="closeDate != null">
-                close_date = #{closeDate},
-            </if>
+            
 
 
             <if test="priority != null and priority != ''">
