@@ -37,10 +37,15 @@ public class IssueTimeConverter {
 
             // 转换 planFixDate
             if (issue.getPlanFixDate() != null) {
+                System.out.println("=== 开始转换日期型字段 planFixDate ===");
                 Date originalTime = issue.getPlanFixDate();
+                System.out.println("=== planFixDate 字段原始时间: " + originalTime + " ===");
+                System.out.println("=== planFixDate 字段原始时间(毫秒): " + originalTime.getTime() + " ===");
                 Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
+                System.out.println("=== planFixDate 字段转换成UTC时间: " + utcTime + " ===");
+                System.out.println("=== planFixDate 字段转换成UTC时间(毫秒): " + utcTime.getTime() + " ===");
                 issue.setPlanFixDate(utcTime);
-                System.out.println("=== planFixDate转换: " + originalTime + " -> " + utcTime + " ===");
+                System.out.println("=== planFixDate 字段转换完成 ===");
             }
 
             // 转换 issueExpand 中 attributes 里的日期字段
@@ -173,12 +178,12 @@ public class IssueTimeConverter {
     private Date convertLocalTimeToUTC(Date localTime, TimeZone userTZ) {
         // 获取用户时区的偏移量（毫秒）
         long offsetMillis = userTZ.getOffset(localTime.getTime());
-        
+
         // 用户本地时间 - 时区偏移 = UTC时间
         long utcTimeMillis = localTime.getTime() - offsetMillis;
-        
+
         Date utcTime = new Date(utcTimeMillis);
-        
+
         System.out.println("=== convertLocalTimeToUTC详细转换 ===");
         System.out.println("=== 输入本地时间: " + localTime + " ===");
         System.out.println("=== 用户时区: " + userTZ.getID() + " ===");
@@ -187,7 +192,7 @@ public class IssueTimeConverter {
         System.out.println("=== 本地时间毫秒: " + localTime.getTime() + " ===");
         System.out.println("=== UTC时间毫秒: " + utcTimeMillis + " ===");
         System.out.println("=== 转换后UTC时间: " + utcTime + " ===");
-        
+
         return utcTime;
     }
 
