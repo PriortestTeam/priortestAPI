@@ -47,10 +47,6 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Date planFixDate;
 
-    @Schema(description = "关闭时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
-    private Date closeDate;
-
     @Schema(description = "关联测试用例")
     private String verifiedResult;
 
@@ -100,23 +96,23 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @Schema(description = "发布后发现")
     @JsonIgnore
     private Integer foundAfterRelease;
-    
+
     // 为前端提供字符串格式的getter方法
     @JsonProperty("isLegacy")
     public String getIsLegacyStr() {
         return isLegacy != null ? isLegacy.toString() : "0";
     }
-    
+
     @JsonProperty("foundAfterRelease")
     public String getFoundAfterReleaseStr() {
         return foundAfterRelease != null ? foundAfterRelease.toString() : "0";
     }
-    
+
     // 为前端提供字符串格式的setter方法
     public void setIsLegacyStr(String isLegacyStr) {
         this.isLegacy = (isLegacyStr != null && !isLegacyStr.isEmpty()) ? Integer.parseInt(isLegacyStr) : 0;
     }
-    
+
     public void setFoundAfterReleaseStr(String foundAfterReleaseStr) {
         this.foundAfterRelease = (foundAfterReleaseStr != null && !foundAfterReleaseStr.isEmpty()) ? Integer.parseInt(foundAfterReleaseStr) : 0;
     }

@@ -229,14 +229,6 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 System.out.println("=== createTime转换: " + originalTime + " -> " + utcTime + " ===");
             }
 
-            // 转换 closeDate
-            if (issue.getCloseDate() != null) {
-                Date originalTime = issue.getCloseDate();
-                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
-                issue.setCloseDate(utcTime);
-                System.out.println("=== closeDate转换: " + originalTime + " -> " + utcTime + " ===");
-            }
-
             // 转换 planFixDate
             if (issue.getPlanFixDate() != null) {
                 Date originalTime = issue.getPlanFixDate();
@@ -311,7 +303,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== convertFieldsToString开始 - Issue ID: " + issue.getId() + " ===");
         System.out.println("=== Duration进入convertFieldsToString前: " + issue.getDuration() + " ===");
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== closeDate: " + issue.getCloseDate() + " ===");
+
 
         // 在convertFieldsToString中调用calculateDuration
         System.out.println("=== 准备调用calculateDuration方法 ===");
@@ -364,7 +356,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
        issue.setVerifiedResult(issueStatusDto.getVerifiedResult());
         // 如果 status 是 关闭 时，设置 close_date 时间为此时
         if ("关闭".equals(issueStatusDto.getIssueStatus())) {
-            issue.setCloseDate(new Date());
+           // issue.setCloseDate(new Date()); // Removed closeDate
         }
        System.out.println(issue);
 
@@ -375,10 +367,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     public void clone(List<Long> ids) {
         // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
-        
+
         List<Issue> issueList = new ArrayList<>();
         Date currentTime = new Date();  // 当前时间作为克隆时间
-        
+
         for (Long id : ids) {
             Issue issue = baseMapper.selectById(id);
             if (issue == null) {
@@ -386,26 +378,26 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             }
             Issue issueClone = new Issue();
             BeanUtil.copyProperties(issue, issueClone);
-            
+
             // 重置关键字段
             issueClone.setId(null);  // 清空ID让数据库生成新ID
             issueClone.setTitle(CloneFormatUtil.getCloneTitle(issueClone.getTitle()));
-            
+
             // 设置新的时间字段
             issueClone.setCreateTime(currentTime);      // 新的创建时间
             issueClone.setUpdateTime(currentTime);      // 新的更新时间
-            issueClone.setCloseDate(null);              // 关闭时间设置为空
+           // issueClone.setCloseDate(null);              // 关闭时间设置为空  Removed closeDate
             issueClone.setPlanFixDate(currentTime);     // 计划修复时间设置为当前时间
-            
+
             // 设置状态为新建
             issueClone.setIssueStatus("新建");
-            
+
             // 转换时间到UTC
             convertDatesToUTC(issueClone, userTimezone);
-            
+
             issueList.add(issueClone);
         }
-        
+
         // 批量保存克隆的Issue
         this.saveBatch(issueList);
     }
@@ -628,15 +620,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
         // 统一使用UTC时间进行计算，避免时区问题
         Date endTime;
-        if (issue.getCloseDate() != null) {
+       /* if (issue.getCloseDate() != null) { // removed closeDate references
             endTime = issue.getCloseDate();
             System.out.println("=== 使用closeDate作为结束时间 ===");
-        } else {
+        } else {*/
             // 获取UTC当前时间
             Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             endTime = utcCalendar.getTime();
             System.out.println("=== 使用当前UTC时间计算duration ===");
-        }
+        //}
 
         // 处理数据库中存储的时间
         Date adjustedCreateTime = issue.getCreateTime();
@@ -707,14 +699,6 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 Date localTime = convertUTCToLocalTime(originalTime, userTZ);
                 issue.setCreateTime(localTime);
                 System.out.println("=== createTime转换: " + originalTime + " -> " + localTime + " ===");
-            }
-
-            // 转换 closeDate
-            if (issue.getCloseDate() != null) {
-                Date originalTime = issue.getCloseDate();
-                Date localTime = convertUTCToLocalTime(originalTime, userTZ);
-                issue.setCloseDate(localTime);
-                System.out.println("=== closeDate转换: " + originalTime + " -> " + localTime + " ===");
             }
 
             // 转换 planFixDate
