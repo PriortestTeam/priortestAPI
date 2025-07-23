@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.json.JSONArray;
@@ -176,17 +175,29 @@ public class IssueTimeConverter {
     }
 
     /**
-     * 将UTC时间转换为用户本地时间
+     * 将UTC时间转换为用户本地时间的工具方法
      */
     private Date convertUTCToLocalTime(Date utcTime, TimeZone userTZ) {
-        // 将UTC时间解释为UTC时区的时间，然后转换为用户时区
-        Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        utcCalendar.setTime(utcTime);
+        System.out.println("=== convertUTCToLocalTime开始 ===");
+        System.out.println("=== 输入UTC时间: " + utcTime + " ===");
+        System.out.println("=== 目标用户时区: " + userTZ.getID() + " ===");
 
-        // 获取用户本地时间
-        Calendar localCalendar = Calendar.getInstance(userTZ);
-        localCalendar.setTimeInMillis(utcCalendar.getTimeInMillis());
+        // 获取UTC时间的毫秒数
+        long utcMillis = utcTime.getTime();
+        System.out.println("=== UTC时间毫秒数: " + utcMillis + " ===");
 
-        return localCalendar.getTime();
+        // 获取用户时区相对于UTC的偏移量
+        int offsetInMillis = userTZ.getOffset(utcMillis);
+        System.out.println("=== 时区偏移毫秒数: " + offsetInMillis + " ===");
+        System.out.println("=== 时区偏移小时数: " + (offsetInMillis / (1000 * 60 * 60)) + " ===");
+
+        // 添加偏移量得到本地时间
+        long localMillis = utcMillis + offsetInMillis;
+        Date localTime = new Date(localMillis);
+
+        System.out.println("=== 转换后本地时间: " + localTime + " ===");
+        System.out.println("=== convertUTCToLocalTime结束 ===");
+
+        return localTime;
     }
 }
