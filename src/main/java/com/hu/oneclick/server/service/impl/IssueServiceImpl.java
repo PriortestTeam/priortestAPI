@@ -164,6 +164,13 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             issue.setFoundAfterRelease(0);
         }
 
+        System.out.println("=== ========== 返回给前端用户的最终时间信息 ========== ===");
+        System.out.println("=== Issue ID: " + issue.getId() + " ===");
+        System.out.println("=== 返回给前端的createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== 返回给前端的updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== 返回给前端的planFixDate: " + issue.getPlanFixDate() + " ===");
+        System.out.println("=== 返回给前端的duration: " + issue.getDuration() + " 小时 ===");
+        System.out.println("=== 用户时区: " + TimezoneContext.getUserTimezone() + " ===");
         System.out.println("=== convertFieldsToString结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
     }
 

@@ -72,13 +72,15 @@ public class IssueDurationCalculator {
             }
         }
 
+        System.out.println("=== ========== Duration计算公式详情 ========== ===");
+        System.out.println("=== 计算公式: duration = (当前时间 - 创建时间) / (1000 * 60 * 60) ===");
         System.out.println("=== 当前UTC时间: " + endTime + " ===");
         System.out.println("=== 当前UTC时间(毫秒): " + endTime.getTime() + " ===");
         System.out.println("=== 最终创建时间: " + adjustedCreateTime + " ===");
         System.out.println("=== 最终创建时间(毫秒): " + adjustedCreateTime.getTime() + " ===");
 
         long diffInMillis = endTime.getTime() - adjustedCreateTime.getTime();
-        System.out.println("=== 时间差(毫秒): " + diffInMillis + " ===");
+        System.out.println("=== 时间差计算: " + endTime.getTime() + " - " + adjustedCreateTime.getTime() + " = " + diffInMillis + " 毫秒 ===");
 
         // 如果时间差为负数，说明可能存在时区问题或数据异常
         if (diffInMillis < 0) {
@@ -87,11 +89,29 @@ public class IssueDurationCalculator {
             diffInMillis = Math.abs(diffInMillis);
         }
 
-        // 转换为小时
-        int durationInHours = (int) (diffInMillis / (1000 * 60 * 60));
-        System.out.println("=== 计算得到duration: " + durationInHours + " 小时 ===");
+        // 转换为小时的详细计算过程
+        double durationInSeconds = diffInMillis / 1000.0;
+        double durationInMinutes = durationInSeconds / 60.0;
+        double durationInHoursDouble = durationInMinutes / 60.0;
+        int durationInHours = (int) durationInHoursDouble;
+        
+        System.out.println("=== Duration计算步骤: ===");
+        System.out.println("=== 1. 毫秒转秒: " + diffInMillis + " / 1000 = " + durationInSeconds + " 秒 ===");
+        System.out.println("=== 2. 秒转分钟: " + durationInSeconds + " / 60 = " + durationInMinutes + " 分钟 ===");
+        System.out.println("=== 3. 分钟转小时: " + durationInMinutes + " / 60 = " + durationInHoursDouble + " 小时 ===");
+        System.out.println("=== 4. 取整数部分: " + durationInHoursDouble + " -> " + durationInHours + " 小时 ===");
+        System.out.println("=== 最终Duration结果: " + durationInHours + " 小时 ===");
 
         issue.setDuration(durationInHours);
+        
+        System.out.println("=== ========== Duration时间信息汇总 ========== ===");
+        System.out.println("=== Issue ID: " + issue.getId() + " ===");
+        System.out.println("=== 创建时间(原始): " + issue.getCreateTime() + " ===");
+        System.out.println("=== 创建时间(调整后): " + adjustedCreateTime + " ===");
+        System.out.println("=== 当前时间: " + endTime + " ===");
+        System.out.println("=== 存活时长: " + durationInHours + " 小时 ===");
+        System.out.println("=== 存活时长: " + durationInMinutes + " 分钟 ===");
+        System.out.println("=== 存活时长: " + durationInSeconds + " 秒 ===");
         System.out.println("=== IssueDurationCalculator - Duration计算完成 ===");
     }
 
