@@ -125,13 +125,92 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
         Issue issue = issueSaveService.updateExistingIssue(dto);
 
+        // 重新查询完整的Issue对象，确保包含所有字段（包括createTime和createUserId）
+        Issue completeIssue = this.getByIdAndProjectId(issue.getId(), issue.getProjectId());
+        if (completeIssue != null) {
+            // 将更新后的字段值复制到完整对象中
+            completeIssue.setTitle(issue.getTitle());
+            completeIssue.setPlanFixDate(issue.getPlanFixDate());
+            completeIssue.setVerifiedResult(issue.getVerifiedResult());
+            completeIssue.setPriority(issue.getPriority());
+            completeIssue.setEnv(issue.getEnv());
+            completeIssue.setBrowser(issue.getBrowser());
+            completeIssue.setPlatform(issue.getPlatform());
+            completeIssue.setIssueVersion(issue.getIssueVersion());
+            completeIssue.setCaseCategory(issue.getCaseCategory());
+            completeIssue.setDescription(issue.getDescription());
+            completeIssue.setIssueStatus(issue.getIssueStatus());
+            completeIssue.setModule(issue.getModule());
+            completeIssue.setReportTo(issue.getReportTo());
+            completeIssue.setIssueExpand(issue.getIssueExpand());
+            completeIssue.setFixVersion(issue.getFixVersion());
+            completeIssue.setIntroducedVersion(issue.getIntroducedVersion());
+            completeIssue.setIsLegacy(issue.getIsLegacy());
+            completeIssue.setFoundAfterRelease(issue.getFoundAfterRelease());
+            completeIssue.setSeverity(issue.getSeverity());
+            completeIssue.setTestDevice(issue.getTestDevice());
+            completeIssue.setRuncaseId(issue.getRuncaseId());
+            completeIssue.setFixCategory(issue.getFixCategory());
+            completeIssue.setFrequency(issue.getFrequency());
+            completeIssue.setIssueSource(issue.getIssueSource());
+            completeIssue.setUserImpact(issue.getUserImpact());
+            completeIssue.setRootCause(issue.getRootCause());
+            completeIssue.setRootcauseCategory(issue.getRootcauseCategory());
+            completeIssue.setUpdateTime(issue.getUpdateTime());
+            completeIssue.setUpdateUserId(issue.getUpdateUserId());
+            
+            issue = completeIssue;
+        }
+
         // 转换字段格式，确保返回给前端的是字符串格式
-        convertFieldsToString(issue);
+        convertFieldsToStringForEdit(issue);
 
         return issue;
     }
 
     
+
+    /**
+     * 专门用于编辑操作的字段转换方法，避免重复时间转换
+     * 因为在IssueSaveService中已经进行了时间转换
+     */
+    private void convertFieldsToStringForEdit(Issue issue) {
+        System.out.println("=== convertFieldsToStringForEdit开始 - Issue ID: " + issue.getId() + " ===");
+        System.out.println("=== Duration进入convertFieldsToStringForEdit前: " + issue.getDuration() + " ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== convertFieldsToStringForEdit中获取的用户时区: " + userTimezone + " ===");
+
+        // 计算duration（基于UTC时间）
+        System.out.println("=== 准备调用IssueDurationCalculator.calculateDuration方法 ===");
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== IssueDurationCalculator.calculateDuration调用完成，Duration值: " + issue.getDuration() + " ===");
+
+        // 注意：这里不再调用时间转换，因为在IssueSaveService中已经转换过了
+        System.out.println("=== 跳过时间转换，因为在IssueSaveService中已经转换 ===");
+
+        // 确保 isLegacy 和 foundAfterRelease 不为null
+        if (issue.getIsLegacy() == null) {
+            issue.setIsLegacy(0);
+        }
+        if (issue.getFoundAfterRelease() == null) {
+            issue.setFoundAfterRelease(0);
+        }
+
+        System.out.println("=== ========== 返回给前端用户的最终时间信息（编辑操作） ========== ===");
+        System.out.println("=== Issue ID: " + issue.getId() + " ===");
+        System.out.println("=== 返回给前端的createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== 返回给前端的updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== 返回给前端的planFixDate: " + issue.getPlanFixDate() + " ===");
+        System.out.println("=== 返回给前端的duration: " + issue.getDuration() + " 小时 ===");
+        System.out.println("=== 返回给前端的createUserId: " + issue.getCreateUserId() + " ===");
+        System.out.println("=== 返回给前端的updateUserId: " + issue.getUpdateUserId() + " ===");
+        System.out.println("=== 用户时区: " + TimezoneContext.getUserTimezone() + " ===");
+        System.out.println("=== convertFieldsToStringForEdit结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
+    }
 
     /**
      * 转换字段格式：确保数据格式正确
