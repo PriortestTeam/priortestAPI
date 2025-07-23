@@ -51,7 +51,23 @@ public class IssueSaveService {
         // 处理版本相关字段
         processVersionFields(issue, dto);
 
+        // 在插入数据库之前，打印最终的时间值
+        System.out.println("=== 即将插入数据库的时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== createTime (毫秒): " + (issue.getCreateTime() != null ? issue.getCreateTime().getTime() : "null") + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== updateTime (毫秒): " + (issue.getUpdateTime() != null ? issue.getUpdateTime().getTime() : "null") + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        System.out.println("=== planFixDate (毫秒): " + (issue.getPlanFixDate() != null ? issue.getPlanFixDate().getTime() : "null") + " ===");
+        
         issueDao.insert(issue);
+        
+        // 插入数据库后，再次打印确认
+        System.out.println("=== 插入数据库后的时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        
         return issue;
     }
 
@@ -78,7 +94,22 @@ public class IssueSaveService {
         // 处理版本相关字段
         processVersionFields(issue, dto);
 
+        // 在更新数据库之前，打印最终的时间值
+        System.out.println("=== 即将更新数据库的时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== createTime (毫秒): " + (issue.getCreateTime() != null ? issue.getCreateTime().getTime() : "null") + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== updateTime (毫秒): " + (issue.getUpdateTime() != null ? issue.getUpdateTime().getTime() : "null") + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        System.out.println("=== planFixDate (毫秒): " + (issue.getPlanFixDate() != null ? issue.getPlanFixDate().getTime() : "null") + " ===");
+
         issueDao.updateById(issue);
+
+        // 更新数据库后，再次打印确认
+        System.out.println("=== 更新数据库后的时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
 
         return issue;
     }
@@ -167,6 +198,15 @@ public class IssueSaveService {
 
         // 批量保存克隆的Issue
         for (Issue issue : issueList) {
+            System.out.println("=== 克隆Issue插入前的时间信息 ===");
+            System.out.println("=== Issue ID: " + issue.getId() + " ===");
+            System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+            System.out.println("=== createTime (毫秒): " + (issue.getCreateTime() != null ? issue.getCreateTime().getTime() : "null") + " ===");
+            System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+            System.out.println("=== updateTime (毫秒): " + (issue.getUpdateTime() != null ? issue.getUpdateTime().getTime() : "null") + " ===");
+            System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+            System.out.println("=== planFixDate (毫秒): " + (issue.getPlanFixDate() != null ? issue.getPlanFixDate().getTime() : "null") + " ===");
+            
             issueDao.insert(issue);
         }
     }
