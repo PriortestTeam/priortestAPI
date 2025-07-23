@@ -171,15 +171,24 @@ public class IssueTimeConverter {
      * 将用户本地时间转换为UTC时间
      */
     private Date convertLocalTimeToUTC(Date localTime, TimeZone userTZ) {
-        // 将本地时间解释为用户时区的时间，然后转换为UTC
-        Calendar localCalendar = Calendar.getInstance(userTZ);
-        localCalendar.setTime(localTime);
-
-        // 获取UTC时间
-        Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        utcCalendar.setTimeInMillis(localCalendar.getTimeInMillis());
-
-        return utcCalendar.getTime();
+        // 获取用户时区的偏移量（毫秒）
+        long offsetMillis = userTZ.getOffset(localTime.getTime());
+        
+        // 用户本地时间 - 时区偏移 = UTC时间
+        long utcTimeMillis = localTime.getTime() - offsetMillis;
+        
+        Date utcTime = new Date(utcTimeMillis);
+        
+        System.out.println("=== convertLocalTimeToUTC详细转换 ===");
+        System.out.println("=== 输入本地时间: " + localTime + " ===");
+        System.out.println("=== 用户时区: " + userTZ.getID() + " ===");
+        System.out.println("=== 时区偏移毫秒: " + offsetMillis + " ===");
+        System.out.println("=== 时区偏移小时: " + (offsetMillis / (1000 * 60 * 60)) + " ===");
+        System.out.println("=== 本地时间毫秒: " + localTime.getTime() + " ===");
+        System.out.println("=== UTC时间毫秒: " + utcTimeMillis + " ===");
+        System.out.println("=== 转换后UTC时间: " + utcTime + " ===");
+        
+        return utcTime;
     }
 
     /**

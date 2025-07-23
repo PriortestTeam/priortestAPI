@@ -20,7 +20,7 @@ spring:
                         threadPriority: 5
                         threadsInheritContextClassLoaderOfInitializingThread: true
     jackson:
-        time-zone: GMT+8
+        time-zone: UTC
         date-format: yyyy-MM-dd HH:mm:ss
 
 #  devtools:
