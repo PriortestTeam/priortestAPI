@@ -176,12 +176,13 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
         }
 
-        // 计算duration（基于UTC时间）
+        // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
+        
+        // 计算duration（基于UTC时间）
         issueDurationCalculator.calculateDuration(issue, userTimezone);
 
-        // 获取用户时区并转换UTC时间为用户本地时间
-        String userTimezone = TimezoneContext.getUserTimezone();
+        // 转换UTC时间为用户本地时间
         issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
 
         // 转换字段格式，确保返回给前端的是字符串格式
