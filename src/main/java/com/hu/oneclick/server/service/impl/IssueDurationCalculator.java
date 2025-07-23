@@ -46,38 +46,19 @@ public class IssueDurationCalculator {
         endTime = utcCalendar.getTime();
         System.out.println("=== 使用当前UTC时间计算duration ===");
 
-        // 处理数据库中存储的时间
+        // 数据库中存储的时间已经是UTC时间，直接使用，不需要再次转换
         Date adjustedCreateTime = issue.getCreateTime();
-
-        // 如果数据库中存储的时间是用户本地时区时间，需要转换为UTC
-        if (userTimezone != null && !userTimezone.isEmpty()) {
-            try {
-                TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
-                TimeZone utcTZ = TimeZone.getTimeZone("UTC");
-
-                // 如果数据库存储的是用户本地时间，需要转换为UTC
-                // 这里假设数据库存储的是用户创建时的本地时间
-                Calendar userCalendar = Calendar.getInstance(userTZ);
-                userCalendar.setTime(issue.getCreateTime());
-
-                // 转换为UTC时间
-                long utcTime = userCalendar.getTimeInMillis() - userTZ.getOffset(userCalendar.getTimeInMillis()) + utcTZ.getOffset(userCalendar.getTimeInMillis());
-                adjustedCreateTime = new Date(utcTime);
-
-                System.out.println("=== 原始创建时间: " + issue.getCreateTime() + " ===");
-                System.out.println("=== 调整后UTC创建时间: " + adjustedCreateTime + " ===");
-            } catch (Exception e) {
-                System.out.println("=== 时区转换失败，使用原始时间: " + e.getMessage() + " ===");
-                adjustedCreateTime = issue.getCreateTime();
-            }
-        }
+        
+        System.out.println("=== 数据库中的createTime已经是UTC时间，直接使用: " + adjustedCreateTime + " ===");
+        System.out.println("=== 不进行重复的UTC转换 ===");
 
         System.out.println("=== ========== Duration计算公式详情 ========== ===");
-        System.out.println("=== 计算公式: duration = (当前时间 - 创建时间) / (1000 * 60 * 60) ===");
+        System.out.println("=== 计算公式: duration(小时) = (当前UTC时间 - 创建UTC时间) / (1000 * 60 * 60) ===");
+        System.out.println("=== 公式说明: 除以1000转换毫秒->秒，除以60转换秒->分钟，除以60转换分钟->小时 ===");
         System.out.println("=== 当前UTC时间: " + endTime + " ===");
         System.out.println("=== 当前UTC时间(毫秒): " + endTime.getTime() + " ===");
-        System.out.println("=== 最终创建时间: " + adjustedCreateTime + " ===");
-        System.out.println("=== 最终创建时间(毫秒): " + adjustedCreateTime.getTime() + " ===");
+        System.out.println("=== 数据库UTC创建时间: " + adjustedCreateTime + " ===");
+        System.out.println("=== 数据库UTC创建时间(毫秒): " + adjustedCreateTime.getTime() + " ===");
 
         long diffInMillis = endTime.getTime() - adjustedCreateTime.getTime();
         System.out.println("=== 时间差计算: " + endTime.getTime() + " - " + adjustedCreateTime.getTime() + " = " + diffInMillis + " 毫秒 ===");
@@ -160,27 +141,11 @@ public class IssueDurationCalculator {
      * 
      * @param issue Issue对象
      * @param endTime 结束时间
-     * @param userTimezone 用户时区
+     * @param userTimezone 用户时区（批量计算时不使用，因为数据库时间已是UTC）
      */
     private void calculateSingleIssueDuration(Issue issue, Date endTime, String userTimezone) {
+        // 数据库中存储的时间已经是UTC时间，直接使用
         Date adjustedCreateTime = issue.getCreateTime();
-
-        // 如果需要时区转换
-        if (userTimezone != null && !userTimezone.isEmpty()) {
-            try {
-                TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
-                TimeZone utcTZ = TimeZone.getTimeZone("UTC");
-
-                Calendar userCalendar = Calendar.getInstance(userTZ);
-                userCalendar.setTime(issue.getCreateTime());
-
-                long utcTime = userCalendar.getTimeInMillis() - userTZ.getOffset(userCalendar.getTimeInMillis()) + utcTZ.getOffset(userCalendar.getTimeInMillis());
-                adjustedCreateTime = new Date(utcTime);
-            } catch (Exception e) {
-                System.out.println("=== Issue ID " + issue.getId() + " 时区转换失败: " + e.getMessage() + " ===");
-                adjustedCreateTime = issue.getCreateTime();
-            }
-        }
 
         long diffInMillis = endTime.getTime() - adjustedCreateTime.getTime();
 
@@ -189,7 +154,7 @@ public class IssueDurationCalculator {
             diffInMillis = Math.abs(diffInMillis);
         }
 
-        // 转换为小时
+        // 转换为小时：除以(1000 * 60 * 60) = 除以3600000
         int durationInHours = (int) (diffInMillis / (1000 * 60 * 60));
         issue.setDuration(durationInHours);
     }
