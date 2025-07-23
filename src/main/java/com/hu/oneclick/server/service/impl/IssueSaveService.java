@@ -44,8 +44,8 @@ public class IssueSaveService {
         // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
 
-        // 转换日期到UTC
-        issueTimeConverter.convertDatesToUTC(issue, userTimezone);
+        // 转换时间到UTC - 已注释，测试框架自动时区处理
+        // issueTimeConverter.convertDatesToUTC(issue, userTimezone);
 
         // 处理自定义字段数据
         processCustomFields(issue, dto);
@@ -103,8 +103,8 @@ public class IssueSaveService {
         // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
 
-        // 转换日期到UTC
-        issueTimeConverter.convertDatesToUTC(issue, userTimezone);
+        // 转换时间到UTC - 已注释，测试框架自动时区处理
+        // issueTimeConverter.convertDatesToUTC(issue, userTimezone);
 
         // 处理自定义字段数据
         processCustomFields(issue, dto);
@@ -218,8 +218,8 @@ public class IssueSaveService {
             // 设置状态为新建
             issueClone.setIssueStatus("新建");
 
-            // 转换时间到UTC
-            issueTimeConverter.convertDatesToUTC(issueClone, userTimezone);
+            // 转换时间到UTC - 已注释，测试框架自动时区处理
+            // issueTimeConverter.convertDatesToUTC(issueClone, userTimezone);
 
             issueList.add(issueClone);
         }
