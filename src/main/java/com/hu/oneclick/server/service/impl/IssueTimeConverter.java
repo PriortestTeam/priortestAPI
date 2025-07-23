@@ -14,37 +14,6 @@ import java.util.TimeZone;
 public class IssueTimeConverter {
 
     /**
-     * 将用户本地时间转换为UTC时间
-     */
-    private Date convertLocalTimeToUTC(Date localTime, TimeZone userTimeZone) {
-        System.out.println("=== convertLocalTimeToUTC开始 ===");
-        System.out.println("=== 输入本地时间: " + localTime + " ===");
-        System.out.println("=== 用户时区: " + userTimeZone.getID() + " ===");
-        
-        if (localTime == null) {
-            System.out.println("=== 输入时间为null，返回null ===");
-            return null;
-        }
-        
-        long localTimeMillis = localTime.getTime();
-        System.out.println("=== 本地时间毫秒数: " + localTimeMillis + " ===");
-        
-        // 获取时区偏移量（包括夏令时）
-        int offsetMillis = userTimeZone.getOffset(localTimeMillis);
-        System.out.println("=== 时区偏移毫秒数: " + offsetMillis + " ===");
-        System.out.println("=== 时区偏移小时数: " + (offsetMillis / (1000 * 60 * 60)) + " ===");
-        
-        // 本地时间 - 偏移量 = UTC时间
-        long utcTimeMillis = localTimeMillis - offsetMillis;
-        Date utcTime = new Date(utcTimeMillis);
-        
-        System.out.println("=== 转换后UTC时间: " + utcTime + " ===");
-        System.out.println("=== convertLocalTimeToUTC结束 ===");
-        
-        return utcTime;
-    }
-
-    /**
      * 转换所有日期字段到UTC
      */
     public void convertDatesToUTC(Issue issue, String userTimezone) {
@@ -67,18 +36,11 @@ public class IssueTimeConverter {
             }
 
             // 转换 planFixDate
-            System.out.println("=== 检查planFixDate是否需要转换: " + issue.getPlanFixDate() + " ===");
             if (issue.getPlanFixDate() != null) {
                 Date originalTime = issue.getPlanFixDate();
-                System.out.println("=== planFixDate原始时间: " + originalTime + " ===");
-                System.out.println("=== planFixDate原始时间(毫秒): " + originalTime.getTime() + " ===");
                 Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
-                System.out.println("=== planFixDate转换后UTC时间: " + utcTime + " ===");
-                System.out.println("=== planFixDate转换后UTC时间(毫秒): " + utcTime.getTime() + " ===");
                 issue.setPlanFixDate(utcTime);
-                System.out.println("=== planFixDate转换完成: " + originalTime + " -> " + utcTime + " ===");
-            } else {
-                System.out.println("=== planFixDate为null，跳过转换 ===");
+                System.out.println("=== planFixDate转换: " + originalTime + " -> " + utcTime + " ===");
             }
 
             // 转换 issueExpand 中 attributes 里的日期字段
