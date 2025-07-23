@@ -61,7 +61,7 @@ public class IssueTimeConverter {
             // 转换 createTime（如果是新建时，通常由数据库自动设置）
             if (issue.getCreateTime() != null) {
                 Date originalTime = issue.getCreateTime();
-                Date utcTime = convertUserInputTimeToUTC(originalTime, userTZ);
+                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
                 issue.setCreateTime(utcTime);
                 System.out.println("=== createTime转换: " + originalTime + " -> " + utcTime + " ===");
             }
@@ -72,7 +72,7 @@ public class IssueTimeConverter {
                 Date originalTime = issue.getPlanFixDate();
                 System.out.println("=== planFixDate原始时间: " + originalTime + " ===");
                 System.out.println("=== planFixDate原始时间(毫秒): " + originalTime.getTime() + " ===");
-                Date utcTime = convertUserInputTimeToUTC(originalTime, userTZ);
+                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
                 System.out.println("=== planFixDate转换后UTC时间: " + utcTime + " ===");
                 System.out.println("=== planFixDate转换后UTC时间(毫秒): " + utcTime.getTime() + " ===");
                 issue.setPlanFixDate(utcTime);
@@ -154,7 +154,7 @@ public class IssueTimeConverter {
                         if ("date".equals(fieldType) && valueData != null && !valueData.isEmpty()) {
                             try {
                                 Date originalTime = cn.hutool.core.date.DateUtil.parse(valueData);
-                                Date utcTime = convertUserInputTimeToUTC(originalTime, userTZ);
+                                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
                                 attribute.set("valueData", cn.hutool.core.date.DateUtil.format(utcTime, "yyyy-MM-dd HH:mm:ss"));
                                 System.out.println("=== Attribute日期字段转换: " + originalTime + " -> " + utcTime + " ===");
                             } catch (Exception e) {
@@ -256,3 +256,4 @@ public class IssueTimeConverter {
         return localTime;
     }
 }
+```
