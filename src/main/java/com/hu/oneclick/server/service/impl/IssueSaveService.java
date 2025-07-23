@@ -41,12 +41,11 @@ public class IssueSaveService {
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
 
-        // ===== 重新启用UTC转换：系统配置无法自动处理用户时区转换 =====
-        // ===== 需要手动将用户本地时间转换为UTC时间存储 =====
-
+        // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== 从TimezoneContext获取的用户时区: " + userTimezone + " ===");
-        issueTimeConverter.convertDatesToUTC(issue, userTimezone);
+
+        // 转换时间到UTC - 已注释，测试框架自动时区处理
+        // issueTimeConverter.convertDatesToUTC(issue, userTimezone);
 
         // 处理自定义字段数据
         processCustomFields(issue, dto);
@@ -101,12 +100,11 @@ public class IssueSaveService {
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
 
-        // ===== 重新启用UTC转换：系统配置无法自动处理用户时区转换 =====
-        // ===== 需要手动将用户本地时间转换为UTC时间存储 =====
-
+        // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== 从TimezoneContext获取的用户时区: " + userTimezone + " ===");
-        issueTimeConverter.convertDatesToUTC(issue, userTimezone);
+
+        // 转换时间到UTC - 已注释，测试框架自动时区处理
+        // issueTimeConverter.convertDatesToUTC(issue, userTimezone);
 
         // 处理自定义字段数据
         processCustomFields(issue, dto);
@@ -220,12 +218,8 @@ public class IssueSaveService {
             // 设置状态为新建
             issueClone.setIssueStatus("新建");
 
-            // ===== 重新启用UTC转换：系统配置无法自动处理用户时区转换 =====
-            // ===== 需要手动将用户本地时间转换为UTC时间存储 =====
-
-            String userTimezone = TimezoneContext.getUserTimezone();
-            System.out.println("=== 从TimezoneContext获取的用户时区: " + userTimezone + " ===");
-            issueTimeConverter.convertDatesToUTC(issueClone, userTimezone);
+            // 转换时间到UTC - 已注释，测试框架自动时区处理
+            // issueTimeConverter.convertDatesToUTC(issueClone, userTimezone);
 
             issueList.add(issueClone);
         }
