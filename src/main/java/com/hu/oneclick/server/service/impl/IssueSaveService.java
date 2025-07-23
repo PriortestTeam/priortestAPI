@@ -42,7 +42,7 @@ public class IssueSaveService {
         BeanUtil.copyProperties(dto, issue);
 
         // 获取用户时区
-        String userTimezone = TimezoneContext.getUserTimezone();
+        //String userTimezone = TimezoneContext.getUserTimezone();
 
         // 转换时间到UTC - 已注释，测试框架自动时区处理
         // issueTimeConverter.convertDatesToUTC(issue, userTimezone);
@@ -120,7 +120,7 @@ public class IssueSaveService {
         BeanUtil.copyProperties(dto, issue);
 
         // 获取用户时区
-        String userTimezone = TimezoneContext.getUserTimezone();
+        //String userTimezone = TimezoneContext.getUserTimezone();
 
         // 转换时间到UTC - 已注释，测试框架自动时区处理
         // issueTimeConverter.convertDatesToUTC(issue, userTimezone);
@@ -130,6 +130,26 @@ public class IssueSaveService {
 
         // 处理版本相关字段
         processVersionFields(issue, dto);
+
+           // 检查并转换日期型字段
+            String userTimezone = TimezoneContext.getUserTimezone();
+            System.out.println("=== 开始转换日期型字段 ===");
+            System.out.println("=== 用户时区: " + userTimezone + " ===");
+
+            if (issue.getPlanFixDate() != null) {
+                Date originalPlanFixDate = issue.getPlanFixDate();
+                System.out.println("=== planFixDate 字段转换前: " + originalPlanFixDate + " ===");
+                System.out.println("=== planFixDate 转换前毫秒: " + originalPlanFixDate.getTime() + " ===");
+
+                // 调用时间转换器将用户输入时间转换为UTC
+                issueTimeConverter.convertUserInputTimeToUTC(issue, userTimezone);
+
+                System.out.println("=== planFixDate 转换后: " + issue.getPlanFixDate() + " ===");
+                System.out.println("=== planFixDate 转换后毫秒: " + (issue.getPlanFixDate() != null ? issue.getPlanFixDate().getTime() : "null") + " ===");
+            } else {
+                System.out.println("=== planFixDate 为空，跳过转换 ===");
+            }
+        
 
         // 在更新数据库之前，打印最终的时间值
         System.out.println("=== 即将更新数据库的时间信息 ===");

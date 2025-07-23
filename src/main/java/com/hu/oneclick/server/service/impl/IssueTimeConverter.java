@@ -16,7 +16,7 @@ public class IssueTimeConverter {
     /**
      * 转换所有日期字段到UTC
      */
-    public void convertDatesToUTC(Issue issue, String userTimezone) {
+    public void convertUserInputTimeToUTC(Issue issue, String userTimezone) {
         if (userTimezone == null || userTimezone.isEmpty()) {
             System.out.println("=== 没有用户时区信息，跳过UTC转换 ===");
             return;
