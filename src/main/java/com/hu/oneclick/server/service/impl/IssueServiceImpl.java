@@ -69,10 +69,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     private final ViewFilterService viewFilterService;
 
     @Resource
-    private IssueSaveService issueSaveService;
+    private com.hu.oneclick.server.service.impl.issue.IssueSaveService issueSaveService;
 
     @Resource
-    private IssueTimeConverter issueTimeConverter;
+    private com.hu.oneclick.server.service.impl.issue.IssueTimeConverter issueTimeConverter;
 
     // ThreadLocal存储用户时区信息
     private static final ThreadLocal<String> USER_TIMEZONE = new ThreadLocal<>();

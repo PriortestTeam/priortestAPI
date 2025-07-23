@@ -1,5 +1,5 @@
 
-package com.hu.oneclick.server.service.impl;
+package com.hu.oneclick.server.service.impl.issue;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -143,20 +143,24 @@ public class IssueTimeConverter {
 
                         if ("date".equals(fieldType) && valueData != null && !valueData.isEmpty()) {
                             try {
-                                Date originalTime = cn.hutool.core.date.DateUtil.parse(valueData);
-                                Date localTime = convertUTCToLocalTime(originalTime, userTZ);
-                                attribute.set("valueData", cn.hutool.core.date.DateUtil.format(localTime, "yyyy-MM-dd HH:mm:ss"));
-                                System.out.println("=== Attribute日期字段转换: " + originalTime + " -> " + localTime + " ===");
+                                Date utcTime = cn.hutool.core.date.DateUtil.parse(valueData);
+                                Date localTime = convertUTCToLocalTime(utcTime, userTZ);
+                                String localTimeStr = cn.hutool.core.date.DateUtil.format(localTime, "yyyy-MM-dd HH:mm:ss");
+                                attribute.set("valueData", localTimeStr);
+                                
+                                System.out.println("=== attributes日期字段转换: " + valueData + " -> " + localTimeStr + " ===");
                             } catch (Exception e) {
-                                System.out.println("=== Attribute日期字段转换失败: " + e.getMessage() + " ===");
+                                System.out.println("=== attributes日期字段转换失败: " + e.getMessage() + " ===");
                             }
                         }
                     }
                 }
+                
+                // 更新 issueExpand
                 issue.setIssueExpand(issueExpandJson.toString());
             }
         } catch (Exception e) {
-            System.out.println("=== 处理attributes日期字段失败: " + e.getMessage() + " ===");
+            System.out.println("=== attributes时间转换失败: " + e.getMessage() + " ===");
         }
     }
 
@@ -164,11 +168,9 @@ public class IssueTimeConverter {
      * 将用户本地时间转换为UTC时间
      */
     private Date convertLocalTimeToUTC(Date localTime, TimeZone userTZ) {
-        // 将本地时间解释为用户时区的时间，然后转换为UTC
         Calendar localCalendar = Calendar.getInstance(userTZ);
         localCalendar.setTime(localTime);
 
-        // 获取UTC时间
         Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         utcCalendar.setTimeInMillis(localCalendar.getTimeInMillis());
 
@@ -176,14 +178,12 @@ public class IssueTimeConverter {
     }
 
     /**
-     * 将UTC时间转换为用户本地时间
+     * 将UTC时间转换为用户本地时间（单个时间对象）
      */
     private Date convertUTCToLocalTime(Date utcTime, TimeZone userTZ) {
-        // 将UTC时间解释为UTC时区的时间，然后转换为用户时区
         Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         utcCalendar.setTime(utcTime);
 
-        // 获取用户本地时间
         Calendar localCalendar = Calendar.getInstance(userTZ);
         localCalendar.setTimeInMillis(utcCalendar.getTimeInMillis());
 

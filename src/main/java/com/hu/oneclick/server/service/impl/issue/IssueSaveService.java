@@ -1,5 +1,5 @@
 
-package com.hu.oneclick.server.service.impl;
+package com.hu.oneclick.server.service.impl.issue;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
