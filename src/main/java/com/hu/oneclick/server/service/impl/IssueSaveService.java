@@ -27,6 +27,9 @@ public class IssueSaveService {
     @Resource
     private IssueTimeConverter issueTimeConverter;
 
+    @Resource
+    private IssueDurationCalculator issueDurationCalculator;
+
     /**
      * 处理新增缺陷的所有逻辑
      */
@@ -67,6 +70,11 @@ public class IssueSaveService {
         System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
 
+        // 计算duration（基于UTC时间）
+        System.out.println("=== saveNewIssue - 准备计算duration ===");
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== saveNewIssue - duration计算完成，值: " + issue.getDuration() + " ===");
+
         // 在返回给前端之前，将UTC时间转换为用户本地时间
         System.out.println("=== 开始转换UTC时间为用户本地时间，用于返回前端 ===");
         String actualUserTimezone = TimezoneContext.getUserTimezone();
@@ -76,6 +84,7 @@ public class IssueSaveService {
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
         System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        System.out.println("=== duration: " + issue.getDuration() + " 小时 ===");
 
         return issue;
     }
