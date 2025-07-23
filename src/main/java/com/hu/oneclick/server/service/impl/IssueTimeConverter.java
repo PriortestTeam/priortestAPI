@@ -16,31 +16,31 @@ public class IssueTimeConverter {
     /**
      * 将用户本地时间转换为UTC时间
      */
-    private Date convertUserInputTimeToUTC(Date localTime, TimeZone userTimeZone) {
+    private Date convertLocalTimeToUTC(Date localTime, TimeZone userTimeZone) {
         System.out.println("=== convertLocalTimeToUTC开始 ===");
         System.out.println("=== 输入本地时间: " + localTime + " ===");
         System.out.println("=== 用户时区: " + userTimeZone.getID() + " ===");
-
+        
         if (localTime == null) {
             System.out.println("=== 输入时间为null，返回null ===");
             return null;
         }
-
+        
         long localTimeMillis = localTime.getTime();
         System.out.println("=== 本地时间毫秒数: " + localTimeMillis + " ===");
-
+        
         // 获取时区偏移量（包括夏令时）
         int offsetMillis = userTimeZone.getOffset(localTimeMillis);
         System.out.println("=== 时区偏移毫秒数: " + offsetMillis + " ===");
         System.out.println("=== 时区偏移小时数: " + (offsetMillis / (1000 * 60 * 60)) + " ===");
-
+        
         // 本地时间 - 偏移量 = UTC时间
         long utcTimeMillis = localTimeMillis - offsetMillis;
         Date utcTime = new Date(utcTimeMillis);
-
+        
         System.out.println("=== 转换后UTC时间: " + utcTime + " ===");
         System.out.println("=== convertLocalTimeToUTC结束 ===");
-
+        
         return utcTime;
     }
 
@@ -206,26 +206,26 @@ public class IssueTimeConverter {
     }
 
     /**
-     * 将用户输入时间转换为UTC时间
+     * 将用户本地时间转换为UTC时间
      */
-    private Date convertUserInputTimeToUTC(Date userInputTime, TimeZone userTZ) {
+    private Date convertLocalTimeToUTC(Date localTime, TimeZone userTZ) {
         // 获取用户时区的偏移量（毫秒）
-        long offsetMillis = userTZ.getOffset(userInputTime.getTime());
-
-        // 用户输入时间 - 时区偏移 = UTC时间
-        long utcTimeMillis = userInputTime.getTime() - offsetMillis;
-
+        long offsetMillis = userTZ.getOffset(localTime.getTime());
+        
+        // 用户本地时间 - 时区偏移 = UTC时间
+        long utcTimeMillis = localTime.getTime() - offsetMillis;
+        
         Date utcTime = new Date(utcTimeMillis);
-
-        System.out.println("=== convertUserInputTimeToUTC详细转换 ===");
-        System.out.println("=== 输入用户时间: " + userInputTime + " ===");
+        
+        System.out.println("=== convertLocalTimeToUTC详细转换 ===");
+        System.out.println("=== 输入本地时间: " + localTime + " ===");
         System.out.println("=== 用户时区: " + userTZ.getID() + " ===");
         System.out.println("=== 时区偏移毫秒: " + offsetMillis + " ===");
         System.out.println("=== 时区偏移小时: " + (offsetMillis / (1000 * 60 * 60)) + " ===");
-        System.out.println("=== 本地时间毫秒: " + userInputTime.getTime() + " ===");
+        System.out.println("=== 本地时间毫秒: " + localTime.getTime() + " ===");
         System.out.println("=== UTC时间毫秒: " + utcTimeMillis + " ===");
         System.out.println("=== 转换后UTC时间: " + utcTime + " ===");
-
+        
         return utcTime;
     }
 
