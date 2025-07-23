@@ -73,6 +73,14 @@ public class IssueTimeConverter {
                 System.out.println("=== createTime转换: " + originalTime + " -> " + localTime + " ===");
             }
 
+            // 转换 updateTime
+            if (issue.getUpdateTime() != null) {
+                Date originalTime = issue.getUpdateTime();
+                Date localTime = convertUTCToLocalTime(originalTime, userTZ);
+                issue.setUpdateTime(localTime);
+                System.out.println("=== updateTime转换: " + originalTime + " -> " + localTime + " ===");
+            }
+
             // 转换 planFixDate
             if (issue.getPlanFixDate() != null) {
                 Date originalTime = issue.getPlanFixDate();
