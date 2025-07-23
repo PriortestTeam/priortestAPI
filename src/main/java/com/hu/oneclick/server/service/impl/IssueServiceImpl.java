@@ -142,12 +142,19 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== Duration进入convertFieldsToString前: " + issue.getDuration() + " ===");
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
 
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== convertFieldsToString中获取的用户时区: " + userTimezone + " ===");
 
         // 在convertFieldsToString中调用IssueDurationCalculator
         System.out.println("=== 准备调用IssueDurationCalculator.calculateDuration方法 ===");
-        String userTimezone = TimezoneContext.getUserTimezone();
         issueDurationCalculator.calculateDuration(issue, userTimezone);
         System.out.println("=== IssueDurationCalculator.calculateDuration调用完成，Duration值: " + issue.getDuration() + " ===");
+
+        // 添加时区转换调用 - 这是关键修复！
+        System.out.println("=== 准备调用IssueTimeConverter.convertUTCToLocalTime方法 ===");
+        System.out.println("=== 转换前时间信息 - createTime: " + issue.getCreateTime() + ", updateTime: " + issue.getUpdateTime() + ", planFixDate: " + issue.getPlanFixDate() + " ===");
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        System.out.println("=== 转换后时间信息 - createTime: " + issue.getCreateTime() + ", updateTime: " + issue.getUpdateTime() + ", planFixDate: " + issue.getPlanFixDate() + " ===");
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
