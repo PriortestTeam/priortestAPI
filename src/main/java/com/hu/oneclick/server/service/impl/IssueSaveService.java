@@ -13,6 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.Date;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class IssueSaveService {
@@ -28,6 +33,9 @@ public class IssueSaveService {
      */
     @Transactional
     public Issue saveNewIssue(IssueSaveDto dto) {
+        // 记录服务器时区和时间信息
+        logServerTimezoneAndTime("saveNewIssue");
+        
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
 
@@ -52,6 +60,9 @@ public class IssueSaveService {
      */
     @Transactional
     public Issue updateExistingIssue(IssueSaveDto dto) {
+        // 记录服务器时区和时间信息
+        logServerTimezoneAndTime("updateExistingIssue");
+        
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
 
@@ -119,6 +130,9 @@ public class IssueSaveService {
      */
     @Transactional
     public void cloneIssues(java.util.List<Long> ids) {
+        // 记录服务器时区和时间信息
+        logServerTimezoneAndTime("cloneIssues");
+        
         // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
 
@@ -155,5 +169,57 @@ public class IssueSaveService {
         for (Issue issue : issueList) {
             issueDao.insert(issue);
         }
+    }
+
+    /**
+     * 记录服务器时区和时间信息
+     */
+    private void logServerTimezoneAndTime(String methodName) {
+        System.out.println("=== " + methodName + " - 服务器时区和时间信息 ===");
+        
+        // 获取默认时区
+        TimeZone defaultTimeZone = TimeZone.getDefault();
+        System.out.println("=== 服务器默认时区ID: " + defaultTimeZone.getID() + " ===");
+        System.out.println("=== 服务器默认时区显示名: " + defaultTimeZone.getDisplayName() + " ===");
+        
+        // 获取系统时区
+        ZoneId systemZoneId = ZoneId.systemDefault();
+        System.out.println("=== 系统时区ID: " + systemZoneId.toString() + " ===");
+        
+        // 获取当前时间 - 多个时区
+        Date currentDate = new Date();
+        System.out.println("=== 服务器当前时间(Date): " + currentDate + " ===");
+        
+        // UTC时间
+        ZonedDateTime utcTime = ZonedDateTime.now(ZoneId.of("UTC"));
+        System.out.println("=== UTC时间: " + utcTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z")) + " ===");
+        
+        // 系统默认时区时间
+        ZonedDateTime systemTime = ZonedDateTime.now(systemZoneId);
+        System.out.println("=== 系统默认时区时间: " + systemTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z")) + " ===");
+        
+        // 时区偏移信息
+        int rawOffset = defaultTimeZone.getRawOffset();
+        int offsetHours = rawOffset / (1000 * 60 * 60);
+        System.out.println("=== 时区偏移: " + offsetHours + " 小时 (原始偏移: " + rawOffset + " 毫秒) ===");
+        
+        // 是否在夏令时
+        boolean inDaylightTime = defaultTimeZone.inDaylightTime(currentDate);
+        System.out.println("=== 是否夏令时: " + inDaylightTime + " ===");
+        
+        // 获取用户时区信息对比
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== 用户时区: " + (userTimezone != null ? userTimezone : "未设置") + " ===");
+        
+        if (userTimezone != null && !userTimezone.isEmpty()) {
+            try {
+                ZonedDateTime userTime = ZonedDateTime.now(ZoneId.of(userTimezone));
+                System.out.println("=== 用户时区时间: " + userTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z")) + " ===");
+            } catch (Exception e) {
+                System.out.println("=== 用户时区解析失败: " + e.getMessage() + " ===");
+            }
+        }
+        
+        System.out.println("=== " + methodName + " - 时区信息记录完成 ===");
     }
 }
