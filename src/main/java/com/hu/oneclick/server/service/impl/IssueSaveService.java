@@ -113,4 +113,47 @@ public class IssueSaveService {
             issue.setFoundAfterRelease(dto.getFoundAfterReleaseAsInt());
         }
     }
+
+    /**
+     * 克隆缺陷
+     */
+    @Transactional
+    public void cloneIssues(java.util.List<Long> ids) {
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getUserTimezone();
+
+        java.util.List<Issue> issueList = new java.util.ArrayList<>();
+        java.util.Date currentTime = new java.util.Date();  // 当前时间作为克隆时间
+
+        for (Long id : ids) {
+            Issue issue = issueDao.selectById(id);
+            if (issue == null) {
+                throw new com.hu.oneclick.common.exception.BaseException(cn.hutool.core.util.StrUtil.format("缺陷查询不到。ID：{}", id));
+            }
+            Issue issueClone = new Issue();
+            BeanUtil.copyProperties(issue, issueClone);
+
+            // 重置关键字段
+            issueClone.setId(null);  // 清空ID让数据库生成新ID
+            issueClone.setTitle(com.hu.oneclick.common.util.CloneFormatUtil.getCloneTitle(issueClone.getTitle()));
+
+            // 设置新的时间字段
+            issueClone.setCreateTime(currentTime);      // 新的创建时间
+            issueClone.setUpdateTime(currentTime);      // 新的更新时间
+            issueClone.setPlanFixDate(currentTime);     // 计划修复时间设置为当前时间
+
+            // 设置状态为新建
+            issueClone.setIssueStatus("新建");
+
+            // 转换时间到UTC
+            issueTimeConverter.convertDatesToUTC(issueClone, userTimezone);
+
+            issueList.add(issueClone);
+        }
+
+        // 批量保存克隆的Issue
+        for (Issue issue : issueList) {
+            issueDao.insert(issue);
+        }
+    }
 }

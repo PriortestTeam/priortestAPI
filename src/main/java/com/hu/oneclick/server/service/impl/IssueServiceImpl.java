@@ -200,41 +200,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
     @Override
     public void clone(List<Long> ids) {
-        // 获取用户时区
-        String userTimezone = TimezoneContext.getUserTimezone();
-
-        List<Issue> issueList = new ArrayList<>();
-        Date currentTime = new Date();  // 当前时间作为克隆时间
-
-        for (Long id : ids) {
-            Issue issue = baseMapper.selectById(id);
-            if (issue == null) {
-                throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
-            }
-            Issue issueClone = new Issue();
-            BeanUtil.copyProperties(issue, issueClone);
-
-            // 重置关键字段
-            issueClone.setId(null);  // 清空ID让数据库生成新ID
-            issueClone.setTitle(CloneFormatUtil.getCloneTitle(issueClone.getTitle()));
-
-            // 设置新的时间字段
-            issueClone.setCreateTime(currentTime);      // 新的创建时间
-            issueClone.setUpdateTime(currentTime);      // 新的更新时间
-           // issueClone.setCloseDate(null);              // 关闭时间设置为空  Removed closeDate
-            issueClone.setPlanFixDate(currentTime);     // 计划修复时间设置为当前时间
-
-            // 设置状态为新建
-            issueClone.setIssueStatus("新建");
-
-            // 转换时间到UTC
-            issueTimeConverter.convertDatesToUTC(issueClone, userTimezone);
-
-            issueList.add(issueClone);
-        }
-
-        // 批量保存克隆的Issue
-        this.saveBatch(issueList);
+        issueSaveService.cloneIssues(ids);
     }
 
     @Override
