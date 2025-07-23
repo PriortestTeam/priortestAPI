@@ -53,12 +53,31 @@ public class IssueSaveService {
         // 处理版本相关字段
         processVersionFields(issue, dto);
 
-        // 在插入数据库之前，打印最终的时间值
+        // 检查并转换日期型字段
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== 开始转换日期型字段 ===");
+        System.out.println("=== 用户时区: " + userTimezone + " ===");
+
+        if (issue.getPlanFixDate() != null) {
+            Date originalPlanFixDate = issue.getPlanFixDate();
+            System.out.println("=== planFixDate 字段转换前: " + originalPlanFixDate + " ===");
+            System.out.println("=== planFixDate 转换前毫秒: " + originalPlanFixDate.getTime() + " ===");
+
+            // 调用时间转换器将用户输入时间转换为UTC
+            issueTimeConverter.convertUserInputTimeToUTC(issue, userTimezone);
+
+            System.out.println("=== planFixDate 转换后: " + issue.getPlanFixDate() + " ===");
+            System.out.println("=== planFixDate 转换后毫秒: " + (issue.getPlanFixDate() != null ? issue.getPlanFixDate().getTime() : "null") + " ===");
+        } else {
+            System.out.println("=== planFixDate 为空，跳过转换 ===");
+        }
+
+        // 打印即将插入数据库的时间信息
         System.out.println("=== 即将插入数据库的时间信息 ===");
-        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== createTime (毫秒): " + (issue.getCreateTime() != null ? issue.getCreateTime().getTime() : "null") + " ===");
-        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== updateTime (毫秒): " + (issue.getUpdateTime() != null ? issue.getUpdateTime().getTime() : "null") + " ===");
+        System.out.println("=== createTime: null ===");
+        System.out.println("=== createTime (毫秒): null ===");
+        System.out.println("=== updateTime: null ===");
+        System.out.println("=== updateTime (毫秒): null ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
         System.out.println("=== planFixDate (毫秒): " + (issue.getPlanFixDate() != null ? issue.getPlanFixDate().getTime() : "null") + " ===");
 
