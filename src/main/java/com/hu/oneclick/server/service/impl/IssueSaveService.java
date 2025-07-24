@@ -95,7 +95,16 @@ public class IssueSaveService {
         issueDurationCalculator.calculateDuration(issue, userTimezone);
         System.out.println("=== insertNewIssue - duration计算完成，值: " + issue.getDuration() + " ===");
 
-        System.out.println("=== insertNewIssue完成，数据已插入到数据库（UTC时间） ===");
+        // 转换UTC时间回用户本地时区（用于返回给前端显示）
+        System.out.println("=== 开始将UTC时间转换为用户本地时区 ===");
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        System.out.println("=== UTC到本地时区转换完成 ===");
+        System.out.println("=== 返回给用户的时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+
+        System.out.println("=== insertNewIssue完成，数据已插入到数据库（UTC时间），返回用户本地时区时间 ===");
         return issue;
     }
 
