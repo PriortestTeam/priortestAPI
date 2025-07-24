@@ -94,16 +94,12 @@ public class IssueSaveService {
         issueDurationCalculator.calculateDuration(issue, userTimezone);
         System.out.println("=== saveNewIssue - duration计算完成，值: " + issue.getDuration() + " ===");
 
-        // 在返回给前端之前，将UTC时间转换为用户本地时间
-        System.out.println("=== 开始转换UTC时间为用户本地时间，用于返回前端 ===");
-        String actualUserTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== 从TimezoneContext获取的用户时区: " + actualUserTimezone + " ===");
-        issueTimeConverter.convertUTCToLocalTime(issue, actualUserTimezone);
-        System.out.println("=== 转换后返回给前端的时间信息 ===");
+        System.out.println("=== updateExistingIssue完成，数据已更新到数据库（UTC时间） ===");
+        System.out.println("=== 更新后的时间信息（数据库中的UTC时间） ===");
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
         System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
-        System.out.println("=== duration: " + issue.getDuration() + " 小时 ===");
+        System.out.println("=== 注意：时区转换将在上层方法中单独处理 ===");
 
         return issue;
     }

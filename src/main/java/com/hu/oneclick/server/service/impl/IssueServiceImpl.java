@@ -123,9 +123,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
         }
 
+        // 1. 更新数据库记录（包含时区转换到UTC）
         Issue issue = issueSaveService.updateExistingIssue(dto);
 
-        // 重新查询完整的Issue对象，确保包含所有字段（包括createTime和createUserId）
+        // 2. 重新查询完整的Issue对象，确保包含所有字段（包括createTime和createUserId）
         Issue completeIssue = this.getByIdAndProjectId(issue.getId(), issue.getProjectId());
         if (completeIssue != null) {
             // 将更新后的字段值复制到完整对象中
@@ -162,16 +163,23 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             issue = completeIssue;
         }
 
-        // 转换字段格式，确保返回给前端的是字符串格式
+        // 3. 计算duration和处理其他字段（基于UTC时间）
         convertFieldsToStringForEdit(issue);
+
+        // 4. 最后进行时区转换，将UTC时间转换为用户本地时间用于返回前端
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== edit方法最后阶段 - 开始UTC到本地时间转换 ===");
+        System.out.println("=== 用户时区: " + userTimezone + " ===");
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        System.out.println("=== edit方法 - 时区转换完成，返回给前端 ===");
 
         return issue;
     }
 
 
     /**
-     * 专门用于编辑操作的字段转换方法，避免重复时间转换
-     * 因为在IssueSaveService中已经进行了时间转换
+     * 专门用于编辑操作的字段转换方法，只处理业务逻辑，不进行时区转换
+     * 时区转换在上层方法中单独处理
      */
     private void convertFieldsToStringForEdit(Issue issue) {
         System.out.println("=== convertFieldsToStringForEdit开始 - Issue ID: " + issue.getId() + " ===");
@@ -182,17 +190,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== convertFieldsToStringForEdit中获取的用户时区: " + userTimezone + " ===");
 
-        // 计算duration（如果还没有计算）
+        // 计算duration（基于UTC时间，不进行时区转换）
         if (issue.getDuration() == null) {
-            System.out.println("=== 开始计算duration ===");
+            System.out.println("=== 开始计算duration（基于UTC时间） ===");
             issueDurationCalculator.calculateDuration(issue, userTimezone);
             System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
         }
-
-        // 转换UTC时间为用户本地时间
-        System.out.println("=== 开始转换UTC时间为用户本地时间 ===");
-        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-        System.out.println("=== 时区转换完成 ===");
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
@@ -202,16 +205,8 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             issue.setFoundAfterRelease(0);
         }
 
-        System.out.println("=== ========== 返回给前端用户的最终时间信息（编辑操作） ========== ===");
-        System.out.println("=== Issue ID: " + issue.getId() + " ===");
-        System.out.println("=== 返回给前端的createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== 返回给前端的updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== 返回给前端的planFixDate: " + issue.getPlanFixDate() + " ===");
-        System.out.println("=== 返回给前端的duration: " + issue.getDuration() + " 小时 ===");
-        System.out.println("=== 返回给前端的createUserId: " + issue.getCreateUserId() + " ===");
-        System.out.println("=== 返回给前端的updateUserId: " + issue.getUpdateUserId() + " ===");
-        System.out.println("=== 用户时区: " + TimezoneContext.getUserTimezone() + " ===");
         System.out.println("=== convertFieldsToStringForEdit结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
+        System.out.println("=== 注意：时区转换将在上层方法中单独处理 ===");
     }
 
     /**
