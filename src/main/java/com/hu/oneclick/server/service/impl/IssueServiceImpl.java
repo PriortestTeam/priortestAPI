@@ -158,7 +158,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             completeIssue.setRootcauseCategory(issue.getRootcauseCategory());
             completeIssue.setUpdateTime(issue.getUpdateTime());
             completeIssue.setUpdateUserId(issue.getUpdateUserId());
-            
+
             issue = completeIssue;
         }
 
@@ -168,7 +168,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         return issue;
     }
 
-    
+
 
     /**
      * 专门用于编辑操作的字段转换方法，避免重复时间转换
@@ -271,7 +271,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
         // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
-        
+
         // 计算duration（基于UTC时间）
         issueDurationCalculator.calculateDuration(issue, userTimezone);
 
@@ -500,7 +500,49 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         return PageInfo.of(dataList);
     }
 
-    
+    public Issue getIssueById(Long id) {
+        Issue issue = this.baseMapper.selectById(id);
 
-     
+        if (issue == null) {
+            throw new BaseException("Issue查询不到");
+        }
+
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== getIssueById - 用户时区: " + userTimezone + " ===");
+
+        // 计算duration（基于UTC时间）
+        System.out.println("=== getIssueById - 准备计算duration ===");
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== getIssueById - duration计算完成，值: " + issue.getDuration() + " ===");
+
+        // 将UTC时间转换为用户本地时间
+        System.out.println("=== getIssueById - 开始转换UTC时间为用户本地时间 ===");
+        System.out.println("=== 转换前时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+
+        System.out.println("=== 转换后时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+
+        // 转换字段格式，确保返回给前端的是字符串格式
+        convertFieldsToStringForEdit(issue);
+
+        System.out.println("=== getIssueById - 返回给前端的最终时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        System.out.println("=== duration: " + issue.getDuration() + " 小时 ===");
+
+        return issue;
+    }
+
+
+
+
 }
