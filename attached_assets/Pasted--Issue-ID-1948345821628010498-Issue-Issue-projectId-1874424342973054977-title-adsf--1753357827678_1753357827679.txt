@@ -1,0 +1,72 @@
+=== Issue ID: 1948345821628010498 ===
+=== Issue对象: Issue(projectId=1874424342973054977, title=adsf, planFixDate=Thu Jul 31 00:00:00 CST 2025, verifiedResult=请输入验证结果, priority=中, env=测试, browser=, platform=MAC12.0, issueVersion=1.0.0.0, caseCategory=安全, description=, issueStatus=新建, module=, reportTo=, issueExpand={"attributes": [{"scope": "issue", "scopeId": "7000001", "fieldType": "text", "valueData": "测试", "fieldNameCn": "新建故事", "fieldNameEn": "", "scopeNameCn": "缺陷", "customFieldId": "894709703517409282", "customFieldLinkId": "894709703550963712"}, {"scope": "issue", "scopeId": "7000001", "fieldType": "dropDown", "valueData": "开发", "fieldNameCn": "新建缺陷", "fieldNameEn": "", "scopeNameCn": "缺陷", "customFieldId": "894709852725579778", "customFieldLinkId": "894709852742356992"}, {"scope": "issue", "scopeId": "7000001", "fieldType": "date", "valueData": "2025-06-11 00:00:00", "fieldNameCn": "日期型", "fieldNameEn": "", "scopeNameCn": "缺陷", "customFieldId": "944024277282197506", "customFieldLinkId": "944049976349036544"}, {"scope": "issue", "scopeId": "7000001", "fieldType": "multiList", "valueData": ["顶替"], "fieldNameCn": "样的", "fieldNameEn": "", "scopeNameCn": "缺陷", "customFieldId": "894711075805597698", "customFieldLinkId": "943701921812713472"}, {"scope": "issue", "scopeId": "7000001", "fieldType": "dropDown", "valueData": "新12", "fieldNameCn": "自定义", "fieldNameEn": "", "scopeNameCn": "缺陷", "customFieldId": "913627008792006658", "customFieldLinkId": "944024112542519297"}, {"scope": "issue", "scopeId": "7000001", "fieldType": "text", "valueData": "1221", "fieldNameCn": "项亠名舟", "fieldNameEn": "", "scopeNameCn": "缺陷", "customFieldId": "959370124857446402", "customFieldLinkId": "959370124870029312"}, {"scope": "issue", "scopeId": "7000001", "fieldType": "numberList", "valueData": "12", "fieldNameCn": "数值", "fieldNameEn": "", "scopeNameCn": "缺陷", "customFieldId": "944026127775567874", "customFieldLinkId": "958602555347177476"}], "found_after_release": "0"}, fixVersion=, introducedVersion=null, isLegacy=0, foundAfterRelease=0, severity=一般, testDevice=台式计算机, runcaseId=0, fixCategory=[环境], frequency=, issueSource=QA, userImpact=一般, rootCause=此处填写缺陷发生以及解决方法, rootcauseCategory=[代码], duration=null) ===
+=== 用户时区参数: Asia/Singapore ===
+=== Issue createTime原始值: Thu Jul 24 19:33:37 CST 2025 ===
+=== ✅ createTime不为null，开始计算duration ===
+=== 当前时间获取方式: 获取UTC时间并转换为用户本地时间 ===
+=== UTC当前时间获取完成: Thu Jul 24 19:48:58 CST 2025 ===
+=== UTC当前时间(毫秒): 1753357738291 ===
+=== 开始UTC时间转换为用户本地时间 ===
+=== 输入UTC时间: Thu Jul 24 19:48:58 CST 2025 ===
+=== 用户时区: Asia/Singapore ===
+=== 服务器时区: Asia/Shanghai ===
+=== 用户时区偏移毫秒: 28800000 ===
+=== 服务器时区偏移毫秒: 28800000 ===
+=== 用户时区偏移小时: 8 ===
+=== 服务器时区偏移小时: 8 ===
+=== 用户时区与服务器时区相同，直接返回UTC时间（服务器会自动显示为本地时间） ===
+=== 输入UTC时间: Thu Jul 24 19:48:58 CST 2025 ===
+=== 返回时间: Thu Jul 24 19:48:58 CST 2025 ===
+=== UTC时间转换为用户本地时间: Thu Jul 24 19:48:58 CST 2025 -> Thu Jul 24 19:48:58 CST 2025 ===
+=== 用户本地当前时间(毫秒): 1753357738291 ===
+=== 数据库创建时间处理策略: 数据库存储的是用户本地时间，直接使用 ===
+=== 数据库中的createTime是用户本地时间，直接使用: Thu Jul 24 19:33:37 CST 2025 ===
+=== 不需要进行时区转换 ===
+=== ========== Duration计算公式详情 ========== ===
+=== 计算公式: duration(小时) = (当前用户本地时间 - 创建用户本地时间) / (1000 * 60 * 60) ===
+=== 公式说明: 除以1000转换毫秒->秒，除以60转换秒->分钟，除以60转换分钟->小时 ===
+=== 当前用户本地时间: Thu Jul 24 19:48:58 CST 2025 ===
+=== 当前用户本地时间(毫秒): 1753357738291 ===
+=== 数据库用户本地创建时间: Thu Jul 24 19:33:37 CST 2025 ===
+=== 数据库用户本地创建时间(毫秒): 1753356817000 ===
+=== 时间差计算: 1753357738291 - 1753356817000 = 921291 毫秒 ===
+=== 是否为负数差值: 否 ===
+=== ========================================== ===
+=== 开始逐步转换时间单位 ===
+=== ========================================== ===
+=== 步骤1 - 毫秒转秒: 921291 ÷ 1000 = 921 秒 ===
+=== 步骤2 - 秒转分钟: 921 ÷ 60 = 15 分钟 ===
+=== 步骤3 - 分钟转小时(double): 15 ÷ 60 = 0.25 小时 ===
+=== 步骤4 - 取整数部分(int): 0.25 -> 0 小时 ===
+=== ========================================== ===
+=== Duration计算结果汇总: ===
+=== ========================================== ===
+=== 原始毫秒差值: 921291 毫秒 ===
+=== 转换为秒: 921 秒 ===
+=== 转换为分钟: 15 分钟 ===
+=== 转换为小时(精确): 0.25 小时 ===
+=== 最终Duration结果(整数): 0 小时 ===
+=== ========================================== ===
+=== 设置Issue的duration字段 ===
+=== ========================================== ===
+=== 设置前Issue.duration: null ===
+=== 设置后Issue.duration: 0 ===
+=== ========== Duration时间信息汇总 ========== ===
+=== Issue ID: 1948345821628010498 ===
+=== 创建时间(原始): Thu Jul 24 19:33:37 CST 2025 ===
+=== 创建时间(调整后): Thu Jul 24 19:33:37 CST 2025 ===
+=== 当前时间: Thu Jul 24 19:48:58 CST 2025 ===
+=== 存活时长: 0 小时 ===
+=== 存活时长: 15 分钟 ===
+=== 存活时长: 921 秒 ===
+=== IssueDurationCalculator - Duration计算完成 ===
+=== duration计算完成，值: 0 ===
+=== 跳过时区转换（数据库已存储用户本地时间） ===
+=== convertFieldsToStringForEdit开始 - Issue ID: 1948345821628010498 ===
+=== Duration进入convertFieldsToStringForEdit前: 0 ===
+=== createTime: Thu Jul 24 19:33:37 CST 2025 ===
+=== convertFieldsToStringForEdit中获取的用户时区: Asia/Singapore ===
+=== convertFieldsToStringForEdit结束 - Issue ID: 1948345821628010498, Duration最终: 0 ===
+=== 注意：时区转换将在上层方法中单独处理 ===
+=== 字段格式转换完成 ===
+=== Issue.info方法结束 ===
