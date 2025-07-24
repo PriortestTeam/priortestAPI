@@ -118,20 +118,25 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     @Override
     @Transactional
     public Issue edit(IssueSaveDto dto) {
+        // 1. 查找记录验证是否存在（不做任何时区转换，只确认记录存在）
         Issue entity = this.getByIdAndProjectId(dto.getId(), dto.getProjectId());
         if (null == entity) {
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
         }
+        System.out.println("=== 验证记录存在，不进行任何时区转换 ===");
 
-        // 1. 更新数据库记录（只做UTC转换和存储，不做返回转换）
+        // 2. 执行更新操作（本地时间 → UTC 转换并存储）
         Issue issue = issueSaveService.updateExistingIssue(dto);
+        System.out.println("=== 更新操作完成，数据已存储为UTC时间 ===");
 
-        // 2. 重新查询完整的Issue对象，确保包含所有字段（从数据库查询的都是UTC时间）
+        // 3. 重新查询完整的Issue对象（从数据库查询的都是UTC时间）
         Issue completeIssue = this.getByIdAndProjectId(issue.getId(), issue.getProjectId());
         if (completeIssue != null) {
-            // 将更新后的字段值复制到完整对象中，但时间字段使用数据库查询的UTC时间
+            System.out.println("=== 重新查询完整记录，获取最新的UTC时间数据 ===");
+            
+            // 将更新后的非时间字段值复制到完整对象中
+            // 注意：时间字段（createTime, updateTime, planFixDate）使用数据库查询的UTC时间
             completeIssue.setTitle(issue.getTitle());
-            // 注意：planFixDate使用数据库查询的UTC时间，不使用updateExistingIssue返回的已转换时间
             completeIssue.setVerifiedResult(issue.getVerifiedResult());
             completeIssue.setPriority(issue.getPriority());
             completeIssue.setEnv(issue.getEnv());
@@ -157,21 +162,21 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             completeIssue.setUserImpact(issue.getUserImpact());
             completeIssue.setRootCause(issue.getRootCause());
             completeIssue.setRootcauseCategory(issue.getRootcauseCategory());
-            // 注意：updateTime也使用数据库查询的UTC时间，不使用updateExistingIssue返回的已转换时间
             completeIssue.setUpdateUserId(issue.getUpdateUserId());
 
             issue = completeIssue;
         }
 
-        // 3. 计算duration和处理其他字段（基于UTC时间）
+        // 4. 计算duration（基于UTC时间，不进行时区转换）
         convertFieldsToStringForEdit(issue);
+        System.out.println("=== Duration计算完成，基于UTC时间 ===");
 
-        // 4. 最后进行时区转换，将UTC时间转换为用户本地时间用于返回前端（只转换一次）
+        // 5. 最后一步：将UTC时间转换为用户本地时间（只转换一次）
         String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== edit方法最后阶段 - 开始UTC到本地时间转换 ===");
+        System.out.println("=== edit方法最后阶段 - 开始唯一的UTC到本地时间转换 ===");
         System.out.println("=== 用户时区: " + userTimezone + " ===");
         issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-        System.out.println("=== edit方法 - 时区转换完成，返回给前端 ===");
+        System.out.println("=== edit方法 - 时区转换完成，返回本地时间给前端 ===");
 
         return issue;
     }
