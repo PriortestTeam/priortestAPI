@@ -222,80 +222,6 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== convertFieldsToStringForEdit结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
     }
 
-   /**
-     * 专门用于 issue/list API 的字段转换方法
-     */
-    private void convertFieldsToStringForList(Issue issue) {
-        System.out.println("=== convertFieldsToStringForList开始 - Issue ID: " + issue.getId() + " ===");
-        System.out.println("=== Duration进入convertFieldsToStringForList前: " + issue.getDuration() + " ===");
-        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-
-        String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== convertFieldsToStringForList中获取的用户时区: " + userTimezone + " ===");
-
-        // 检查时间是否已经是用户本地时间格式
-        boolean isAlreadyConverted = checkIfTimeAlreadyConverted(issue, userTimezone);
-        System.out.println("=== 时间是否已转换为本地时间: " + isAlreadyConverted + " ===");
-
-        // 计算duration（基于原始UTC时间或当前时间）
-        System.out.println("=== 开始计算duration ===");
-        if (issue.getDuration() == null || issue.getDuration() == 0) {
-            issueDurationCalculator.calculateDuration(issue, userTimezone);
-            System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
-        }
-
-        // 只有当时间还是UTC格式时才进行转换
-        if (!isAlreadyConverted) {
-            System.out.println("=== 开始转换UTC时间为用户本地时间 ===");
-            issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-            System.out.println("=== 时区转换完成 ===");
-        } else {
-            System.out.println("=== 时间已经是本地时间格式，跳过转换 ===");
-        }
-
-        // 确保 isLegacy 和 foundAfterRelease 不为null
-        if (issue.getIsLegacy() == null) {
-            issue.setIsLegacy(0);
-        }
-        if (issue.getFoundAfterRelease() == null) {
-            issue.setFoundAfterRelease(0);
-        }
-
-        System.out.println("=== ========== 返回给前端用户的最终时间信息(list) ========== ===");
-        System.out.println("=== Issue ID: " + issue.getId() + " ===");
-        System.out.println("=== 返回给前端的createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== 返回给前端的updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== 返回给前端的planFixDate: " + issue.getPlanFixDate() + " ===");
-        System.out.println("=== 返回给前端的duration: " + issue.getDuration() + " 小时 ===");
-        System.out.println("=== 返回给前端的createUserId: " + issue.getCreateUserId() + " ===");
-        System.out.println("=== 返回给前端的updateUserId: " + issue.getUpdateUserId() + " ===");
-        System.out.println("=== 用户时区: " + TimezoneContext.getUserTimezone() + " ===");
-        System.out.println("=== convertFieldsToStringForList结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
-    }
-
-    // 为 issue/list API 服务的时区转换方法
-    private void convertUTCToLocalTimeForListAPI(Issue issue, String userTimezone) {
-        System.out.println("=== convertUTCToLocalTimeForListAPI开始 - Issue ID: " + issue.getId() + " ===");
-
-        if (issue == null || userTimezone == null || userTimezone.isEmpty()) {
-            System.out.println("=== 参数为空，跳过转换 ===");
-            return;
-        }
-
-        System.out.println("=== 转换前时间信息 ===");
-        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
-
-        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-
-        System.out.println("=== 转换后时间信息 ===");
-        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
-        System.out.println("=== convertUTCToLocalTimeForListAPI结束 - Issue ID: " + issue.getId() + " ===");
-    }
-
     /**
      * 转换字段格式：确保数据格式正确
      * 由于使用了 @JsonProperty 注解，JSON 序列化会自动调用字符串格式的 getter 方法
@@ -438,7 +364,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 .collect(Collectors.toList());
 
             // 转换字段格式，确保返回给前端的是字符串格式
-            issueList.forEach(this::convertFieldsToStringForList);
+            issueList.forEach(this::convertFieldsToString);
 
             // 使用与 BeanSearchController 相同的分页处理方式
             return PageUtil.manualPaging(issueList);
@@ -499,8 +425,8 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         // 6. 转 bean
         List<Issue> issueList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class)).collect(Collectors.toList());
 
-        // 转换字段格式，确保返回给前端的是字符串格式（使用list专用的转换方法）
-        issueList.forEach(this::convertFieldsToStringForList);
+        // 转换字段格式，确保返回给前端的是字符串格式
+        issueList.forEach(this::convertFieldsToString);
 
         // 7. 构造 PageInfo
         PageInfo<Issue> pageInfo = new PageInfo<>(issueList);
@@ -553,14 +479,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 pageData = issueList.subList(startIndex, endIndex);
             }
 
-            // 转换字段格式，确保返回给前端的是字符串格式（使用list专用的转换方法）
+            // 转换字段格式，确保返回给前端的是字符串格式
             String userTimezone = TimezoneContext.getUserTimezone();
-                List<Issue> results = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class)).collect(Collectors.toList());
-
-                // 对结果进行后处理，转换字段为字符串格式（使用list专用的转换方法）
-                for (Issue issue : results) {
-                    convertFieldsToStringForList(issue);
-                }
+            pageData.forEach(issue -> {
+                System.out.println("=== 处理Issue ID: " + issue.getId() + " ===");
+                // 计算duration
+                issueDurationCalculator.calculateDuration(issue, userTimezone);
+                // 转换字段格式
+                convertFieldsToString(issue);
+            });
 
             PageInfo<Issue> pageInfo = new PageInfo<>(pageData);
             pageInfo.setPageNum(pageNum);
@@ -703,5 +630,8 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             return false;
         }
     }
+
+
+
 
 }
