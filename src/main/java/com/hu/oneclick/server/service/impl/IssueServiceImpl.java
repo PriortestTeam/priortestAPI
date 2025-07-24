@@ -189,10 +189,18 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
         }
 
-        // 转换UTC时间为用户本地时间
-        System.out.println("=== 开始转换UTC时间为用户本地时间 ===");
-        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-        System.out.println("=== 时区转换完成 ===");
+        // 检查时间是否已经是用户本地时间格式
+        boolean isAlreadyConverted = checkIfTimeAlreadyConverted(issue, userTimezone);
+        System.out.println("=== 时间是否已转换为本地时间: " + isAlreadyConverted + " ===");
+
+        // 只有当时间还是UTC格式时才进行转换
+        if (!isAlreadyConverted) {
+            System.out.println("=== 开始转换UTC时间为用户本地时间 ===");
+            issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+            System.out.println("=== 时区转换完成 ===");
+        } else {
+            System.out.println("=== 时间已经是本地时间格式，跳过转换 ===");
+        }
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
@@ -227,15 +235,25 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== convertFieldsToString中获取的用户时区: " + userTimezone + " ===");
 
-        // 计算duration（基于UTC时间）
-        System.out.println("=== 开始计算duration ===");
-        issueDurationCalculator.calculateDuration(issue, userTimezone);
-        System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
+        // 检查时间是否已经是用户本地时间格式
+        boolean isAlreadyConverted = checkIfTimeAlreadyConverted(issue, userTimezone);
+        System.out.println("=== 时间是否已转换为本地时间: " + isAlreadyConverted + " ===");
 
-        // 转换UTC时间为用户本地时间
-        System.out.println("=== 开始转换UTC时间为用户本地时间 ===");
-        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-        System.out.println("=== 时区转换完成 ===");
+        // 计算duration（基于原始UTC时间或当前时间）
+        System.out.println("=== 开始计算duration ===");
+        if (issue.getDuration() == null || issue.getDuration() == 0) {
+            issueDurationCalculator.calculateDuration(issue, userTimezone);
+            System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
+        }
+
+        // 只有当时间还是UTC格式时才进行转换
+        if (!isAlreadyConverted) {
+            System.out.println("=== 开始转换UTC时间为用户本地时间 ===");
+            issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+            System.out.println("=== 时区转换完成 ===");
+        } else {
+            System.out.println("=== 时间已经是本地时间格式，跳过转换 ===");
+        }
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
@@ -564,6 +582,53 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== duration: " + issue.getDuration() + " 小时 ===");
 
         return issue;
+    }
+
+    /**
+     * 检查Issue中的时间是否已经转换为用户本地时间
+     * 通过比较时区偏移来判断
+     */
+    private boolean checkIfTimeAlreadyConverted(Issue issue, String userTimezone) {
+        if (issue.getCreateTime() == null || userTimezone == null || userTimezone.isEmpty()) {
+            return false;
+        }
+
+        try {
+            // 获取用户时区偏移（小时）
+            java.util.TimeZone userTZ = java.util.TimeZone.getTimeZone(userTimezone);
+            long userOffsetMillis = userTZ.getOffset(issue.getCreateTime().getTime());
+            int userOffsetHours = (int) (userOffsetMillis / (1000 * 60 * 60));
+
+            // 获取当前时间的UTC时间
+            java.util.Date currentUTC = new java.util.Date();
+
+            // 计算如果这个时间是UTC，转换为用户本地时间应该是什么
+            java.util.Calendar utcCalendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
+            utcCalendar.setTime(issue.getCreateTime());
+
+            java.util.Calendar localCalendar = java.util.Calendar.getInstance(userTZ);
+            localCalendar.setTimeInMillis(utcCalendar.getTimeInMillis());
+
+            // 比较小时差，如果差值接近时区偏移，说明可能已经转换过了
+            long timeDiff = Math.abs(issue.getCreateTime().getTime() - localCalendar.getTime().getTime());
+            long expectedOffset = Math.abs(userOffsetMillis);
+
+            // 如果时间差小于1小时，认为可能已经转换过
+            boolean alreadyConverted = timeDiff < (60 * 60 * 1000);
+
+            System.out.println("=== 时间转换检查详情 ===");
+            System.out.println("=== 用户时区偏移: " + userOffsetHours + " 小时 ===");
+            System.out.println("=== 当前createTime: " + issue.getCreateTime() + " ===");
+            System.out.println("=== 预期本地时间: " + localCalendar.getTime() + " ===");
+            System.out.println("=== 时间差: " + timeDiff + " 毫秒 ===");
+            System.out.println("=== 已转换判断: " + alreadyConverted + " ===");
+
+            return alreadyConverted;
+
+        } catch (Exception e) {
+            System.out.println("=== 检查时间转换状态失败: " + e.getMessage() + " ===");
+            return false;
+        }
     }
 
 
