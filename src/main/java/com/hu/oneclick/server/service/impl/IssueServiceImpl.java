@@ -215,29 +215,24 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
     /**
-     * 转换字段格式：确保数据格式正确
-     * 由于使用了 @JsonProperty 注解，JSON 序列化会自动调用字符串格式的 getter 方法
-     * 在这个方法中进行必要的业务计算和时区转换
+     * 专门为 issue/list API 设计的字段转换方法
+     * 直接进行时区转换，不做任何检查
      */
-    private void convertFieldsToString(Issue issue) {
-        System.out.println("=== convertFieldsToString开始 - Issue ID: " + issue.getId() + " ===");
-        System.out.println("=== Duration进入convertFieldsToString前: " + issue.getDuration() + " ===");
-        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-
+    private void convertFieldsToStringForList(Issue issue) {
+        System.out.println("=== convertFieldsToStringForList开始 - Issue ID: " + issue.getId() + " ===");
+        
         String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== convertFieldsToString中获取的用户时区: " + userTimezone + " ===");
+        System.out.println("=== 用户时区: " + userTimezone + " ===");
 
-        // 计算duration（基于UTC时间）
-        System.out.println("=== 开始计算duration ===");
+        // 1. 计算duration（基于UTC时间）
         issueDurationCalculator.calculateDuration(issue, userTimezone);
-        System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
+        System.out.println("=== duration计算完成: " + issue.getDuration() + " ===");
 
-        // 转换UTC时间为用户本地时间
-        System.out.println("=== 开始转换UTC时间为用户本地时间 ===");
+        // 2. 转换UTC时间为用户本地时间
         issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
         System.out.println("=== 时区转换完成 ===");
 
-        // 确保 isLegacy 和 foundAfterRelease 不为null
+        // 3. 确保字段不为null
         if (issue.getIsLegacy() == null) {
             issue.setIsLegacy(0);
         }
@@ -245,16 +240,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             issue.setFoundAfterRelease(0);
         }
 
-        System.out.println("=== ========== 返回给前端用户的最终时间信息 ========== ===");
-        System.out.println("=== Issue ID: " + issue.getId() + " ===");
-        System.out.println("=== 返回给前端的createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== 返回给前端的updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== 返回给前端的planFixDate: " + issue.getPlanFixDate() + " ===");
-        System.out.println("=== 返回给前端的duration: " + issue.getDuration() + " 小时 ===");
-        System.out.println("=== 返回给前端的createUserId: " + issue.getCreateUserId() + " ===");
-        System.out.println("=== 返回给前端的updateUserId: " + issue.getUpdateUserId() + " ===");
-        System.out.println("=== 用户时区: " + TimezoneContext.getUserTimezone() + " ===");
-        System.out.println("=== convertFieldsToString结束 - Issue ID: " + issue.getDuration() + ", Duration最终: " + issue.getDuration() + " ===");
+        System.out.println("=== convertFieldsToStringForList结束 ===");
     }
 
     private Issue getByIdAndProjectId(Long id, Long projectId) {
@@ -273,17 +259,28 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
         }
 
-        // 获取用户时区
+        System.out.println("=== info方法开始处理Issue ID: " + id + " ===");
+        
         String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== 用户时区: " + userTimezone + " ===");
 
         // 计算duration（基于UTC时间）
         issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== duration计算完成: " + issue.getDuration() + " ===");
 
         // 转换UTC时间为用户本地时间
         issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        System.out.println("=== 时区转换完成 ===");
 
-        // 转换字段格式，确保返回给前端的是字符串格式
-        convertFieldsToString(issue);
+        // 确保字段不为null
+        if (issue.getIsLegacy() == null) {
+            issue.setIsLegacy(0);
+        }
+        if (issue.getFoundAfterRelease() == null) {
+            issue.setFoundAfterRelease(0);
+        }
+
+        System.out.println("=== info方法处理完成 ===");
         return issue;
     }
 
@@ -346,7 +343,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
                 .collect(Collectors.toList());
 
             // 转换字段格式，确保返回给前端的是字符串格式
-            issueList.forEach(this::convertFieldsToString);
+            issueList.forEach(this::convertFieldsToStringForList);
 
             // 使用与 BeanSearchController 相同的分页处理方式
             return PageUtil.manualPaging(issueList);
@@ -408,7 +405,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         List<Issue> issueList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class)).collect(Collectors.toList());
 
         // 转换字段格式，确保返回给前端的是字符串格式
-        issueList.forEach(this::convertFieldsToString);
+        issueList.forEach(this::convertFieldsToStringForList);
 
         // 7. 构造 PageInfo
         PageInfo<Issue> pageInfo = new PageInfo<>(issueList);
@@ -462,14 +459,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             }
 
             // 转换字段格式，确保返回给前端的是字符串格式
-            String userTimezone = TimezoneContext.getUserTimezone();
-            pageData.forEach(issue -> {
-                System.out.println("=== 处理Issue ID: " + issue.getId() + " ===");
-                // 计算duration
-                issueDurationCalculator.calculateDuration(issue, userTimezone);
-                // 转换字段格式
-                convertFieldsToString(issue);
-            });
+            pageData.forEach(this::convertFieldsToStringForList);
 
             PageInfo<Issue> pageInfo = new PageInfo<>(pageData);
             pageInfo.setPageNum(pageNum);
@@ -492,14 +482,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         List<Issue> dataList = this.list(param);
 
          // 转换字段格式，确保返回给前端的是字符串格式
-        String userTimezone = TimezoneContext.getUserTimezone();
-        dataList.forEach(issue -> {
-            System.out.println("=== 简单查询处理Issue ID: " + issue.getId() + " ===");
-            // 计算duration
-            issueDurationCalculator.calculateDuration(issue, userTimezone);
-            // 转换字段格式
-            convertFieldsToString(issue);
-        });
+        dataList.forEach(this::convertFieldsToStringForList);
 
         return PageInfo.of(dataList);
     }
@@ -510,16 +493,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         List<Issue> dataList = this.list(param);
 
         // 转换字段格式，确保返回给前端的是字符串格式
-        String userTimezone = TimezoneContext.getUserTimezone();
-        dataList.forEach(issue -> {
-            System.out.println("=== 简单查询处理Issue ID: " + issue.getId() + " ===");
-            // 1. 先计算duration
-            issueDurationCalculator.calculateDuration(issue, userTimezone);
-            // 2. 转换UTC时间为用户本地时间
-            issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-            // 3. 转换字段格式（不再重复计算duration和时区转换）
-            convertFieldsToString(issue);
-        });
+        dataList.forEach(this::convertFieldsToStringForList);
 
         return PageInfo.of(dataList);
     }
