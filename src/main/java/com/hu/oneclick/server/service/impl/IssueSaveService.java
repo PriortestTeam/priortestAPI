@@ -121,18 +121,18 @@ public class IssueSaveService {
         System.out.println("=== updateExistingIssue - 开始转换日期型字段 ===");
         System.out.println("=== 用户时区: " + userTimezone + " ===");
 
-        // 转换主要日期字段
+        // 转换主要日期字段（只转换一次）
         if (issue.getPlanFixDate() != null) {
             Date originalPlanFixDate = issue.getPlanFixDate();
             System.out.println("=== planFixDate 字段转换前: " + originalPlanFixDate + " ===");
-            issueTimeConverter.convertUserInputTimeToUTC(issue, userTimezone);
+            issueTimeConverter.convertMainTimeFieldsToUTC(issue, userTimezone);
             System.out.println("=== planFixDate 转换后: " + issue.getPlanFixDate() + " ===");
         }
 
-        // 转换自定义字段中的日期
+        // 转换自定义字段中的日期（只处理issueExpand，不再处理主要字段）
         if (issue.getIssueExpand() != null && !issue.getIssueExpand().isEmpty()) {
             System.out.println("=== 开始处理issueExpand中的日期字段 ===");
-            issueTimeConverter.convertUserInputTimeToUTC(issue, userTimezone);
+            issueTimeConverter.convertCustomFieldsTimeToUTC(issue, userTimezone);
         }
 
         // 确保字段不为null

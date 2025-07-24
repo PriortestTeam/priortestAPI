@@ -14,7 +14,77 @@ import java.util.TimeZone;
 public class IssueTimeConverter {
 
     /**
-     * 转换所有日期字段到UTC
+     * 只转换主要时间字段到UTC（createTime, updateTime, planFixDate）
+     */
+    public void convertMainTimeFieldsToUTC(Issue issue, String userTimezone) {
+        if (userTimezone == null || userTimezone.isEmpty()) {
+            System.out.println("=== 没有用户时区信息，跳过主要字段UTC转换 ===");
+            return;
+        }
+
+        System.out.println("=== 开始主要字段UTC转换，用户时区: " + userTimezone + " ===");
+
+        try {
+            TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
+
+            // 转换 createTime（如果是新建时，通常由数据库自动设置）
+            if (issue.getCreateTime() != null) {
+                Date originalTime = issue.getCreateTime();
+                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
+                issue.setCreateTime(utcTime);
+                System.out.println("=== createTime转换: " + originalTime + " -> " + utcTime + " ===");
+            }
+
+            // 转换 updateTime（通常由数据库自动设置）
+            if (issue.getUpdateTime() != null) {
+                Date originalTime = issue.getUpdateTime();
+                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
+                issue.setUpdateTime(utcTime);
+                System.out.println("=== updateTime转换: " + originalTime + " -> " + utcTime + " ===");
+            }
+
+            // 转换 planFixDate
+            if (issue.getPlanFixDate() != null) {
+                System.out.println("=== 开始转换日期型字段 planFixDate ===");
+                Date originalTime = issue.getPlanFixDate();
+                System.out.println("=== planFixDate 字段原始时间: " + originalTime + " ===");
+                System.out.println("=== planFixDate 字段原始时间(毫秒): " + originalTime.getTime() + " ===");
+                Date utcTime = convertLocalTimeToUTC(originalTime, userTZ);
+                issue.setPlanFixDate(utcTime);
+                System.out.println("=== planFixDate 字段转换成UTC时间: " + utcTime + " ===");
+                System.out.println("=== planFixDate 字段转换成UTC时间(毫秒): " + utcTime.getTime() + " ===");
+                System.out.println("=== planFixDate 字段转换完成 ===");
+            }
+
+        } catch (Exception e) {
+            System.out.println("=== 主要字段UTC转换失败: " + e.getMessage() + " ===");
+        }
+    }
+
+    /**
+     * 只转换自定义字段中的日期到UTC（issueExpand中的attributes）
+     */
+    public void convertCustomFieldsTimeToUTC(Issue issue, String userTimezone) {
+        if (userTimezone == null || userTimezone.isEmpty()) {
+            System.out.println("=== 没有用户时区信息，跳过自定义字段UTC转换 ===");
+            return;
+        }
+
+        System.out.println("=== 开始自定义字段UTC转换，用户时区: " + userTimezone + " ===");
+
+        try {
+            TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
+
+            // 只转换 issueExpand 中 attributes 里的日期字段
+            convertAttributesDateFieldsToUTC(issue, userTZ);
+
+        } catch (Exception e) {
+            System.out.println("=== 自定义字段UTC转换失败: " + e.getMessage() + " ===");
+        }
+    }
+
+    /**
+     * 转换所有日期字段到UTC（保持向后兼容）
      */
     public void convertUserInputTimeToUTC(Issue issue, String userTimezone) {
         if (userTimezone == null || userTimezone.isEmpty()) {
