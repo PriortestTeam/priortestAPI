@@ -164,12 +164,8 @@ public class IssueSaveService {
         System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
 
-        // 在返回给前端之前，将UTC时间转换为用户本地时间
-        System.out.println("=== 开始转换UTC时间为用户本地时间，用于返回前端 ===");
-        String actualUserTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== 从TimezoneContext获取的用户时区: " + actualUserTimezone + " ===");
-        issueTimeConverter.convertUTCToLocalTime(issue, actualUserTimezone);
-        System.out.println("=== 转换后返回给前端的时间信息 ===");
+        // 不在这里进行时区转换，保持UTC时间返回给上层方法
+        System.out.println("=== 数据库更新完成，保持UTC时间返回给上层方法 ===");
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
         System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");

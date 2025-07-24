@@ -123,15 +123,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
         }
 
-        // 1. 更新数据库记录（包含时区转换到UTC）
+        // 1. 更新数据库记录（只做UTC转换和存储，不做返回转换）
         Issue issue = issueSaveService.updateExistingIssue(dto);
 
-        // 2. 重新查询完整的Issue对象，确保包含所有字段（包括createTime和createUserId）
+        // 2. 重新查询完整的Issue对象，确保包含所有字段（从数据库查询的都是UTC时间）
         Issue completeIssue = this.getByIdAndProjectId(issue.getId(), issue.getProjectId());
         if (completeIssue != null) {
-            // 将更新后的字段值复制到完整对象中
+            // 将更新后的字段值复制到完整对象中，但时间字段使用数据库查询的UTC时间
             completeIssue.setTitle(issue.getTitle());
-            completeIssue.setPlanFixDate(issue.getPlanFixDate());
+            // 注意：planFixDate使用数据库查询的UTC时间，不使用updateExistingIssue返回的已转换时间
             completeIssue.setVerifiedResult(issue.getVerifiedResult());
             completeIssue.setPriority(issue.getPriority());
             completeIssue.setEnv(issue.getEnv());
@@ -157,7 +157,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             completeIssue.setUserImpact(issue.getUserImpact());
             completeIssue.setRootCause(issue.getRootCause());
             completeIssue.setRootcauseCategory(issue.getRootcauseCategory());
-            completeIssue.setUpdateTime(issue.getUpdateTime());
+            // 注意：updateTime也使用数据库查询的UTC时间，不使用updateExistingIssue返回的已转换时间
             completeIssue.setUpdateUserId(issue.getUpdateUserId());
 
             issue = completeIssue;
@@ -166,7 +166,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         // 3. 计算duration和处理其他字段（基于UTC时间）
         convertFieldsToStringForEdit(issue);
 
-        // 4. 最后进行时区转换，将UTC时间转换为用户本地时间用于返回前端
+        // 4. 最后进行时区转换，将UTC时间转换为用户本地时间用于返回前端（只转换一次）
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== edit方法最后阶段 - 开始UTC到本地时间转换 ===");
         System.out.println("=== 用户时区: " + userTimezone + " ===");
