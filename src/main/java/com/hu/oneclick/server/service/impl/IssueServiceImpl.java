@@ -498,7 +498,6 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         return PageInfo.of(dataList);
     }
 
-    @Override
     public PageInfo<Issue> pageList(IssueParam param, int pageNum, int pageSize) {
         // 手动设置分页参数
         PageUtil.startPage(pageNum, pageSize);
