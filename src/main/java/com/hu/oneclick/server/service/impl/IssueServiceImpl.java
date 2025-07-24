@@ -197,12 +197,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== convertFieldsToStringForEdit中获取的用户时区: " + userTimezone + " ===");
 
-        // 计算duration（基于UTC时间，不进行时区转换） - 已注释
-        // if (issue.getDuration() == null) {
-        //     System.out.println("=== 开始计算duration（基于UTC时间） ===");
-        //     issueDurationCalculator.calculateDuration(issue, userTimezone);
-        //     System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
-        // }
+        // 计算duration（基于UTC时间，不进行时区转换）
+        if (issue.getDuration() == null) {
+            System.out.println("=== 开始计算duration（基于UTC时间） ===");
+            issueDurationCalculator.calculateDuration(issue, userTimezone);
+            System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
+        }
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
@@ -226,9 +226,9 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== 用户时区: " + userTimezone + " ===");
 
-        // 计算duration（基于UTC时间） - 已注释
-        // issueDurationCalculator.calculateDuration(issue, userTimezone);
-        // System.out.println("=== duration计算完成: " + issue.getDuration() + " ===");
+        // 计算duration（基于UTC时间）
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== duration计算完成: " + issue.getDuration() + " ===");
 
         // 2. 转换UTC时间为用户本地时间 - 已注释
         // issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
