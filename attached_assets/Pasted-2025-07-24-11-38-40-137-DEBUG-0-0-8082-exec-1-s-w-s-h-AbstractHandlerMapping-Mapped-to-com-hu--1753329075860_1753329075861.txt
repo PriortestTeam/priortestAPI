@@ -1,0 +1,96 @@
+2025-07-24 11:38:40.137 -DEBUG  [0.0-8082-exec-1] s.w.s.h.AbstractHandlerMapping : Mapped to com.hu.oneclick.controller.IssueController#info(Long)
+=== TimezoneInterceptor 开始处理请求 ===
+=== 请求URL: /api/issue/info/1948218190710501377 ===
+=== 请求方法: GET ===
+=== 客户端IP: 34.83.198.174 ===
+=== 所有请求头信息 ===
+=== Header[accept] = application/json ===
+=== Header[content-type] = application/json ===
+=== Header[authorization] = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJodWp5MTFAZ21haWwuY29tIiwiZXhwIjoxNzUzMzMxNjI1LCJpYXQiOjE3NTMzMjgwMjV9.8Us3DR-Ct4jvIJ4SVXLe-m5YNCAS1vwqL5FclNJ9ZGA ===
+=== Header[x-user-timezone] = Asia/Singapore ===
+=== Header[user-agent] = axios/1.8.4 ===
+=== Header[accept-encoding] = gzip, compress, deflate, br ===
+=== Header[host] = 43.139.159.146:8082 ===
+=== Header[connection] = keep-alive ===
+=== X-User-Timezone头值: [Asia/Singapore] ===
+=== 成功设置时区到ThreadLocal: Asia/Singapore ===
+=== 验证ThreadLocal中的时区: Asia/Singapore ===
+=== TimezoneInterceptor 处理完成 ===
+2025-07-24 11:38:40.138 -DEBUG  [0.0-8082-exec-1] o.a.i.l.j.BaseJdbcLogger       : ==>  Preparing: SELECT id,project_id,title,plan_fix_date,verified_result,priority,env,browser,platform,issue_version,case_category,description,issue_status,module,report_to,issue_expand,fix_version,introduced_version,is_legacy,found_after_release,severity,test_device,runcase_id,fix_category,frequency,issue_source,user_impact,root_cause,rootcause_category,duration,create_user_id,update_user_id,create_time,update_time FROM issue WHERE id=?
+2025-07-24 11:38:40.138 -DEBUG  [0.0-8082-exec-1] o.a.i.l.j.BaseJdbcLogger       : ==> Parameters: 1948218190710501377(Long)
+2025-07-24 11:38:40.141 -DEBUG  [0.0-8082-exec-1] o.a.i.l.j.BaseJdbcLogger       : <==      Total: 1
+=== IssueDurationCalculator - Duration计算开始 ===
+=== Issue ID: 1948218190710501377 ===
+=== 用户时区: Asia/Singapore ===
+=== 使用当前UTC时间计算duration ===
+=== 数据库中的createTime已经是UTC时间，直接使用: Thu Jul 24 11:06:27 CST 2025 ===
+=== 不进行重复的UTC转换 ===
+=== ========== Duration计算公式详情 ========== ===
+=== 计算公式: duration(小时) = (当前UTC时间 - 创建UTC时间) / (1000 * 60 * 60) ===
+=== 公式说明: 除以1000转换毫秒->秒，除以60转换秒->分钟，除以60转换分钟->小时 ===
+=== 当前UTC时间: Thu Jul 24 11:38:40 CST 2025 ===
+=== 当前UTC时间(毫秒): 1753328320142 ===
+=== 数据库UTC创建时间: Thu Jul 24 11:06:27 CST 2025 ===
+=== 数据库UTC创建时间(毫秒): 1753326387000 ===
+=== 时间差计算: 1753328320142 - 1753326387000 = 1933142 毫秒 ===
+=== Duration计算步骤: ===
+=== 1. 毫秒转秒: 1933142 / 1000 = 1933.142 秒 ===
+=== 2. 秒转分钟: 1933.142 / 60 = 32.219033333333336 分钟 ===
+=== 3. 分钟转小时: 32.219033333333336 / 60 = 0.5369838888888889 小时 ===
+=== 4. 取整数部分: 0.5369838888888889 -> 0 小时 ===
+=== 最终Duration结果: 0 小时 ===
+=== ========== Duration时间信息汇总 ========== ===
+=== Issue ID: 1948218190710501377 ===
+=== 创建时间(原始): Thu Jul 24 11:06:27 CST 2025 ===
+=== 创建时间(调整后): Thu Jul 24 11:06:27 CST 2025 ===
+=== 当前时间: Thu Jul 24 11:38:40 CST 2025 ===
+=== 存活时长: 0 小时 ===
+=== 存活时长: 32.219033333333336 分钟 ===
+=== 存活时长: 1933.142 秒 ===
+=== IssueDurationCalculator - Duration计算完成 ===
+=== 开始UTC到本地时间转换，用户时区: Asia/Singapore ===
+=== convertUTCToLocalTime开始 ===
+=== 输入UTC时间: Thu Jul 24 11:06:27 CST 2025 ===
+=== 目标用户时区: Asia/Singapore ===
+=== UTC时间毫秒数: 1753326387000 ===
+=== 时区偏移毫秒数: 28800000 ===
+=== 时区偏移小时数: 8 ===
+=== 转换后本地时间: Thu Jul 24 19:06:27 CST 2025 ===
+=== convertUTCToLocalTime结束 ===
+=== createTime转换: Thu Jul 24 11:06:27 CST 2025 -> Thu Jul 24 19:06:27 CST 2025 ===
+=== convertUTCToLocalTime开始 ===
+=== 输入UTC时间: Thu Jul 24 11:06:27 CST 2025 ===
+=== 目标用户时区: Asia/Singapore ===
+=== UTC时间毫秒数: 1753326387000 ===
+=== 时区偏移毫秒数: 28800000 ===
+=== 时区偏移小时数: 8 ===
+=== 转换后本地时间: Thu Jul 24 19:06:27 CST 2025 ===
+=== convertUTCToLocalTime结束 ===
+=== updateTime转换: Thu Jul 24 11:06:27 CST 2025 -> Thu Jul 24 19:06:27 CST 2025 ===
+=== convertUTCToLocalTime开始 ===
+=== 输入UTC时间: Thu Jul 31 00:00:00 CST 2025 ===
+=== 目标用户时区: Asia/Singapore ===
+=== UTC时间毫秒数: 1753891200000 ===
+=== 时区偏移毫秒数: 28800000 ===
+=== 时区偏移小时数: 8 ===
+=== 转换后本地时间: Thu Jul 31 08:00:00 CST 2025 ===
+=== convertUTCToLocalTime结束 ===
+=== planFixDate转换: Thu Jul 31 00:00:00 CST 2025 -> Thu Jul 31 08:00:00 CST 2025 ===
+=== convertUTCToLocalTime开始 ===
+=== 输入UTC时间: 2025-07-30 16:00:00 ===
+=== 目标用户时区: Asia/Singapore ===
+=== UTC时间毫秒数: 1753862400000 ===
+=== 时区偏移毫秒数: 28800000 ===
+=== 时区偏移小时数: 8 ===
+=== 转换后本地时间: Thu Jul 31 00:00:00 CST 2025 ===
+=== convertUTCToLocalTime结束 ===
+=== Attribute日期字段转换: 2025-07-30 16:00:00 -> Thu Jul 31 00:00:00 CST 2025 ===
+=== convertFieldsToString开始 - Issue ID: 1948218190710501377 ===
+=== Duration进入convertFieldsToString前: 0 ===
+=== createTime: Thu Jul 24 19:06:27 CST 2025 ===
+=== convertFieldsToString中获取的用户时区: Asia/Singapore ===
+=== 准备调用IssueDurationCalculator.calculateDuration方法 ===
+=== IssueDurationCalculator - Duration计算开始 ===
+=== Issue ID: 1948218190710501377 ===
+=== 用户时区: Asia/Singapore ===
+=== 使用当前UTC时间计算duration ===
