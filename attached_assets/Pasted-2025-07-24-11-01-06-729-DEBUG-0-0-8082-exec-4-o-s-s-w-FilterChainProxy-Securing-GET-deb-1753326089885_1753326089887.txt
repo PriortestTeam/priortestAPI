@@ -1,0 +1,56 @@
+2025-07-24 11:01:06.729 -DEBUG  [0.0-8082-exec-4] o.s.s.w.FilterChainProxy       : Securing GET /debug/test
+>>> ========== WebSecurityConfig 过滤器 ==========
+>>> 请求路径: /api/debug/test
+>>> 请求方法: GET
+>>> Content-Type: null
+>>> Authorization头: Bearer eyJhbGciOiJIU...
+>>> 请求参数:
+>>> 需要JWT验证，使用JWT过滤器: /api/debug/test
+>>> [GET] JwtAuthenticationFilter 收到请求: /api/debug/test
+>>> ========== 开始请求处理 ==========
+>>> 请求路径: /api/debug/test
+>>> 请求方法: GET
+>>> 原始Authorization头: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJodWp5MTFAZ21haWwuY29tIiwiZXhwIjoxNzUzMzI5NTI1LCJpYXQiOjE3NTMzMjU5MjV9.6oHPvxpKXzD6sOwYIa3e2dOsksdsO_g5ZjSup4VTIP0
+>>> Authorization头长度: 168
+>>> Authorization头前缀: Bearer eyJhbGciOiJIU...
+>>> 检测到Bearer token，尝试JWT验证
+>>> 开始验证Bearer Token (JWT)
+>>> JWT Subject: hujy11@gmail.com
+>>> 开始验证JWT token是否为当前用户的最新有效token
+>>> Redis中存储的当前有效token: eyJhbGciOiJIUzI1NiIs...
+>>> 请求中的token: eyJhbGciOiJIUzI1NiIs...
+>>> JWT Token验证通过：token匹配，为当前有效的最新token
+>>> JWT Token验证成功，用户: hujy11@gmail.com
+>>> 认证信息已设置到SecurityContext
+>>> 认证成功，继续处理请求
+>>> 认证对象类型: JwtAuthenticationToken
+>>> 认证用户:
+>>> 即将继续过滤链处理
+2025-07-24 11:01:06.734 -DEBUG  [0.0-8082-exec-4] o.s.s.w.FilterChainProxy       : Secured GET /debug/test
+2025-07-24 11:01:06.735 -DEBUG  [0.0-8082-exec-4] o.s.c.l.LogFormatUtils         : GET "/api/debug/test", parameters={}
+2025-07-24 11:01:06.736 -DEBUG  [0.0-8082-exec-4] s.w.s.h.AbstractHandlerMapping : Mapped to ResourceHttpRequestHandler [classpath [META-INF/resources/], classpath [resources/], classpath [static/], classpath [public/], ServletContext [/]]
+=== TimezoneInterceptor 开始处理请求 ===
+=== 请求URL: /api/debug/test ===
+=== 请求方法: GET ===
+=== 客户端IP: 42.60.133.9 ===
+=== 所有请求头信息 ===
+=== Header[x-user-timezone] = Asia/Singapore ===
+=== Header[authorization] = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJodWp5MTFAZ21haWwuY29tIiwiZXhwIjoxNzUzMzI5NTI1LCJpYXQiOjE3NTMzMjU5MjV9.6oHPvxpKXzD6sOwYIa3e2dOsksdsO_g5ZjSup4VTIP0 ===
+=== Header[user-agent] = PostmanRuntime/7.44.1 ===
+=== Header[accept] = */* ===
+=== Header[postman-token] = 8b97ffa3-bc0f-45c4-b6b5-675d4f347c73 ===
+=== Header[host] = 43.139.159.146:8082 ===
+=== Header[accept-encoding] = gzip, deflate, br ===
+=== Header[connection] = keep-alive ===
+=== X-User-Timezone头值: [Asia/Singapore] ===
+=== 成功设置时区到ThreadLocal: Asia/Singapore ===
+=== 验证ThreadLocal中的时区: Asia/Singapore ===
+=== TimezoneInterceptor 处理完成 ===
+2025-07-24 11:01:06.738 -DEBUG  [0.0-8082-exec-4] s.r.ResourceHttpRequestHandler : Resource not found
+2025-07-24 11:01:06.738 -DEBUG  [0.0-8082-exec-4] eptionHandlerExceptionResolver : Using @ExceptionHandler com.hu.oneclick.common.exception.GlobalExceptionHandler#handleException(Exception, HttpServletRequest)
+2025-07-24 11:01:06.739 - INFO  [0.0-8082-exec-4] h.o.c.e.GlobalExceptionHandler : class: GlobalExceptionHandler#handleException type: class org.springframework.web.servlet.resource.NoResourceFoundException, message: No static resource debug/test.
+2025-07-24 11:01:06.739 -DEBUG  [0.0-8082-exec-4] essageConverterMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-07-24 11:01:06.739 -DEBUG  [0.0-8082-exec-4] o.s.c.l.LogFormatUtils         : Writing [com.hu.oneclick.model.base.Resp@522fbb2e]
+2025-07-24 11:01:06.740 -DEBUG  [0.0-8082-exec-4] stractHandlerExceptionResolver : Resolved [org.springframework.web.servlet.resource.NoResourceFoundException: No static resource debug/test.]
+2025-07-24 11:01:06.740 -DEBUG  [0.0-8082-exec-4] o.s.w.s.FrameworkServlet       : Completed 500 INTERNAL_SERVER_ERROR
+>>> 过滤链处理完成，响应状态: 500
