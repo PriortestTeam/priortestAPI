@@ -12,6 +12,7 @@ import java.util.Map;
 public class DebugController {
 
     @PostMapping("/headers")
+    @PostMapping("/debug/headers")  // 添加额外的路径映射
     public Map<String, Object> debugHeaders(HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>();
         Map<String, String> headers = new HashMap<>();
