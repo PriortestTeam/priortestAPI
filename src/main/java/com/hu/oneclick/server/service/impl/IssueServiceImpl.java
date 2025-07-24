@@ -273,6 +273,28 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== convertFieldsToStringForList结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
     }
 
+    // 为 issue/list API 服务的时区转换方法
+    private void convertUTCToLocalTimeForListAPI(Issue issue, String userTimezone) {
+        System.out.println("=== convertUTCToLocalTimeForListAPI开始 - Issue ID: " + issue.getId() + " ===");
+
+        if (issue == null || userTimezone == null || userTimezone.isEmpty()) {
+            System.out.println("=== 参数为空，跳过转换 ===");
+            return;
+        }
+
+        System.out.println("=== 转换前时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+
+        System.out.println("=== 转换后时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        System.out.println("=== convertUTCToLocalTimeForListAPI结束 - Issue ID: " + issue.getId() + " ===");
+    }
 
     /**
      * 转换字段格式：确保数据格式正确
@@ -681,8 +703,5 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             return false;
         }
     }
-
-
-
 
 }

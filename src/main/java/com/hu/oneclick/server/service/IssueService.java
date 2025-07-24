@@ -53,12 +53,6 @@ public interface IssueService extends IService<Issue> {
      */
     Issue edit(IssueSaveDto dto);
 
-    /**
-     * 详情
-     *
-     * @param id
-     * @return
-     */
     Issue info(Long id);
 
     int studusedit(Issue issue,IssueStatusDto issueStatusDto);
