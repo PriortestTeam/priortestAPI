@@ -189,8 +189,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
         }
 
-        // 注意：跳过时区转换，因为getById()已经转换过了
-        System.out.println("=== 跳过时区转换，getById()已经完成时区转换 ===");
+        // 转换UTC时间为用户本地时间
+        System.out.println("=== 开始转换UTC时间为用户本地时间 ===");
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        System.out.println("=== 时区转换完成 ===");
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
@@ -230,8 +232,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         issueDurationCalculator.calculateDuration(issue, userTimezone);
         System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
 
-        // 注意：移除时区转换，让convertFieldsToStringForEdit负责唯一的时区转换
-        System.out.println("=== 跳过时区转换，将在convertFieldsToStringForEdit中统一处理 ===");
+        // 转换UTC时间为用户本地时间
+        System.out.println("=== 开始转换UTC时间为用户本地时间 ===");
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        System.out.println("=== 时区转换完成 ===");
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
