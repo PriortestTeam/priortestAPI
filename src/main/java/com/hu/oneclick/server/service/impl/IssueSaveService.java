@@ -164,11 +164,11 @@ public class IssueSaveService {
         System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
 
-        // 不在这里进行时区转换，保持UTC时间返回给上层方法
-        System.out.println("=== 数据库更新完成，保持UTC时间返回给上层方法 ===");
-        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        // 保持UTC时间返回给上层方法，不进行时区转换
+        System.out.println("=== 数据库更新完成，返回UTC时间给上层方法处理 ===");
+        System.out.println("=== 返回的UTC时间 - createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== 返回的UTC时间 - updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== 返回的UTC时间 - planFixDate: " + issue.getPlanFixDate() + " ===");
 
         return issue;
     }
