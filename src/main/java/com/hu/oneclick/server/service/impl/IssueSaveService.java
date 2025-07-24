@@ -44,7 +44,7 @@ public class IssueSaveService {
     @Transactional
     public Issue insertNewIssue(IssueSaveDto dto) {
         // 记录服务器时区和时间信息
-        logServerTimezoneAndTime("insertNewIssue");
+        //logServerTimezoneAndTime("insertNewIssue");
 
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
@@ -56,23 +56,23 @@ public class IssueSaveService {
         processVersionFields(issue, dto);
 
         // 获取用户时区并转换日期型字段
-        String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== insertNewIssue - 开始转换日期型字段 ===");
-        System.out.println("=== 用户时区: " + userTimezone + " ===");
+        // String userTimezone = TimezoneContext.getUserTimezone();
+        // System.out.println("=== insertNewIssue - 开始转换日期型字段 ===");
+        // System.out.println("=== 用户时区: " + userTimezone + " ===");
 
-        // 转换主要日期字段到UTC
-        if (issue.getPlanFixDate() != null) {
-            Date originalPlanFixDate = issue.getPlanFixDate();
-            System.out.println("=== planFixDate 字段转换前: " + originalPlanFixDate + " ===");
-            issueTimeConverter.convertMainTimeFieldsToUTC(issue, userTimezone);
-            System.out.println("=== planFixDate 转换后: " + issue.getPlanFixDate() + " ===");
-        }
+        // // 转换主要日期字段到UTC
+        // if (issue.getPlanFixDate() != null) {
+        //     Date originalPlanFixDate = issue.getPlanFixDate();
+        //     System.out.println("=== planFixDate 字段转换前: " + originalPlanFixDate + " ===");
+        //     issueTimeConverter.convertMainTimeFieldsToUTC(issue, userTimezone);
+        //     System.out.println("=== planFixDate 转换后: " + issue.getPlanFixDate() + " ===");
+        // }
 
-        // 转换自定义字段中的日期到UTC（只处理attributes，不重复转换主要字段）
-        if (issue.getIssueExpand() != null && !issue.getIssueExpand().isEmpty()) {
-            System.out.println("=== 开始处理issueExpand中的日期字段 ===");
-            issueTimeConverter.convertCustomFieldsTimeToUTC(issue, userTimezone);
-        }
+        // // 转换自定义字段中的日期到UTC（只处理attributes，不重复转换主要字段）
+        // if (issue.getIssueExpand() != null && !issue.getIssueExpand().isEmpty()) {
+        //     System.out.println("=== 开始处理issueExpand中的日期字段 ===");
+        //     issueTimeConverter.convertCustomFieldsTimeToUTC(issue, userTimezone);
+        // }
 
         // 确保字段不为null
         if (issue.getIsLegacy() == null) {
@@ -96,15 +96,15 @@ public class IssueSaveService {
         System.out.println("=== insertNewIssue - duration计算完成，值: " + issue.getDuration() + " ===");
 
         // 转换UTC时间回用户本地时区（用于返回给前端显示）
-        System.out.println("=== 开始将UTC时间转换为用户本地时区 ===");
-        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-        System.out.println("=== UTC到本地时区转换完成 ===");
-        System.out.println("=== 返回给用户的时间信息 ===");
-        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        // System.out.println("=== 开始将UTC时间转换为用户本地时区 ===");
+        // issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        // System.out.println("=== UTC到本地时区转换完成 ===");
+        // System.out.println("=== 返回给用户的时间信息 ===");
+        // System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        // System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        // System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
 
-        System.out.println("=== insertNewIssue完成，数据已插入到数据库（UTC时间），返回用户本地时区时间 ===");
+        // System.out.println("=== insertNewIssue完成，数据已插入到数据库（UTC时间），返回用户本地时区时间 ===");
         return issue;
     }
 
@@ -131,18 +131,18 @@ public class IssueSaveService {
         System.out.println("=== 用户时区: " + userTimezone + " ===");
 
         // 转换主要日期字段（只转换一次）
-        if (issue.getPlanFixDate() != null) {
-            Date originalPlanFixDate = issue.getPlanFixDate();
-            System.out.println("=== planFixDate 字段转换前: " + originalPlanFixDate + " ===");
-            issueTimeConverter.convertMainTimeFieldsToUTC(issue, userTimezone);
-            System.out.println("=== planFixDate 转换后: " + issue.getPlanFixDate() + " ===");
-        }
+        // if (issue.getPlanFixDate() != null) {
+        //     Date originalPlanFixDate = issue.getPlanFixDate();
+        //     System.out.println("=== planFixDate 字段转换前: " + originalPlanFixDate + " ===");
+        //     issueTimeConverter.convertMainTimeFieldsToUTC(issue, userTimezone);
+        //     System.out.println("=== planFixDate 转换后: " + issue.getPlanFixDate() + " ===");
+        // }
 
         // 转换自定义字段中的日期（只处理issueExpand，不再处理主要字段）
-        if (issue.getIssueExpand() != null && !issue.getIssueExpand().isEmpty()) {
-            System.out.println("=== 开始处理issueExpand中的日期字段 ===");
-            issueTimeConverter.convertCustomFieldsTimeToUTC(issue, userTimezone);
-        }
+        // if (issue.getIssueExpand() != null && !issue.getIssueExpand().isEmpty()) {
+        //     System.out.println("=== 开始处理issueExpand中的日期字段 ===");
+        //     issueTimeConverter.convertCustomFieldsTimeToUTC(issue, userTimezone);
+        // }
 
         // 确保字段不为null
         if (issue.getIsLegacy() == null) {
@@ -155,13 +155,13 @@ public class IssueSaveService {
         System.out.println("=== 执行更新操作，Issue ID: " + dto.getId() + " ===");
         issueDao.updateById(issue);
 
-        System.out.println("=== 更新数据库后的时间信息 ===");
-        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        // System.out.println("=== 更新数据库后的时间信息 ===");
+        // System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        // System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        // System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
 
-        System.out.println("=== updateExistingIssue完成，数据已更新到数据库（UTC时间） ===");
-        System.out.println("=== 注意：不在此方法中进行返回时区转换，将在上层方法中单独处理 ===");
+        // System.out.println("=== updateExistingIssue完成，数据已更新到数据库（UTC时间） ===");
+        // System.out.println("=== 注意：不在此方法中进行返回时区转换，将在上层方法中单独处理 ===");
 
         return issue;
     }
