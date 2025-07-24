@@ -215,7 +215,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     /**
      * 转换字段格式：确保数据格式正确
      * 由于使用了 @JsonProperty 注解，JSON 序列化会自动调用字符串格式的 getter 方法
-     * 注意：不在此方法中计算duration，避免重复计算
+     * 在这个方法中进行必要的业务计算和时区转换
      */
     private void convertFieldsToString(Issue issue) {
         System.out.println("=== convertFieldsToString开始 - Issue ID: " + issue.getId() + " ===");
@@ -225,11 +225,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== convertFieldsToString中获取的用户时区: " + userTimezone + " ===");
 
-        // 移除重复的duration计算，因为在调用此方法前已经计算过了
-        System.out.println("=== 跳过重复的duration计算，使用已有值: " + issue.getDuration() + " ===");
+        // 计算duration（基于UTC时间）
+        System.out.println("=== 开始计算duration ===");
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
 
-        // 时区转换也应该在调用此方法前完成，这里不再重复转换
-        System.out.println("=== 跳过重复的时区转换，时间已在调用前转换完成 ===");
+        // 将UTC时间转换为用户本地时间
+        System.out.println("=== 开始时区转换 ===");
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        System.out.println("=== 时区转换完成 ===");
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
@@ -248,7 +252,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== 返回给前端的createUserId: " + issue.getCreateUserId() + " ===");
         System.out.println("=== 返回给前端的updateUserId: " + issue.getUpdateUserId() + " ===");
         System.out.println("=== 用户时区: " + TimezoneContext.getUserTimezone() + " ===");
-        System.out.println("=== convertFieldsToString结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
+        System.out.println("=== convertFieldsToString结束 - Issue ID: " + issue.getDuration() + ", Duration最终: " + issue.getDuration() + " ===");
     }
 
     private Issue getByIdAndProjectId(Long id, Long projectId) {
