@@ -34,7 +34,8 @@ public class DebugController {
         
         result.put("receivedHeaders", headers);
         result.put("xUserTimezone", timezone);
-        result.put("message", "请求头调试信息");
+        result.put("message", "Headers received successfully");
+        result.put("timestamp", System.currentTimeMillis());
         
         return result;
     }
