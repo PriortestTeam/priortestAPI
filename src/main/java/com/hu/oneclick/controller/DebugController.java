@@ -8,8 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/debug")
+@RequestMapping("/api/debug")
 public class DebugController {
+
+    @GetMapping("/test")
+    public Map<String, Object> testController() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "DebugController is working on server");
+        result.put("timestamp", System.currentTimeMillis());
+        result.put("server", "guangzhou");
+        return result;
+    }
 
     @PostMapping("/headers")
     public Map<String, Object> debugHeaders(HttpServletRequest request) {
@@ -18,6 +27,7 @@ public class DebugController {
         
         System.out.println("=== DEBUG: 接收到请求 ===");
         System.out.println("=== 请求URL: " + request.getRequestURI() + " ===");
+        System.out.println("=== Controller被正确调用 ===");
         
         // 获取所有请求头
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -34,8 +44,9 @@ public class DebugController {
         
         result.put("receivedHeaders", headers);
         result.put("xUserTimezone", timezone);
-        result.put("message", "Headers received successfully");
+        result.put("message", "Headers received successfully from guangzhou server");
         result.put("timestamp", System.currentTimeMillis());
+        result.put("server", "guangzhou");
         
         return result;
     }
