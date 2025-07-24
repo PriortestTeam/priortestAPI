@@ -178,19 +178,20 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== convertFieldsToStringForEdit开始 - Issue ID: " + issue.getId() + " ===");
         System.out.println("=== Duration进入convertFieldsToStringForEdit前: " + issue.getDuration() + " ===");
         System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
-        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
 
+        // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== convertFieldsToStringForEdit中获取的用户时区: " + userTimezone + " ===");
 
-        // 计算duration（基于UTC时间）
-        System.out.println("=== 准备调用IssueDurationCalculator.calculateDuration方法 ===");
-        issueDurationCalculator.calculateDuration(issue, userTimezone);
-        System.out.println("=== IssueDurationCalculator.calculateDuration调用完成，Duration值: " + issue.getDuration() + " ===");
+        // 计算duration（如果还没有计算）
+        if (issue.getDuration() == null) {
+            System.out.println("=== 开始计算duration ===");
+            issueDurationCalculator.calculateDuration(issue, userTimezone);
+            System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
+        }
 
-        // 注意：这里不再调用时间转换，因为在IssueSaveService中已经转换过了
-        System.out.println("=== 跳过时间转换，因为在IssueSaveService中已经转换 ===");
+        // 注意：跳过时区转换，因为getById()已经转换过了
+        System.out.println("=== 跳过时区转换，getById()已经完成时区转换 ===");
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
