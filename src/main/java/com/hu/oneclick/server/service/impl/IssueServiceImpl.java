@@ -230,10 +230,8 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         issueDurationCalculator.calculateDuration(issue, userTimezone);
         System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
 
-        // 将UTC时间转换为用户本地时间
-        System.out.println("=== 开始时区转换 ===");
-        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-        System.out.println("=== 时区转换完成 ===");
+        // 注意：移除时区转换，让convertFieldsToStringForEdit负责唯一的时区转换
+        System.out.println("=== 跳过时区转换，将在convertFieldsToStringForEdit中统一处理 ===");
 
         // 确保 isLegacy 和 foundAfterRelease 不为null
         if (issue.getIsLegacy() == null) {
