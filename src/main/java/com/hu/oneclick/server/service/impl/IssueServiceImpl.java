@@ -256,35 +256,33 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
     @Override
     public Issue info(Long id) {
+        System.out.println("=== Issue.info方法开始，ID: " + id + " ===");
+
         Issue issue = this.baseMapper.selectById(id);
         if (issue == null) {
-            throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
+            throw new BaseException("issue not found");
         }
 
-        System.out.println("=== info方法开始处理Issue ID: " + id + " ===");
+        System.out.println("=== 数据库查询的原始issue: " + issue.getId() + " ===");
+        System.out.println("=== 原始createTime: " + issue.getCreateTime() + " ===");
 
+        // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== 用户时区: " + userTimezone + " ===");
 
-        // 计算duration（基于UTC时间） - 已注释
-        // System.out.println("=== 开始计算duration（基于UTC时间） ===");
-        // issueDurationCalculator.calculateDuration(issue, userTimezone);
-        // System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
+        // 计算duration（基于当前时间策略）
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
 
-        // 转换UTC时间为用户本地时区（用于返回给前端显示） - 已注释
-        // System.out.println("=== 开始将UTC时间转换为用户本地时区 ===");
-        // issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-        // System.out.println("=== UTC到本地时区转换完成 ===");
+        // 现在数据库存储的是用户本地时间，无需进行时区转换
+        // 但如果需要显示格式转换，可以在这里处理
+        System.out.println("=== 跳过时区转换（数据库已存储用户本地时间） ===");
 
-        // 确保字段不为null
-        if (issue.getIsLegacy() == null) {
-            issue.setIsLegacy(0);
-        }
-        if (issue.getFoundAfterRelease() == null) {
-            issue.setFoundAfterRelease(0);
-        }
+        // 转换字段格式
+        convertFieldsToStringForEdit(issue);
+        System.out.println("=== 字段格式转换完成 ===");
 
-        System.out.println("=== info方法处理完成 ===");
+        System.out.println("=== Issue.info方法结束 ===");
         return issue;
     }
 
