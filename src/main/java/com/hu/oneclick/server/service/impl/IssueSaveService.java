@@ -314,4 +314,9 @@ public class IssueSaveService {
 
         System.out.println("=== " + methodName + " - 时区信息记录完成 ===");
     }
+
+    // 4. 转换用户输入的本地时间为UTC时间（用于存储到数据库） - 已注释
+    public void convertUserInputTimeToUTC(Issue issue, String userTimezone) {
+
+    }
 }

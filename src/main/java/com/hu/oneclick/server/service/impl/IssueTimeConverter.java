@@ -84,7 +84,7 @@ public class IssueTimeConverter {
     }
 
     /**
-     * 转换所有日期字段到UTC（保持向后兼容）
+     * 将用户输入的本地时间转换为UTC时间（用于存储到数据库） - 已注释
      */
     public void convertUserInputTimeToUTC(Issue issue, String userTimezone) {
         if (userTimezone == null || userTimezone.isEmpty()) {
@@ -92,8 +92,10 @@ public class IssueTimeConverter {
             return;
         }
 
-        System.out.println("=== 开始UTC转换，用户时区: " + userTimezone + " ===");
+        System.out.println("=== 开始UTC转换，用户时区: " + userTimezone + " - 已注释，不进行转换 ===");
 
+        // 所有时间转换逻辑已注释 - 数据库不存储UTC时间
+        /*
         try {
             TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
 
@@ -124,6 +126,7 @@ public class IssueTimeConverter {
         } catch (Exception e) {
             System.out.println("=== UTC转换失败: " + e.getMessage() + " ===");
         }
+        */
     }
 
     /**
