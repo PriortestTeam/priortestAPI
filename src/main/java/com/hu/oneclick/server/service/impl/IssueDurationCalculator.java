@@ -251,20 +251,36 @@ public class IssueDurationCalculator {
         System.out.println("=== 输入UTC时间: " + utcTime + " ===");
         System.out.println("=== 用户时区: " + userTimeZone.getID() + " ===");
         
-        // 获取用户时区的偏移量（毫秒）
-        long offsetMillis = userTimeZone.getOffset(utcTime.getTime());
-        System.out.println("=== 时区偏移毫秒: " + offsetMillis + " ===");
-        System.out.println("=== 时区偏移小时: " + (offsetMillis / (1000 * 60 * 60)) + " ===");
+        // 获取服务器当前时区
+        TimeZone serverTimeZone = TimeZone.getDefault();
+        System.out.println("=== 服务器时区: " + serverTimeZone.getID() + " ===");
         
-        // UTC时间 + 时区偏移 = 用户本地时间
-        long localTimeMillis = utcTime.getTime() + offsetMillis;
-        Date localTime = new Date(localTimeMillis);
+        // 获取用户时区和服务器时区的偏移量
+        long userOffsetMillis = userTimeZone.getOffset(utcTime.getTime());
+        long serverOffsetMillis = serverTimeZone.getOffset(utcTime.getTime());
+        System.out.println("=== 用户时区偏移毫秒: " + userOffsetMillis + " ===");
+        System.out.println("=== 服务器时区偏移毫秒: " + serverOffsetMillis + " ===");
+        System.out.println("=== 用户时区偏移小时: " + (userOffsetMillis / (1000 * 60 * 60)) + " ===");
+        System.out.println("=== 服务器时区偏移小时: " + (serverOffsetMillis / (1000 * 60 * 60)) + " ===");
         
-        System.out.println("=== UTC时间毫秒: " + utcTime.getTime() + " ===");
-        System.out.println("=== 本地时间毫秒: " + localTimeMillis + " ===");
-        System.out.println("=== 转换后的用户本地时间: " + localTime + " ===");
-        System.out.println("=== UTC时间转换为用户本地时间完成 ===");
-        
-        return localTime;
+        // 检查时区是否相同
+        if (userOffsetMillis == serverOffsetMillis) {
+            System.out.println("=== 用户时区与服务器时区相同，直接返回UTC时间（服务器会自动显示为本地时间） ===");
+            System.out.println("=== 输入UTC时间: " + utcTime + " ===");
+            System.out.println("=== 返回时间: " + utcTime + " ===");
+            return utcTime;
+        } else {
+            // 时区不同时才进行转换
+            System.out.println("=== 用户时区与服务器时区不同，需要进行时区转换 ===");
+            long offsetDiff = userOffsetMillis - serverOffsetMillis;
+            long localTimeMillis = utcTime.getTime() + offsetDiff;
+            Date localTime = new Date(localTimeMillis);
+            
+            System.out.println("=== 时区差异毫秒: " + offsetDiff + " ===");
+            System.out.println("=== UTC时间毫秒: " + utcTime.getTime() + " ===");
+            System.out.println("=== 本地时间毫秒: " + localTimeMillis + " ===");
+            System.out.println("=== 转换后的用户本地时间: " + localTime + " ===");
+            return localTime;
+        }
     }
 }
