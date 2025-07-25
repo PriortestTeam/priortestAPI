@@ -187,7 +187,7 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             }
         }
 
-        // 特殊处理：当 scopeId=7000001 时，将 version 字段拆分成两个字段
+        // 特殊处理：当 scopeId=7000001 时，将 version 字段拆分成三个字段
         if (customFieldDto.getScopeId() != null && customFieldDto.getScopeId() == 7000001L) {
             List<CustomFileldLinkVo> processedFields = new ArrayList<>();
 
@@ -206,6 +206,13 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
                     fixVersionField.setFieldNameEn("fixVersion");
                     fixVersionField.setMandatory(0);
                     processedFields.add(fixVersionField);
+
+                    // 创建引入版本字段（不必填）
+                    CustomFileldLinkVo introducedVersionField = cloneCustomField(field);
+                    introducedVersionField.setFieldNameCn("引入版本");
+                    introducedVersionField.setFieldNameEn("introducedVersion");
+                    introducedVersionField.setMandatory(0); // 设置为非必填
+                    processedFields.add(introducedVersionField);
                 } else {
                     // 其他字段保持不变
                     processedFields.add(field);

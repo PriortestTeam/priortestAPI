@@ -2,6 +2,8 @@ package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,15 +25,22 @@ import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.ViewFilterService;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import cn.zhxu.bs.MapSearcher;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.BeanUtils;
+import com.hu.oneclick.common.util.TimezoneContext;
+import com.hu.oneclick.model.base.Resp;
 
 @Service
 public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements IssueService {
@@ -59,6 +68,30 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
     private final ViewFilterService viewFilterService;
 
+    @Resource
+    private IssueSaveService issueSaveService;
+
+    @Resource
+    private IssueTimeConverter issueTimeConverter;
+
+    @Resource
+    private IssueDurationCalculator issueDurationCalculator;
+
+    // ThreadLocal存储用户时区信息
+    private static final ThreadLocal<String> USER_TIMEZONE = new ThreadLocal<>();
+
+    public static void setUserTimezone(String timezone) {
+        USER_TIMEZONE.set(timezone);
+    }
+
+    public static String getCurrentUserTimezone() {
+        return USER_TIMEZONE.get();
+    }
+
+    public static void clearUserTimezone() {
+        USER_TIMEZONE.remove();
+    }
+
 
     public IssueServiceImpl(JwtUserServiceImpl jwtUserService, ModifyRecordsService modifyRecordsService, SysPermissionService sysPermissionService, QueryFilterService queryFilterService, CustomFieldDataService customFieldDataService, ViewFilterService viewFilterService) {
         this.jwtUserService = jwtUserService;
@@ -77,31 +110,139 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
     @Override
+    @Transactional
     public Issue add(IssueSaveDto dto) {
-        Issue issue = new Issue();
-        BeanUtil.copyProperties(dto, issue);
-        // 保存自定义字段
-        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            issue.setIssueExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
-        }
-        this.baseMapper.insert(issue);
-        return issue;
+        return issueSaveService.saveNewIssue(dto);
     }
 
     @Override
+    @Transactional
     public Issue edit(IssueSaveDto dto) {
+        // 1. 查找记录验证是否存在（不做任何时区转换，只确认记录存在）
         Issue entity = this.getByIdAndProjectId(dto.getId(), dto.getProjectId());
         if (null == entity) {
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
         }
-        Issue issue = new Issue();
-        BeanUtil.copyProperties(dto, issue);
-        // 保存自定义字段
-        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            issue.setIssueExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
+        System.out.println("=== 验证记录存在，不进行任何时区转换 ===");
+
+        // 2. 执行更新操作（本地时间 → UTC 转换并存储）
+        Issue issue = issueSaveService.updateExistingIssue(dto);
+        System.out.println("=== 更新操作完成，数据已存储为UTC时间 ===");
+
+        // 3. 重新查询完整的Issue对象（从数据库查询的都是UTC时间）
+        Issue completeIssue = this.getByIdAndProjectId(issue.getId(), issue.getProjectId());
+        if (completeIssue != null) {
+            System.out.println("=== 重新查询完整记录，获取最新的UTC时间数据 ===");
+
+            // 将更新后的非时间字段值复制到完整对象中
+            // 注意：时间字段（createTime, updateTime, planFixDate）使用数据库查询的UTC时间
+            completeIssue.setTitle(issue.getTitle());
+            completeIssue.setVerifiedResult(issue.getVerifiedResult());
+            completeIssue.setPriority(issue.getPriority());
+            completeIssue.setEnv(issue.getEnv());
+            completeIssue.setBrowser(issue.getBrowser());
+            completeIssue.setPlatform(issue.getPlatform());
+            completeIssue.setIssueVersion(issue.getIssueVersion());
+            completeIssue.setCaseCategory(issue.getCaseCategory());
+            completeIssue.setDescription(issue.getDescription());
+            completeIssue.setIssueStatus(issue.getIssueStatus());
+            completeIssue.setModule(issue.getModule());
+            completeIssue.setReportTo(issue.getReportTo());
+            completeIssue.setIssueExpand(issue.getIssueExpand());
+            completeIssue.setFixVersion(issue.getFixVersion());
+            completeIssue.setIntroducedVersion(issue.getIntroducedVersion());
+            completeIssue.setIsLegacy(issue.getIsLegacy());
+            completeIssue.setFoundAfterRelease(issue.getFoundAfterRelease());
+            completeIssue.setSeverity(issue.getSeverity());
+            completeIssue.setTestDevice(issue.getTestDevice());
+            completeIssue.setRuncaseId(issue.getRuncaseId());
+            completeIssue.setFixCategory(issue.getFixCategory());
+            completeIssue.setFrequency(issue.getFrequency());
+            completeIssue.setIssueSource(issue.getIssueSource());
+            completeIssue.setUserImpact(issue.getUserImpact());
+            completeIssue.setRootCause(issue.getRootCause());
+            completeIssue.setRootcauseCategory(issue.getRootcauseCategory());
+            completeIssue.setUpdateUserId(issue.getUpdateUserId());
+
+            issue = completeIssue;
         }
-        this.baseMapper.updateById(issue);
+
+        // 4. 计算duration（基于UTC时间，不进行时区转换）
+        convertFieldsToStringForEdit(issue);
+        System.out.println("=== Duration计算完成，基于UTC时间 ===");
+
+        // 5. 最后一步：将UTC时间转换为用户本地时间（只转换一次）
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== edit方法最后阶段 - 开始唯一的UTC到本地时间转换 ===");
+        System.out.println("=== 用户时区: " + userTimezone + " ===");
+        // 转换UTC时间为用户本地时区（用于返回给前端显示） - 已注释
+        // System.out.println("=== 开始将UTC时间转换为用户本地时区 ===");
+        // issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        // System.out.println("=== UTC到本地时区转换完成 ===");
+
         return issue;
+    }
+
+
+    /**
+     * 专门用于编辑操作的字段转换方法，只处理业务逻辑，不进行时区转换
+     * 时区转换在上层方法中单独处理
+     */
+    private void convertFieldsToStringForEdit(Issue issue) {
+        System.out.println("=== convertFieldsToStringForEdit开始 - Issue ID: " + issue.getId() + " ===");
+        System.out.println("=== Duration进入convertFieldsToStringForEdit前: " + issue.getDuration() + " ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== convertFieldsToStringForEdit中获取的用户时区: " + userTimezone + " ===");
+
+        // 计算duration（基于UTC时间，不进行时区转换）
+        if (issue.getDuration() == null) {
+            System.out.println("=== 开始计算duration（基于UTC时间） ===");
+            issueDurationCalculator.calculateDuration(issue, userTimezone);
+            System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
+        }
+
+        // 确保 isLegacy 和 foundAfterRelease 不为null
+        if (issue.getIsLegacy() == null) {
+            issue.setIsLegacy(0);
+        }
+        if (issue.getFoundAfterRelease() == null) {
+            issue.setFoundAfterRelease(0);
+        }
+
+        System.out.println("=== convertFieldsToStringForEdit结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
+        System.out.println("=== 注意：时区转换将在上层方法中单独处理 ===");
+    }
+
+    /**
+     * 专门为 issue/list API 设计的字段转换方法
+     * 直接进行时区转换，不做任何检查
+     */
+    private void convertFieldsToStringForList(Issue issue) {
+        System.out.println("=== convertFieldsToStringForList开始 - Issue ID: " + issue.getId() + " ===");
+
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== 用户时区: " + userTimezone + " ===");
+
+        // 计算duration（基于UTC时间）
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== duration计算完成: " + issue.getDuration() + " ===");
+
+        // 2. 转换UTC时间为用户本地时间 - 已注释
+        // issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+        // System.out.println("=== 时区转换完成 ===");
+
+        // 3. 确保字段不为null
+        if (issue.getIsLegacy() == null) {
+            issue.setIsLegacy(0);
+        }
+        if (issue.getFoundAfterRelease() == null) {
+            issue.setFoundAfterRelease(0);
+        }
+
+        System.out.println("=== convertFieldsToStringForList结束 ===");
     }
 
     private Issue getByIdAndProjectId(Long id, Long projectId) {
@@ -115,10 +256,33 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
     @Override
     public Issue info(Long id) {
+        System.out.println("=== Issue.info方法开始，ID: " + id + " ===");
+
         Issue issue = this.baseMapper.selectById(id);
         if (issue == null) {
-            throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
+            throw new BaseException("issue not found");
         }
+
+        System.out.println("=== 数据库查询的原始issue: " + issue.getId() + " ===");
+        System.out.println("=== 原始createTime: " + issue.getCreateTime() + " ===");
+
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== 用户时区: " + userTimezone + " ===");
+
+        // 计算duration（基于当前时间策略）
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
+
+        // 现在数据库存储的是用户本地时间，无需进行时区转换
+        // 但如果需要显示格式转换，可以在这里处理
+        System.out.println("=== 跳过时区转换（数据库已存储用户本地时间） ===");
+
+        // 转换字段格式
+        convertFieldsToStringForEdit(issue);
+        System.out.println("=== 字段格式转换完成 ===");
+
+        System.out.println("=== Issue.info方法结束 ===");
         return issue;
     }
 
@@ -129,7 +293,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
        issue.setVerifiedResult(issueStatusDto.getVerifiedResult());
         // 如果 status 是 关闭 时，设置 close_date 时间为此时
         if ("关闭".equals(issueStatusDto.getIssueStatus())) {
-            issue.setCloseDate(new Date());
+           // issue.setCloseDate(new Date()); // Removed closeDate
         }
        System.out.println(issue);
 
@@ -138,20 +302,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
     @Override
     public void clone(List<Long> ids) {
-        List<Issue> issueList = new ArrayList<>();
-        for (Long id : ids) {
-            Issue issue = baseMapper.selectById(id);
-            if (issue == null) {
-                throw new BaseException(StrUtil.format("缺陷查询不到。ID：{}", id));
-            }
-            Issue issueClone = new Issue();
-            BeanUtil.copyProperties(issue, issueClone);
-            issueClone.setId(null);
-            issueClone.setTitle(CloneFormatUtil.getCloneTitle(issueClone.getTitle()));
-            issueList.add(issueClone);
-        }
-        // 批量克隆
-        this.saveBatch(issueList);
+        issueSaveService.cloneIssues(ids);
     }
 
     @Override
@@ -176,23 +327,26 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         try {
             // 获取视图过滤参数
             Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
-            
+
             if (filterParams == null) {
                 // 如果没有过滤条件，返回空分页结果
                 return new PageInfo<>(new ArrayList<>());
             }
-            
+
             // 使用BeanSearcher进行查询，使用issue作为查询类
             Class<?> issueClass = Class.forName("com.hu.oneclick.model.entity.Issue");
-            
+
             // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
             List<Map<String, Object>> result = mapSearcher.searchAll(issueClass, filterParams);
-            
+
             // 转换为 Issue 对象
             List<Issue> issueList = result.stream()
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class))
                 .collect(Collectors.toList());
-            
+
+            // 转换字段格式，确保返回给前端的是字符串格式
+            issueList.forEach(this::convertFieldsToStringForList);
+
             // 使用与 BeanSearchController 相同的分页处理方式
             return PageUtil.manualPaging(issueList);
         } catch (Exception e) {
@@ -214,14 +368,14 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
         // 2. 获取 projectId
         String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
-        
+
         // 3. 计算偏移量
         int offset = (pageNum - 1) * pageSize;
-        
+
         // 添加调试日志
         logger.info("queryByFieldAndValue - 分页参数: pageNum={}, pageSize={}, offset={}", pageNum, pageSize, offset);
         logger.info("queryByFieldAndValue - 查询参数: tableName={}, fieldNameEn={}, value={}, projectId={}", tableName, fieldNameEn, value, projectId);
-        
+
         // 4. 使用 DAO 方法查询数据
         List<Map<String, Object>> result = viewDao.queryRecordsByScope(
             tableName,
@@ -232,12 +386,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             offset,
             pageSize
         );
-        
+
         logger.info("queryByFieldAndValue - 查询结果数量: {}", result.size());
         if (!result.isEmpty()) {
             logger.info("queryByFieldAndValue - 第一条记录: {}", result.get(0));
         }
-        
+
         // 5. 查询总数
         long total = viewDao.countRecordsByScope(
             tableName,
@@ -246,12 +400,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             projectId,
             null
         );
-        
+
         logger.info("queryByFieldAndValue - 总记录数: {}", total);
-        
+
         // 6. 转 bean
         List<Issue> issueList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class)).collect(Collectors.toList());
-        
+
+        // 转换字段格式，确保返回给前端的是字符串格式
+        issueList.forEach(this::convertFieldsToStringForList);
+
         // 7. 构造 PageInfo
         PageInfo<Issue> pageInfo = new PageInfo<>(issueList);
         pageInfo.setPageNum(pageNum);
@@ -262,10 +419,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
         pageInfo.setHasPreviousPage(pageNum > 1);
         pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
-        
+
         logger.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
                  pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage());
-        
+
         return pageInfo;
     }
 
@@ -277,7 +434,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             // 获取视图过滤参数
             Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
                 param.getViewId(), param.getProjectId().toString());
-            
+
             if (filterParams == null) {
                 // 如果获取过滤参数失败，回退到简单查询
                 logger.warn("获取视图过滤参数失败，回退到简单查询");
@@ -287,22 +444,25 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             // 使用BeanSearcher进行查询
             Class<?> issueClass = Class.forName("com.hu.oneclick.model.entity.Issue");
             List<Map<String, Object>> result = mapSearcher.searchAll(issueClass, filterParams);
-            
+
             // 转换为 Issue 对象
             List<Issue> issueList = result.stream()
                 .map(map -> BeanUtil.toBeanIgnoreError(map, Issue.class))
                 .collect(Collectors.toList());
-            
+
             // 手动分页处理
             int total = issueList.size();
             int startIndex = (pageNum - 1) * pageSize;
             int endIndex = Math.min(startIndex + pageSize, total);
-            
+
             List<Issue> pageData = new ArrayList<>();
             if (startIndex < total) {
                 pageData = issueList.subList(startIndex, endIndex);
             }
-            
+
+            // 转换字段格式，确保返回给前端的是字符串格式
+            pageData.forEach(this::convertFieldsToStringForList);
+
             PageInfo<Issue> pageInfo = new PageInfo<>(pageData);
             pageInfo.setPageNum(pageNum);
             pageInfo.setPageSize(pageSize);
@@ -322,6 +482,67 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         // 手动设置分页参数
         PageUtil.startPage(pageNum, pageSize);
         List<Issue> dataList = this.list(param);
+
+         // 转换字段格式，确保返回给前端的是字符串格式
+        dataList.forEach(this::convertFieldsToStringForList);
+
         return PageInfo.of(dataList);
     }
+
+    public PageInfo<Issue> pageList(IssueParam param, int pageNum, int pageSize) {
+        // 手动设置分页参数
+        PageUtil.startPage(pageNum, pageSize);
+        List<Issue> dataList = this.list(param);
+
+        // 转换字段格式，确保返回给前端的是字符串格式
+        dataList.forEach(this::convertFieldsToStringForList);
+
+        return PageInfo.of(dataList);
+    }
+
+    public Issue getIssueById(Long id) {
+        Issue issue = this.baseMapper.selectById(id);
+
+        if (issue == null) {
+            throw new BaseException("Issue查询不到");
+        }
+
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== getIssueById - 用户时区: " + userTimezone + " ===");
+
+        // 计算duration（基于UTC时间）
+        System.out.println("=== getIssueById - 准备计算duration ===");
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== getIssueById - duration计算完成，值: " + issue.getDuration() + " ===");
+
+        // 将UTC时间转换为用户本地时间
+        System.out.println("=== getIssueById - 开始转换UTC时间为用户本地时间 ===");
+        System.out.println("=== 转换前时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+
+        issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
+
+        System.out.println("=== 转换后时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+
+        // 转换字段格式，确保返回给前端的是字符串格式
+        convertFieldsToStringForEdit(issue);
+
+        System.out.println("=== getIssueById - 返回给前端的最终时间信息 ===");
+        System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
+        System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
+        System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
+        System.out.println("=== duration: " + issue.getDuration() + " 小时 ===");
+
+        return issue;
+    }
+
+
+
+
 }

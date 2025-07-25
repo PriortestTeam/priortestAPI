@@ -2,6 +2,8 @@ package com.hu.oneclick.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hu.oneclick.model.base.AssignBaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -70,16 +72,34 @@ public class TestCycle extends AssignBaseEntity implements Serializable {
      */
     @Schema(description = "描述")
     private String description;
-    /**
-     * 0 默认 1 选中
-     */
-    @Schema(description = "0 默认 1 选中")
+
+    @Schema(description = "当前版本")
+    @JsonIgnore
     private Integer currentRelease;
-    /**
-     * 0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。)
-     */
-    @Schema(description = "0 未选择 1选中 (当 currentVersion 选中， 此值一定选择。))")
+
+    @Schema(description = "是否发布")
+    @JsonIgnore
     private Integer released;
+
+    // 为前端提供字符串格式的getter方法
+    @JsonProperty("currentRelease")
+    public String getCurrentReleaseStr() {
+        return currentRelease != null ? currentRelease.toString() : "0";
+    }
+
+    @JsonProperty("released")
+    public String getReleasedStr() {
+        return released != null ? released.toString() : "0";
+    }
+
+    // 为前端提供字符串格式的setter方法
+    public void setCurrentReleaseStr(String currentReleaseStr) {
+        this.currentRelease = (currentReleaseStr != null && !currentReleaseStr.isEmpty()) ? Integer.parseInt(currentReleaseStr) : 0;
+    }
+
+    public void setReleasedStr(String releasedStr) {
+        this.released = (releasedStr != null && !releasedStr.isEmpty()) ? Integer.parseInt(releasedStr) : 0;
+    }
     /**
      * 用例执行人
      */

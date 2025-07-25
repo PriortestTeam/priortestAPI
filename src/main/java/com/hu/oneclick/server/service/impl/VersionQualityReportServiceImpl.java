@@ -96,6 +96,175 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         }
     }
 
+    public Resp<Map<String, Object>> getReleasePhaseDefects(String projectId, String releaseVersion) {
+        try {
+            Map<String, Object> result = new HashMap<>();
+
+            // 发布前后对比分析
+            Map<String, Object> phaseStats = new HashMap<>();
+
+            // 发布前缺陷
+            int preReleaseDefects = 8;
+            // 发布后缺陷  
+            int postReleaseDefects = 4;
+            // 遗留缺陷（历史版本引入，当前版本发现）
+            int legacyDefects = 2;
+            int totalDefects = preReleaseDefects + postReleaseDefects;
+
+            phaseStats.put("preReleaseDefects", preReleaseDefects);
+            phaseStats.put("postReleaseDefects", postReleaseDefects);
+            phaseStats.put("totalDefects", totalDefects);
+
+            // 核心指标计算
+            double escapeRate = totalDefects > 0 ? (double) postReleaseDefects / totalDefects * 100 : 0.0;
+            double testEffectiveness = totalDefects > 0 ? (double) preReleaseDefects / totalDefects * 100 : 0.0;
+
+            phaseStats.put("escapeRate", Math.round(escapeRate * 100.0) / 100.0);
+            phaseStats.put("testEffectiveness", Math.round(testEffectiveness * 100.0) / 100.0);
+
+            // 发布质量等级评定
+            String qualityLevel;
+            if (escapeRate < 10) {
+                qualityLevel = "优秀";
+            } else if (escapeRate < 20) {
+                qualityLevel = "良好";
+            } else if (escapeRate < 30) {
+                qualityLevel = "一般";
+            } else {
+                qualityLevel = "需改进";
+            }
+            phaseStats.put("qualityLevel", qualityLevel);
+
+            // 发布前后缺陷严重程度对比
+            Map<String, Object> severityComparison = new HashMap<>();
+
+            // 发布前缺陷严重程度分布
+            List<Map<String, Object>> preReleaseSeverity = new ArrayList<>();
+            preReleaseSeverity.add(createSeverityData("致命", 1, "#dc3545"));
+            preReleaseSeverity.add(createSeverityData("严重", 2, "#fd7e14"));
+            preReleaseSeverity.add(createSeverityData("一般", 3, "#ffc107"));
+            preReleaseSeverity.add(createSeverityData("轻微", 2, "#28a745"));
+
+            // 发布后缺陷严重程度分布
+            List<Map<String, Object>> postReleaseSeverity = new ArrayList<>();
+            postReleaseSeverity.add(createSeverityData("致命", 2, "#dc3545"));
+            postReleaseSeverity.add(createSeverityData("严重", 1, "#fd7e14"));
+            postReleaseSeverity.add(createSeverityData("一般", 1, "#ffc107"));
+            postReleaseSeverity.add(createSeverityData("轻微", 0, "#28a745"));
+
+            severityComparison.put("preRelease", preReleaseSeverity);
+            severityComparison.put("postRelease", postReleaseSeverity);
+
+            result.put("phaseStats", phaseStats);
+            result.put("severityComparison", severityComparison);
+
+            // 发布后缺陷列表
+            List<Map<String, Object>> postReleaseDefectsList = new ArrayList<>();
+            // 当前版本新缺陷
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "登录页面响应缓慢", "性能", "严重", "2024-01-15", "生产环境用户反馈", 
+                "3.0.0.0", "3.0.0.0", 0, 1));
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "订单状态更新异常", "功能", "致命", "2024-01-18", "客服部门报告", 
+                "3.0.0.0", "3.0.0.0", 0, 1));
+            
+            // 历史版本遗留缺陷
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "移动端适配问题", "兼容性", "一般", "2024-01-20", "用户投诉", 
+                "3.0.0.0", "2.0.0", 1, 1));
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "数据导出格式错误", "功能", "轻微", "2024-01-22", "业务部门发现", 
+                "3.0.0.0", "2.5.0", 1, 1));
+            
+            // 历史遗留缺陷（测试阶段发现）
+            postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
+                "权限验证逻辑缺陷", "安全", "严重", "2024-01-10", "测试团队发现", 
+                "3.0.0.0", "2.3.0", 1, 0));
+
+            result.put("postReleaseDefects", postReleaseDefectsList);
+
+            // 缺陷引入版本分析
+            Map<String, Object> defectIntroductionAnalysis = new HashMap<>();
+            
+            // 按引入版本分组统计
+            List<Map<String, Object>> introductionVersionStats = new ArrayList<>();
+            introductionVersionStats.add(createIntroductionVersionStat("3.0.0.0", 2, "当前版本引入"));
+            introductionVersionStats.add(createIntroductionVersionStat("2.5.0", 1, "历史版本遗留"));
+            introductionVersionStats.add(createIntroductionVersionStat("2.3.0", 1, "历史版本遗留"));
+            introductionVersionStats.add(createIntroductionVersionStat("2.0.0", 1, "早期版本遗留"));
+            
+            defectIntroductionAnalysis.put("versionStats", introductionVersionStats);
+            
+            // 遗留缺陷详细分析
+            Map<String, Object> legacyDefectAnalysis = new HashMap<>();
+            legacyDefectAnalysis.put("count", 3); // 遗留缺陷总数
+            legacyDefectAnalysis.put("foundAfterReleaseCount", 2); // 发布后发现的遗留缺陷
+            legacyDefectAnalysis.put("foundBeforeReleaseCount", 1); // 发布前发现的遗留缺陷
+            legacyDefectAnalysis.put("percentage", 5 > 0 ? Math.round((double) 3 / 5 * 100 * 100.0) / 100.0 : 0);
+            legacyDefectAnalysis.put("description", "历史版本遗留缺陷分析");
+            
+            defectIntroductionAnalysis.put("legacyDefects", legacyDefectAnalysis);
+            
+            // 发现时机分析
+            Map<String, Object> discoveryTimingAnalysis = new HashMap<>();
+            discoveryTimingAnalysis.put("postReleaseCount", 4); // 发布后缺陷总数
+            discoveryTimingAnalysis.put("preReleaseCount", 1);  // 发布前缺陷总数
+            discoveryTimingAnalysis.put("postReleaseNewDefects", 2); // 发布后新缺陷
+            discoveryTimingAnalysis.put("postReleaseLegacyDefects", 2); // 发布后遗留缺陷
+            discoveryTimingAnalysis.put("description", "缺陷发现时机分析");
+            
+            defectIntroductionAnalysis.put("discoveryTiming", discoveryTimingAnalysis);
+            
+            result.put("defectIntroductionAnalysis", defectIntroductionAnalysis);
+
+            // 缺陷来源分析
+            List<Map<String, Object>> defectSources = new ArrayList<>();
+            defectSources.add(createDefectSource("用户反馈", 6, "#ff6b6b"));
+            defectSources.add(createDefectSource("监控告警", 3, "#4ecdc4"));
+            defectSources.add(createDefectSource("客服报告", 2, "#45b7d1"));
+            defectSources.add(createDefectSource("业务部门", 1, "#96ceb4"));
+
+            result.put("defectSources", defectSources);
+
+            // 发布质量趋势（最近几个版本）
+            List<Map<String, Object>> qualityTrend = new ArrayList<>();
+            qualityTrend.add(createQualityTrendData("v1.8", 12, 2, 14.3));
+            qualityTrend.add(createQualityTrendData("v1.9", 10, 3, 23.1));
+            qualityTrend.add(createQualityTrendData("v2.0", 8, 4, 33.3));
+            qualityTrend.add(createQualityTrendData("v2.1", 8, 4, 33.3));
+
+            result.put("qualityTrend", qualityTrend);
+
+            // 发布后缺陷时间分布分析
+            List<Map<String, Object>> timeDistribution = new ArrayList<>();
+            timeDistribution.add(createTimeDistribution("发布后1天", 2, "紧急问题"));
+            timeDistribution.add(createTimeDistribution("发布后1周", 1, "用户反馈"));
+            timeDistribution.add(createTimeDistribution("发布后1月", 1, "深度使用发现"));
+
+            result.put("timeDistribution", timeDistribution);
+
+            // 测试改进建议
+            List<String> improvements = new ArrayList<>();
+            if (escapeRate > 30) {
+                improvements.add("建议增加端到端测试覆盖");
+                improvements.add("加强用户场景测试");
+                improvements.add("提升测试环境与生产环境一致性");
+            } else if (escapeRate > 20) {
+                improvements.add("优化测试用例设计");
+                improvements.add("增加边界条件测试");
+            } else if (escapeRate > 10) {
+                improvements.add("加强回归测试");
+            } else {
+                improvements.add("测试质量良好，继续保持");
+            }
+            result.put("improvements", improvements);
+
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+        } catch (Exception e) {
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取发布阶段缺陷分析失败");
+        }
+    }
+
     @Override
     public Resp<Map<String, Object>> getTestCoverage(String projectId, String releaseVersion) {
         try {
@@ -105,7 +274,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             // 故事(User Story) = 功能需求的最小单位，如"用户登录"、"商品搜索"等
             // 总故事数 = 本版本需要实现的所有功能故事
             // 已覆盖故事数 = 有测试用例验证的故事数量
-            
+
             int totalStories = 25;        // 本版本计划的总故事数
             int coveredStories = 22;      // 已有测试用例覆盖的故事数
             double storyCoverage = (double) coveredStories / totalStories * 100;
@@ -136,7 +305,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             storyCoverageDetails.add(createStoryCoverage("商品搜索功能", true, 12));
             storyCoverageDetails.add(createStoryCoverage("购物车管理", true, 10));
             storyCoverageDetails.add(createStoryCoverage("订单提交流程", true, 15));
-            
+
             // 未覆盖的故事
             storyCoverageDetails.add(createStoryCoverage("支付优化功能", false, 0));
             storyCoverageDetails.add(createStoryCoverage("会员积分系统", false, 0));
@@ -263,6 +432,11 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         }
     }
 
+    @Override
+    public Resp<Map<String, Object>> getPostReleaseDefects(String projectId, String releaseVersion) {
+        return getReleasePhaseDefects(projectId, releaseVersion);
+    }
+
     // 辅助方法
     private Map<String, Object> createModuleDefect(String module, int count) {
         Map<String, Object> data = new HashMap<>();
@@ -284,6 +458,102 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("severity", severity);
         data.put("count", count);
         data.put("color", color);
+        return data;
+    }
+
+    private Map<String, Object> createPostReleaseDefect(String title, String category, String severity, String foundDate, String source) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", title);
+        data.put("category", category);
+        data.put("severity", severity);
+        data.put("foundDate", foundDate);
+        data.put("source", source);
+        return data;
+    }
+
+    private Map<String, Object> createDetailedPostReleaseDefect(String title, String category, String severity, 
+            String foundDate, String source, String foundVersion, String introducedVersion, boolean isLegacy) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", title);
+        data.put("category", category);
+        data.put("severity", severity);
+        data.put("foundDate", foundDate);
+        data.put("source", source);
+        data.put("foundVersion", foundVersion);
+        data.put("introducedVersion", introducedVersion);
+        data.put("isLegacy", isLegacy);
+        data.put("legacyDescription", isLegacy ? "遗留缺陷" : "新引入缺陷");
+        return data;
+    }
+
+    private Map<String, Object> createDetailedPostReleaseDefectWithTracking(String title, String category, String severity, 
+            String foundDate, String source, String foundVersion, String introducedVersion, 
+            int isLegacy, int foundAfterRelease) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", title);
+        data.put("category", category);
+        data.put("severity", severity);
+        data.put("foundDate", foundDate);
+        data.put("source", source);
+        data.put("foundVersion", foundVersion);
+        data.put("introducedVersion", introducedVersion);
+        data.put("isLegacy", isLegacy);
+        data.put("foundAfterRelease", foundAfterRelease);
+        
+        // 用于前端显示的描述
+        String legacyDescription;
+        String discoveryDescription;
+        
+        if (isLegacy == 1) {
+            legacyDescription = "遗留缺陷";
+        } else {
+            legacyDescription = "新引入缺陷";
+        }
+        
+        if (foundAfterRelease == 1) {
+            discoveryDescription = "发布后";
+        } else {
+            discoveryDescription = "发布前";
+        }
+        
+        data.put("legacyDescription", legacyDescription);
+        data.put("discoveryDescription", discoveryDescription);
+        data.put("detailedDescription", legacyDescription + " - " + discoveryDescription);
+        
+        return data;
+    }
+
+    private Map<String, Object> createIntroductionVersionStat(String version, int count, String description) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("version", version);
+        data.put("count", count);
+        data.put("description", description);
+        return data;
+    }
+
+    private Map<String, Object> createDefectSource(String source, int count, String color) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("source", source);
+        data.put("count", count);
+        data.put("color", color);
+        return data;
+    }
+
+    private Map<String, Object> createQualityTrendData(String version, int preRelease, int postRelease, double escapeRate) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("version", version);
+        data.put("preRelease", preRelease);
+        data.put("postRelease", postRelease);
+        data.put("escapeRate", escapeRate);
+        data.put("totalDefects", preRelease + postRelease);
+        return data;
+    }
+
+    private Map<String, Object> createTimeDistribution(String timeRange, int count, String description) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("timeRange", timeRange);
+        data.put("count", count);
+        data.put("description", description);
         return data;
     }
 

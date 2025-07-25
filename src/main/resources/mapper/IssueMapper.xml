@@ -10,7 +10,7 @@
         <!--        <result property="author" column="author" jdbcType="VARCHAR"/>-->
         <result property="issueStatus" column="issue_status" jdbcType="INTEGER"/>
         <!--        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>-->
-        <result property="closeDate" column="close_date" jdbcType="TIMESTAMP"/>
+        
         <!--        <result property="testCase" column="test_case" jdbcType="INTEGER"/>-->
         <!--        <result property="testCycle" column="test_cycle" jdbcType="INTEGER"/>-->
         <!--        <result property="feature" column="feature" jdbcType="INTEGER"/>-->
@@ -20,15 +20,26 @@
         <!--        <result property="platform" column="platform" jdbcType="VARCHAR"/>-->
         <!--        <result property="version" column="version" jdbcType="VARCHAR"/>-->
         <result property="caseCategory" column="case_category" jdbcType="VARCHAR"/>
+        <result property="releasePhase" column="release_phase" jdbcType="VARCHAR"/>
+        <result property="foundAfterRelease" column="found_after_release" jdbcType="INTEGER"/>
+        <result property="releasedVersion" column="released_version" jdbcType="VARCHAR"/>
+        <result property="issueVersion" column="issue_version" jdbcType="VARCHAR"/>
+        <result property="introducedVersion" column="introduced_version" jdbcType="VARCHAR"/>
+        <result property="isLegacy" column="is_legacy" jdbcType="INTEGER"/>
+        <result property="fixVersion" column="fix_version" jdbcType="VARCHAR"/>
+        <result property="severity" column="severity" jdbcType="VARCHAR"/>
+        <result property="testDevice" column="test_device" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="duration" column="duration" jdbcType="INTEGER"/>
     </resultMap>
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="IssueMap">
         select
-        id, project_id, user_id, title, status, planned_release_date, close_date,
-        priority, env, browser, platform, version, case_category, create_time, update_time, description
+        id, project_id, user_id, title, status, planned_release_date,
+        priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, 
+        issue_version, introduced_version, is_legacy, fix_version, severity, test_device, create_time, update_time, description, duration
         from oneclick.issue
         <where>
             <if test="id != null">
@@ -47,9 +58,7 @@
             <if test="status != null">
                 and status = #{status}
             </if>
-            <if test="closeDate != null">
-                and close_date = #{closeDate}
-            </if>
+            
 
             <if test="priority != null and priority != ''">
                 and priority = #{priority}
@@ -68,6 +77,15 @@
             </if>
             <if test="caseCategory != null and caseCategory != ''">
                 and case_category = #{caseCategory}
+            </if>
+            <if test="releasePhase != null and releasePhase != ''">
+                and release_phase = #{releasePhase}
+            </if>
+            <if test="foundAfterRelease != null">
+                and found_after_release = #{foundAfterRelease}
+            </if>
+            <if test="releasedVersion != null and releasedVersion != ''">
+                and released_version = #{releasedVersion}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime}
@@ -94,16 +112,25 @@
                user_id,
                title,
                status,
-               close_date,
                priority,
                env,
                browser,
                platform,
                version,
                case_category,
+               release_phase,
+               found_after_release,
+               released_version,
+               issue_version,
+               introduced_version,
+               is_legacy,
+               fix_version,
+               severity,
+               test_device,
                create_time,
                update_time,
-               description
+               description,
+               duration
         from oneclick.issue
         where id = #{id}
     </select>
@@ -121,9 +148,7 @@
                 status = #{status},
             </if>
 
-            <if test="closeDate != null">
-                close_date = #{closeDate},
-            </if>
+            
 
 
             <if test="priority != null and priority != ''">
@@ -144,8 +169,38 @@
             <if test="caseCategory != null and caseCategory != ''">
                 case_category = #{caseCategory},
             </if>
+             <if test="releasePhase != null and releasePhase != ''">
+                release_phase = #{releasePhase},
+            </if>
+            <if test="foundAfterRelease != null">
+                found_after_release = #{foundAfterRelease},
+            </if>
+            <if test="releasedVersion != null and releasedVersion != ''">
+                released_version = #{releasedVersion},
+            </if>
+            <if test="issueVersion != null and issueVersion != ''">
+                issue_version = #{issueVersion},
+            </if>
+            <if test="introducedVersion != null and introducedVersion != ''">
+                introduced_version = #{introducedVersion},
+            </if>
+            <if test="isLegacy != null">
+                is_legacy = #{isLegacy},
+            </if>
+            <if test="fixVersion != null and fixVersion != ''">
+                fix_version = #{fixVersion},
+            </if>
+            <if test="severity != null and severity != ''">
+                severity = #{severity},
+            </if>
+            <if test="testDevice != null and testDevice != ''">
+                test_device = #{testDevice},
+            </if>
             <if test="description != null and description != ''">
                 description = #{description},
+            </if>
+            <if test="duration != null">
+                duration = #{duration},
             </if>
             update_time =NOW()
         </set>

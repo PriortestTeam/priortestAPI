@@ -369,6 +369,145 @@
                     </div>
                 </div>
 
+                <!-- 发布阶段缺陷追踪 -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="report-section">
+                            <h4><i class="bi bi-shield-exclamation text-warning"></i> 发布阶段缺陷追踪</h4>
+
+                            <!-- 发布质量指标卡片 -->
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="metric-card level-good">
+                                        <div class="metric-icon"><i class="bi bi-bug"></i></div>
+                                        <div class="metric-value" id="preReleaseDefects">8</div>
+                                        <div class="metric-label">发布前缺陷</div>
+                                        <div class="level-badge">测试阶段</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card level-poor">
+                                        <div class="metric-icon"><i class="bi bi-exclamation-triangle"></i></div>
+                                        <div class="metric-value" id="postReleaseDefects">4</div>
+                                        <div class="metric-label">发布后缺陷</div>
+                                        <div class="level-badge">生产环境</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card level-average">
+                                        <div class="metric-icon"><i class="bi bi-percent"></i></div>
+                                        <div class="metric-value" id="escapeRate">33.3%</div>
+                                        <div class="metric-label">缺陷逃逸率</div>
+                                        <div class="level-badge" id="escapeRateLevel">需改进</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card level-good">
+                                        <div class="metric-icon"><i class="bi bi-graph-up"></i></div>
+                                        <div class="metric-value" id="testEffectiveness">66.7%</div>
+                                        <div class="metric-label">测试有效性</div>
+                                        <div class="level-badge" id="testEffectivenessLevel">良好</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 质量分析洞察 -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        <h6><i class="bi bi-lightbulb"></i> 质量分析洞察</h6>
+                                        <div id="qualityInsights">
+                                            <p><strong>风险提示：</strong> 发布后发现了 <span class="text-danger">4个缺陷</span>，逃逸率为 <span class="text-warning">33.3%</span>，建议加强测试覆盖。</p>
+                                            <p><strong>对比分析：</strong> 相比发布前发现的8个缺陷，说明测试过程中发现了大部分问题，但仍有改进空间。</p>
+                                        </div>
+                                        <div id="improvementSuggestions">
+                                            <strong>改进建议：</strong>
+                                            <ul class="mb-0 mt-2" id="suggestionsList">
+                                                <li>建议增加端到端测试覆盖</li>
+                                                <li>加强用户场景测试</li>
+                                                <li>提升测试环境与生产环境一致性</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 发布后缺陷列表 -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h6><i class="bi bi-bug text-danger"></i> 发布后缺陷详情</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="postReleaseDefectsTable">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>缺陷标题</th>
+                                                    <th>类别</th>
+                                                    <th>严重程度</th>
+                                                    <th>发现日期</th>
+                                                    <th>发现版本</th>
+                                                    <th>引入版本</th>
+                                                    <th>缺陷类型</th>
+                                                    <th>发现时机</th>
+                                                    <th>来源</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="9" class="text-center text-muted py-4">
+                                                        <i class="bi bi-info-circle fs-2"></i>
+                                                        <p class="mb-0 mt-2">请选择版本查看缺陷详情</p>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 缺陷引入版本分析 -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="chart-container">
+                                        <h6><i class="bi bi-clock-history text-warning"></i> 缺陷引入版本分析</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm" id="defectIntroductionTable">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>引入版本</th>
+                                                        <th>缺陷数量</th>
+                                                        <th>类型描述</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="3" class="text-center text-muted py-3">
+                                                            <i class="bi bi-info-circle"></i>
+                                                            <p class="mb-0 mt-1">暂无数据</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="chart-container">
+                                        <h6><i class="bi bi-archive text-info"></i> 遗留缺陷分析</h6>
+                                        <div id="legacyDefectInfo" class="text-center py-4">
+                                            <div class="display-6 text-muted" id="legacyDefectCount">-</div>
+                                            <div class="text-muted mb-2">遗留缺陷数量</div>
+                                            <div class="badge bg-secondary" id="legacyDefectPercentage">-%</div>
+                                            <p class="small text-muted mt-3" id="legacyDefectDescription">
+                                                遗留缺陷是指在历史版本就已存在，但直到当前版本才被发现的缺陷
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 图表区域 -->
                 <div class="row">
                     <div class="col-md-6">
@@ -572,7 +711,7 @@
                     </div>
                 </div>
                 <div class="story-coverage-item not-covered">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="div class="d-flex justify-content-between align-items-center">
                         <div>
                             <strong>支付流程优化</strong>
                             <small class="text-muted d-block">Story ID: US-003</small>

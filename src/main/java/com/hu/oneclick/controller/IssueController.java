@@ -12,8 +12,10 @@ import com.hu.oneclick.server.service.IssueService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import jakarta.servlet.http.HttpServletRequest;
+import com.hu.oneclick.common.util.TimezoneContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -77,7 +79,11 @@ public class IssueController extends BaseController {
 
     @Operation(summary = "新增", description = "新增问题")
     @PostMapping("/save")
-    public Resp<?> save(@RequestBody @Validated IssueSaveDto dto) {
+    public Resp<Issue> save(@RequestBody @Validated IssueSaveDto dto, HttpServletRequest request) {
+        System.out.println("=== IssueController.save 开始处理 ===");
+        System.out.println("=== 请求URL: " + request.getRequestURI() + " ===");
+        System.out.println("=== 从Controller中获取X-User-Timezone: " + request.getHeader("X-User-Timezone") + " ===");
+        System.out.println("=== 从TimezoneContext获取时区: " + TimezoneContext.getUserTimezone() + " ===");
         try {
             Issue issue = this.issueService.add(dto);
             return new Resp.Builder<Issue>().setData(issue).ok();

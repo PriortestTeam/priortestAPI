@@ -30,7 +30,7 @@ spring:
           # 显示慢sql 默认当超过3秒显示
           log-slow-sql: true
   jackson:
-    time-zone: GMT+8 #设置时区
+     time-zone: GMT+8 #设置时区
     date-format: yyyy-MM-dd HH:mm:ss #设置返回格式
 
   redis:
