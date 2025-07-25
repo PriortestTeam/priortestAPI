@@ -14,4 +14,57 @@
         SELECT COUNT(*) FROM user_case WHERE feature_id = #{featureId}
     </select>
     
+    <!-- 查询主版本Features下的Use Cases（情况1专用） -->
+    <select id="selectByFeatureIdsWithVersionFilter" resultType="com.hu.oneclick.model.domain.dto.UserCaseDto">
+        SELECT * FROM use_case 
+        WHERE feature_id IN
+        <foreach collection="featureIds" item="featureId" open="(" separator="," close=")">
+            #{featureId}
+        </foreach>
+        <if test="majorVersion != null and majorVersion != ''">
+            AND (version = #{majorVersion}
+            <if test="includeVersions != null and includeVersions.size() > 0">
+                OR version IN
+                <foreach collection="includeVersions" item="version" open="(" separator="," close=")">
+                    #{version}
+                </foreach>
+            </if>
+            )
+        </if>
+    </select>
+    
+    <!-- 查询指定版本的Use Cases，排除指定的Use Case IDs（情况3专用） -->
+    <select id="selectByVersionsExcludeIds" resultType="com.hu.oneclick.model.domain.dto.UserCaseDto">
+        SELECT * FROM use_case 
+        WHERE project_id = #{projectId}
+        <if test="includeVersions != null and includeVersions.size() > 0">
+            AND version IN
+            <foreach collection="includeVersions" item="version" open="(" separator="," close=")">
+                #{version}
+            </foreach>
+        </if>
+        <if test="excludeUseCaseIds != null and excludeUseCaseIds.size() > 0">
+            AND id NOT IN
+            <foreach collection="excludeUseCaseIds" item="useCaseId" open="(" separator="," close=")">
+                #{useCaseId}
+            </foreach>
+        </if>
+    </select>
+    
+    <!-- 查询Feature下没有Use Case版本匹配的Use Cases（用于versionNotMatchedInfo） -->
+    <select id="selectVersionNotMatchedByFeatureIds" resultType="com.hu.oneclick.model.domain.dto.UserCaseDto">
+        SELECT * FROM use_case 
+        WHERE feature_id IN
+        <foreach collection="featureIds" item="featureId" open="(" separator="," close=")">
+            #{featureId}
+        </foreach>
+        AND version != #{majorVersion}
+        <if test="includeVersions != null and includeVersions.size() > 0">
+            AND version NOT IN
+            <foreach collection="includeVersions" item="version" open="(" separator="," close=")">
+                #{version}
+            </foreach>
+        </if>
+    </select>
+    
 </mapper>
