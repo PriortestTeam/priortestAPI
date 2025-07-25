@@ -3,7 +3,7 @@
 
 ## 概述
 
-故事覆盖率是衡量功能需求测试覆盖完整程度的重要指标，通过计算已覆盖故事数与总故事数的比例来评估测试质量。
+故事覆盖率是衡量功能需求测试覆盖完整程度的重要指标，通过计算已覆盖故事数与总故事数的比例来评估测试质量。此报表帮助团队了解需求覆盖的完整性，确保所有功能点都有相应的测试验证。
 
 ## 计算公式
 
@@ -109,11 +109,21 @@ AND (
 ## API设计
 
 ### 接口路径
-`GET /api/versionQualityReport/storyCoverage`
+- `GET /api/versionQualityReport/storyCoverage` - 简单查询
+- `POST /api/versionQualityReport/storyCoverage` - 复杂查询（支持多版本）
 
-### 请求参数
+### GET请求参数
 - `projectId`: 项目ID
 - `version`: 版本号
+
+### POST请求参数
+```json
+{
+    "projectId": 1874424342973054977,
+    "majorVersion": "1.0.0.0",
+    "includeVersions": ["1.0.0.0", "2.0.0.0"]
+}
+```
 
 ### 响应格式
 ```json
@@ -128,6 +138,25 @@ AND (
       "useCaseCount": 50,
       "coveredFeatures": 40,
       "coveredUseCases": 45
+    },
+    "featuresDetails": {
+      "features": [
+        {
+          "id": 123,
+          "title": "用户登录功能",
+          "version": "1.0.0.0",
+          "covered": true,
+          "hasUseCases": true,
+          "useCases": [
+            {
+              "id": 456,
+              "title": "正常登录流程",
+              "version": "1.0.0.0",
+              "covered": true
+            }
+          ]
+        }
+      ]
     }
   }
 }
