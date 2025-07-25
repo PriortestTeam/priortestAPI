@@ -980,11 +980,32 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
             TestCycle testCaseClone = new TestCycle();
             BeanUtil.copyProperties(testCycle, testCaseClone);
             testCaseClone.setId(null);
-            testCaseClone.setTitle(CloneFormatUtil.getCloneTitle(testCaseClone.getTitle()));
+            
+            // 生成唯一的克隆标题
+            String uniqueCloneTitle = generateUniqueCloneTitle(testCycle.getTitle(), testCycle.getProjectId());
+            testCaseClone.setTitle(uniqueCloneTitle);
+            
             testCycleList.add(testCaseClone);
         }
         // 批量克隆
         this.saveBatch(testCycleList);
+    }
+    
+    /**
+     * 生成唯一的克隆标题
+     */
+    private String generateUniqueCloneTitle(String originalTitle, Long projectId) {
+        String baseTitle = CloneFormatUtil.getCloneTitle(originalTitle);
+        String uniqueTitle = baseTitle;
+        int counter = 1;
+        
+        // 检查标题是否已存在，如果存在则添加数字后缀
+        while (!listByTitle(uniqueTitle, null, projectId).isEmpty()) {
+            uniqueTitle = baseTitle + "(" + counter + ")";
+            counter++;
+        }
+        
+        return uniqueTitle;
     }
 
     private List<TestCycle> listByTitle(String title, Long id, Long projectId){
