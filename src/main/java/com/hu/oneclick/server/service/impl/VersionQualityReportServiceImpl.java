@@ -31,6 +31,151 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
     private final RelationDao relationDao;
 
     @Override
+    public Resp<Map<String, Object>> getStoryCoverage(Long projectId, String version) {
+        try {
+            log.info("开始计算故事覆盖率 - 项目ID: {}, 版本: {}", projectId, version);
+            
+            // 1. 获取指定版本的所有feature
+            LambdaQueryWrapper<Feature> featureQuery = new LambdaQueryWrapper<>();
+            featureQuery.eq(Feature::getProjectId, projectId)
+                       .eq(Feature::getVersion, version);
+            List<Feature> features = featureDao.selectList(featureQuery);
+            
+            if (features.isEmpty()) {
+                log.warn("未找到指定版本的功能故事 - 项目ID: {}, 版本: {}", projectId, version);
+                return buildEmptyStoryCoverageResult();
+            }
+            
+            // 2. 计算总故事数和已覆盖故事数
+            int totalStories = 0;
+            int coveredStories = 0;
+            int featureCount = 0;
+            int useCaseCount = 0;
+            int coveredFeatures = 0;
+            int coveredUseCases = 0;
+            
+            List<Long> featureIds = features.stream().map(Feature::getId).collect(Collectors.toList());
+            
+            for (Feature feature : features) {
+                // 检查该feature是否有use_case
+                LambdaQueryWrapper<UseCase> useCaseQuery = new LambdaQueryWrapper<>();
+                useCaseQuery.eq(UseCase::getFeatureId, feature.getId());
+                List<UseCase> useCases = useCaseDao.selectList(useCaseQuery);
+                
+                if (!useCases.isEmpty()) {
+                    // 有use_case，计算use_case的覆盖情况
+                    useCaseCount += useCases.size();
+                    totalStories += useCases.size();
+                    
+                    // 检查use_case的覆盖情况
+                    Set<Long> useCaseIds = useCases.stream().map(UseCase::getId).collect(Collectors.toSet());
+                    Set<Long> coveredUseCaseIds = getCoveredUseCases(useCaseIds);
+                    coveredUseCases += coveredUseCaseIds.size();
+                    coveredStories += coveredUseCaseIds.size();
+                } else {
+                    // 没有use_case，计算feature本身
+                    featureCount++;
+                    totalStories++;
+                    
+                    // 检查feature的覆盖情况
+                    if (isFeatureCovered(feature.getId())) {
+                        coveredFeatures++;
+                        coveredStories++;
+                    }
+                }
+            }
+            
+            // 3. 计算覆盖率
+            double coverageRate = totalStories > 0 ? (double) coveredStories / totalStories * 100 : 0.0;
+            
+            // 4. 构建返回结果
+            Map<String, Object> result = new HashMap<>();
+            result.put("totalStories", totalStories);
+            result.put("coveredStories", coveredStories);
+            result.put("coverageRate", Math.round(coverageRate * 10) / 10.0); // 保留1位小数
+            
+            Map<String, Object> details = new HashMap<>();
+            details.put("featureCount", featureCount);
+            details.put("useCaseCount", useCaseCount);
+            details.put("coveredFeatures", coveredFeatures);
+            details.put("coveredUseCases", coveredUseCases);
+            result.put("details", details);
+            
+            log.info("故事覆盖率计算完成 - 总故事数: {}, 已覆盖: {}, 覆盖率: {}%", 
+                    totalStories, coveredStories, coverageRate);
+            
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+            
+        } catch (Exception e) {
+            log.error("计算故事覆盖率失败", e);
+            return new Resp.Builder<Map<String, Object>>().buildResult("计算故事覆盖率失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 检查feature是否有测试用例覆盖
+     */
+    private boolean isFeatureCovered(Long featureId) {
+        // 查找FEATURE_TO_TEST_CASE关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "FEATURE_TO_TEST_CASE")
+              .eq(Relation::getObjectId, featureId);
+        
+        // 查找TEST_CASE_TO_FEATURE关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_FEATURE")
+              .eq(Relation::getTargetId, featureId);
+        
+        return relationDao.selectCount(query1) > 0 || relationDao.selectCount(query2) > 0;
+    }
+    
+    /**
+     * 获取有测试用例覆盖的use_case集合
+     */
+    private Set<Long> getCoveredUseCases(Set<Long> useCaseIds) {
+        Set<Long> coveredIds = new HashSet<>();
+        
+        if (useCaseIds.isEmpty()) {
+            return coveredIds;
+        }
+        
+        // 查找USE_CASE_TO_TEST_CASE关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "USE_CASE_TO_TEST_CASE")
+              .in(Relation::getObjectId, useCaseIds);
+        List<Relation> relations1 = relationDao.selectList(query1);
+        relations1.forEach(r -> coveredIds.add(r.getObjectId()));
+        
+        // 查找TEST_CASE_TO_USE_CASE关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_USE_CASE")
+              .in(Relation::getTargetId, useCaseIds);
+        List<Relation> relations2 = relationDao.selectList(query2);
+        relations2.forEach(r -> coveredIds.add(r.getTargetId()));
+        
+        return coveredIds;
+    }
+    
+    /**
+     * 构建空的故事覆盖率结果
+     */
+    private Map<String, Object> buildEmptyStoryCoverageResult() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalStories", 0);
+        result.put("coveredStories", 0);
+        result.put("coverageRate", 0.0);
+        
+        Map<String, Object> details = new HashMap<>();
+        details.put("featureCount", 0);
+        details.put("useCaseCount", 0);
+        details.put("coveredFeatures", 0);
+        details.put("coveredUseCases", 0);
+        result.put("details", details);
+        
+        return result;
+    }
+
+    @Override
     public Resp<Map<String, Object>> getQualityOverview(String projectId) {
         try {
             Map<String, Object> result = new HashMap<>();

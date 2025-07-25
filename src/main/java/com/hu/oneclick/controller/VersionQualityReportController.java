@@ -1,9 +1,9 @@
-
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.server.service.VersionQualityReportService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +15,19 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/versionQualityReport")
-@Tag(name = "版本质量分析", description = "版本质量分析报表相关接口")
+@Tag(name = "版本质量分析报表", description = "版本质量分析报表相关接口")
 public class VersionQualityReportController {
 
     @Autowired
     private VersionQualityReportService versionQualityReportService;
+
+    @GetMapping("/storyCoverage")
+    @Operation(summary = "获取故事覆盖率", description = "获取指定项目和版本的故事覆盖率统计")
+    public Resp<Map<String, Object>> getStoryCoverage(
+            @Parameter(description = "项目ID") @RequestParam Long projectId,
+            @Parameter(description = "版本号") @RequestParam String version) {
+        return versionQualityReportService.getStoryCoverage(projectId, version);
+    }
 
     @GetMapping("/getQualityOverview/{projectId}")
     @Operation(summary = "获取项目版本质量总览")
@@ -66,35 +74,5 @@ public class VersionQualityReportController {
             @RequestParam(required = false) String startVersion,
             @RequestParam(required = false) String endVersion) {
         return versionQualityReportService.getVersionComparison(projectId, startVersion, endVersion);
-    }
-}
-package com.hu.oneclick.controller;
-
-import com.hu.oneclick.model.base.Resp;
-import com.hu.oneclick.server.service.VersionQualityReportService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-
-@RestController
-@RequestMapping("/versionQualityReport")
-@Tag(name = "版本质量报表", description = "版本质量评估相关接口")
-@RequiredArgsConstructor
-public class VersionQualityReportController {
-
-    private final VersionQualityReportService versionQualityReportService;
-
-    @GetMapping("/storyCoverage")
-    @Operation(summary = "获取故事覆盖率", description = "获取指定项目和版本的故事覆盖率统计")
-    public Resp<Map<String, Object>> getStoryCoverage(
-            @Parameter(description = "项目ID", required = true)
-            @RequestParam Long projectId,
-            @Parameter(description = "版本号", required = true)
-            @RequestParam String version) {
-        return versionQualityReportService.getStoryCoverage(projectId, version);
     }
 }
