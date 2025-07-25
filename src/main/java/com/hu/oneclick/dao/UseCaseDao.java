@@ -59,5 +59,5 @@ public interface UseCaseDao extends BaseMapper<UserCaseDto> {
         @Param("featureIds") List<Long> featureIds,
         @Param("majorVersion") String majorVersion,
         @Param("includeVersions") List<String> includeVersions
-    );eId(@Param("featureId") Long featureId);
+    );
 }
