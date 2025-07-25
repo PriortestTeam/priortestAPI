@@ -352,6 +352,37 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
     }
 
     @Override
+    public Resp<Map<String, Object>> getStoryCoverageWithVersions(Long projectId, String majorVersion, List<String> includeVersions) {
+        try {
+            log.info("获取故事覆盖率 - 项目ID: {}, 主版本: {}, 包含版本: {}", projectId, majorVersion, includeVersions);
+
+            // 1. 获取主版本的所有features
+            LambdaQueryWrapper<Feature> featureQuery = new LambdaQueryWrapper<>();
+            featureQuery.eq(Feature::getProjectId, projectId)
+                       .eq(Feature::getVersion, majorVersion);
+            List<Feature> features = featureDao.selectList(featureQuery);
+
+            if (features.isEmpty()) {
+                log.warn("未找到指定版本的功能故事 - 项目ID: {}, 版本: {}", projectId, majorVersion);
+                return new Resp.Builder<Map<String, Object>>().setData(buildEmptyStoryCoverageResult()).ok();
+            }
+
+            List<Long> featureIds = features.stream().map(Feature::getId).collect(Collectors.toList());
+
+            // 2. 获取符合条件的use cases
+            List<UserCaseDto> useCases = useCaseDao.selectByFeatureIdsWithVersionFilter(featureIds, majorVersion, includeVersions);
+
+            // 3. 构建结果
+            Map<String, Object> result = buildStoryCoverageResult(features, useCases, majorVersion, includeVersions);
+
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+        } catch (Exception e) {
+            log.error("获取故事覆盖率失败 - 项目ID: {}, 主版本: {}, 包含版本: {}", projectId, majorVersion, includeVersions, e);
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取故事覆盖率失败");
+        }
+    }
+
+    @Override
     public Resp<Map<String, Object>> getQualityOverview(String projectId) {
         try {
             Map<String, Object> result = new HashMap<>();
@@ -654,7 +685,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             result.put("storyCoverageDetails", storyCoverageDetails);
 
             return new Resp.Builder<Map<String, Object>>().setData(result).ok();
-        } catch (Exception e) {
+        } catch (Exception e) {```text
             return new Resp.Builder<Map<String, Object>>().buildResult("获取测试覆盖率失败");
         }
     }
@@ -879,5 +910,71 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("totalTestCases", totalTestCases);
         data.put("qualityLevel", qualityLevel);
         return data;
+    }
+
+    private Map<String, Object> buildStoryCoverageResult(List<Feature> features, List<UserCaseDto> useCases, String majorVersion, List<String> includeVersions) {
+        Map<String, Object> result = new HashMap<>();
+
+        // 计算总故事数和已覆盖故事数
+        int totalStories = 0;
+        int coveredStories = 0;
+        int featureCount = 0;
+        int useCaseCount = 0;
+        int coveredFeatures = 0;
+        int coveredUseCases = 0;
+
+        // 将features和useCases分组
+        Map<Long, Feature> featureMap = features.stream().collect(Collectors.toMap(Feature::getId, f -> f));
+        Map<Long, List<UserCaseDto>> useCaseMap = useCases.stream().collect(Collectors.groupingBy(UserCaseDto::getFeatureId));
+
+        for (Feature feature : features) {
+            List<UserCaseDto> featureUseCases = useCaseMap.get(feature.getId());
+
+            if (featureUseCases != null && !featureUseCases.isEmpty()) {
+                // 有use_case，计算use_case的覆盖情况
+                useCaseCount += featureUseCases.size();
+                totalStories += featureUseCases.size();
+
+                // 检查use_case的覆盖情况
+                Set<Long> useCaseIds = featureUseCases.stream().map(UserCaseDto::getId).collect(Collectors.toSet());
+                Set<Long> coveredUseCaseIds = getCoveredUseCases(useCaseIds);
+                coveredUseCases += coveredUseCaseIds.size();
+                coveredStories += coveredUseCaseIds.size();
+            } else {
+                // 没有use_case，计算feature本身
+                featureCount++;
+                totalStories++;
+
+                // 检查feature的覆盖情况
+                if (isFeatureCovered(feature.getId())) {
+                    coveredFeatures++;
+                    coveredStories++;
+                }
+            }
+        }
+
+        // 计算覆盖率
+        double coverageRate = totalStories > 0 ? (double) coveredStories / totalStories * 100 : 0.0;
+
+        // 构建返回结果
+        result.put("totalStories", totalStories);
+        result.put("coveredStories", coveredStories);
+        result.put("coverageRate", Math.round(coverageRate * 10) / 10.0); // 保留1位小数
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("featureCount", featureCount);
+        details.put("useCaseCount", useCaseCount);
+        details.put("coveredFeatures", coveredFeatures);
+        details.put("coveredUseCases", coveredUseCases);
+        result.put("details", details);
+
+        // 添加详细的Feature结构信息
+        Map<String, Object> featuresDetails = buildFeaturesDetails(features);
+        result.put("featuresDetails", featuresDetails);
+
+        log.info("故事覆盖率计算完成 - 总故事数: {}, 已覆盖: {}, 覆盖率: {}%",
+                totalStories, coveredStories, coverageRate);
+
+        return result;
     }
 }
