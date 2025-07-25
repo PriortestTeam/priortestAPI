@@ -129,31 +129,72 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         return relationDao.selectCount(query1) > 0 || relationDao.selectCount(query2) > 0;
     }
 
-    /**
-     * 获取有测试用例覆盖的use_case集合
-     */
+    private Set<Long> getCoveredFeatures(Set<Long> featureIds) {
+        Set<Long> coveredFeatures = new HashSet<>();
+
+        // 查询 FEATURE_TO_TEST_CASE 关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "FEATURE_TO_TEST_CASE")
+              .in(Relation::getObjectId, featureIds);
+        List<Relation> relations1 = relationDao.selectList(query1);
+
+        // 查询 TEST_CASE_TO_FEATURE 关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_FEATURE")
+              .in(Relation::getTargetId, featureIds);
+        List<Relation> relations2 = relationDao.selectList(query2);
+
+        // 收集已覆盖的feature ID
+        relations1.forEach(r -> {
+            try {
+                coveredFeatures.add(Long.parseLong(r.getObjectId()));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid feature ID format: {}", r.getObjectId());
+            }
+        });
+        relations2.forEach(r -> {
+            try {
+                coveredFeatures.add(Long.parseLong(r.getTargetId()));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid feature ID format: {}", r.getTargetId());
+            }
+        });
+
+        return coveredFeatures;
+    }
+
     private Set<Long> getCoveredUseCases(Set<Long> useCaseIds) {
-        Set<Long> coveredIds = new HashSet<>();
+        Set<Long> coveredUseCases = new HashSet<>();
 
-        if (useCaseIds.isEmpty()) {
-            return coveredIds;
-        }
-
-        // 查找USE_CASE_TO_TEST_CASE关系
+        // 查询 USE_CASE_TO_TEST_CASE 关系
         LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
         query1.eq(Relation::getCategory, "USE_CASE_TO_TEST_CASE")
               .in(Relation::getObjectId, useCaseIds);
         List<Relation> relations1 = relationDao.selectList(query1);
-        relations1.forEach(r -> coveredIds.add(r.getObjectId()));
 
-        // 查找TEST_CASE_TO_USE_CASE关系
+        // 查询 TEST_CASE_TO_USE_CASE 关系
         LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
         query2.eq(Relation::getCategory, "TEST_CASE_TO_USE_CASE")
               .in(Relation::getTargetId, useCaseIds);
         List<Relation> relations2 = relationDao.selectList(query2);
-        relations2.forEach(r -> coveredIds.add(r.getTargetId()));
 
-        return coveredIds;
+        // 收集已覆盖的use case ID
+        relations1.forEach(r -> {
+            try {
+                coveredUseCases.add(Long.parseLong(r.getObjectId()));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid use case ID format: {}", r.getObjectId());
+            }
+        });
+        relations2.forEach(r -> {
+            try {
+                coveredUseCases.add(Long.parseLong(r.getTargetId()));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid use case ID format: {}", r.getTargetId());
+            }
+        });
+
+        return coveredUseCases;
     }
 
     /**
