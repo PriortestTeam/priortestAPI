@@ -226,6 +226,302 @@ WHERE tc.id IN (计划的测试用例IDs)
 GROUP BY tc.id, tc.title, uc.version
 ```
 
+## API设计
+
+### 接口路径
+- `GET /api/versionQualityReport/functionExecutionRate` - 简单查询
+- `POST /api/versionQualityReport/functionExecutionRate` - 复杂查询（支持多版本）
+
+### GET请求参数
+- `projectId`: 项目ID
+- `functionVersions`: 功能版本号数组
+- `startDate`: 开始日期（YYYY-MM-DD）
+- `endDate`: 结束日期（YYYY-MM-DD）
+
+### POST请求参数
+```json
+{
+    "projectId": 1874424342973054977,
+    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "startDate": "2025-01-01",
+    "endDate": "2025-01-31"
+}
+```
+
+### 响应格式
+
+#### 简单查询响应格式（GET请求）
+```json
+{
+  "success": true,
+  "data": {
+    "functionVersions": ["2.0.0.0"],
+    "totalPlannedCount": 100,
+    "actualExecutedCount": 85,
+    "executionRate": 85.0,
+    "queryConditions": {
+      "projectId": 1874424342973054977,
+      "functionVersions": ["2.0.0.0"],
+      "startDate": "2025-01-01",
+      "endDate": "2025-01-31"
+    },
+    "executionSummary": {
+      "totalTestCases": 100,
+      "executedTestCases": 85,
+      "notExecutedTestCases": 15,
+      "executionCycles": 3
+    }
+  }
+}
+```
+
+#### 复杂查询响应格式（POST请求 - 包含所有可能条件）
+```json
+{
+  "success": true,
+  "data": {
+    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "totalPlannedCount": 150,
+    "actualExecutedCount": 120,
+    "executionRate": 80.0,
+    "queryConditions": {
+      "projectId": 1874424342973054977,
+      "functionVersions": ["2.0.0.0", "2.1.0.0"],
+      "startDate": "2025-01-01",
+      "endDate": "2025-01-31"
+    },
+    "executionSummary": {
+      "totalTestCases": 150,
+      "executedTestCases": 120,
+      "notExecutedTestCases": 30,
+      "executionCycles": 5,
+      "averageExecutionsPerCase": 2.3
+    },
+    "versionAnalysis": [
+      {
+        "version": "2.0.0.0",
+        "plannedCount": 100,
+        "executedCount": 85,
+        "executionRate": 85.0,
+        "notExecutedCount": 15
+      },
+      {
+        "version": "2.1.0.0",
+        "plannedCount": 50,
+        "executedCount": 35,
+        "executionRate": 70.0,
+        "notExecutedCount": 15
+      }
+    ],
+    "executionDetails": [
+      {
+        "testCaseId": 123,
+        "testCaseTitle": "登录功能测试",
+        "version": "2.0.0.0",
+        "isExecuted": true,
+        "lastExecutionTime": "2025-01-15 10:30:00",
+        "executionCount": 3,
+        "executionStatus": 1,
+        "executionCycles": [
+          {
+            "testCycleId": 1001,
+            "testCycleTitle": "开发测试周期",
+            "testCycleEnv": "dev",
+            "executionTime": "2025-01-13 09:00:00",
+            "executionStatus": 1,
+            "executor": "测试员A",
+            "duration": 120
+          },
+          {
+            "testCycleId": 1002,
+            "testCycleTitle": "集成测试周期", 
+            "testCycleEnv": "test",
+            "executionTime": "2025-01-14 14:30:00",
+            "executionStatus": 2,
+            "executor": "测试员B",
+            "duration": 180
+          },
+          {
+            "testCycleId": 1003,
+            "testCycleTitle": "回归测试周期",
+            "testCycleEnv": "prod", 
+            "executionTime": "2025-01-15 10:30:00",
+            "executionStatus": 1,
+            "executor": "测试员A",
+            "duration": 90
+          }
+        ]
+      },
+      {
+        "testCaseId": 124,
+        "testCaseTitle": "密码重置功能",
+        "version": "2.0.0.0",
+        "isExecuted": false,
+        "lastExecutionTime": null,
+        "executionCount": 0,
+        "executionStatus": 0,
+        "executionCycles": [],
+        "notExecutedReason": "在指定时间范围内未执行"
+      },
+      {
+        "testCaseId": 125,
+        "testCaseTitle": "新支付功能测试",
+        "version": "2.1.0.0",
+        "isExecuted": true,
+        "lastExecutionTime": "2025-01-20 16:45:00",
+        "executionCount": 1,
+        "executionStatus": 2,
+        "executionCycles": [
+          {
+            "testCycleId": 1004,
+            "testCycleTitle": "新功能验证周期",
+            "testCycleEnv": "test",
+            "executionTime": "2025-01-20 16:45:00",
+            "executionStatus": 2,
+            "executor": "测试员C",
+            "duration": 240,
+            "failureReason": "支付接口超时"
+          }
+        ]
+      }
+    ],
+    "cycleExecutionStatistics": [
+      {
+        "testCycleId": 1001,
+        "testCycleTitle": "开发测试周期",
+        "testCycleEnv": "dev",
+        "totalCases": 60,
+        "executedCases": 55,
+        "executionRate": 91.7,
+        "passedCases": 50,
+        "failedCases": 5,
+        "passRate": 90.9
+      },
+      {
+        "testCycleId": 1002,
+        "testCycleTitle": "集成测试周期",
+        "testCycleEnv": "test",
+        "totalCases": 80,
+        "executedCases": 70,
+        "executionRate": 87.5,
+        "passedCases": 65,
+        "failedCases": 5,
+        "passRate": 92.9
+      },
+      {
+        "testCycleId": 1003,
+        "testCycleTitle": "回归测试周期",
+        "testCycleEnv": "prod",
+        "totalCases": 100,
+        "executedCases": 85,
+        "executionRate": 85.0,
+        "passedCases": 80,
+        "failedCases": 5,
+        "passRate": 94.1
+      }
+    ],
+    "environmentAnalysis": [
+      {
+        "environment": "dev",
+        "totalCases": 60,
+        "executedCases": 55,
+        "executionRate": 91.7
+      },
+      {
+        "environment": "test",
+        "totalCases": 120,
+        "executedCases": 105,
+        "executionRate": 87.5
+      },
+      {
+        "environment": "prod",
+        "totalCases": 100,
+        "executedCases": 85,
+        "executionRate": 85.0
+      }
+    ],
+    "timeRangeAnalysis": {
+      "startDate": "2025-01-01",
+      "endDate": "2025-01-31",
+      "totalDays": 31,
+      "activeDays": 20,
+      "dailyExecutionStats": [
+        {
+          "date": "2025-01-15",
+          "executedCases": 15,
+          "cycles": 2
+        },
+        {
+          "date": "2025-01-16",
+          "executedCases": 25,
+          "cycles": 3
+        }
+      ]
+    },
+    "qualityMetrics": {
+      "averageExecutionTime": 145,
+      "executionEfficiency": 78.5,
+      "riskLevel": "medium",
+      "recommendations": [
+        "建议优先执行版本2.1.0.0中未执行的15个测试用例",
+        "开发环境执行率较高，建议在测试和生产环境加强执行",
+        "支付功能测试失败率较高，建议重点关注"
+      ]
+    },
+    "notExecutedTestCases": [
+      {
+        "testCaseId": 124,
+        "testCaseTitle": "密码重置功能",
+        "version": "2.0.0.0",
+        "priority": "high",
+        "category": "安全功能",
+        "assignee": "测试员D",
+        "plannedDate": "2025-01-25"
+      },
+      {
+        "testCaseId": 126,
+        "testCaseTitle": "多语言支持测试",
+        "version": "2.1.0.0",
+        "priority": "medium",
+        "category": "国际化功能",
+        "assignee": "测试员E",
+        "plannedDate": "2025-01-28"
+      }
+    ]
+  }
+}
+```
+
+#### 错误响应格式
+```json
+{
+  "success": false,
+  "code": "INVALID_PARAMETER",
+  "message": "项目ID不能为空",
+  "data": null
+}
+```
+
+#### 空数据响应格式
+```json
+{
+  "success": true,
+  "data": {
+    "functionVersions": ["3.0.0.0"],
+    "totalPlannedCount": 0,
+    "actualExecutedCount": 0,
+    "executionRate": 0.0,
+    "queryConditions": {
+      "projectId": 1874424342973054977,
+      "functionVersions": ["3.0.0.0"],
+      "startDate": "2025-01-01",
+      "endDate": "2025-01-31"
+    },
+    "message": "未找到指定版本的测试用例"
+  }
+}
+```
+
 ## 业务价值
 
 ### 核心问题解答
@@ -233,6 +529,8 @@ GROUP BY tc.id, tc.title, uc.version
 - **"跨版本的功能测试完成度如何？"**
 - **"哪些测试用例还没有执行？"**
 - **"测试用例在不同环境的执行情况如何？"**
+- **"测试执行的时间分布如何？"**
+- **"哪些功能模块的测试风险较高？"**
 
 ### 质量评级标准
 - **优秀 (95%+)**: 测试执行非常充分
