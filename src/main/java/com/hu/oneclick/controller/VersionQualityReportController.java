@@ -31,6 +31,15 @@ public class VersionQualityReportController {
         return versionQualityReportService.getStoryCoverage(projectId, version);
     }
 
+    @PostMapping("/storyCoverage")
+    @Operation(summary = "获取故事覆盖率 (POST)", description = "通过POST方法获取指定项目和版本的故事覆盖率统计")
+    public Resp<Map<String, Object>> getStoryCoveragePost(@RequestBody Map<String, Object> request) {
+        String projectIdStr = String.valueOf(request.get("projectId"));
+        Long projectId = Long.valueOf(projectIdStr);
+        String majorVersion = (String) request.get("majorVersion");
+        return versionQualityReportService.getStoryCoverage(projectId, majorVersion);
+    }
+
     @GetMapping("/getQualityOverview/{projectId}")
     @Operation(summary = "获取项目版本质量总览")
     public Resp<Map<String, Object>> getQualityOverview(@PathVariable String projectId) {
