@@ -90,8 +90,7 @@ public class UserCaseController extends BaseController {
 
     @DeleteMapping(value = "deleteUseCaseById")
     @Operation(summary = "根据ID删除故事用例")
-    // Assuming the request body contains a JSON object with the user case ID
-    public Resp<Boolean>  deleteUseCaseById(@RequestBody Map<String, Object> requestBody) {
+    public Resp<Boolean> deleteUseCaseById(@RequestBody Map<String, Object> requestBody) {
         // Extract the ID from the request body
         long id = Long.parseLong(requestBody.get("id").toString());
         // Proceed with removing the use case by ID

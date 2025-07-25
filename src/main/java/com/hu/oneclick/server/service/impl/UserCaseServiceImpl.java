@@ -89,6 +89,10 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
 
     @Override
     public boolean removeUserCaseById(long id) {
+        int result = this.baseMapper.deleteById(id);
+        return result > 0;
+    }e
+    public boolean removeUserCaseById(long id) {
         int index = this.baseMapper.deleteById(id);
         return index > 0;
     }
