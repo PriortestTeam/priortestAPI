@@ -37,7 +37,11 @@ public class VersionQualityReportController {
         String projectIdStr = String.valueOf(request.get("projectId"));
         Long projectId = Long.valueOf(projectIdStr);
         String majorVersion = (String) request.get("majorVersion");
-        return versionQualityReportService.getStoryCoverage(projectId, majorVersion);
+        @SuppressWarnings("unchecked")
+        List<String> includeVersions = (List<String>) request.get("includeVersions");
+        
+        // 调用新的service方法来处理复杂的查询逻辑
+        return versionQualityReportService.getStoryCoverageWithVersions(projectId, majorVersion, includeVersions);
     }
 
     @GetMapping("/getQualityOverview/{projectId}")

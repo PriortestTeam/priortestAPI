@@ -155,26 +155,26 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             if (!useCases.isEmpty()) {
                 // 有Use Cases的Feature
                 Map<String, Object> useCasesInfo = new HashMap<>();
-                
+
                 for (UserCaseDto useCase : useCases) {
                     Map<String, Object> useCaseInfo = new HashMap<>();
                     useCaseInfo.put("useCaseId", useCase.getId());
                     useCaseInfo.put("useCaseTitle", useCase.getTitle());
                     useCaseInfo.put("useCaseVersion", useCase.getVersion()); // 添加Use Case版本
-                    
+
                     // 获取Use Case关联的测试用例
                     List<Map<String, Object>> useCaseTestCases = getUseCaseTestCases(useCase.getId());
                     useCaseInfo.put("testCases", useCaseTestCases);
                     useCaseInfo.put("testCaseCount", useCaseTestCases.size());
                     useCaseInfo.put("hasCoverage", !useCaseTestCases.isEmpty());
-                    
+
                     useCasesInfo.put(String.valueOf(useCase.getId()), useCaseInfo);
                 }
-                
+
                 featureInfo.put("type", "WITH_USE_CASES");
                 featureInfo.put("useCases", useCasesInfo);
                 featureInfo.put("useCaseCount", useCases.size());
-                
+
                 // 如果Feature既有Use Cases又有直接关联的测试用例
                 if (!featureTestCases.isEmpty()) {
                     featureInfo.put("directTestCases", featureTestCases);
@@ -191,7 +191,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
                 featureInfo.put("directTestCaseCount", featureTestCases.size());
                 featureInfo.put("hasCoverage", !featureTestCases.isEmpty());
             }
-            
+
             featuresDetails.put(String.valueOf(feature.getId()), featureInfo);
         }
 
@@ -688,74 +688,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
     @Override
     public Resp<Map<String, Object>> getExecutionRate(String projectId, String releaseVersion) {
         try {
-            Map<String, Object> result = new HashMap<>();
-
-            // 测试执行率数据
-            int plannedCases = 135;
-            int executedCases = 120;
-            int passedCases = 105;
-            int failedCases = 15;
-
-            double executionRate = (double) executedCases / plannedCases * 100;
-            double passRate = (double) passedCases / executedCases * 100;
-
-            result.put("plannedCases", plannedCases);
-            result.put("executedCases", executedCases);
-            result.put("passedCases", passedCases);
-            result.put("failedCases", failedCases);
-            result.put("executionRate", Math.round(executionRate * 100.0) / 100.0);
-            result.put("passRate", Math.round(passRate * 100.0) / 100.0);
-
-            // 执行率等级
-            String executionLevel;
-            if (executionRate >= 95) {
-                executionLevel = "优秀";
-            } else if (executionRate >= 85) {
-                executionLevel = "良好";
-            } else if (executionRate >= 75) {
-                executionLevel = "一般";
-            } else {
-                executionLevel = "需改进";
-            }
-            result.put("executionLevel", executionLevel);
-
-            // 通过率等级
-            String passLevel;
-            if (passRate >= 95) {
-                passLevel = "优秀";
-            } else if (passRate >= 90) {
-                passLevel = "良好";
-            } else if (passRate >= 85) {
-                passLevel = "一般";
-            } else {
-                passLevel = "需改进";
-            }
-            result.put("passLevel", passLevel);
-
-            // 测试执行趋势
-            List<Map<String, Object>> executionTrend = new ArrayList<>();
-            executionTrend.add(createTrendData("2024-01-15", 75.5, 85.2));
-            executionTrend.add(createTrendData("2024-01-16", 82.3, 87.5));
-            executionTrend.add(createTrendData("2024-01-17", 88.9, 89.1));
-            executionTrend.add(createTrendData("2024-01-18", 91.2, 88.8));
-            executionTrend.add(createTrendData("2024-01-19", 88.9, 87.5));
-            result.put("executionTrend", executionTrend);
-
-            // 测试周期执行详情
-            List<Map<String, Object>> cycleExecutionDetails = new ArrayList<>();
-            cycleExecutionDetails.add(createCycleExecution("系统测试周期1", 45, 42, 38, 4, 93.3, 90.5));
-            cycleExecutionDetails.add(createCycleExecution("集成测试周期", 30, 28, 25, 3, 93.3, 89.3));
-            cycleExecutionDetails.add(createCycleExecution("回归测试周期", 60, 50, 42, 8, 83.3, 84.0));
-            result.put("cycleExecutionDetails", cycleExecutionDetails);
-
-            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
-        } catch (Exception e) {
-            return new Resp.Builder<Map<String, Object>>().buildResult("获取执行率失败");
-        }
-    }
-
-    @Override
-    public Resp<Map<String, Object>> getVersionComparison(String projectId, String startVersion, String endVersion) {
+            Map<StringString, Object>> getVersionComparison(String projectId, String startVersion, String endVersion) {
         try {
             Map<String, Object> result = new HashMap<>();
 

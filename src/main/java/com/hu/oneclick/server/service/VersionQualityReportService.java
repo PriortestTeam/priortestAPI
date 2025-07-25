@@ -34,6 +34,15 @@ public interface VersionQualityReportService {
     Resp<Map<String, Object>> getStoryCoverage(Long projectId, String version);
 
     /**
+     * 获取故事覆盖率（支持多版本查询）
+     * @param projectId 项目ID
+     * @param majorVersion 主版本号
+     * @param includeVersions 包含的版本列表
+     * @return 故事覆盖率统计结果
+     */
+    Resp<Map<String, Object>> getStoryCoverageWithVersions(Long projectId, String majorVersion, List<String> includeVersions);
+
+    /**
      * 获取版本缺陷分布分析
      */
     Resp<Map<String, Object>> getDefectDistribution(String projectId, String releaseVersion);
