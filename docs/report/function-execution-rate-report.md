@@ -17,7 +17,7 @@
 ```json
 {
     "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "versions": ["2.0.0.0", "2.1.0.0"],
     "startDate": "2025-01-01",  // 可选，开始日期，为空则不限制开始时间
     "endDate": "2025-01-31"     // 可选，结束日期，为空则不限制结束时间
 }
@@ -25,7 +25,7 @@
 
 #### 参数说明
 - **projectId**: 项目ID（必填）
-- **functionVersions**: 功能版本号数组（必填）
+- **versions**: 功能版本号数组（必填，可以是1个或多个版本）
 - **startDate**: 开始日期，格式YYYY-MM-DD（可选）
   - 为空或null：不限制开始时间，查询所有历史执行记录
   - 有值：只统计该日期之后的执行记录
@@ -33,7 +33,7 @@
   - 为空或null：不限制结束时间，查询到当前时间的所有执行记录
   - 有值：只统计该日期之前的执行记录
 
-### 3. 返回结果设计（规范化命名）
+### 3. 返回结果设计
 ```json
 {
     "versions": ["2.0.0.0", "2.1.0.0"],
@@ -92,131 +92,23 @@
 - **实际执行数(actualExecutedCount)**: 该功能版本下已执行的测试用例数（去重）
 - **去重**: 一个测试用例在多个测试周期中执行，只计算一次
 
-## Use Case与Feature版本关系
-
-### 项目中的版本关系模式
-在当前项目中，Use Case和Feature存在以下版本关系：
-
-1. **Feature有版本**: Feature表中有`version`字段，表示Feature所属的功能版本
-2. **Use Case有独立版本**: Use Case表中有`version`字段，表示Use Case自身的版本
-3. **关联关系**: Use Case通过`feature_id`关联到Feature，但Use Case的版本独立于Feature版本
-4. **版本可能不同**: 一个Feature（如v2.0.0）下的Use Case可能有不同版本（v2.0.0、v2.1.0等）
-
-### 查询逻辑说明
-
-#### 情况1：主版本Feature分析（始终执行）
-**目的**: 获取指定主版本Feature下符合版本条件的Use Case
-
-**查询步骤**：
-1. 查询主版本的所有Feature（`feature.version = majorVersion`）
-2. 查询这些Feature下的所有Use Case（通过`feature_id`关联）
-3. 对Use Case进行版本过滤：
-   - 版本 = 主版本 → 包含
-   - 版本 ∈ includeVersions（如果有值）→ 包含
-   - 其他版本 → 排除到`versionNotMatchedInfo`
-
-**主版本Feature分析的场景处理**：
-
-**1. 有Use Case的Feature**：
-- 使用 `selectByFeatureIdsWithVersionFilter` 查询Feature下的Use Cases
-- 支持版本过滤：主版本 + includeVersions中的版本
-- 对于每个符合版本条件的Use Case，查询其关联的测试用例
-
-**2. 无Use Case的Feature**：
-- 当Feature下没有Use Case或Use Case版本都不匹配时
-- 查询Feature直接关联的测试用例
-
-**3. 版本不匹配信息**：
-- 使用 `selectVersionNotMatchedByFeatureIds` 查询Feature下版本不匹配的Use Cases
-- 这些Use Cases既不是主版本，也不在includeVersions中
-
-#### 情况2：包含版本Use Case补充（当includeVersions有值时）
-**目的**: 获取纯粹属于includeVersions但不属于主版本Feature的Use Case
-
-**查询步骤**：
-1. 查询指定版本的Use Case（`use_case.version IN includeVersions`）
-2. 排除情况1中已统计的有效Use Case（避免重复）
-3. 这样获得了纯粹属于includeVersions但不属于主版本Feature的Use Case
-
-**逻辑优化说明**：
-- 情况1现在已包含版本过滤逻辑，会检查Use Case版本是否匹配includeVersions
-- 情况2专门处理增量Use Case，确保去重后的纯增量统计
-- 最终逻辑简化为：主版本Feature分析（包含版本过滤）+ 包含版本Use Case补充（去重后的纯增量）
-
-**设计保证**：
-- 主版本Feature的完整覆盖分析
-- Use Case版本的灵活过滤
-- 版本不匹配情况的透明记录
-- 支持后续去重逻辑，避免重复计算
-
-## 数据结构分析
-
-### 核心表结构
-1. **feature表** - 存储主要功能特性，有version字段
-2. **use_case表** - 存储功能用例，有独立的version字段和feature_id关联字段
-3. **test_case表** - 存储测试用例
-4. **test_cycle表** - 存储测试周期信息
-5. **test_cycle_join_test_case表** - 存储测试执行记录
-
-### 关系说明
-- Feature → Use Case: 一对多关系（通过feature_id）
-- Use Case → Test Case: 多对多关系（通过关联表或字段）
-- Test Case → Execution: 一对多关系（一个用例可在多个周期执行）
-
 ## 核心计算逻辑
 
-### 5. 核心计算逻辑
-- **totalPlannedCount**: 从test_case表统计指定版本的测试用例总数
-- **actualExecutedCount**: 从test_cycle_join_test_case表统计已执行的测试用例数（去重）
-- **executionRate**: (actualExecutedCount ÷ totalPlannedCount) × 100%
-
-### 6. 数据来源表
-- **test_case**: 测试用例基础信息
-- **test_cycle**: 测试周期信息（获取title和env）
-- **test_cycle_join_test_case**: 测试执行记录（获取执行状态和时间）
-
 ### 1. 计划数统计
-- 从`test_case`表统计指定功能版本的测试用例总数
-- 需要考虑Feature和Use Case的版本匹配关系
-
-### 2. 实际执行数统计（去重）
-- 从`test_cycle_join_test_case`表统计已执行的测试用例
-- **去重逻辑**: 同一个测试用例在多个测试周期中执行，只计算一次
-- 使用`DISTINCT test_case_id`或Set去重
-
-### 3. 执行率计算
 ```sql
-执行率 = (actualExecutedCount ÷ totalPlannedCount) × 100%
-```
-
-## SQL查询示例
-
-### 计划数查询
-```sql
--- 情况1：主版本Feature下的符合条件Use Case
 SELECT COUNT(DISTINCT tc.id) as planned_count
 FROM test_case tc
-JOIN use_case uc ON tc.use_case_id = uc.id
-JOIN feature f ON uc.feature_id = f.id
-WHERE f.project_id = #{projectId}
-  AND f.version = #{majorVersion}
-  AND (uc.version = #{majorVersion} 
-       OR uc.version IN (#{includeVersions}))
-
--- 情况2：补充的includeVersions Use Case
-SELECT COUNT(DISTINCT tc.id) as additional_count
-FROM test_case tc
-JOIN use_case uc ON tc.use_case_id = uc.id
-WHERE uc.project_id = #{projectId}
-  AND uc.version IN (#{includeVersions})
-  AND uc.id NOT IN (已统计的Use Case IDs)
+WHERE tc.version IN (#{versions})
+  AND tc.project_id = #{projectId}
 ```
 
-### 实际执行数查询（去重）
+### 2. 实际执行数统计（去重）
 ```sql
 SELECT COUNT(DISTINCT tcjtc.test_case_id) as executed_count
 FROM test_cycle_join_test_case tcjtc
-WHERE tcjtc.test_case_id IN (计划的测试用例IDs)
+JOIN test_case tc ON tcjtc.test_case_id = tc.id
+WHERE tc.version IN (#{versions})
+  AND tc.project_id = #{projectId}
   <if test="startDate != null and startDate != ''">
     AND tcjtc.execution_time >= #{startDate}
   </if>
@@ -225,16 +117,15 @@ WHERE tcjtc.test_case_id IN (计划的测试用例IDs)
   </if>
 ```
 
-### 详细执行历史查询（支持可选时间过滤）
+### 3. 详细执行历史查询（支持可选时间过滤）
 ```sql
 SELECT 
     tc.id as testCaseId,
     tc.title as testCaseTitle,
-    uc.version,
+    tc.version,
     COUNT(tcjtc.id) as executionCount,
     MAX(tcjtc.execution_time) as lastExecutionTime
 FROM test_case tc
-LEFT JOIN use_case uc ON tc.use_case_id = uc.id
 LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
     <if test="startDate != null and startDate != ''">
       AND tcjtc.execution_time >= #{startDate}
@@ -242,42 +133,31 @@ LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
     <if test="endDate != null and endDate != ''">
       AND tcjtc.execution_time <= #{endDate}
     </if>
-WHERE tc.id IN (计划的测试用例IDs)
-GROUP BY tc.id, tc.title, uc.version
+WHERE tc.version IN (#{versions})
+  AND tc.project_id = #{projectId}
+GROUP BY tc.id, tc.title, tc.version
 ```
 
-### 详细执行历史查询
-```sql
-SELECT 
-    tc.id as testCaseId,
-    tc.title as testCaseTitle,
-    uc.version,
-    COUNT(tcjtc.id) as executionCount,
-    MAX(tcjtc.execution_time) as lastExecutionTime
-FROM test_case tc
-LEFT JOIN use_case uc ON tc.use_case_id = uc.id
-LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
-WHERE tc.id IN (计划的测试用例IDs)
-GROUP BY tc.id, tc.title, uc.version
-```
+## 数据结构分析
+
+### 核心表结构
+1. **test_case表** - 存储测试用例，有version字段和project_id字段
+2. **test_cycle表** - 存储测试周期信息
+3. **test_cycle_join_test_case表** - 存储测试执行记录
+
+### 关系说明
+- Test Case → Execution: 一对多关系（一个用例可在多个周期执行）
 
 ## API设计
 
 ### 接口路径
-- `GET /api/versionQualityReport/functionExecutionRate` - 简单查询
-- `POST /api/versionQualityReport/functionExecutionRate` - 复杂查询（支持多版本）
+- `POST /api/versionQualityReport/functionExecutionRate`
 
-### GET请求参数
-- `projectId`: 项目ID（必填）
-- `functionVersions`: 功能版本号数组（必填）
-- `startDate`: 开始日期，格式YYYY-MM-DD（可选）
-- `endDate`: 结束日期，格式YYYY-MM-DD（可选）
-
-### POST请求参数
+### 请求参数
 ```json
 {
     "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "versions": ["2.0.0.0", "2.1.0.0"],
     "startDate": "2025-01-01",  // 可选参数
     "endDate": "2025-01-31"     // 可选参数
 }
@@ -288,7 +168,7 @@ GROUP BY tc.id, tc.title, uc.version
 ```json
 {
     "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0"]
+    "versions": ["2.0.0.0"]
 }
 ```
 
@@ -296,7 +176,7 @@ GROUP BY tc.id, tc.title, uc.version
 ```json
 {
     "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0"],
+    "versions": ["2.0.0.0"],
     "startDate": "2025-01-15"
 }
 ```
@@ -305,39 +185,14 @@ GROUP BY tc.id, tc.title, uc.version
 ```json
 {
     "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0"],
+    "versions": ["2.0.0.0"],
     "endDate": "2025-01-31"
 }
 ```
 
 ### 响应格式
 
-#### 简单查询响应格式（GET请求）
-```json
-{
-  "success": true,
-  "data": {
-    "versions": ["2.0.0.0"],
-    "totalPlannedCount": 100,
-    "actualExecutedCount": 85,
-    "executionRate": 85.0,
-    "queryConditions": {
-      "projectId": 1874424342973054977,
-      "versions": ["2.0.0.0"],
-      "startDate": "2025-01-01",  // 如果请求中未传该参数，则为null
-      "endDate": "2025-01-31"     // 如果请求中未传该参数，则为null
-    },
-    "executionSummary": {
-      "totalTestCases": 100,
-      "executedTestCases": 85,
-      "notExecutedTestCases": 15,
-      "executionCycles": 3
-    }
-  }
-}
-```
-
-#### 复杂查询响应格式（POST请求 - 包含所有可能条件）
+#### 成功响应格式
 ```json
 {
   "success": true,
@@ -356,25 +211,8 @@ GROUP BY tc.id, tc.title, uc.version
       "totalTestCases": 150,
       "executedTestCases": 120,
       "notExecutedTestCases": 30,
-      "executionCycles": 5,
-      "averageExecutionsPerCase": 2.3
+      "executionCycles": 5
     },
-    "versionAnalysis": [
-      {
-        "version": "2.0.0.0",
-        "plannedCount": 100,
-        "executedCount": 85,
-        "executionRate": 85.0,
-        "notExecutedCount": 15
-      },
-      {
-        "version": "2.1.0.0",
-        "plannedCount": 50,
-        "executedCount": 35,
-        "executionRate": 70.0,
-        "notExecutedCount": 15
-      }
-    ],
     "executionDetails": [
       {
         "testCaseId": 123,
@@ -390,27 +228,14 @@ GROUP BY tc.id, tc.title, uc.version
             "testCycleTitle": "开发测试周期",
             "testCycleEnv": "dev",
             "executionTime": "2025-01-13 09:00:00",
-            "executionStatus": 1,
-            "executor": "测试员A",
-            "duration": 120
+            "executionStatus": 1
           },
           {
             "testCycleId": 1002,
             "testCycleTitle": "集成测试周期", 
             "testCycleEnv": "test",
             "executionTime": "2025-01-14 14:30:00",
-            "executionStatus": 2,
-            "executor": "测试员B",
-            "duration": 180
-          },
-          {
-            "testCycleId": 1003,
-            "testCycleTitle": "回归测试周期",
-            "testCycleEnv": "prod", 
-            "executionTime": "2025-01-15 10:30:00",
-            "executionStatus": 1,
-            "executor": "测试员A",
-            "duration": 90
+            "executionStatus": 2
           }
         ]
       },
@@ -422,132 +247,7 @@ GROUP BY tc.id, tc.title, uc.version
         "lastExecutionTime": null,
         "executionCount": 0,
         "executionStatus": 0,
-        "executionCycles": [],
-        "notExecutedReason": "在指定时间范围内未执行"
-      },
-      {
-        "testCaseId": 125,
-        "testCaseTitle": "新支付功能测试",
-        "version": "2.1.0.0",
-        "isExecuted": true,
-        "lastExecutionTime": "2025-01-20 16:45:00",
-        "executionCount": 1,
-        "executionStatus": 2,
-        "executionCycles": [
-          {
-            "testCycleId": 1004,
-            "testCycleTitle": "新功能验证周期",
-            "testCycleEnv": "test",
-            "executionTime": "2025-01-20 16:45:00",
-            "executionStatus": 2,
-            "executor": "测试员C",
-            "duration": 240,
-            "failureReason": "支付接口超时"
-          }
-        ]
-      }
-    ],
-    "cycleExecutionStatistics": [
-      {
-        "testCycleId": 1001,
-        "testCycleTitle": "开发测试周期",
-        "testCycleEnv": "dev",
-        "totalCases": 60,
-        "executedCases": 55,
-        "executionRate": 91.7,
-        "passedCases": 50,
-        "failedCases": 5,
-        "passRate": 90.9
-      },
-      {
-        "testCycleId": 1002,
-        "testCycleTitle": "集成测试周期",
-        "testCycleEnv": "test",
-        "totalCases": 80,
-        "executedCases": 70,
-        "executionRate": 87.5,
-        "passedCases": 65,
-        "failedCases": 5,
-        "passRate": 92.9
-      },
-      {
-        "testCycleId": 1003,
-        "testCycleTitle": "回归测试周期",
-        "testCycleEnv": "prod",
-        "totalCases": 100,
-        "executedCases": 85,
-        "executionRate": 85.0,
-        "passedCases": 80,
-        "failedCases": 5,
-        "passRate": 94.1
-      }
-    ],
-    "environmentAnalysis": [
-      {
-        "environment": "dev",
-        "totalCases": 60,
-        "executedCases": 55,
-        "executionRate": 91.7
-      },
-      {
-        "environment": "test",
-        "totalCases": 120,
-        "executedCases": 105,
-        "executionRate": 87.5
-      },
-      {
-        "environment": "prod",
-        "totalCases": 100,
-        "executedCases": 85,
-        "executionRate": 85.0
-      }
-    ],
-    "timeRangeAnalysis": {
-      "startDate": "2025-01-01",
-      "endDate": "2025-01-31",
-      "totalDays": 31,
-      "activeDays": 20,
-      "dailyExecutionStats": [
-        {
-          "date": "2025-01-15",
-          "executedCases": 15,
-          "cycles": 2
-        },
-        {
-          "date": "2025-01-16",
-          "executedCases": 25,
-          "cycles": 3
-        }
-      ]
-    },
-    "qualityMetrics": {
-      "averageExecutionTime": 145,
-      "executionEfficiency": 78.5,
-      "riskLevel": "medium",
-      "recommendations": [
-        "建议优先执行版本2.1.0.0中未执行的15个测试用例",
-        "开发环境执行率较高，建议在测试和生产环境加强执行",
-        "支付功能测试失败率较高，建议重点关注"
-      ]
-    },
-    "notExecutedTestCases": [
-      {
-        "testCaseId": 124,
-        "testCaseTitle": "密码重置功能",
-        "version": "2.0.0.0",
-        "priority": "high",
-        "category": "安全功能",
-        "assignee": "测试员D",
-        "plannedDate": "2025-01-25"
-      },
-      {
-        "testCaseId": 126,
-        "testCaseTitle": "多语言支持测试",
-        "version": "2.1.0.0",
-        "priority": "medium",
-        "category": "国际化功能",
-        "assignee": "测试员E",
-        "plannedDate": "2025-01-28"
+        "executionCycles": []
       }
     ]
   }
@@ -564,33 +264,7 @@ GROUP BY tc.id, tc.title, uc.version
 }
 ```
 
-#### 无时间限制查询响应格式
-```json
-{
-  "success": true,
-  "data": {
-    "versions": ["2.0.0.0"],
-    "totalPlannedCount": 150,
-    "actualExecutedCount": 145,
-    "executionRate": 96.7,
-    "queryConditions": {
-      "projectId": 1874424342973054977,
-      "versions": ["2.0.0.0"],
-      "startDate": null,
-      "endDate": null
-    },
-    "executionSummary": {
-      "totalTestCases": 150,
-      "executedTestCases": 145,
-      "notExecutedTestCases": 5,
-      "executionCycles": 8,
-      "timeRangeInfo": "查询所有历史执行记录"
-    }
-  }
-}
-```
-
-#### 空数据响应格式
+#### 无数据响应格式
 ```json
 {
   "success": true,
@@ -617,66 +291,28 @@ GROUP BY tc.id, tc.title, uc.version
 - 统计所有历史执行记录
 - 适用于整体质量评估和长期趋势分析
 
-**示例请求**:
-```json
-{
-    "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0"]
-}
-```
-
 ### 2. 只传startDate（endDate为空）
 **使用场景**: 查看某个时间点之后的测试执行情况
 - 统计指定日期之后到当前时间的执行记录
 - 适用于版本发布后的回归测试分析
-
-**示例请求**:
-```json
-{
-    "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0"],
-    "startDate": "2025-01-15"
-}
-```
 
 ### 3. 只传endDate（startDate为空）
 **使用场景**: 查看某个时间点之前的测试执行情况
 - 统计从历史开始到指定日期的执行记录
 - 适用于里程碑节点的质量分析
 
-**示例请求**:
-```json
-{
-    "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0"],
-    "endDate": "2025-01-31"
-}
-```
-
 ### 4. 同时传startDate和endDate
 **使用场景**: 查看特定时间段的测试执行情况
 - 统计指定时间窗口内的执行记录
 - 适用于阶段性质量报告和周期性分析
 
-**示例请求**:
-```json
-{
-    "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0"],
-    "startDate": "2025-01-01",
-    "endDate": "2025-01-31"
-}
-```
-
 ## 业务价值
 
 ### 核心问题解答
-- **"2.0.0.0新功能本身测试得怎么样？"**
+- **"2.0.0.0新功能测试执行得怎么样？"**
 - **"跨版本的功能测试完成度如何？"**
 - **"哪些测试用例还没有执行？"**
 - **"测试用例在不同环境的执行情况如何？"**
-- **"测试执行的时间分布如何？"**
-- **"哪些功能模块的测试风险较高？"**
 
 ### 质量评级标准
 - **优秀 (95%+)**: 测试执行非常充分
@@ -686,27 +322,21 @@ GROUP BY tc.id, tc.title, uc.version
 
 ## 实现要点
 
-### 1. 版本匹配逻辑
-- Feature版本作为主要筛选条件
-- Use Case版本进行二次过滤
-- 支持多版本组合查询
-
-### 2. 去重策略
+### 1. 去重策略
 - 使用Set集合自动去重
 - SQL层面使用DISTINCT
 - 记录详细的执行历史
 
-### 3. 性能优化
+### 2. 性能优化
 - 合理使用索引
 - 分步查询避免复杂JOIN
 - 缓存常用查询结果
 
-### 4. 数据完整性
+### 3. 数据完整性
 - 处理空数据情况
-- 版本不匹配的Use Case记录到versionNotMatchedInfo
 - 提供详细的执行轨迹信息
 
-### 5. 详细执行信息
+### 4. 详细执行信息
 - 提供每个测试用例的执行历史
 - 记录测试周期环境信息
 - 支持多周期执行状态追踪
