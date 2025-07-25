@@ -43,7 +43,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
             if (features.isEmpty()) {
                 log.warn("未找到指定版本的功能故事 - 项目ID: {}, 版本: {}", projectId, version);
-                return buildEmptyStoryCoverageResult();
+                return new Resp.Builder<Map<String, Object>>().setData(buildEmptyStoryCoverageResult()).ok();
             }
 
             // 2. 计算总故事数和已覆盖故事数
