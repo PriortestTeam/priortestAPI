@@ -3,89 +3,61 @@
 
 ## 概述
 
-功能执行率是衡量指定功能版本测试执行完整程度的重要指标，通过计算已执行测试用例数与计划测试用例总数的比例来评估测试进度。
+功能执行率是衡量指定功能版本测试完成度的重要指标，通过计算已执行测试用例数与计划测试用例数的比例来评估测试进度。此报表帮助团队了解特定功能版本的测试覆盖情况。
 
 ## 计算公式
 
-**功能执行率 = (实际执行测试用例数 ÷ 计划测试用例总数) × 100%**
+**功能执行率 = (实际执行数 ÷ 计划数) × 100%**
 
 ### 术语说明
-- **计划测试用例总数**: 指定功能版本下所有测试用例的数量
-- **实际执行测试用例数**: 已在测试周期中执行过的测试用例数量（去重）
-- **去重逻辑**: 同一个测试用例在多个测试周期中执行，只计算一次
+- **计划数**: 该功能版本下所有测试用例总数
+- **实际执行数**: 该功能版本下已执行的测试用例数（去重）
+- **去重**: 一个测试用例在多个测试周期中执行，只计算一次
+
+## Use Case与Feature版本关系
+
+### 项目中的版本关系模式
+在当前项目中，Use Case和Feature存在以下版本关系：
+
+1. **Feature有版本**: Feature表中有`version`字段，表示Feature所属的功能版本
+2. **Use Case有独立版本**: Use Case表中有`version`字段，表示Use Case自身的版本
+3. **关联关系**: Use Case通过`feature_id`关联到Feature，但Use Case的版本独立于Feature版本
+4. **版本可能不同**: 一个Feature（如v2.0.0）下的Use Case可能有不同版本（v2.0.0、v2.1.0等）
+
+### 查询逻辑说明
+
+#### 情况1：主版本Feature分析（始终执行）
+- **目的**: 获取指定主版本Feature下符合版本条件的Use Case
+- **步骤**:
+  1. 查询主版本的所有Feature（`feature.version = majorVersion`）
+  2. 查询这些Feature下的所有Use Case（通过`feature_id`关联）
+  3. 对Use Case进行版本过滤：
+     - 版本 = 主版本 → 包含
+     - 版本 ∈ includeVersions（如果有值）→ 包含
+     - 其他版本 → 排除到`versionNotMatchedInfo`
+
+#### 情况2：包含版本Use Case补充（当includeVersions有值时）
+- **目的**: 获取纯粹属于includeVersions但不属于主版本Feature的Use Case
+- **步骤**:
+  1. 查询指定版本的Use Case（`use_case.version IN includeVersions`）
+  2. 排除情况1中已统计的有效Use Case（避免重复计算）
+  3. 这样获得增量的Use Case，确保统计完整性
 
 ## 数据结构分析
 
 ### 核心表结构
-1. **test_case表** - 存储测试用例基础信息
-2. **test_cycle表** - 存储测试周期信息
-3. **test_cycle_join_test_case表** - 存储测试执行记录
+1. **feature表** - 存储主要功能特性，有version字段
+2. **use_case表** - 存储功能用例，有独立的version字段和feature_id关联字段
+3. **test_case表** - 存储测试用例
+4. **test_cycle表** - 存储测试周期信息
+5. **test_cycle_join_test_case表** - 存储测试执行记录
 
-### 字段说明
-- **test_case.version**: 测试用例所属功能版本
-- **test_cycle_join_test_case.run_status**: 执行状态（0=未执行，1=通过，2=失败，3=阻塞）
-- **test_cycle_join_test_case.update_time**: 执行时间
+### 关系说明
+- Feature → Use Case: 一对多关系（通过feature_id）
+- Use Case → Test Case: 多对多关系（通过关联表或字段）
+- Test Case → Execution: 一对多关系（一个用例可在多个周期执行）
 
-## 查询逻辑
-
-### 步骤1：计算计划测试用例总数
-```sql
-SELECT COUNT(*) as totalPlannedCount
-FROM test_case tc
-WHERE tc.project_id = #{projectId}
-AND tc.version IN (#{functionVersions})
-```
-
-### 步骤2：计算实际执行测试用例数（去重）
-```sql
-SELECT COUNT(DISTINCT tc.id) as actualExecutedCount
-FROM test_case tc
-INNER JOIN test_cycle_join_test_case tctc ON tc.id = tctc.test_case_id
-WHERE tc.project_id = #{projectId}
-AND tc.version IN (#{functionVersions})
-AND tctc.run_status != 0  -- 排除未执行状态
-<if test="startDate != null and endDate != null">
-AND tctc.update_time BETWEEN #{startDate} AND #{endDate}
-</if>
-```
-
-### 步骤3：查询执行详情
-```sql
-SELECT 
-    tc.id as testCaseId,
-    tc.title as testCaseTitle,
-    tc.version,
-    CASE WHEN tctc.test_case_id IS NOT NULL THEN true ELSE false END as isExecuted,
-    MAX(tctc.update_time) as lastExecutionTime,
-    COUNT(tctc.test_cycle_id) as executionCount,
-    JSON_ARRAYAGG(
-        CASE WHEN tctc.test_cycle_id IS NOT NULL THEN
-            JSON_OBJECT(
-                'testCycleId', tctc.test_cycle_id,
-                'testCycleTitle', tcycle.title,
-                'testCycleEnv', tcycle.env,
-                'executionTime', tctc.update_time,
-                'executionStatus', tctc.run_status
-            )
-        END
-    ) as executionCycles
-FROM test_case tc
-LEFT JOIN test_cycle_join_test_case tctc ON tc.id = tctc.test_case_id 
-    AND tctc.run_status != 0
-LEFT JOIN test_cycle tcycle ON tctc.test_cycle_id = tcycle.id
-WHERE tc.project_id = #{projectId}
-AND tc.version IN (#{functionVersions})
-<if test="startDate != null and endDate != null">
-AND (tctc.update_time IS NULL OR tctc.update_time BETWEEN #{startDate} AND #{endDate})
-</if>
-GROUP BY tc.id, tc.title, tc.version
-ORDER BY tc.id
-```
-
-## API设计
-
-### 接口路径
-`POST /api/versionQualityReport/functionExecutionRate`
+## 接口设计
 
 ### 请求参数
 ```json
@@ -100,91 +72,131 @@ ORDER BY tc.id
 ### 响应格式
 ```json
 {
-    "success": true,
-    "data": {
-        "functionVersions": ["2.0.0.0", "2.1.0.0"],
-        "totalPlannedCount": 150,
-        "actualExecutedCount": 120,
-        "executionRate": 80.0,
-        "executionDetails": [
-            {
-                "testCaseId": 123,
-                "testCaseTitle": "登录功能测试",
-                "version": "2.0.0.0",
-                "isExecuted": true,
-                "lastExecutionTime": "2025-01-15 10:30:00",
-                "executionCount": 3,
-                "executionCycles": [
-                    {
-                        "testCycleId": 1001,
-                        "testCycleTitle": "开发测试周期",
-                        "testCycleEnv": "dev",
-                        "executionTime": "2025-01-13 09:00:00",
-                        "executionStatus": 1
-                    },
-                    {
-                        "testCycleId": 1002,
-                        "testCycleTitle": "集成测试周期",
-                        "testCycleEnv": "test",
-                        "executionTime": "2025-01-14 14:30:00",
-                        "executionStatus": 2
-                    },
-                    {
-                        "testCycleId": 1003,
-                        "testCycleTitle": "回归测试周期",
-                        "testCycleEnv": "prod",
-                        "executionTime": "2025-01-15 10:30:00",
-                        "executionStatus": 1
-                    }
-                ]
-            }
-        ]
-    }
+    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "totalPlannedCount": 150,
+    "actualExecutedCount": 120,
+    "executionRate": 80.0,
+    "executionDetails": [
+        {
+            "testCaseId": 123,
+            "testCaseTitle": "登录功能测试",
+            "version": "2.0.0.0",
+            "isExecuted": true,
+            "lastExecutionTime": "2025-01-15 10:30:00",
+            "executionCount": 3,
+            "executionCycles": [
+                {
+                    "testCycleId": 1001,
+                    "testCycleTitle": "开发测试周期",
+                    "testCycleEnv": "dev",
+                    "executionTime": "2025-01-13 09:00:00",
+                    "executionStatus": 1
+                },
+                {
+                    "testCycleId": 1002,
+                    "testCycleTitle": "集成测试周期", 
+                    "testCycleEnv": "test",
+                    "executionTime": "2025-01-14 14:30:00",
+                    "executionStatus": 2
+                },
+                {
+                    "testCycleId": 1003,
+                    "testCycleTitle": "回归测试周期",
+                    "testCycleEnv": "prod", 
+                    "executionTime": "2025-01-15 10:30:00",
+                    "executionStatus": 1
+                }
+            ]
+        }
+    ]
 }
 ```
 
-## 实现要点
+### 字段说明
+- **testCycleId**: 测试周期ID
+- **testCycleTitle**: 测试周期标题名称
+- **testCycleEnv**: 测试周期环境（dev/test/prod等）
+- **executionTime**: 在该周期中的执行时间
+- **executionStatus**: 执行状态（0=未执行，1=通过，2=失败，3=阻塞）
 
-### 1. 去重逻辑
-- 同一个测试用例在多个测试周期中执行，在 `actualExecutedCount` 中只计算一次
-- 但在 `executionDetails` 中会显示所有执行历史
+## 核心计算逻辑
 
-### 2. 执行状态过滤
-- 只有 `run_status != 0` 的记录才被认为是"已执行"
-- 状态含义：0=未执行，1=通过，2=失败，3=阻塞
+### 1. 计划数统计
+- 从`test_case`表统计指定功能版本的测试用例总数
+- 需要考虑Feature和Use Case的版本匹配关系
 
-### 3. 时间范围过滤
-- 可选的 `startDate` 和 `endDate` 参数用于过滤执行时间范围
-- 只影响执行记录的筛选，不影响测试用例总数的计算
+### 2. 实际执行数统计（去重）
+- 从`test_cycle_join_test_case`表统计已执行的测试用例
+- **去重逻辑**: 同一个测试用例在多个测试周期中执行，只计算一次
+- 使用`DISTINCT test_case_id`或Set去重
 
-### 4. 版本处理
-- 支持查询多个功能版本的合并统计
-- 测试用例通过 `version` 字段与功能版本关联
+### 3. 执行率计算
+```sql
+执行率 = (actualExecutedCount ÷ totalPlannedCount) × 100%
+```
 
-## 质量评级标准
+## SQL查询示例
 
-- **优秀 (90%+)**: 测试执行非常完整
-- **良好 (80-89%)**: 测试执行较为完整
-- **一般 (70-79%)**: 测试执行基本达标
-- **较差 (<70%)**: 测试执行不足，存在风险
+### 计划数查询
+```sql
+-- 情况1：主版本Feature下的符合条件Use Case
+SELECT COUNT(DISTINCT tc.id) as planned_count
+FROM test_case tc
+JOIN use_case uc ON tc.use_case_id = uc.id
+JOIN feature f ON uc.feature_id = f.id
+WHERE f.project_id = #{projectId}
+  AND f.version = #{majorVersion}
+  AND (uc.version = #{majorVersion} 
+       OR uc.version IN (#{includeVersions}))
 
-## 报表展示
+-- 情况2：补充的includeVersions Use Case
+SELECT COUNT(DISTINCT tc.id) as additional_count
+FROM test_case tc
+JOIN use_case uc ON tc.use_case_id = uc.id
+WHERE uc.project_id = #{projectId}
+  AND uc.version IN (#{includeVersions})
+  AND uc.id NOT IN (已统计的Use Case IDs)
+```
 
-### 指标卡片
-- 计划测试用例总数
-- 实际执行测试用例数
-- 执行率百分比
-- 质量等级
-
-### 详细分析
-- 测试用例执行详情列表
-- 跨周期执行历史
-- 未执行测试用例列表
-- 执行趋势分析
+### 实际执行数查询（去重）
+```sql
+SELECT COUNT(DISTINCT tcjtc.test_case_id) as executed_count
+FROM test_cycle_join_test_case tcjtc
+WHERE tcjtc.test_case_id IN (计划的测试用例IDs)
+  AND tcjtc.execution_time BETWEEN #{startDate} AND #{endDate}
+```
 
 ## 业务价值
 
-1. **进度监控**: 实时了解测试执行进度
-2. **质量保障**: 确保测试覆盖的完整性
-3. **资源优化**: 识别执行效率瓶颈
-4. **风险预警**: 及时发现执行不足的风险点
+### 核心问题解答
+- **"2.0.0.0新功能本身测试得怎么样？"**
+- **"跨版本的功能测试完成度如何？"**
+- **"哪些测试用例还没有执行？"**
+
+### 质量评级标准
+- **优秀 (95%+)**: 测试执行非常充分
+- **良好 (85-94%)**: 测试执行较为充分
+- **一般 (70-84%)**: 测试执行基本达标
+- **较差 (<70%)**: 测试执行不足，存在风险
+
+## 实现要点
+
+### 1. 版本匹配逻辑
+- Feature版本作为主要筛选条件
+- Use Case版本进行二次过滤
+- 支持多版本组合查询
+
+### 2. 去重策略
+- 使用Set集合自动去重
+- SQL层面使用DISTINCT
+- 记录详细的执行历史
+
+### 3. 性能优化
+- 合理使用索引
+- 分步查询避免复杂JOIN
+- 缓存常用查询结果
+
+### 4. 数据完整性
+- 处理空数据情况
+- 版本不匹配的Use Case记录到versionNotMatchedInfo
+- 提供详细的执行轨迹信息
