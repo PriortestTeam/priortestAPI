@@ -1,4 +1,3 @@
-
 # 功能执行率报表分析
 
 ## 概述
@@ -37,7 +36,7 @@
 ### 3. 返回结果设计（规范化命名）
 ```json
 {
-    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "versions": ["2.0.0.0", "2.1.0.0"],
     "totalPlannedCount": 150,
     "actualExecutedCount": 120,
     "executionRate": 80.0,
@@ -289,7 +288,7 @@ GROUP BY tc.id, tc.title, uc.version
 ```json
 {
     "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0", "2.1.0.0"]
+    "functionVersions": ["2.0.0.0"]
 }
 ```
 
@@ -297,7 +296,7 @@ GROUP BY tc.id, tc.title, uc.version
 ```json
 {
     "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "functionVersions": ["2.0.0.0"],
     "startDate": "2025-01-15"
 }
 ```
@@ -306,7 +305,7 @@ GROUP BY tc.id, tc.title, uc.version
 ```json
 {
     "projectId": 1874424342973054977,
-    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "functionVersions": ["2.0.0.0"],
     "endDate": "2025-01-31"
 }
 ```
@@ -318,13 +317,13 @@ GROUP BY tc.id, tc.title, uc.version
 {
   "success": true,
   "data": {
-    "functionVersions": ["2.0.0.0"],
+    "versions": ["2.0.0.0"],
     "totalPlannedCount": 100,
     "actualExecutedCount": 85,
     "executionRate": 85.0,
     "queryConditions": {
       "projectId": 1874424342973054977,
-      "functionVersions": ["2.0.0.0"],
+      "versions": ["2.0.0.0"],
       "startDate": "2025-01-01",  // 如果请求中未传该参数，则为null
       "endDate": "2025-01-31"     // 如果请求中未传该参数，则为null
     },
@@ -343,13 +342,13 @@ GROUP BY tc.id, tc.title, uc.version
 {
   "success": true,
   "data": {
-    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "versions": ["2.0.0.0", "2.1.0.0"],
     "totalPlannedCount": 150,
     "actualExecutedCount": 120,
     "executionRate": 80.0,
     "queryConditions": {
       "projectId": 1874424342973054977,
-      "functionVersions": ["2.0.0.0", "2.1.0.0"],
+      "versions": ["2.0.0.0", "2.1.0.0"],
       "startDate": "2025-01-01",
       "endDate": "2025-01-31"
     },
@@ -570,13 +569,13 @@ GROUP BY tc.id, tc.title, uc.version
 {
   "success": true,
   "data": {
-    "functionVersions": ["2.0.0.0"],
+    "versions": ["2.0.0.0"],
     "totalPlannedCount": 150,
     "actualExecutedCount": 145,
     "executionRate": 96.7,
     "queryConditions": {
       "projectId": 1874424342973054977,
-      "functionVersions": ["2.0.0.0"],
+      "versions": ["2.0.0.0"],
       "startDate": null,
       "endDate": null
     },
@@ -596,13 +595,13 @@ GROUP BY tc.id, tc.title, uc.version
 {
   "success": true,
   "data": {
-    "functionVersions": ["3.0.0.0"],
+    "versions": ["3.0.0.0"],
     "totalPlannedCount": 0,
     "actualExecutedCount": 0,
     "executionRate": 0.0,
     "queryConditions": {
       "projectId": 1874424342973054977,
-      "functionVersions": ["3.0.0.0"],
+      "versions": ["3.0.0.0"],
       "startDate": null,
       "endDate": null
     },
