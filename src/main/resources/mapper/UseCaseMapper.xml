@@ -1,0 +1,18 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hu.oneclick.dao.UseCaseDao">
+
+    <select id="selectByFeatureIds" resultType="com.hu.oneclick.model.entity.UseCase">
+        SELECT * FROM use_case 
+        WHERE feature_id IN 
+        <foreach collection="featureIds" item="featureId" open="(" separator="," close=")">
+            #{featureId}
+        </foreach>
+    </select>
+
+    <select id="countByFeatureId" resultType="int">
+        SELECT COUNT(*) FROM use_case WHERE feature_id = #{featureId}
+    </select>
+
+</mapper>

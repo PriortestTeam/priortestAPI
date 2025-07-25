@@ -2,7 +2,19 @@ package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.server.service.VersionQualityReportService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.hu.oneclick.dao.FeatureDao;
+import com.hu.oneclick.dao.UseCaseDao;
+import com.hu.oneclick.relation.dao.RelationDao;
+import com.hu.oneclick.model.entity.Feature;
+import com.hu.oneclick.model.entity.UseCase;
+import com.hu.oneclick.relation.domain.Relation;
+import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.HashSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +22,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class VersionQualityReportServiceImpl implements VersionQualityReportService {
+
+    private final FeatureDao featureDao;
+    private final UseCaseDao useCaseDao;
+    private final RelationDao relationDao;
 
     @Override
     public Resp<Map<String, Object>> getQualityOverview(String projectId) {
@@ -167,7 +185,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "订单状态更新异常", "功能", "致命", "2024-01-18", "客服部门报告", 
                 "3.0.0.0", "3.0.0.0", 0, 1));
-            
+
             // 历史版本遗留缺陷
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "移动端适配问题", "兼容性", "一般", "2024-01-20", "用户投诉", 
@@ -175,7 +193,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "数据导出格式错误", "功能", "轻微", "2024-01-22", "业务部门发现", 
                 "3.0.0.0", "2.5.0", 1, 1));
-            
+
             // 历史遗留缺陷（测试阶段发现）
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "权限验证逻辑缺陷", "安全", "严重", "2024-01-10", "测试团队发现", 
@@ -185,16 +203,16 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
             // 缺陷引入版本分析
             Map<String, Object> defectIntroductionAnalysis = new HashMap<>();
-            
+
             // 按引入版本分组统计
             List<Map<String, Object>> introductionVersionStats = new ArrayList<>();
             introductionVersionStats.add(createIntroductionVersionStat("3.0.0.0", 2, "当前版本引入"));
             introductionVersionStats.add(createIntroductionVersionStat("2.5.0", 1, "历史版本遗留"));
             introductionVersionStats.add(createIntroductionVersionStat("2.3.0", 1, "历史版本遗留"));
             introductionVersionStats.add(createIntroductionVersionStat("2.0.0", 1, "早期版本遗留"));
-            
+
             defectIntroductionAnalysis.put("versionStats", introductionVersionStats);
-            
+
             // 遗留缺陷详细分析
             Map<String, Object> legacyDefectAnalysis = new HashMap<>();
             legacyDefectAnalysis.put("count", 3); // 遗留缺陷总数
@@ -202,9 +220,9 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             legacyDefectAnalysis.put("foundBeforeReleaseCount", 1); // 发布前发现的遗留缺陷
             legacyDefectAnalysis.put("percentage", 5 > 0 ? Math.round((double) 3 / 5 * 100 * 100.0) / 100.0 : 0);
             legacyDefectAnalysis.put("description", "历史版本遗留缺陷分析");
-            
+
             defectIntroductionAnalysis.put("legacyDefects", legacyDefectAnalysis);
-            
+
             // 发现时机分析
             Map<String, Object> discoveryTimingAnalysis = new HashMap<>();
             discoveryTimingAnalysis.put("postReleaseCount", 4); // 发布后缺陷总数
@@ -212,9 +230,9 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             discoveryTimingAnalysis.put("postReleaseNewDefects", 2); // 发布后新缺陷
             discoveryTimingAnalysis.put("postReleaseLegacyDefects", 2); // 发布后遗留缺陷
             discoveryTimingAnalysis.put("description", "缺陷发现时机分析");
-            
+
             defectIntroductionAnalysis.put("discoveryTiming", discoveryTimingAnalysis);
-            
+
             result.put("defectIntroductionAnalysis", defectIntroductionAnalysis);
 
             // 缺陷来源分析
@@ -499,27 +517,27 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("introducedVersion", introducedVersion);
         data.put("isLegacy", isLegacy);
         data.put("foundAfterRelease", foundAfterRelease);
-        
+
         // 用于前端显示的描述
         String legacyDescription;
         String discoveryDescription;
-        
+
         if (isLegacy == 1) {
             legacyDescription = "遗留缺陷";
         } else {
             legacyDescription = "新引入缺陷";
         }
-        
+
         if (foundAfterRelease == 1) {
             discoveryDescription = "发布后";
         } else {
             discoveryDescription = "发布前";
         }
-        
+
         data.put("legacyDescription", legacyDescription);
         data.put("discoveryDescription", discoveryDescription);
         data.put("detailedDescription", legacyDescription + " - " + discoveryDescription);
-        
+
         return data;
     }
 

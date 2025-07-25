@@ -24,6 +24,14 @@ public interface VersionQualityReportService {
      * 获取版本测试覆盖率分析
      */
     Resp<Map<String, Object>> getTestCoverage(String projectId, String releaseVersion);
+    
+    /**
+     * 获取故事覆盖率
+     * @param projectId 项目ID
+     * @param version 版本号
+     * @return 故事覆盖率统计结果
+     */
+    Resp<Map<String, Object>> getStoryCoverage(Long projectId, String version);
 
     /**
      * 获取版本缺陷分布分析
