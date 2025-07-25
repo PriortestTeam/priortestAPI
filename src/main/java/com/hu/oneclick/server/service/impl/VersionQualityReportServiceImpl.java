@@ -688,7 +688,16 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
     @Override
     public Resp<Map<String, Object>> getExecutionRate(String projectId, String releaseVersion) {
         try {
-            Map<StringString, Object> getVersionComparison(String projectId, String startVersion, String endVersion) {
+            Map<String, Object> result = new HashMap<>();
+            // TODO: 实现执行率计算逻辑
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+        } catch (Exception e) {
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取执行率失败");
+        }
+    }
+
+    @Override
+    public Resp<Map<String, Object>> getVersionComparison(String projectId, String startVersion, String endVersion) {
         try {
             Map<String, Object> result = new HashMap<>();
 
