@@ -97,5 +97,7 @@ public class UserCaseController extends BaseController {
         // Proceed with removing the use case by ID
         boolean result = this.userCaseService.removeUserCaseById(id);
         return new Resp.Builder<Boolean>().setData(result).ok();
+    }olean result = this.userCaseService.removeUserCaseById(id);
+        return new Resp.Builder<Boolean>().setData(result).ok();
     }
 }
