@@ -72,8 +72,6 @@ public class UserCaseController extends BaseController {
         }
         boolean result = this.userCaseService.insertUserCase(reqEntity);
         return new Resp.Builder<Boolean>().setData(result).ok();
-    }nsertUserCase(reqEntity);
-        return new Resp.Builder<Boolean>().setData(result).ok();
     }
 
     @PostMapping(value = "updateUseCase")
