@@ -153,6 +153,8 @@ AND (
 ```
 
 ### 响应格式
+
+#### 简单查询响应格式（GET请求）
 ```json
 {
   "success": true,
@@ -185,6 +187,265 @@ AND (
         }
       ]
     }
+  }
+}
+```
+
+#### 复杂查询响应格式（POST请求 - 包含所有可能条件）
+```json
+{
+  "success": true,
+  "data": {
+    "totalStories": 150,
+    "coveredStories": 128,
+    "coverageRate": 85.3,
+    "queryConditions": {
+      "projectId": 1874424342973054977,
+      "majorVersion": "2.0.0.0",
+      "includeVersions": ["2.0.0.0", "2.1.0.0", "1.9.0.0"]
+    },
+    "details": {
+      "featureCount": 75,
+      "useCaseCount": 75,
+      "coveredFeatures": 65,
+      "coveredUseCases": 63,
+      "majorVersionFeatureCount": 60,
+      "includeVersionUseCaseCount": 15,
+      "versionNotMatchedCount": 12
+    },
+    "versionAnalysis": {
+      "majorVersionAnalysis": {
+        "version": "2.0.0.0",
+        "featureCount": 60,
+        "validUseCaseCount": 45,
+        "coveredFeatureCount": 50,
+        "coveredUseCaseCount": 38
+      },
+      "includeVersionsAnalysis": [
+        {
+          "version": "2.1.0.0",
+          "additionalUseCaseCount": 8,
+          "coveredCount": 6
+        },
+        {
+          "version": "1.9.0.0",
+          "additionalUseCaseCount": 7,
+          "coveredCount": 5
+        }
+      ],
+      "versionNotMatchedInfo": [
+        {
+          "version": "1.8.0.0",
+          "useCaseCount": 5,
+          "description": "Feature下版本不匹配的Use Case"
+        },
+        {
+          "version": "3.0.0.0",
+          "useCaseCount": 7,
+          "description": "Feature下版本不匹配的Use Case"
+        }
+      ]
+    },
+    "featuresDetails": {
+      "features": [
+        {
+          "id": 123,
+          "title": "用户登录功能",
+          "version": "2.0.0.0",
+          "covered": true,
+          "hasUseCases": true,
+          "useCaseAnalysis": {
+            "totalCount": 5,
+            "validCount": 3,
+            "coveredCount": 3,
+            "versionNotMatchedCount": 2
+          },
+          "useCases": [
+            {
+              "id": 456,
+              "title": "正常登录流程",
+              "version": "2.0.0.0",
+              "covered": true,
+              "isVersionMatched": true,
+              "testCaseCount": 3
+            },
+            {
+              "id": 457,
+              "title": "密码错误处理",
+              "version": "2.1.0.0",
+              "covered": true,
+              "isVersionMatched": true,
+              "testCaseCount": 2
+            },
+            {
+              "id": 458,
+              "title": "账号锁定处理",
+              "version": "2.0.0.0",
+              "covered": false,
+              "isVersionMatched": true,
+              "testCaseCount": 0
+            }
+          ],
+          "versionNotMatchedUseCases": [
+            {
+              "id": 459,
+              "title": "旧版本登录逻辑",
+              "version": "1.8.0.0",
+              "covered": false,
+              "isVersionMatched": false,
+              "reason": "版本不在includeVersions范围内"
+            }
+          ]
+        },
+        {
+          "id": 124,
+          "title": "商品搜索功能",
+          "version": "2.0.0.0",
+          "covered": true,
+          "hasUseCases": false,
+          "directTestCaseCount": 4,
+          "useCases": [],
+          "versionNotMatchedUseCases": []
+        },
+        {
+          "id": 125,
+          "title": "订单处理功能",
+          "version": "2.0.0.0",
+          "covered": false,
+          "hasUseCases": true,
+          "useCaseAnalysis": {
+            "totalCount": 3,
+            "validCount": 2,
+            "coveredCount": 0,
+            "versionNotMatchedCount": 1
+          },
+          "useCases": [
+            {
+              "id": 460,
+              "title": "创建订单",
+              "version": "2.0.0.0",
+              "covered": false,
+              "isVersionMatched": true,
+              "testCaseCount": 0
+            },
+            {
+              "id": 461,
+              "title": "取消订单",
+              "version": "2.1.0.0",
+              "covered": false,
+              "isVersionMatched": true,
+              "testCaseCount": 0
+            }
+          ],
+          "versionNotMatchedUseCases": [
+            {
+              "id": 462,
+              "title": "老版本订单流程",
+              "version": "1.5.0.0",
+              "covered": false,
+              "isVersionMatched": false,
+              "reason": "版本不在查询范围内"
+            }
+          ]
+        }
+      ],
+      "additionalIncludeVersionUseCases": [
+        {
+          "id": 500,
+          "title": "新增支付功能",
+          "version": "2.1.0.0",
+          "featureId": null,
+          "covered": true,
+          "testCaseCount": 2,
+          "source": "includeVersions补充"
+        },
+        {
+          "id": 501,
+          "title": "历史数据迁移",
+          "version": "1.9.0.0",
+          "featureId": null,
+          "covered": false,
+          "testCaseCount": 0,
+          "source": "includeVersions补充"
+        }
+      ]
+    },
+    "statistics": {
+      "coverageByVersion": [
+        {
+          "version": "2.0.0.0",
+          "totalStories": 105,
+          "coveredStories": 90,
+          "coverageRate": 85.7
+        },
+        {
+          "version": "2.1.0.0",
+          "totalStories": 15,
+          "coveredStories": 12,
+          "coverageRate": 80.0
+        },
+        {
+          "version": "1.9.0.0",
+          "totalStories": 30,
+          "coveredStories": 26,
+          "coverageRate": 86.7
+        }
+      ],
+      "coverageByType": {
+        "featureDirectCoverage": {
+          "count": 15,
+          "percentage": 20.0,
+          "description": "Feature直接关联测试用例"
+        },
+        "useCaseCoverage": {
+          "count": 60,
+          "percentage": 80.0,
+          "description": "通过Use Case关联测试用例"
+        }
+      }
+    },
+    "recommendations": [
+      "建议为未覆盖的12个故事添加测试用例",
+      "重点关注版本2.1.0.0的覆盖率提升",
+      "建议对版本不匹配的Use Case进行版本整理"
+    ]
+  }
+}
+```
+
+#### 错误响应格式
+```json
+{
+  "success": false,
+  "code": "INVALID_PARAMETER",
+  "message": "项目ID不能为空",
+  "data": null
+}
+```
+
+#### 空数据响应格式
+```json
+{
+  "success": true,
+  "data": {
+    "totalStories": 0,
+    "coveredStories": 0,
+    "coverageRate": 0.0,
+    "queryConditions": {
+      "projectId": 1874424342973054977,
+      "majorVersion": "3.0.0.0",
+      "includeVersions": []
+    },
+    "details": {
+      "featureCount": 0,
+      "useCaseCount": 0,
+      "coveredFeatures": 0,
+      "coveredUseCases": 0,
+      "majorVersionFeatureCount": 0,
+      "includeVersionUseCaseCount": 0,
+      "versionNotMatchedCount": 0
+    },
+    "message": "未找到指定版本的功能故事"
   }
 }
 ```
