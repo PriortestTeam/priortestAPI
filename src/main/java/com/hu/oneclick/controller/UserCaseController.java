@@ -66,6 +66,10 @@ public class UserCaseController extends BaseController {
     @PostMapping(value = "createUseCase")
     @Operation(summary = "创建一个故事用例")
     public Resp<Boolean> createUseCase(@RequestBody UserCaseParam reqEntity) {
+        // 验证projectId是否存在
+        if (reqEntity.getProjectId() == null) {
+            return new Resp.Builder<Boolean>().setData(false).fail().setMsg("项目ID不能为空");
+        }
         boolean result = this.userCaseService.insertUserCase(reqEntity);
         return new Resp.Builder<Boolean>().setData(result).ok();
     }
