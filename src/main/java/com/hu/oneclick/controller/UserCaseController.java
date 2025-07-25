@@ -66,10 +66,6 @@ public class UserCaseController extends BaseController {
     @PostMapping(value = "createUseCase")
     @Operation(summary = "创建一个故事用例")
     public Resp<Boolean> createUseCase(@RequestBody UserCaseParam reqEntity) {
-        // 验证projectId是否存在
-        if (reqEntity.getProjectId() == null) {
-            return new Resp.Builder<Boolean>().setData(false).fail().setMsg("项目ID不能为空");
-        }
         boolean result = this.userCaseService.insertUserCase(reqEntity);
         return new Resp.Builder<Boolean>().setData(result).ok();
     }
@@ -90,12 +86,12 @@ public class UserCaseController extends BaseController {
 
     @DeleteMapping(value = "deleteUseCaseById")
     @Operation(summary = "根据ID删除故事用例")
-    public Resp<Boolean> deleteUseCaseById(@RequestBody Map<String, Object> requestBody) {
+    // Assuming the request body contains a JSON object with the user case ID
+    public Resp<Boolean>  deleteUseCaseById(@RequestBody Map<String, Object> requestBody) {
         // Extract the ID from the request body
         long id = Long.parseLong(requestBody.get("id").toString());
         // Proceed with removing the use case by ID
         boolean result = this.userCaseService.removeUserCaseById(id);
-        return new Resp.Builder<Boolean>().setData(result).ok();olean result = this.userCaseService.removeUserCaseById(id);
         return new Resp.Builder<Boolean>().setData(result).ok();
     }
 }

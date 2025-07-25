@@ -30,14 +30,6 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
         // 手动设置创建时间
         entity.setCreateTime(new Date());
         
-        // 确保projectId被设置
-        if (userCaseParam.getProjectId() != null) {
-            entity.setProjectId(userCaseParam.getProjectId());
-        }
-        
-        // TODO: 可以添加验证逻辑，确保featureId属于指定的projectId
-        // 这样可以防止数据不一致的情况
-        
         // 保存自定义字段
         if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand())) {
             String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand());
@@ -89,7 +81,7 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
 
     @Override
     public boolean removeUserCaseById(long id) {
-        int result = this.baseMapper.deleteById(id);
-        return result > 0;
+        int index = this.baseMapper.deleteById(id);
+        return index > 0;
     }
 }
