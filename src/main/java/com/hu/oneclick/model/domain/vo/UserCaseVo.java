@@ -46,6 +46,9 @@ public class UserCaseVo implements Serializable {
     @Schema(description = "所属故事ID")
     private long featureId;
 
+    @Schema(description = "项目ID")
+    private Long projectId;
+
     @Schema(description = "版本")
     private String version;
 

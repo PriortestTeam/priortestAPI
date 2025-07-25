@@ -34,6 +34,8 @@ public class UserCaseDto {
     private String usecaseExpand;
     private long featureId;
 
+    private Long projectId;
+
     private String version;
 
     private String remarks;

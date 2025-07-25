@@ -2,7 +2,19 @@ package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.server.service.VersionQualityReportService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.hu.oneclick.dao.FeatureDao;
+import com.hu.oneclick.dao.UseCaseDao;
+import com.hu.oneclick.relation.dao.RelationDao;
+import com.hu.oneclick.model.entity.Feature;
+import com.hu.oneclick.model.domain.dto.UserCaseDto;
+import com.hu.oneclick.relation.domain.Relation;
+import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.HashSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +22,334 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class VersionQualityReportServiceImpl implements VersionQualityReportService {
+
+    private final FeatureDao featureDao;
+    private final UseCaseDao useCaseDao;
+    private final RelationDao relationDao;
+
+    @Override
+    public Resp<Map<String, Object>> getStoryCoverage(Long projectId, String version) {
+        try {
+            log.info("开始计算故事覆盖率 - 项目ID: {}, 版本: {}", projectId, version);
+
+            // 1. 获取指定版本的所有feature
+            LambdaQueryWrapper<Feature> featureQuery = new LambdaQueryWrapper<>();
+            featureQuery.eq(Feature::getProjectId, projectId)
+                       .eq(Feature::getVersion, version);
+            List<Feature> features = featureDao.selectList(featureQuery);
+
+            if (features.isEmpty()) {
+                log.warn("未找到指定版本的功能故事 - 项目ID: {}, 版本: {}", projectId, version);
+                return new Resp.Builder<Map<String, Object>>().setData(buildEmptyStoryCoverageResult()).ok();
+            }
+
+            // 2. 计算总故事数和已覆盖故事数
+            int totalStories = 0;
+            int coveredStories = 0;
+            int featureCount = 0;
+            int useCaseCount = 0;
+            int coveredFeatures = 0;
+            int coveredUseCases = 0;
+
+            List<Long> featureIds = features.stream().map(Feature::getId).collect(Collectors.toList());
+
+            for (Feature feature : features) {
+                // 检查该feature是否有use_case
+                LambdaQueryWrapper<UserCaseDto> useCaseQuery = new LambdaQueryWrapper<>();
+                useCaseQuery.eq(UserCaseDto::getFeatureId, feature.getId());
+                List<UserCaseDto> useCases = useCaseDao.selectList(useCaseQuery);
+
+                if (!useCases.isEmpty()) {
+                    // 有use_case，计算use_case的覆盖情况
+                    useCaseCount += useCases.size();
+                    totalStories += useCases.size();
+
+                    // 检查use_case的覆盖情况
+                    Set<Long> useCaseIds = useCases.stream().map(UserCaseDto::getId).collect(Collectors.toSet());
+                    Set<Long> coveredUseCaseIds = getCoveredUseCases(useCaseIds);
+                    coveredUseCases += coveredUseCaseIds.size();
+                    coveredStories += coveredUseCaseIds.size();
+                } else {
+                    // 没有use_case，计算feature本身
+                    featureCount++;
+                    totalStories++;
+
+                    // 检查feature的覆盖情况
+                    if (isFeatureCovered(feature.getId())) {
+                        coveredFeatures++;
+                        coveredStories++;
+                    }
+                }
+            }
+
+            // 3. 计算覆盖率
+            double coverageRate = totalStories > 0 ? (double) coveredStories / totalStories * 100 : 0.0;
+
+            // 4. 构建返回结果
+            Map<String, Object> result = new HashMap<>();
+            result.put("totalStories", totalStories);
+            result.put("coveredStories", coveredStories);
+            result.put("coverageRate", Math.round(coverageRate * 10) / 10.0); // 保留1位小数
+
+            Map<String, Object> details = new HashMap<>();
+            details.put("featureCount", featureCount);
+            details.put("useCaseCount", useCaseCount);
+            details.put("coveredFeatures", coveredFeatures);
+            details.put("coveredUseCases", coveredUseCases);
+            result.put("details", details);
+
+            // 添加详细的Feature结构信息
+            Map<String, Object> featuresDetails = buildFeaturesDetails(features);
+            result.put("featuresDetails", featuresDetails);
+
+            log.info("故事覆盖率计算完成 - 总故事数: {}, 已覆盖: {}, 覆盖率: {}%", 
+                    totalStories, coveredStories, coverageRate);
+
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+
+        } catch (Exception e) {
+            log.error("计算故事覆盖率失败", e);
+            return new Resp.Builder<Map<String, Object>>().buildResult("计算故事覆盖率失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 检查feature是否有测试用例覆盖
+     */
+    private boolean isFeatureCovered(Long featureId) {
+        // 查找FEATURE_TO_TEST_CASE关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "FEATURE_TO_TEST_CASE")
+              .eq(Relation::getObjectId, featureId);
+
+        // 查找TEST_CASE_TO_FEATURE关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_FEATURE")
+              .eq(Relation::getTargetId, featureId);
+
+        return relationDao.selectCount(query1) > 0 || relationDao.selectCount(query2) > 0;
+    }
+
+    /**
+     * 构建Features详细信息
+     */
+    private Map<String, Object> buildFeaturesDetails(List<Feature> features) {
+        Map<String, Object> featuresDetails = new HashMap<>();
+
+        for (Feature feature : features) {
+            Map<String, Object> featureInfo = new HashMap<>();
+            featureInfo.put("featureId", feature.getId());
+            featureInfo.put("featureTitle", feature.getTitle());
+
+            // 查询Feature下的Use Cases
+            LambdaQueryWrapper<UserCaseDto> useCaseQuery = new LambdaQueryWrapper<>();
+            useCaseQuery.eq(UserCaseDto::getFeatureId, feature.getId());
+            List<UserCaseDto> useCases = useCaseDao.selectList(useCaseQuery);
+
+            // 获取Feature直接关联的测试用例
+            List<Map<String, Object>> featureTestCases = getFeatureDirectTestCases(feature.getId());
+
+            if (!useCases.isEmpty()) {
+                // 有Use Cases的Feature
+                Map<String, Object> useCasesInfo = new HashMap<>();
+                
+                for (UserCaseDto useCase : useCases) {
+                    Map<String, Object> useCaseInfo = new HashMap<>();
+                    useCaseInfo.put("useCaseId", useCase.getId());
+                    useCaseInfo.put("useCaseTitle", useCase.getTitle());
+                    useCaseInfo.put("useCaseVersion", useCase.getVersion()); // 添加Use Case版本
+                    
+                    // 获取Use Case关联的测试用例
+                    List<Map<String, Object>> useCaseTestCases = getUseCaseTestCases(useCase.getId());
+                    useCaseInfo.put("testCases", useCaseTestCases);
+                    useCaseInfo.put("testCaseCount", useCaseTestCases.size());
+                    useCaseInfo.put("hasCoverage", !useCaseTestCases.isEmpty());
+                    
+                    useCasesInfo.put(String.valueOf(useCase.getId()), useCaseInfo);
+                }
+                
+                featureInfo.put("type", "WITH_USE_CASES");
+                featureInfo.put("useCases", useCasesInfo);
+                featureInfo.put("useCaseCount", useCases.size());
+                
+                // 如果Feature既有Use Cases又有直接关联的测试用例
+                if (!featureTestCases.isEmpty()) {
+                    featureInfo.put("directTestCases", featureTestCases);
+                    featureInfo.put("directTestCaseCount", featureTestCases.size());
+                    featureInfo.put("hasDirectCoverage", true);
+                    featureInfo.put("type", "WITH_USE_CASES_AND_DIRECT_TEST_CASES");
+                } else {
+                    featureInfo.put("hasDirectCoverage", false);
+                }
+            } else {
+                // 没有Use Cases的Feature
+                featureInfo.put("type", "WITHOUT_USE_CASES");
+                featureInfo.put("directTestCases", featureTestCases);
+                featureInfo.put("directTestCaseCount", featureTestCases.size());
+                featureInfo.put("hasCoverage", !featureTestCases.isEmpty());
+            }
+            
+            featuresDetails.put(String.valueOf(feature.getId()), featureInfo);
+        }
+
+        return featuresDetails;
+    }
+
+    /**
+     * 获取Feature直接关联的测试用例
+     */
+    private List<Map<String, Object>> getFeatureDirectTestCases(Long featureId) {
+        List<Map<String, Object>> testCases = new ArrayList<>();
+
+        // 查询FEATURE_TO_TEST_CASE关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "FEATURE_TO_TEST_CASE")
+              .eq(Relation::getObjectId, featureId);
+        List<Relation> relations1 = relationDao.selectList(query1);
+
+        // 查询TEST_CASE_TO_FEATURE关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_FEATURE")
+              .eq(Relation::getTargetId, featureId);
+        List<Relation> relations2 = relationDao.selectList(query2);
+
+        // 收集测试用例ID
+        Set<String> testCaseIds = new HashSet<>();
+        relations1.forEach(r -> testCaseIds.add(r.getTargetId()));
+        relations2.forEach(r -> testCaseIds.add(r.getObjectId()));
+
+        // 构建测试用例信息（这里简化处理，只返回ID，实际可以查询完整信息）
+        for (String testCaseId : testCaseIds) {
+            Map<String, Object> testCaseInfo = new HashMap<>();
+            testCaseInfo.put("testCaseId", testCaseId);
+            testCases.add(testCaseInfo);
+        }
+
+        return testCases;
+    }
+
+    /**
+     * 获取Use Case关联的测试用例
+     */
+    private List<Map<String, Object>> getUseCaseTestCases(Long useCaseId) {
+        List<Map<String, Object>> testCases = new ArrayList<>();
+
+        // 查询USE_CASE_TO_TEST_CASE关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "USE_CASE_TO_TEST_CASE")
+              .eq(Relation::getObjectId, useCaseId);
+        List<Relation> relations1 = relationDao.selectList(query1);
+
+        // 查询TEST_CASE_TO_USE_CASE关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_USE_CASE")
+              .eq(Relation::getTargetId, useCaseId);
+        List<Relation> relations2 = relationDao.selectList(query2);
+
+        // 收集测试用例ID
+        Set<String> testCaseIds = new HashSet<>();
+        relations1.forEach(r -> testCaseIds.add(r.getTargetId()));
+        relations2.forEach(r -> testCaseIds.add(r.getObjectId()));
+
+        // 构建测试用例信息
+        for (String testCaseId : testCaseIds) {
+            Map<String, Object> testCaseInfo = new HashMap<>();
+            testCaseInfo.put("testCaseId", testCaseId);
+            testCases.add(testCaseInfo);
+        }
+
+        return testCases;
+    }
+
+    private Set<Long> getCoveredFeatures(Set<Long> featureIds) {
+        Set<Long> coveredFeatures = new HashSet<>();
+
+        // 查询 FEATURE_TO_TEST_CASE 关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "FEATURE_TO_TEST_CASE")
+              .in(Relation::getObjectId, featureIds);
+        List<Relation> relations1 = relationDao.selectList(query1);
+
+        // 查询 TEST_CASE_TO_FEATURE 关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_FEATURE")
+              .in(Relation::getTargetId, featureIds);
+        List<Relation> relations2 = relationDao.selectList(query2);
+
+        // 收集已覆盖的feature ID
+        relations1.forEach(r -> {
+            try {
+                coveredFeatures.add(Long.parseLong(r.getObjectId()));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid feature ID format: {}", r.getObjectId());
+            }
+        });
+        relations2.forEach(r -> {
+            try {
+                coveredFeatures.add(Long.parseLong(r.getTargetId()));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid feature ID format: {}", r.getTargetId());
+            }
+        });
+
+        return coveredFeatures;
+    }
+
+    private Set<Long> getCoveredUseCases(Set<Long> useCaseIds) {
+        Set<Long> coveredUseCases = new HashSet<>();
+
+        // 查询 USE_CASE_TO_TEST_CASE 关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "USE_CASE_TO_TEST_CASE")
+              .in(Relation::getObjectId, useCaseIds);
+        List<Relation> relations1 = relationDao.selectList(query1);
+
+        // 查询 TEST_CASE_TO_USE_CASE 关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_USE_CASE")
+              .in(Relation::getTargetId, useCaseIds);
+        List<Relation> relations2 = relationDao.selectList(query2);
+
+        // 收集已覆盖的use case ID
+        relations1.forEach(r -> {
+            try {
+                coveredUseCases.add(Long.parseLong(r.getObjectId()));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid use case ID format: {}", r.getObjectId());
+            }
+        });
+        relations2.forEach(r -> {
+            try {
+                coveredUseCases.add(Long.parseLong(r.getTargetId()));
+            } catch (NumberFormatException e) {
+                log.warn("Invalid use case ID format: {}", r.getTargetId());
+            }
+        });
+
+        return coveredUseCases;
+    }
+
+    /**
+     * 构建空的故事覆盖率结果
+     */
+    private Map<String, Object> buildEmptyStoryCoverageResult() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalStories", 0);
+        result.put("coveredStories", 0);
+        result.put("coverageRate", 0.0);
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("featureCount", 0);
+        details.put("useCaseCount", 0);
+        details.put("coveredFeatures", 0);
+        details.put("coveredUseCases", 0);
+        result.put("details", details);
+
+        return result;
+    }
 
     @Override
     public Resp<Map<String, Object>> getQualityOverview(String projectId) {
@@ -167,7 +506,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "订单状态更新异常", "功能", "致命", "2024-01-18", "客服部门报告", 
                 "3.0.0.0", "3.0.0.0", 0, 1));
-            
+
             // 历史版本遗留缺陷
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "移动端适配问题", "兼容性", "一般", "2024-01-20", "用户投诉", 
@@ -175,7 +514,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "数据导出格式错误", "功能", "轻微", "2024-01-22", "业务部门发现", 
                 "3.0.0.0", "2.5.0", 1, 1));
-            
+
             // 历史遗留缺陷（测试阶段发现）
             postReleaseDefectsList.add(createDetailedPostReleaseDefectWithTracking(
                 "权限验证逻辑缺陷", "安全", "严重", "2024-01-10", "测试团队发现", 
@@ -185,16 +524,16 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
             // 缺陷引入版本分析
             Map<String, Object> defectIntroductionAnalysis = new HashMap<>();
-            
+
             // 按引入版本分组统计
             List<Map<String, Object>> introductionVersionStats = new ArrayList<>();
             introductionVersionStats.add(createIntroductionVersionStat("3.0.0.0", 2, "当前版本引入"));
             introductionVersionStats.add(createIntroductionVersionStat("2.5.0", 1, "历史版本遗留"));
             introductionVersionStats.add(createIntroductionVersionStat("2.3.0", 1, "历史版本遗留"));
             introductionVersionStats.add(createIntroductionVersionStat("2.0.0", 1, "早期版本遗留"));
-            
+
             defectIntroductionAnalysis.put("versionStats", introductionVersionStats);
-            
+
             // 遗留缺陷详细分析
             Map<String, Object> legacyDefectAnalysis = new HashMap<>();
             legacyDefectAnalysis.put("count", 3); // 遗留缺陷总数
@@ -202,9 +541,9 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             legacyDefectAnalysis.put("foundBeforeReleaseCount", 1); // 发布前发现的遗留缺陷
             legacyDefectAnalysis.put("percentage", 5 > 0 ? Math.round((double) 3 / 5 * 100 * 100.0) / 100.0 : 0);
             legacyDefectAnalysis.put("description", "历史版本遗留缺陷分析");
-            
+
             defectIntroductionAnalysis.put("legacyDefects", legacyDefectAnalysis);
-            
+
             // 发现时机分析
             Map<String, Object> discoveryTimingAnalysis = new HashMap<>();
             discoveryTimingAnalysis.put("postReleaseCount", 4); // 发布后缺陷总数
@@ -212,9 +551,9 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             discoveryTimingAnalysis.put("postReleaseNewDefects", 2); // 发布后新缺陷
             discoveryTimingAnalysis.put("postReleaseLegacyDefects", 2); // 发布后遗留缺陷
             discoveryTimingAnalysis.put("description", "缺陷发现时机分析");
-            
+
             defectIntroductionAnalysis.put("discoveryTiming", discoveryTimingAnalysis);
-            
+
             result.put("defectIntroductionAnalysis", defectIntroductionAnalysis);
 
             // 缺陷来源分析
@@ -499,27 +838,27 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("introducedVersion", introducedVersion);
         data.put("isLegacy", isLegacy);
         data.put("foundAfterRelease", foundAfterRelease);
-        
+
         // 用于前端显示的描述
         String legacyDescription;
         String discoveryDescription;
-        
+
         if (isLegacy == 1) {
             legacyDescription = "遗留缺陷";
         } else {
             legacyDescription = "新引入缺陷";
         }
-        
+
         if (foundAfterRelease == 1) {
             discoveryDescription = "发布后";
         } else {
             discoveryDescription = "发布前";
         }
-        
+
         data.put("legacyDescription", legacyDescription);
         data.put("discoveryDescription", discoveryDescription);
         data.put("detailedDescription", legacyDescription + " - " + discoveryDescription);
-        
+
         return data;
     }
 
@@ -561,7 +900,6 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         Map<String, Object> data = new HashMap<>();
         data.put("environment", environment);
         data.put("count", count);
-        data.put("color", color);
         return data;
     }
 

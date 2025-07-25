@@ -1,11 +1,12 @@
-
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
 import com.hu.oneclick.server.service.VersionQualityReportService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -14,12 +15,21 @@ import java.util.Map;
  * 版本质量分析报表控制器
  */
 @RestController
-@RequestMapping("/api/versionQualityReport")
-@Tag(name = "版本质量分析", description = "版本质量分析报表相关接口")
+@RequestMapping("/versionQualityReport")
+@Tag(name = "版本质量分析报表", description = "版本质量分析报表相关接口")
+@Component
 public class VersionQualityReportController {
 
     @Autowired
     private VersionQualityReportService versionQualityReportService;
+
+    @GetMapping("/storyCoverage")
+    @Operation(summary = "获取故事覆盖率", description = "获取指定项目和版本的故事覆盖率统计")
+    public Resp<Map<String, Object>> getStoryCoverage(
+            @Parameter(description = "项目ID") @RequestParam Long projectId,
+            @Parameter(description = "版本号") @RequestParam String version) {
+        return versionQualityReportService.getStoryCoverage(projectId, version);
+    }
 
     @GetMapping("/getQualityOverview/{projectId}")
     @Operation(summary = "获取项目版本质量总览")

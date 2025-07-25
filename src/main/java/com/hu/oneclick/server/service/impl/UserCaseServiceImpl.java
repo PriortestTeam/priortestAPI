@@ -30,6 +30,11 @@ public class UserCaseServiceImpl extends ServiceImpl<UserCaseDao, UserCaseDto> i
         // 手动设置创建时间
         entity.setCreateTime(new Date());
         
+        // 设置项目ID
+        if (userCaseParam.getProjectId() != null) {
+            entity.setProjectId(userCaseParam.getProjectId());
+        }
+        
         // 保存自定义字段
         if (!JSONUtil.isNull(userCaseParam.getUsecaseExpand())) {
             String jsonStr = JSONUtil.toJsonStr(userCaseParam.getUsecaseExpand());
