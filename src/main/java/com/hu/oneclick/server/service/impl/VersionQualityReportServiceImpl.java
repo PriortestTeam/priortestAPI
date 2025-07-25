@@ -10,7 +10,7 @@ import com.hu.oneclick.dao.FeatureDao;
 import com.hu.oneclick.dao.UseCaseDao;
 import com.hu.oneclick.relation.dao.RelationDao;
 import com.hu.oneclick.model.entity.Feature;
-import com.hu.oneclick.model.entity.UseCase;
+import com.hu.oneclick.model.domain.dto.UserCaseDto;
 import com.hu.oneclick.relation.domain.Relation;
 import java.util.stream.Collectors;
 import java.util.Set;
@@ -58,9 +58,9 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
 
             for (Feature feature : features) {
                 // 检查该feature是否有use_case
-                LambdaQueryWrapper<UseCase> useCaseQuery = new LambdaQueryWrapper<>();
-                useCaseQuery.eq(UseCase::getFeatureId, feature.getId());
-                List<UseCase> useCases = useCaseDao.selectList(useCaseQuery);
+                LambdaQueryWrapper<UserCaseDto> useCaseQuery = new LambdaQueryWrapper<>();
+                useCaseQuery.eq(UserCaseDto::getFeatureId, feature.getId());
+                List<UserCaseDto> useCases = useCaseDao.selectList(useCaseQuery);
 
                 if (!useCases.isEmpty()) {
                     // 有use_case，计算use_case的覆盖情况
@@ -68,7 +68,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
                     totalStories += useCases.size();
 
                     // 检查use_case的覆盖情况
-                    Set<Long> useCaseIds = useCases.stream().map(UseCase::getId).collect(Collectors.toSet());
+                    Set<Long> useCaseIds = useCases.stream().map(UserCaseDto::getId).collect(Collectors.toSet());
                     Set<Long> coveredUseCaseIds = getCoveredUseCases(useCaseIds);
                     coveredUseCases += coveredUseCaseIds.size();
                     coveredStories += coveredUseCaseIds.size();
