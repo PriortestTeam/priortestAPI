@@ -101,6 +101,10 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             details.put("coveredUseCases", coveredUseCases);
             result.put("details", details);
 
+            // 添加详细的Feature结构信息
+            Map<String, Object> featuresDetails = buildFeaturesDetails(features);
+            result.put("featuresDetails", featuresDetails);
+
             log.info("故事覆盖率计算完成 - 总故事数: {}, 已覆盖: {}, 覆盖率: {}%", 
                     totalStories, coveredStories, coverageRate);
 
@@ -127,6 +131,136 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
               .eq(Relation::getTargetId, featureId);
 
         return relationDao.selectCount(query1) > 0 || relationDao.selectCount(query2) > 0;
+    }
+
+    /**
+     * 构建Features详细信息
+     */
+    private Map<String, Object> buildFeaturesDetails(List<Feature> features) {
+        Map<String, Object> featuresDetails = new HashMap<>();
+
+        for (Feature feature : features) {
+            Map<String, Object> featureInfo = new HashMap<>();
+            featureInfo.put("featureId", feature.getId());
+            featureInfo.put("featureTitle", feature.getTitle());
+
+            // 查询Feature下的Use Cases
+            LambdaQueryWrapper<UserCaseDto> useCaseQuery = new LambdaQueryWrapper<>();
+            useCaseQuery.eq(UserCaseDto::getFeatureId, feature.getId());
+            List<UserCaseDto> useCases = useCaseDao.selectList(useCaseQuery);
+
+            // 获取Feature直接关联的测试用例
+            List<Map<String, Object>> featureTestCases = getFeatureDirectTestCases(feature.getId());
+
+            if (!useCases.isEmpty()) {
+                // 有Use Cases的Feature
+                Map<String, Object> useCasesInfo = new HashMap<>();
+                
+                for (UserCaseDto useCase : useCases) {
+                    Map<String, Object> useCaseInfo = new HashMap<>();
+                    useCaseInfo.put("useCaseId", useCase.getId());
+                    useCaseInfo.put("useCaseTitle", useCase.getTitle());
+                    
+                    // 获取Use Case关联的测试用例
+                    List<Map<String, Object>> useCaseTestCases = getUseCaseTestCases(useCase.getId());
+                    useCaseInfo.put("testCases", useCaseTestCases);
+                    useCaseInfo.put("testCaseCount", useCaseTestCases.size());
+                    useCaseInfo.put("hasCoverage", !useCaseTestCases.isEmpty());
+                    
+                    useCasesInfo.put(String.valueOf(useCase.getId()), useCaseInfo);
+                }
+                
+                featureInfo.put("type", "WITH_USE_CASES");
+                featureInfo.put("useCases", useCasesInfo);
+                featureInfo.put("useCaseCount", useCases.size());
+                
+                // 如果Feature既有Use Cases又有直接关联的测试用例
+                if (!featureTestCases.isEmpty()) {
+                    featureInfo.put("directTestCases", featureTestCases);
+                    featureInfo.put("directTestCaseCount", featureTestCases.size());
+                    featureInfo.put("hasDirectCoverage", true);
+                    featureInfo.put("type", "WITH_USE_CASES_AND_DIRECT_TEST_CASES");
+                } else {
+                    featureInfo.put("hasDirectCoverage", false);
+                }
+            } else {
+                // 没有Use Cases的Feature
+                featureInfo.put("type", "WITHOUT_USE_CASES");
+                featureInfo.put("directTestCases", featureTestCases);
+                featureInfo.put("directTestCaseCount", featureTestCases.size());
+                featureInfo.put("hasCoverage", !featureTestCases.isEmpty());
+            }
+            
+            featuresDetails.put(String.valueOf(feature.getId()), featureInfo);
+        }
+
+        return featuresDetails;
+    }
+
+    /**
+     * 获取Feature直接关联的测试用例
+     */
+    private List<Map<String, Object>> getFeatureDirectTestCases(Long featureId) {
+        List<Map<String, Object>> testCases = new ArrayList<>();
+
+        // 查询FEATURE_TO_TEST_CASE关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "FEATURE_TO_TEST_CASE")
+              .eq(Relation::getObjectId, featureId);
+        List<Relation> relations1 = relationDao.selectList(query1);
+
+        // 查询TEST_CASE_TO_FEATURE关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_FEATURE")
+              .eq(Relation::getTargetId, featureId);
+        List<Relation> relations2 = relationDao.selectList(query2);
+
+        // 收集测试用例ID
+        Set<String> testCaseIds = new HashSet<>();
+        relations1.forEach(r -> testCaseIds.add(r.getTargetId()));
+        relations2.forEach(r -> testCaseIds.add(r.getObjectId()));
+
+        // 构建测试用例信息（这里简化处理，只返回ID，实际可以查询完整信息）
+        for (String testCaseId : testCaseIds) {
+            Map<String, Object> testCaseInfo = new HashMap<>();
+            testCaseInfo.put("testCaseId", testCaseId);
+            testCases.add(testCaseInfo);
+        }
+
+        return testCases;
+    }
+
+    /**
+     * 获取Use Case关联的测试用例
+     */
+    private List<Map<String, Object>> getUseCaseTestCases(Long useCaseId) {
+        List<Map<String, Object>> testCases = new ArrayList<>();
+
+        // 查询USE_CASE_TO_TEST_CASE关系
+        LambdaQueryWrapper<Relation> query1 = new LambdaQueryWrapper<>();
+        query1.eq(Relation::getCategory, "USE_CASE_TO_TEST_CASE")
+              .eq(Relation::getObjectId, useCaseId);
+        List<Relation> relations1 = relationDao.selectList(query1);
+
+        // 查询TEST_CASE_TO_USE_CASE关系
+        LambdaQueryWrapper<Relation> query2 = new LambdaQueryWrapper<>();
+        query2.eq(Relation::getCategory, "TEST_CASE_TO_USE_CASE")
+              .eq(Relation::getTargetId, useCaseId);
+        List<Relation> relations2 = relationDao.selectList(query2);
+
+        // 收集测试用例ID
+        Set<String> testCaseIds = new HashSet<>();
+        relations1.forEach(r -> testCaseIds.add(r.getTargetId()));
+        relations2.forEach(r -> testCaseIds.add(r.getObjectId()));
+
+        // 构建测试用例信息
+        for (String testCaseId : testCaseIds) {
+            Map<String, Object> testCaseInfo = new HashMap<>();
+            testCaseInfo.put("testCaseId", testCaseId);
+            testCases.add(testCaseInfo);
+        }
+
+        return testCases;
     }
 
     private Set<Long> getCoveredFeatures(Set<Long> featureIds) {
