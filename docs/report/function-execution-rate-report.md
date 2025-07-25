@@ -19,10 +19,20 @@
 {
     "projectId": 1874424342973054977,
     "functionVersions": ["2.0.0.0", "2.1.0.0"],
-    "startDate": "2025-01-01",
-    "endDate": "2025-01-31"
+    "startDate": "2025-01-01",  // 可选，开始日期，为空则不限制开始时间
+    "endDate": "2025-01-31"     // 可选，结束日期，为空则不限制结束时间
 }
 ```
+
+#### 参数说明
+- **projectId**: 项目ID（必填）
+- **functionVersions**: 功能版本号数组（必填）
+- **startDate**: 开始日期，格式YYYY-MM-DD（可选）
+  - 为空或null：不限制开始时间，查询所有历史执行记录
+  - 有值：只统计该日期之后的执行记录
+- **endDate**: 结束日期，格式YYYY-MM-DD（可选）
+  - 为空或null：不限制结束时间，查询到当前时间的所有执行记录
+  - 有值：只统计该日期之前的执行记录
 
 ### 3. 返回结果设计（规范化命名）
 ```json
@@ -208,7 +218,33 @@ WHERE uc.project_id = #{projectId}
 SELECT COUNT(DISTINCT tcjtc.test_case_id) as executed_count
 FROM test_cycle_join_test_case tcjtc
 WHERE tcjtc.test_case_id IN (计划的测试用例IDs)
-  AND tcjtc.execution_time BETWEEN #{startDate} AND #{endDate}
+  <if test="startDate != null and startDate != ''">
+    AND tcjtc.execution_time >= #{startDate}
+  </if>
+  <if test="endDate != null and endDate != ''">
+    AND tcjtc.execution_time <= #{endDate}
+  </if>
+```
+
+### 详细执行历史查询（支持可选时间过滤）
+```sql
+SELECT 
+    tc.id as testCaseId,
+    tc.title as testCaseTitle,
+    uc.version,
+    COUNT(tcjtc.id) as executionCount,
+    MAX(tcjtc.execution_time) as lastExecutionTime
+FROM test_case tc
+LEFT JOIN use_case uc ON tc.use_case_id = uc.id
+LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
+    <if test="startDate != null and startDate != ''">
+      AND tcjtc.execution_time >= #{startDate}
+    </if>
+    <if test="endDate != null and endDate != ''">
+      AND tcjtc.execution_time <= #{endDate}
+    </if>
+WHERE tc.id IN (计划的测试用例IDs)
+GROUP BY tc.id, tc.title, uc.version
 ```
 
 ### 详细执行历史查询
@@ -233,17 +269,44 @@ GROUP BY tc.id, tc.title, uc.version
 - `POST /api/versionQualityReport/functionExecutionRate` - 复杂查询（支持多版本）
 
 ### GET请求参数
-- `projectId`: 项目ID
-- `functionVersions`: 功能版本号数组
-- `startDate`: 开始日期（YYYY-MM-DD）
-- `endDate`: 结束日期（YYYY-MM-DD）
+- `projectId`: 项目ID（必填）
+- `functionVersions`: 功能版本号数组（必填）
+- `startDate`: 开始日期，格式YYYY-MM-DD（可选）
+- `endDate`: 结束日期，格式YYYY-MM-DD（可选）
 
 ### POST请求参数
 ```json
 {
     "projectId": 1874424342973054977,
     "functionVersions": ["2.0.0.0", "2.1.0.0"],
-    "startDate": "2025-01-01",
+    "startDate": "2025-01-01",  // 可选参数
+    "endDate": "2025-01-31"     // 可选参数
+}
+```
+
+#### 可选参数示例
+**不带时间限制的查询**:
+```json
+{
+    "projectId": 1874424342973054977,
+    "functionVersions": ["2.0.0.0", "2.1.0.0"]
+}
+```
+
+**只有开始时间的查询**:
+```json
+{
+    "projectId": 1874424342973054977,
+    "functionVersions": ["2.0.0.0", "2.1.0.0"],
+    "startDate": "2025-01-15"
+}
+```
+
+**只有结束时间的查询**:
+```json
+{
+    "projectId": 1874424342973054977,
+    "functionVersions": ["2.0.0.0", "2.1.0.0"],
     "endDate": "2025-01-31"
 }
 ```
@@ -262,8 +325,8 @@ GROUP BY tc.id, tc.title, uc.version
     "queryConditions": {
       "projectId": 1874424342973054977,
       "functionVersions": ["2.0.0.0"],
-      "startDate": "2025-01-01",
-      "endDate": "2025-01-31"
+      "startDate": "2025-01-01",  // 如果请求中未传该参数，则为null
+      "endDate": "2025-01-31"     // 如果请求中未传该参数，则为null
     },
     "executionSummary": {
       "totalTestCases": 100,
@@ -502,6 +565,32 @@ GROUP BY tc.id, tc.title, uc.version
 }
 ```
 
+#### 无时间限制查询响应格式
+```json
+{
+  "success": true,
+  "data": {
+    "functionVersions": ["2.0.0.0"],
+    "totalPlannedCount": 150,
+    "actualExecutedCount": 145,
+    "executionRate": 96.7,
+    "queryConditions": {
+      "projectId": 1874424342973054977,
+      "functionVersions": ["2.0.0.0"],
+      "startDate": null,
+      "endDate": null
+    },
+    "executionSummary": {
+      "totalTestCases": 150,
+      "executedTestCases": 145,
+      "notExecutedTestCases": 5,
+      "executionCycles": 8,
+      "timeRangeInfo": "查询所有历史执行记录"
+    }
+  }
+}
+```
+
 #### 空数据响应格式
 ```json
 {
@@ -514,11 +603,69 @@ GROUP BY tc.id, tc.title, uc.version
     "queryConditions": {
       "projectId": 1874424342973054977,
       "functionVersions": ["3.0.0.0"],
-      "startDate": "2025-01-01",
-      "endDate": "2025-01-31"
+      "startDate": null,
+      "endDate": null
     },
     "message": "未找到指定版本的测试用例"
   }
+}
+```
+
+## 时间参数使用场景
+
+### 1. 不传时间参数（startDate和endDate都为空）
+**使用场景**: 查看功能版本的整体测试执行情况
+- 统计所有历史执行记录
+- 适用于整体质量评估和长期趋势分析
+
+**示例请求**:
+```json
+{
+    "projectId": 1874424342973054977,
+    "functionVersions": ["2.0.0.0"]
+}
+```
+
+### 2. 只传startDate（endDate为空）
+**使用场景**: 查看某个时间点之后的测试执行情况
+- 统计指定日期之后到当前时间的执行记录
+- 适用于版本发布后的回归测试分析
+
+**示例请求**:
+```json
+{
+    "projectId": 1874424342973054977,
+    "functionVersions": ["2.0.0.0"],
+    "startDate": "2025-01-15"
+}
+```
+
+### 3. 只传endDate（startDate为空）
+**使用场景**: 查看某个时间点之前的测试执行情况
+- 统计从历史开始到指定日期的执行记录
+- 适用于里程碑节点的质量分析
+
+**示例请求**:
+```json
+{
+    "projectId": 1874424342973054977,
+    "functionVersions": ["2.0.0.0"],
+    "endDate": "2025-01-31"
+}
+```
+
+### 4. 同时传startDate和endDate
+**使用场景**: 查看特定时间段的测试执行情况
+- 统计指定时间窗口内的执行记录
+- 适用于阶段性质量报告和周期性分析
+
+**示例请求**:
+```json
+{
+    "projectId": 1874424342973054977,
+    "functionVersions": ["2.0.0.0"],
+    "startDate": "2025-01-01",
+    "endDate": "2025-01-31"
 }
 ```
 
