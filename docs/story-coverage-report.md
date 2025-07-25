@@ -30,31 +30,31 @@
 
 ## 查找逻辑
 
-### 步骤1：计算总故事数
+### 情况1：主版本Feature分析（始终执行）
+**目的**: 获取指定主版本Feature下符合版本条件的Use Case
 
-**重要原则**：避免重复计算
-- 如果feature有小故事(use_case)：只计算use_case，不计算feature
-- 如果feature没有小故事：计算feature本身
+**查询步骤**：
+1. 查询主版本的所有Feature（`feature.version = majorVersion`）
+2. 查询这些Feature下的所有Use Case（通过`feature_id`关联）
+3. 对Use Case进行版本过滤：
+   - 版本 = 主版本 → 包含
+   - 版本 ∈ includeVersions（如果有值）→ 包含
+   - 其他版本 → 排除到`versionNotMatchedInfo`
 
-```sql
--- 1. 查询指定版本的所有feature
-SELECT f.id, f.title 
-FROM feature f 
-WHERE f.version = '指定版本' AND f.project_id = ?
+**主版本Feature分析的场景处理**：
 
--- 2. 对每个feature，检查是否有use_case
-SELECT COUNT(*) as usecase_count
-FROM use_case uc 
-WHERE uc.feature_id = feature_id
+**1. 有Use Case的Feature**：
+- 使用 `selectByFeatureIdsWithVersionFilter` 查询Feature下的Use Cases
+- 支持版本过滤：主版本 + includeVersions中的版本
+- 对于每个符合版本条件的Use Case，查询其关联的测试用例
 
--- 3. 计算逻辑：
--- 如果usecase_count > 0：计算该feature下的所有use_case
--- 如果usecase_count = 0：计算该feature本身
-```
+**2. 无Use Case的Feature**：
+- 当Feature下没有Use Case或Use Case版本都不匹配时
+- 查询Feature直接关联的测试用例
 
-### 步骤2：计算已覆盖故事数
-
-需要同时考虑双向关联关系：
+**3. 版本不匹配信息**：
+- 使用 `selectVersionNotMatchedByFeatureIds` 查询Feature下版本不匹配的Use Cases
+- 这些Use Cases既不是主版本，也不在includeVersions中
 
 #### 查找有测试用例覆盖的feature
 ```sql
@@ -86,10 +86,37 @@ AND (
 )
 ```
 
-### 步骤3：版本处理逻辑
+### 情况2：包含版本Use Case补充（当includeVersions有值时）
+**目的**: 获取纯粹属于includeVersions但不属于主版本Feature的Use Case
 
-- **feature版本**：以用户提供的版本为准
-- **use_case版本**：use_case有自己的版本，但通过feature_id关联到指定版本的feature
+**查询步骤**：
+1. 查询指定版本的Use Case（`use_case.version IN includeVersions`）
+2. 排除情况1中已统计的有效Use Case（避免重复）
+3. 这样获得了纯粹属于includeVersions但不属于主版本Feature的Use Case
+
+**逻辑优化说明**：
+- 情况1现在已包含版本过滤逻辑，会检查Use Case版本是否匹配includeVersions
+- 情况2专门处理增量Use Case，确保去重后的纯增量统计
+- 最终逻辑简化为：主版本Feature分析（包含版本过滤）+ 包含版本Use Case补充（去重后的纯增量）
+
+**设计保证**：
+- 主版本Feature的完整覆盖分析
+- Use Case版本的灵活过滤
+- 版本不匹配情况的透明记录
+- 支持后续去重逻辑，避免重复计算
+
+### 版本处理逻辑
+
+**重要原则**：我们有2种场景，每种情况的入参都要说清楚
+
+**场景1：简单版本查询**
+- **入参**: `projectId`, `version`
+- **处理**: 查询指定版本的Feature，Use Case通过feature_id关联到Feature
+
+**场景2：复杂版本查询（多版本支持）**
+- **入参**: `projectId`, `majorVersion`, `includeVersions`
+- **处理**: 主版本Feature分析 + 包含版本Use Case补充
+- **版本匹配规则**: Use Case版本 = 主版本 OR Use Case版本 ∈ includeVersions
 
 ## 实现要点
 
