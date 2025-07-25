@@ -14,4 +14,30 @@
         SELECT COUNT(*) FROM user_case WHERE feature_id = #{featureId}
     </select>
     
+    <!-- 根据项目ID和版本列表查询UseCase -->
+    <select id="selectByProjectIdAndVersions" resultType="com.hu.oneclick.model.domain.dto.UserCaseDto">
+        SELECT * FROM user_case 
+        WHERE project_id = #{projectId}
+        AND version IN
+        <foreach collection="versions" item="version" open="(" separator="," close=")">
+            #{version}
+        </foreach>
+    </select>
+    
+    <!-- 查询UseCase并排除指定的Feature -->
+    <select id="selectByProjectIdAndVersionsExcludeFeatures" resultType="com.hu.oneclick.model.domain.dto.UserCaseDto">
+        SELECT * FROM user_case 
+        WHERE project_id = #{projectId}
+        AND version IN
+        <foreach collection="versions" item="version" open="(" separator="," close=")">
+            #{version}
+        </foreach>
+        <if test="excludeFeatureIds != null and excludeFeatureIds.size() > 0">
+            AND feature_id NOT IN
+            <foreach collection="excludeFeatureIds" item="featureId" open="(" separator="," close=")">
+                #{featureId}
+            </foreach>
+        </if>
+    </select>
+    
 </mapper>

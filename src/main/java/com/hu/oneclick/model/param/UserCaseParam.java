@@ -49,6 +49,9 @@ public class UserCaseParam implements Serializable {
     @Schema(description = "版本")
     private String version;
 
+    @Schema(description = "项目ID")
+    private Long projectId;
+
     @Schema(description = "备注")
     private String remarks;
 
