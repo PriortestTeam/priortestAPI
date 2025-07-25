@@ -160,6 +160,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
                     Map<String, Object> useCaseInfo = new HashMap<>();
                     useCaseInfo.put("useCaseId", useCase.getId());
                     useCaseInfo.put("useCaseTitle", useCase.getTitle());
+                    useCaseInfo.put("useCaseVersion", useCase.getVersion()); // 添加Use Case版本
                     
                     // 获取Use Case关联的测试用例
                     List<Map<String, Object>> useCaseTestCases = getUseCaseTestCases(useCase.getId());
