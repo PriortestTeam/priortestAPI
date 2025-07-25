@@ -685,7 +685,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             result.put("storyCoverageDetails", storyCoverageDetails);
 
             return new Resp.Builder<Map<String, Object>>().setData(result).ok();
-        } catch (Exception e) {```text
+        } catch (Exception e) {
             return new Resp.Builder<Map<String, Object>>().buildResult("获取测试覆盖率失败");
         }
     }
