@@ -53,12 +53,26 @@ public class TestCycleCloneServiceImpl extends ServiceImpl<TestCycleDao, TestCyc
     
     /**
      * 生成唯一的克隆标题
-     *
-     * @param originalTitle 原始标题
-     * @param projectId     项目ID
-     * @return 唯一的克隆标题
      */
     private String generateUniqueCloneTitle(String originalTitle, Long projectId) {
-        return CloneFormatUtil.generateUniqueCloneTitle(originalTitle, projectId, testCycleDao);
+        String baseTitle = CloneFormatUtil.getCloneTitle(originalTitle);
+        String uniqueTitle = baseTitle;
+        int counter = 1;
+
+        // 检查标题是否已存在，如果存在则添加数字后缀
+        while (!listByTitle(uniqueTitle, null, projectId).isEmpty()) {
+            uniqueTitle = baseTitle + "(" + counter + ")";
+            counter++;
+        }
+
+        return uniqueTitle;
+    }
+
+    private List<TestCycle> listByTitle(String title, Long id, Long projectId){
+       return  this.lambdaQuery()
+               .eq(TestCycle::getTitle, title)
+               .eq(Objects.nonNull(projectId), TestCycle::getProjectId, projectId)
+               .ne(Objects.nonNull(id), TestCycle::getId, id)
+               .list();
     }
 }
