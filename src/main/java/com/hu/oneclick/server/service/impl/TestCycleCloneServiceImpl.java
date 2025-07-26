@@ -9,14 +9,13 @@ import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.dao.TestCycleDao;
 import com.hu.oneclick.model.entity.TestCycle;
 import com.hu.oneclick.server.service.TestCycleCloneService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  * 测试周期克隆服务实现类
@@ -43,8 +42,22 @@ public class TestCycleCloneServiceImpl extends ServiceImpl<TestCycleDao, TestCyc
             testCaseClone.setId(null);
             
             // 生成唯一的克隆标题
+            // 重置相关的字段
             String uniqueCloneTitle = generateUniqueCloneTitle(testCycle.getTitle(), testCycle.getProjectId());
             testCaseClone.setTitle(uniqueCloneTitle);
+            testCaseClone.setTestCycleStatus("草稿");
+            testCaseClone.setInstanceCount(0);
+            testCaseClone.setRunStatus(0);
+            testCaseClone.setReleased(0);
+            testCaseClone.setCurrentRelease(0);
+            testCaseClone.setExeucteProgress(0);
+            testCaseClone.setLastRunDate(null);
+            testCaseClone.setAutoJobStart(null);
+            testCaseClone.setAutoJobEnd(null);
+            testCaseClone.setAutoJobRunTime(null);
+            testCaseClone.setAllureReportUrl(null);
+            testCaseClone.setNotRunCount(0);
+            testCaseClone.setPlanExecuteDate(null);
             
             testCycleList.add(testCaseClone);
         }
