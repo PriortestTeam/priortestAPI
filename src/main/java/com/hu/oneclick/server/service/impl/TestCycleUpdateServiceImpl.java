@@ -50,16 +50,7 @@ public class TestCycleUpdateServiceImpl extends ServiceImpl<TestCycleDao, TestCy
         }
         baseMapper.updateById(testCycle);
         return testCycle;
-    }
-
-    @Override
-    public TestCycle info(Long id) {
-        TestCycle testCycle = baseMapper.selectById(id);
-        if (testCycle == null) {
-            throw new BizException(StrUtil.format("测试周期查询不到。ID：{}", id));
-        }
-        return testCycle;
-    }
+    }  
     
     /**
      * 根据标题查询测试周期列表
