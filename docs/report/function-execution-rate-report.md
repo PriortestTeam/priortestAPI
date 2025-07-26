@@ -70,8 +70,8 @@
                     "testCycleTitle": "回归测试周期",
                     "testCycleEnv": "prod", 
                     "executionTime": "2025-01-15 10:30:00",
-                    "executionStatus": 1,
-                    "executionStatusText": "PASS"
+                    "executionStatus": 0.1,
+                    "executionStatusText": "CASE_NEED_MODIFY"
                 }
             ]
         }
@@ -91,7 +91,10 @@
 
 | 状态码 | 状态名称 | 英文标识 | 说明 |
 |--------|----------|----------|------|
-| 0 | 无效/N/A | INVALID | 测试数据无效或不适用 |
+| 0 | 无效/N/A | INVALID | 测试数据无效或不适用（通用） |
+| 0.1 | 用例需修改 | CASE_NEED_MODIFY | 测试中发现用例逻辑有问题，需要修改 |
+| 0.2 | 环境不支持 | ENV_NOT_SUPPORT | 当前测试环境不支持此用例执行 |
+| 0.3 | 条件未就绪 | CONDITION_NOT_READY | 测试用例可测试，但相关条件尚未完全就绪 |
 | 1 | 通过 | PASS | 测试执行成功，结果符合预期 |
 | 2 | 失败 | FAIL | 测试执行失败，发现缺陷或问题 |
 | 3 | 跳过 | SKIP | 测试被主动跳过，未执行 |
@@ -99,10 +102,20 @@
 | 5 | 未执行 | NO_RUN | 测试尚未开始执行 |
 | 6 | 未完成 | NOT_COMPLETED | 测试开始但未完成执行 |
 
+#### 状态码 0 系列详细说明
+- **0.1 用例需修改**: 在测试过程中发现测试用例本身存在问题，如步骤不合理、预期结果错误等，需要修改用例后再执行
+- **0.2 环境不支持**: 当前测试环境缺少必要的配置、数据或组件，无法支持该用例的执行
+- **0.3 条件未就绪**: 测试用例本身正确，环境也支持，但某些前置条件（如数据准备、功能调整等）尚未完全到位，需要等待
+
 ### 6. 执行状态说明
 - **计算执行率时的处理**: 只有状态码为 1(PASS)、2(FAIL)、3(SKIP)、4(BLOCKED) 的测试用例才被认为是"已执行"
-- **未执行状态**: 状态码为 0(INVALID)、5(NO_RUN)、6(NOT_COMPLETED) 的测试用例被认为是"未执行"
+- **未执行状态**: 状态码为 0及其子状态(0, 0.1, 0.2, 0.3)、5(NO_RUN)、6(NOT_COMPLETED) 的测试用例被认为是"未执行"
 - **去重原则**: 同一个测试用例在多个测试周期中执行时，以最新的执行状态为准
+- **状态码0细分的价值**: 通过细分状态码0，团队可以：
+  - 明确区分无法执行的具体原因
+  - 避免重复检查已标记的问题
+  - 向管理层提供更详细的进度报告
+  - 针对性地解决不同类型的阻碍因素
 
 ## 计算公式
 
@@ -131,6 +144,7 @@ JOIN test_case tc ON tcjtc.test_case_id = tc.id
 WHERE tc.version IN (#{versions})
   AND tc.project_id = #{projectId}
   AND tcjtc.run_status IN (1, 2, 3, 4)  -- 只统计已执行状态：PASS, FAIL, SKIP, BLOCKED
+  AND tcjtc.run_status NOT IN (0, 0.1, 0.2, 0.3, 5, 6)  -- 排除未执行状态
   <if test="startDate != null and startDate != ''">
     AND tcjtc.execution_time >= #{startDate}
   </if>
@@ -348,6 +362,10 @@ GROUP BY tc.id, tc.title, tc.version
 - **FAIL比例**: 反映当前存在的问题数量
 - **BLOCKED比例**: 反映测试环境或依赖问题
 - **SKIP比例**: 反映测试策略的合理性
+- **无效状态细分统计**:
+  - **用例需修改(0.1)比例**: 反映测试用例质量问题
+  - **环境不支持(0.2)比例**: 反映测试环境配置问题
+  - **条件未就绪(0.3)比例**: 反映项目进度或准备工作问题
 
 ## 实现要点
 
