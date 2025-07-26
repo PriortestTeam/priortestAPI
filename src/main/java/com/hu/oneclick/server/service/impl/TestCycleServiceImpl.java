@@ -926,20 +926,7 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
 
     @Override
     public TestCycle save(TestCycleSaveDto dto) {
-        TestCycle testCycle = new TestCycle();
-        BeanUtil.copyProperties(dto, testCycle);
-        // 保存自定义字段
-        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            testCycle.setTestcycleExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
-        }
-        if(StringUtils.isNotBlank(testCycle.getTitle())){
-            List<TestCycle> testCycles = listByTitle(testCycle.getTitle(),null, dto.getProjectId());
-            if(Objects.nonNull(testCycles) && !testCycles.isEmpty()){
-                return null;
-            }
-        }
-        baseMapper.insert(testCycle);
-        return testCycle;
+        return testCycleUpdateService.save(dto);
     }
 
     @Override
