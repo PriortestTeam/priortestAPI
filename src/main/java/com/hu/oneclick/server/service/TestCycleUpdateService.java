@@ -18,4 +18,12 @@ public interface TestCycleUpdateService {
      * @return 更新后的测试周期
      */
     TestCycle update(TestCycleSaveDto dto);
+    
+    /**
+     * 保存测试周期
+     *
+     * @param dto 测试周期保存DTO
+     * @return 保存后的测试周期
+     */
+    TestCycle save(TestCycleSaveDto dto);
 }
