@@ -254,4 +254,64 @@
                  LEFT JOIN test_case t2 ON t1.test_case_id = t2.id
         WHERE t1.test_cycle_id = #{testCycleId}
     </select>
+
+    <!-- 功能执行率报表相关查询 -->
+    <select id="countPlannedTestCasesByVersions" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM test_case
+        WHERE project_id = #{projectId}
+        AND version IN
+        <foreach collection="versions" item="version" open="(" separator="," close=")">
+            #{version}
+        </foreach>
+    </select>
+
+    <select id="countExecutedTestCasesByVersionsAndCycles" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT tc.id)
+        FROM test_case tc
+        JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
+        WHERE tc.project_id = #{projectId}
+        AND tc.version IN
+        <foreach collection="versions" item="version" open="(" separator="," close=")">
+            #{version}
+        </foreach>
+        <if test="testCycleIds != null and testCycleIds.size() > 0">
+        AND tcjtc.test_cycle_id IN
+        <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">
+            #{cycleId}
+        </foreach>
+        </if>
+        AND tcjtc.run_status IN (1, 2, 3, 4, 4.1, 4.2, 4.3, 4.4, 4.5)
+    </select>
+
+    <select id="queryExecutionDetails" resultType="java.util.Map">
+        SELECT 
+            tc.id as testCaseId,
+            tc.title as testCaseTitle,
+            tc.version as version,
+            CASE WHEN tcjtc.test_case_id IS NOT NULL THEN true ELSE false END as executed,
+            COUNT(tcjtc.id) as executionCount,
+            MAX(tcjtc.update_time) as lastExecutionTime,
+            tcycle.id as testCycleId,
+            tcycle.title as testCycleTitle,
+            tcycle.env as testCycleEnv,
+            tcjtc.update_time as executionTime,
+            tcjtc.run_status as executionStatus
+        FROM test_case tc
+        LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
+        <if test="testCycleIds != null and testCycleIds.size() > 0">
+        AND tcjtc.test_cycle_id IN
+        <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">
+            #{cycleId}
+        </foreach>
+        </if>
+        LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
+        WHERE tc.project_id = #{projectId}
+        AND tc.version IN
+        <foreach collection="versions" item="version" open="(" separator="," close=")">
+            #{version}
+        </foreach>
+        GROUP BY tc.id, tc.title, tc.version, tcycle.id, tcycle.title, tcycle.env, tcjtc.update_time, tcjtc.run_status
+        ORDER BY tc.id, tcjtc.update_time DESC
+    </select>
 </mapper>
