@@ -50,7 +50,7 @@ public class TestCycleUpdateServiceImpl extends ServiceImpl<TestCycleDao, TestCy
         }
         baseMapper.updateById(testCycle);
         return testCycle;
-    }  
+    }
     
     /**
      * 根据标题查询测试周期列表

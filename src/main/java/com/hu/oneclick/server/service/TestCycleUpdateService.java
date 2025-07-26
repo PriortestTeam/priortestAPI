@@ -18,12 +18,4 @@ public interface TestCycleUpdateService {
      * @return 更新后的测试周期
      */
     TestCycle update(TestCycleSaveDto dto);
-    
-    /**
-     * 获取测试周期详情
-     *
-     * @param id 测试周期ID
-     * @return 测试周期详情
-     */
-    TestCycle info(Long id);
 }
