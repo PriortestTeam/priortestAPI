@@ -84,7 +84,7 @@
         where test_case_id = #{testCaseId}
         and test_cycle_id = #{testCycleId}
         and project_id = #{projectId})
-        order by step_update_time desc limit 1;
+        order by step_update_time desc
     </select>
     <select id="getIsFlag" resultType="java.lang.Integer">
         select EXISTS (select *
