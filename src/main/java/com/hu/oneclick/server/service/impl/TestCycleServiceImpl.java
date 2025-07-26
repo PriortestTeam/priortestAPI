@@ -81,6 +81,9 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
     private ViewDao viewDao;
     @Resource
     private TestCycleCloneService testCycleCloneService;
+    @Resource
+    private TestCycleUpdateService testCycleUpdateService;
+   
 
     @Override
     public Resp<List<LeftJoinDto>> queryTitles(String projectId, String title) {
@@ -941,23 +944,7 @@ public class TestCycleServiceImpl extends ServiceImpl<TestCycleDao, TestCycle> i
 
     @Override
     public TestCycle update(TestCycleSaveDto dto) {
-        TestCycle testCycle = baseMapper.getByIdAndProjectId(dto.getId(), dto.getProjectId());
-        if (testCycle == null) {
-            throw new BaseException(StrUtil.format("测试周期查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
-        }
-        BeanUtil.copyProperties(dto, testCycle);
-        // 修改自定义字段
-        if (!JSONUtil.isNull(dto.getCustomFieldDatas())) {
-            testCycle.setTestcycleExpand(JSONUtil.toJsonStr(dto.getCustomFieldDatas()));
-        }
-        if(StringUtils.isNotBlank(testCycle.getTitle())){
-            List<TestCycle> testCycles = listByTitle(testCycle.getTitle(), dto.getId(), dto.getProjectId());
-            if(Objects.nonNull(testCycles) && !testCycles.isEmpty()){
-                return null;
-            }
-        }
-        baseMapper.updateById(testCycle);
-        return testCycle;
+         return testCycleUpdateService.update(dto);
     }
 
     @Override
