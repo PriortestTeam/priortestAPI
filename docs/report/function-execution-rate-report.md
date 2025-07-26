@@ -54,21 +54,24 @@
                     "testCycleTitle": "开发测试周期",
                     "testCycleEnv": "dev",
                     "executionTime": "2025-01-13 09:00:00",
-                    "executionStatus": 1
+                    "executionStatus": 1,
+                    "executionStatusText": "PASS"
                 },
                 {
                     "testCycleId": 1002,
                     "testCycleTitle": "集成测试周期", 
                     "testCycleEnv": "test",
                     "executionTime": "2025-01-14 14:30:00",
-                    "executionStatus": 2
+                    "executionStatus": 2,
+                    "executionStatusText": "FAIL"
                 },
                 {
                     "testCycleId": 1003,
                     "testCycleTitle": "回归测试周期",
                     "testCycleEnv": "prod", 
                     "executionTime": "2025-01-15 10:30:00",
-                    "executionStatus": 1
+                    "executionStatus": 1,
+                    "executionStatusText": "PASS"
                 }
             ]
         }
@@ -81,7 +84,25 @@
 - **testCycleTitle**: 测试周期标题名称
 - **testCycleEnv**: 测试周期环境（dev/test/prod等）
 - **executionTime**: 在该周期中的执行时间
-- **executionStatus**: 执行状态（0=未执行，1=通过，2=失败，3=阻塞）
+- **executionStatus**: 执行状态，详见下方状态码定义
+
+### 5. 执行状态码定义 (run_status)
+系统中的测试执行状态使用数字编码，具体定义如下：
+
+| 状态码 | 状态名称 | 英文标识 | 说明 |
+|--------|----------|----------|------|
+| 0 | 无效/N/A | INVALID | 测试数据无效或不适用 |
+| 1 | 通过 | PASS | 测试执行成功，结果符合预期 |
+| 2 | 失败 | FAIL | 测试执行失败，发现缺陷或问题 |
+| 3 | 跳过 | SKIP | 测试被主动跳过，未执行 |
+| 4 | 阻塞 | BLOCKED | 测试被阻塞，无法继续执行 |
+| 5 | 未执行 | NO_RUN | 测试尚未开始执行 |
+| 6 | 未完成 | NOT_COMPLETED | 测试开始但未完成执行 |
+
+### 6. 执行状态说明
+- **计算执行率时的处理**: 只有状态码为 1(PASS)、2(FAIL)、3(SKIP)、4(BLOCKED) 的测试用例才被认为是"已执行"
+- **未执行状态**: 状态码为 0(INVALID)、5(NO_RUN)、6(NOT_COMPLETED) 的测试用例被认为是"未执行"
+- **去重原则**: 同一个测试用例在多个测试周期中执行时，以最新的执行状态为准
 
 ## 计算公式
 
@@ -109,6 +130,7 @@ FROM test_cycle_join_test_case tcjtc
 JOIN test_case tc ON tcjtc.test_case_id = tc.id
 WHERE tc.version IN (#{versions})
   AND tc.project_id = #{projectId}
+  AND tcjtc.run_status IN (1, 2, 3, 4)  -- 只统计已执行状态：PASS, FAIL, SKIP, BLOCKED
   <if test="startDate != null and startDate != ''">
     AND tcjtc.execution_time >= #{startDate}
   </if>
@@ -315,10 +337,17 @@ GROUP BY tc.id, tc.title, tc.version
 - **"测试用例在不同环境的执行情况如何？"**
 
 ### 质量评级标准
-- **优秀 (95%+)**: 测试执行非常充分
-- **良好 (85-94%)**: 测试执行较为充分
-- **一般 (70-84%)**: 测试执行基本达标
-- **较差 (<70%)**: 测试执行不足，存在风险
+- **优秀 (95%+)**: 测试执行非常充分，质量风险极低
+- **良好 (85-94%)**: 测试执行较为充分，质量风险较低
+- **一般 (70-84%)**: 测试执行基本达标，存在一定质量风险
+- **较差 (<70%)**: 测试执行不足，存在较高质量风险
+
+### 执行状态分布分析
+除了整体执行率，还应关注执行状态的分布：
+- **PASS比例**: 反映功能质量稳定性
+- **FAIL比例**: 反映当前存在的问题数量
+- **BLOCKED比例**: 反映测试环境或依赖问题
+- **SKIP比例**: 反映测试策略的合理性
 
 ## 实现要点
 
