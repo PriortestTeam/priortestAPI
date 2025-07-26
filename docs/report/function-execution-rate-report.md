@@ -18,20 +18,16 @@
 {
     "projectId": 1874424342973054977,
     "versions": ["2.0.0.0", "2.1.0.0"],
-    "startDate": "2025-01-01",  // 可选，开始日期，为空则不限制开始时间
-    "endDate": "2025-01-31"     // 可选，结束日期，为空则不限制结束时间
+    "testCycleIds": [1001, 1002, 1003]  // 可选，测试周期ID数组
 }
 ```
 
 #### 参数说明
 - **projectId**: 项目ID（必填）
 - **versions**: 功能版本号数组（必填，可以是1个或多个版本）
-- **startDate**: 开始日期，格式YYYY-MM-DD（可选）
-  - 为空或null：不限制开始时间，查询所有历史执行记录
-  - 有值：只统计该日期之后的执行记录
-- **endDate**: 结束日期，格式YYYY-MM-DD（可选）
-  - 为空或null：不限制结束时间，查询到当前时间的所有执行记录
-  - 有值：只统计该日期之前的执行记录
+- **testCycleIds**: 测试周期ID数组（可选）
+  - 为空或null：统计所有测试周期中的执行记录
+  - 有值：只统计指定测试周期中的执行记录，支持多个周期
 
 ### 3. 返回结果设计
 ```json
@@ -179,15 +175,15 @@ WHERE tc.version IN (#{versions})
   AND (tcjtc.run_status IN (1, 2, 3, 4) 
        OR tcjtc.run_status BETWEEN 4.1 AND 4.5)  -- 统计已执行状态：PASS, FAIL, SKIP, BLOCKED及其子状态
   AND tcjtc.run_status NOT IN (0, 0.1, 0.2, 0.3, 5, 6)  -- 排除未执行状态
-  <if test="startDate != null and startDate != ''">
-    AND tcjtc.execution_time >= #{startDate}
-  </if>
-  <if test="endDate != null and endDate != ''">
-    AND tcjtc.execution_time <= #{endDate}
+  <if test="testCycleIds != null and testCycleIds.size() > 0">
+    AND tcjtc.test_cycle_id IN 
+    <foreach collection="testCycleIds" item="testCycleId" open="(" close=")" separator=",">
+      #{testCycleId}
+    </foreach>
   </if>
 ```
 
-### 3. 详细执行历史查询（支持可选时间过滤）
+### 3. 详细执行历史查询（支持可选测试周期过滤）
 ```sql
 SELECT 
     tc.id as testCaseId,
@@ -197,11 +193,11 @@ SELECT
     MAX(tcjtc.execution_time) as lastExecutionTime
 FROM test_case tc
 LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
-    <if test="startDate != null and startDate != ''">
-      AND tcjtc.execution_time >= #{startDate}
-    </if>
-    <if test="endDate != null and endDate != ''">
-      AND tcjtc.execution_time <= #{endDate}
+    <if test="testCycleIds != null and testCycleIds.size() > 0">
+      AND tcjtc.test_cycle_id IN 
+      <foreach collection="testCycleIds" item="testCycleId" open="(" close=")" separator=",">
+        #{testCycleId}
+      </foreach>
     </if>
 WHERE tc.version IN (#{versions})
   AND tc.project_id = #{projectId}
@@ -234,7 +230,7 @@ GROUP BY tc.id, tc.title, tc.version
 ```
 
 #### 可选参数示例
-**不带时间限制的查询**:
+**不带测试周期限制的查询**:
 ```json
 {
     "projectId": 1874424342973054977,
@@ -242,21 +238,21 @@ GROUP BY tc.id, tc.title, tc.version
 }
 ```
 
-**只有开始时间的查询**:
+**指定单个测试周期的查询**:
 ```json
 {
     "projectId": 1874424342973054977,
     "versions": ["2.0.0.0"],
-    "startDate": "2025-01-15"
+    "testCycleIds": [1001]
 }
 ```
 
-**只有结束时间的查询**:
+**指定多个测试周期的查询**:
 ```json
 {
     "projectId": 1874424342973054977,
     "versions": ["2.0.0.0"],
-    "endDate": "2025-01-31"
+    "testCycleIds": [1001, 1002, 1003]
 }
 ```
 
@@ -274,8 +270,7 @@ GROUP BY tc.id, tc.title, tc.version
     "queryConditions": {
       "projectId": 1874424342973054977,
       "versions": ["2.0.0.0", "2.1.0.0"],
-      "startDate": "2025-01-01",
-      "endDate": "2025-01-31"
+      "testCycleIds": [1001, 1002, 1003]
     },
     "executionSummary": {
       "totalTestCases": 150,
@@ -346,35 +341,29 @@ GROUP BY tc.id, tc.title, tc.version
     "queryConditions": {
       "projectId": 1874424342973054977,
       "versions": ["3.0.0.0"],
-      "startDate": null,
-      "endDate": null
+      "testCycleIds": null
     },
     "message": "未找到指定版本的测试用例"
   }
 }
 ```
 
-## 时间参数使用场景
+## 测试周期参数使用场景
 
-### 1. 不传时间参数（startDate和endDate都为空）
+### 1. 不传测试周期参数（testCycleIds为空）
 **使用场景**: 查看功能版本的整体测试执行情况
-- 统计所有历史执行记录
-- 适用于整体质量评估和长期趋势分析
+- 统计所有测试周期中的执行记录
+- 适用于整体质量评估和完整的测试覆盖分析
 
-### 2. 只传startDate（endDate为空）
-**使用场景**: 查看某个时间点之后的测试执行情况
-- 统计指定日期之后到当前时间的执行记录
-- 适用于版本发布后的回归测试分析
+### 2. 传入单个测试周期ID
+**使用场景**: 查看特定测试周期的执行情况
+- 统计指定测试周期中的执行记录
+- 适用于单个周期的质量分析和问题定位
 
-### 3. 只传endDate（startDate为空）
-**使用场景**: 查看某个时间点之前的测试执行情况
-- 统计从历史开始到指定日期的执行记录
-- 适用于里程碑节点的质量分析
-
-### 4. 同时传startDate和endDate
-**使用场景**: 查看特定时间段的测试执行情况
-- 统计指定时间窗口内的执行记录
-- 适用于阶段性质量报告和周期性分析
+### 3. 传入多个测试周期ID
+**使用场景**: 查看跨多个测试周期的执行情况
+- 统计指定多个周期中的执行记录（去重）
+- 适用于阶段性质量报告和周期对比分析
 
 ## 业务价值
 
