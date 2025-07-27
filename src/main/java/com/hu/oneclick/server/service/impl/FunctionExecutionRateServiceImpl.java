@@ -101,6 +101,9 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             Object released = firstExecution.get("released");
             cycleDto.setReleased(released != null ? Integer.valueOf(released.toString()) : 0);
 
+            // 设置测试周期版本
+            cycleDto.setVersion((String) firstExecution.get("version"));
+
             cycleDto.setExecutedCaseCount(executions.size());
 
             // 构建执行用例详情列表

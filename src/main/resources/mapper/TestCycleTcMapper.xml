@@ -99,8 +99,9 @@
     <select id="getExecutionDetailsByVersionsAndCycles" resultType="java.util.Map">
         SELECT 
             tc.id AS testCycleId,
-            tc.title AS testCycleTitle,
+            tc.title AS testCycleTitle, 
             tc.env AS testCycleEnv,
+            tc.version as version,
             tc.current_release AS currentRelease,
             tc.released AS released,
             COUNT(DISTINCT tce.test_case_id) AS executedCaseCount,
