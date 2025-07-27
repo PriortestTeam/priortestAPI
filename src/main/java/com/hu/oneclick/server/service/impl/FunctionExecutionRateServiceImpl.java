@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.dao.TestCaseDao;
@@ -40,9 +39,10 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersion);
             logger.info("SQL查询计划数 - 使用版本：{}，结果：{}", majorVersion, totalPlannedCount);
 
-            // 2. 统计实际执行数
+            // 2. 查询已执行的测试用例数（去重）
             Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(
-                projectId, majorVersion, testCycleIds);
+                projectId, majorVersion, includeVersions, testCycleIds
+            );
             logger.info("SQL查询执行数 - 使用版本：{}，测试周期：{}，结果：{}", 
                        majorVersion, testCycleIds, actualExecutedCount);
 
@@ -59,7 +59,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             List<Map<String, Object>> executionDetailMaps = testCaseDao.queryExecutionDetails(
                 projectId, majorVersion, includeVersions, testCycleIds);
             logger.info("执行详情查询结果数量：{}", executionDetailMaps != null ? executionDetailMaps.size() : 0);
-            
+
             if (executionDetailMaps != null && !executionDetailMaps.isEmpty()) {
                 logger.info("执行详情示例数据：{}", executionDetailMaps.get(0));
             }
@@ -106,7 +106,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
      */
     private ExecutionSummaryDto buildExecutionSummary(List<Map<String, Object>> executionDetailMaps) {
         ExecutionSummaryDto summary = new ExecutionSummaryDto();
-        
+
         if (executionDetailMaps == null || executionDetailMaps.isEmpty()) {
             summary.setPassCount(0);
             summary.setFailCount(0);
@@ -144,7 +144,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         if (statusObj == null) {
             return "NOT_EXECUTED";
         }
-        
+
         String status = statusObj.toString();
         switch (status) {
             case "1":
@@ -170,7 +170,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
      */
     private List<CycleExecutionDetailDto> buildCycleExecutionDetails(List<Map<String, Object>> executionDetailMaps) {
         List<CycleExecutionDetailDto> cycleDetails = new ArrayList<>();
-        
+
         if (executionDetailMaps == null || executionDetailMaps.isEmpty()) {
             logger.info("执行详情为空，返回空的周期详情列表");
             return cycleDetails;
@@ -187,15 +187,20 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         logger.info("按测试周期分组结果，周期数量：{}", groupedByTestCycle.size());
 
         for (Map.Entry<Long, List<Map<String, Object>>> entry : groupedByTestCycle.entrySet()) {
-            Long testCycleId = entry.getKey();
             List<Map<String, Object>> executions = entry.getValue();
-            
-            if (executions.isEmpty() || testCycleId == 0L) {
+
+            if (executions.isEmpty()) {
                 continue;
             }
 
+            // 从第一个执行记录中获取测试周期信息
             Map<String, Object> firstExecution = executions.get(0);
-            
+            Long testCycleId = (Long) firstExecution.get("testCycleId");
+
+            if (testCycleId == null) {
+                continue;
+            }
+
             CycleExecutionDetailDto cycleDto = new CycleExecutionDetailDto();
             cycleDto.setTestCycleId(testCycleId);
             cycleDto.setTestCycleTitle((String) firstExecution.get("testCycleTitle"));
