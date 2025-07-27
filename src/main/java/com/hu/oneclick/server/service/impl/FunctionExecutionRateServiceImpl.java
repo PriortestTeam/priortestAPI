@@ -65,6 +65,8 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         responseDto.setExecutionRate(executionRate);
         // 设置执行摘要
         responseDto.setExecutionSummary(executionSummary);
+        // 设置测试周期执行详情
+        responseDto.setCycleExecutionDetails(cycleExecutionDetails);
 
         return responseDto;
     }
