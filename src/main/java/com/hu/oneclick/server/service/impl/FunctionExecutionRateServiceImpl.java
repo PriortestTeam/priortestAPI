@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -194,7 +195,8 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
 
             // 从第一个执行记录中获取测试周期信息
             Map<String, Object> firstExecution = executions.get(0);
-            Long testCycleId = (Long) firstExecution.get("testCycleId");
+            Long testCycleId = firstExecution.get("testCycleId") != null ? 
+                ((BigInteger) firstExecution.get("testCycleId")).longValue() : null;
 
             if (testCycleId == null) {
                 continue;
