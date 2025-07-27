@@ -41,9 +41,6 @@ public class FunctionExecutionRateResponseDto {
     private ExecutionSummaryDto executionSummary;
 
     /**
-     * 测试周期执行详情列表
-     */
-    private List<CycleExecutionDetailDto> cycleExecutionDetails;*
      * 测试周期执行详情
      */
     private List<CycleExecutionDetailDto> cycleExecutionDetails;

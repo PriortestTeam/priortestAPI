@@ -136,9 +136,6 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         }
 
         return cycleDetails;
-
-            CycleExecutionDetailDto cycleDto = new CycleExecutionDetailDto();
-            cycleDto.setTestCycleId(testCycleId);
             cycleDto.setTestCycleTitle((String) firstExecution.get("testCycleTitle"));
             cycleDto.setTestCycleEnv((String) firstExecution.get("testCycleEnv"));
 
