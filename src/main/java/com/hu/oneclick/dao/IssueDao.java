@@ -6,6 +6,7 @@ import com.hu.oneclick.model.entity.Issue;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IssueDao extends BaseMapper<Issue> {
 
