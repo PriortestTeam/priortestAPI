@@ -28,7 +28,6 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         try {
             Long projectId = request.getProjectId();
             String majorVersionStr = request.getMajorVersion();
-            List<String> majorVersion = Arrays.asList(majorVersionStr);
             List<String> includeVersions = request.getIncludeVersions();
             List<Long> testCycleIds = request.getTestCycleIds();
 
@@ -36,15 +35,15 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
                        projectId, majorVersionStr, includeVersions, testCycleIds);
 
             // 1. 统计计划数（主版本下所有测试用例总数）
-            Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersion);
-            logger.info("SQL查询计划数 - 使用版本：{}，结果：{}", majorVersion, totalPlannedCount);
+            Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersionStr);
+            logger.info("SQL查询计划数 - 使用版本：{}，结果：{}", majorVersionStr, totalPlannedCount);
 
             // 2. 查询已执行的测试用例数（去重）
             Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(
-                projectId, majorVersion, includeVersions, testCycleIds
+                projectId, majorVersionStr, includeVersions, testCycleIds
             );
             logger.info("SQL查询执行数 - 使用版本：{}，测试周期：{}，结果：{}", 
-                       majorVersion, testCycleIds, actualExecutedCount);
+                       majorVersionStr, testCycleIds, actualExecutedCount);
 
             // 3. 计算执行率
             BigDecimal executionRate = BigDecimal.ZERO;
@@ -57,7 +56,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
 
             // 4. 获取执行详情
             List<Map<String, Object>> executionDetailMaps = testCaseDao.queryExecutionDetails(
-                projectId, majorVersion, includeVersions, testCycleIds);
+                projectId, majorVersionStr, includeVersions, testCycleIds);
             logger.info("执行详情查询结果数量：{}", executionDetailMaps != null ? executionDetailMaps.size() : 0);
 
             if (executionDetailMaps != null && !executionDetailMaps.isEmpty()) {

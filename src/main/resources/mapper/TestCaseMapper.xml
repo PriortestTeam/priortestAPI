@@ -256,15 +256,12 @@
     </select>
 
     <!-- 功能执行率报表相关查询 -->
-    <!-- 根据项目ID和版本列表查询计划测试用例总数 -->
+    <!-- 根据项目ID和版本查询计划测试用例总数 -->
     <select id="countPlannedTestCasesByVersions" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM test_case
         WHERE project_id = #{projectId}
-          AND version IN
-          <foreach collection="majorVersion" item="version" open="(" close=")" separator=",">
-              #{version}
-          </foreach>
+          AND version = #{majorVersion}
     </select>
 
     <select id="countExecutedTestCasesByVersionsAndCycles" resultType="java.lang.Integer">
@@ -273,12 +270,9 @@
         JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
         JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
         WHERE tc.project_id = #{projectId}
-        AND tc.version IN
-        <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
-            #{version}
-        </foreach>
+        AND tc.version = #{majorVersion}
         AND tcycle.version IN
-        <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
+        <foreach collection="includeVersions" item="version" open="(" separator="," close=")">
             #{version}
         </foreach>
         <if test="testCycleIds != null and testCycleIds.size() > 0">
@@ -306,14 +300,11 @@
         LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
         LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id 
             AND tcycle.version IN
-            <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
+            <foreach collection="includeVersions" item="version" open="(" separator="," close=")">
                 #{version}
             </foreach>
         WHERE tc.project_id = #{projectId}
-        AND tc.version IN
-        <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
-            #{version}
-        </foreach>
+        AND tc.version = #{majorVersion}
         <if test="testCycleIds != null and testCycleIds.size() > 0">
         AND tcjtc.test_cycle_id IN
         <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">

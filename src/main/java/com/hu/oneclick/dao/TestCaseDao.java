@@ -43,23 +43,24 @@ public interface TestCaseDao extends BaseMapper<TestCase> {
   List<Map<String,Object>> queryTestCasesWithCasesByConditions(Map<String,Object> conditions);
 
     /**
-     * 根据项目ID和版本列表查询计划测试用例总数
+     * 根据项目ID和版本查询计划测试用例总数
      */
-    Integer countPlannedTestCasesByVersions(@Param("projectId") Long projectId, @Param("majorVersion") List<String> majorVersion);
+    Integer countPlannedTestCasesByVersions(@Param("projectId") Long projectId,
+                                            @Param("majorVersion") String majorVersion);
 
     /**
-     * 统计实际执行测试用例数（去重）
+     * 根据项目ID、版本和测试周期统计已执行的测试用例数（去重）
      */
     Integer countExecutedTestCasesByVersionsAndCycles(@Param("projectId") Long projectId,
-                                                    @Param("majorVersion") List<String> majorVersion,
-                                                    @Param("includeVersions") List<String> includeVersions,
-                                                    @Param("testCycleIds") List<Long> testCycleIds);
+                                                      @Param("majorVersion") String majorVersion,
+                                                      @Param("includeVersions") List<String> includeVersions,
+                                                      @Param("testCycleIds") List<Long> testCycleIds);
 
     /**
      * 查询功能执行率详细信息
      */
     List<Map<String, Object>> queryExecutionDetails(@Param("projectId") Long projectId,
-                                                     @Param("majorVersion") List<String> majorVersion,
+                                                     @Param("majorVersion") String majorVersion,
                                                      @Param("includeVersions") List<String> includeVersions,
                                                      @Param("testCycleIds") List<Long> testCycleIds);
 
