@@ -35,7 +35,7 @@ public class DefectDensityServiceImpl implements DefectDensityService {
         try {
             // 1. 查询执行详情和相关缺陷信息
             List<Map<String, Object>> executionDetails = testCaseDao.queryExecutionDetails(
-                    requestDto.getProjectId(), 
+                    Long.parseLong(requestDto.getProjectId()), 
                     requestDto.getMajorVersion(), 
                     requestDto.getIncludeVersions(), 
                     requestDto.getTestCycleIds()
