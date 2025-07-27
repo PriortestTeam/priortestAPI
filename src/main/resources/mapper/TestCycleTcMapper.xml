@@ -101,19 +101,19 @@
             tc.id AS testCycleId,
             tc.title AS testCycleTitle, 
             tc.env AS testCycleEnv,
-            tc.version as testCycleVersion,
+            COALESCE(tc.version, '') as testCycleVersion,
             tc.current_release AS currentRelease,
             tc.released AS released,
             COUNT(DISTINCT tce.test_case_id) AS executedCaseCount,
             tcase.id AS testCaseId,
-            tce.id AS runCaseId,
+            COALESCE(tce.id, '') AS runCaseId,
             tce.run_status AS executionStatus,
             tcase.version AS version,
             tcase.title AS testCaseTitle,
             tce.update_time AS lastExecutionTime
         FROM test_cycle tc
-        LEFT JOIN test_cases_execution tce ON tc.id = tce.test_cycle_id
-        LEFT JOIN test_case tcase ON tce.test_case_id = tcase.id
+        INNER JOIN test_cases_execution tce ON tc.id = tce.test_cycle_id
+        INNER JOIN test_case tcase ON tce.test_case_id = tcase.id
         WHERE tc.project_id = #{projectId}
         <if test="versions != null and versions.size() > 0">
             AND tcase.version IN

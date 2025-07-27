@@ -115,7 +115,11 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
                     caseDto.setTestCaseId(testCaseId != null ? Long.valueOf(testCaseId.toString()) : null);
 
                     Object runCaseId = exec.get("runCaseId");
-                    caseDto.setRunCaseId(runCaseId != null ? Long.valueOf(runCaseId.toString()) : null);
+                    if (runCaseId != null && !runCaseId.toString().isEmpty()) {
+                        caseDto.setRunCaseId(Long.valueOf(runCaseId.toString()));
+                    } else {
+                        caseDto.setRunCaseId(null);
+                    }
 
                     Object runStatus = exec.get("executionStatus");
                     caseDto.setRunStatus(runStatus != null ? Integer.valueOf(runStatus.toString()) : null);
