@@ -245,4 +245,56 @@
         ORDER BY i.create_time DESC
     </select>
 
+    <!-- 查询缺陷与运行用例的详细对应关系 -->
+    <select id="queryDefectRunCaseMapping" resultType="map">
+        SELECT 
+            i.id as defect_id,
+            i.title as defect_title,
+            i.description as defect_description,
+            i.severity,
+            i.priority,
+            i.issue_status,
+            i.env,
+            i.browser,
+            i.test_device,
+            i.create_time as defect_create_time,
+            
+            tc.id as test_case_id,
+            tc.title as test_case_title,
+            tc.version as test_case_version,
+            
+            tcycle.id as test_cycle_id,
+            tcycle.title as test_cycle_title,
+            tcycle.env as test_cycle_env,
+            tcycle.version as test_cycle_version,
+            
+            tcjtc.id as run_case_id,
+            tcjtc.run_status as execution_status,
+            tcjtc.run_count,
+            tcjtc.update_time as execution_time,
+            
+            irtc.create_time as issue_relation_create_time
+            
+        FROM issue i
+        INNER JOIN run_case_to_issue irtc ON i.id = irtc.issue_id
+        INNER JOIN test_cycle_join_test_case tcjtc ON irtc.run_case_id = tcjtc.id
+        INNER JOIN test_case tc ON tcjtc.test_case_id = tc.id
+        INNER JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
+        
+        WHERE tc.project_id = #{projectId}
+          AND tc.version = #{majorVersion}
+          AND tcycle.version IN
+        <foreach collection="includeVersions" item="version" open="(" separator="," close=")">
+            #{version}
+        </foreach>
+        <if test="testCycleIds != null and testCycleIds.size() > 0">
+            AND tcjtc.test_cycle_id IN
+            <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">
+                #{cycleId}
+            </foreach>
+        </if>
+        
+        ORDER BY i.id, tcjtc.id
+    </select>
+
 </mapper>

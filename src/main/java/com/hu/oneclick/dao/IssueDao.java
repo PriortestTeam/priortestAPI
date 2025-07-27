@@ -21,11 +21,27 @@ public interface IssueDao extends BaseMapper<Issue> {
     Issue queryCycleAndTest(String testCaseId, String testCycleId);
 
     List<Issue> findAll();
-    
+
     /**
      * 根据RunCaseId查询关联的缺陷信息
      * @param runCaseId RunCase ID
      * @return 缺陷信息列表
      */
     List<Map<String, Object>> queryDefectsByRunCaseId(String runCaseId);
+
+    /**
+     * 查询缺陷详情（包含关联的测试用例信息）
+     */
+    List<Map<String, Object>> queryDefectDetailsWithTestCases(@Param("projectId") Long projectId,
+                                                               @Param("majorVersion") String majorVersion,
+                                                               @Param("includeVersions") List<String> includeVersions,
+                                                               @Param("testCycleIds") List<Long> testCycleIds);
+
+    /**
+     * 查询缺陷与运行用例的详细对应关系（用于调试和验证）
+     */
+    List<Map<String, Object>> queryDefectRunCaseMapping(@Param("projectId") Long projectId,
+                                                         @Param("majorVersion") String majorVersion,
+                                                         @Param("includeVersions") List<String> includeVersions,
+                                                         @Param("testCycleIds") List<Long> testCycleIds);
 }

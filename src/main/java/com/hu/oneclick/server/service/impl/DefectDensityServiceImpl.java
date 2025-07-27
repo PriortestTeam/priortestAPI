@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.dao.IssueDao;
@@ -22,42 +21,42 @@ public class DefectDensityServiceImpl implements DefectDensityService {
 
     @Resource
     private IssueDao issueDao;
-    
+
     @Resource
     private TestCaseDao testCaseDao;
-    
+
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public DefectDensityResponseDto calculateDefectDensity(DefectDensityRequestDto requestDto) {
         log.info("开始计算缺陷密度，项目ID：{}，版本：{}", requestDto.getProjectId(), requestDto.getMajorVersion());
-        
+
         try {
             // 1. 查询执行详情和相关缺陷信息
             List<Long> testCycleIds = requestDto.getTestCycleIds() != null ? 
                     requestDto.getTestCycleIds().stream()
                             .map(Long::parseLong)
                             .collect(Collectors.toList()) : null;
-            
+
             List<Map<String, Object>> executionDetails = testCaseDao.queryExecutionDetails(
                     Long.parseLong(requestDto.getProjectId()), 
                     requestDto.getMajorVersion(), 
                     requestDto.getIncludeVersions(), 
                     testCycleIds
             );
-            
+
             // 2. 统计基础数据
             DefectDensityResponseDto.StatisticsData statistics = calculateStatistics(executionDetails, requestDto);
-            
+
             // 3. 查询缺陷详情并关联测试用例
             List<DefectDensityResponseDto.DefectDetail> defectDetails = buildDefectDetails(executionDetails, requestDto);
-            
+
             // 4. 计算缺陷密度
             double defectDensity = calculateDensity(statistics, requestDto.getCalculationType(), requestDto.getEnvironmentSpecificWeight());
-            
+
             // 5. 确定质量等级
             String qualityLevel = determineQualityLevel(defectDensity);
-            
+
             // 6. 构建响应结果
             DefectDensityResponseDto responseDto = new DefectDensityResponseDto();
             responseDto.setDefectDensity(Math.round(defectDensity * 100.0) / 100.0);
@@ -66,78 +65,96 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             responseDto.setStatistics(statistics);
             responseDto.setDefectDetails(defectDetails);
             responseDto.setConfig(buildCalculationConfig(requestDto));
-            
+
             log.info("缺陷密度计算完成，密度：{}%，缺陷数：{}个", defectDensity, defectDetails.size());
             return responseDto;
-            
+
         } catch (Exception e) {
             log.error("计算缺陷密度时发生错误", e);
             throw new RuntimeException("计算缺陷密度失败：" + e.getMessage(), e);
         }
     }
-    
+
     /**
      * 计算统计数据
      */
     private DefectDensityResponseDto.StatisticsData calculateStatistics(
             List<Map<String, Object>> executionDetails, DefectDensityRequestDto requestDto) {
-        
+
         DefectDensityResponseDto.StatisticsData statistics = new DefectDensityResponseDto.StatisticsData();
-        
+
         // 统计独立测试用例数
         Set<String> uniqueTestCaseIds = executionDetails.stream()
                 .map(detail -> String.valueOf(detail.get("testCaseId")))
                 .collect(Collectors.toSet());
         statistics.setUniqueTestCases(uniqueTestCaseIds.size());
-        
+
         // 统计总执行次数
-        statistics.setTotalExecutions(executionDetails.size());
-        
+        int totalExecutions = executionDetails.stream()
+                .mapToInt(detail -> getIntValue(detail.get("runCount")))
+                .sum();
+        statistics.setTotalExecutions(totalExecutions);
+
         // 统计测试周期数
         Set<String> uniqueCycleIds = executionDetails.stream()
                 .map(detail -> String.valueOf(detail.get("testCycleId")))
                 .collect(Collectors.toSet());
         statistics.setTotalCycles(uniqueCycleIds.size());
-        
-        // 统计环境数
-        Set<String> uniqueEnvironments = executionDetails.stream()
+
+        // 查询缺陷信息并统计
+        List<Map<String, Object>> defectData = queryDefectData(executionDetails);
+        Map<String, List<Map<String, Object>>> defectGroups = groupDefectsByDeduplication(defectData, requestDto);
+
+        statistics.setUniqueDefects(defectGroups.get("unique").size());
+        statistics.setEnvironmentSpecificDefects(defectGroups.get("environmentSpecific").size());
+        statistics.setTotalDefectInstances(defectData.size());
+
+        // 统计环境相关数据
+        Set<String> allEnvironments = executionDetails.stream()
                 .map(detail -> String.valueOf(detail.get("testCycleEnv")))
                 .filter(env -> env != null && !env.equals("null"))
                 .collect(Collectors.toSet());
-        statistics.setTotalEnvironments(uniqueEnvironments.size());
-        
-        // 查询关联的缺陷信息
-        List<Map<String, Object>> defectData = queryDefectData(executionDetails);
-        
-        // 统计缺陷数据
-        statistics.setTotalDefectInstances(defectData.size());
-        
-        // 根据去重策略统计独立缺陷数和环境特定缺陷数
-        Map<String, List<Map<String, Object>>> defectGroups = groupDefectsByDeduplication(defectData, requestDto);
-        statistics.setUniqueDefects(defectGroups.get("unique").size());
-        statistics.setEnvironmentSpecificDefects(defectGroups.get("environmentSpecific").size());
-        
-        // 统计发现缺陷的环境数
+
         Set<String> environmentsWithDefects = defectData.stream()
                 .map(defect -> String.valueOf(defect.get("env")))
                 .filter(env -> env != null && !env.equals("null"))
                 .collect(Collectors.toSet());
+
+        statistics.setTotalEnvironments(allEnvironments.size());
         statistics.setEnvironmentsWithDefects(environmentsWithDefects.size());
-        
-        // 计算环境覆盖率
-        double environmentCoverage = statistics.getTotalEnvironments() > 0 ? 
-                (double) statistics.getEnvironmentsWithDefects() / statistics.getTotalEnvironments() * 100 : 0.0;
+
+        double environmentCoverage = allEnvironments.size() > 0 ? 
+                (double) environmentsWithDefects.size() / allEnvironments.size() * 100 : 0.0;
         statistics.setEnvironmentCoverage(Math.round(environmentCoverage * 100.0) / 100.0);
-        
+
+        // 判断数据有效性
+        boolean hasValidData = statistics.getUniqueTestCases() > 0 && statistics.getTotalExecutions() > 0;
+        statistics.setHasValidData(hasValidData);
+
+        // 设置数据说明
+        String dataExplanation;
+        if (!hasValidData) {
+            if (statistics.getUniqueTestCases() == 0) {
+                dataExplanation = "未找到符合条件的测试用例，请检查项目ID、版本号和测试周期ID是否正确";
+            } else {
+                dataExplanation = "测试用例存在但未执行，无法进行缺陷密度分析";
+            }
+        } else if (statistics.getTotalDefectInstances() == 0) {
+            dataExplanation = "已执行测试但未发现缺陷，质量状况良好";
+        } else {
+            dataExplanation = "数据充足，分析结果可信";
+        }
+        statistics.setDataExplanation(dataExplanation);
+
         return statistics;
     }
-    
+
     /**
      * 查询缺陷数据
      */
     private List<Map<String, Object>> queryDefectData(List<Map<String, Object>> executionDetails) {
         List<Map<String, Object>> defectData = new ArrayList<>();
-        
+
         for (Map<String, Object> execution : executionDetails) {
             String runCaseId = String.valueOf(execution.get("runCaseId"));
             if (runCaseId != null && !runCaseId.equals("null")) {
@@ -155,31 +172,31 @@ public class DefectDensityServiceImpl implements DefectDensityService {
                 }
             }
         }
-        
+
         return defectData;
     }
-    
+
     /**
      * 根据去重策略分组缺陷
      */
     private Map<String, List<Map<String, Object>>> groupDefectsByDeduplication(
             List<Map<String, Object>> defectData, DefectDensityRequestDto requestDto) {
-        
+
         Map<String, List<Map<String, Object>>> groups = new HashMap<>();
         groups.put("unique", new ArrayList<>());
         groups.put("environmentSpecific", new ArrayList<>());
-        
+
         if (!requestDto.getEnableDeduplication()) {
             // 不启用去重，所有缺陷都算作独立缺陷
             groups.get("unique").addAll(defectData);
             return groups;
         }
-        
+
         // 按缺陷标题和严重程度分组
         Map<String, List<Map<String, Object>>> titleSeverityGroups = defectData.stream()
                 .collect(Collectors.groupingBy(defect -> 
                         String.valueOf(defect.get("title")) + "|" + String.valueOf(defect.get("severity"))));
-        
+
         for (List<Map<String, Object>> group : titleSeverityGroups.values()) {
             if (group.size() == 1) {
                 // 单个缺陷，算作独立缺陷
@@ -194,10 +211,10 @@ public class DefectDensityServiceImpl implements DefectDensityService {
                 }
             }
         }
-        
+
         return groups;
     }
-    
+
     /**
      * 判断是否为环境特定缺陷
      */
@@ -207,34 +224,34 @@ public class DefectDensityServiceImpl implements DefectDensityService {
                 .map(defect -> String.valueOf(defect.get("env")))
                 .filter(env -> env != null && !env.equals("null"))
                 .collect(Collectors.toSet());
-        
+
         return environments.size() > 1;
     }
-    
+
     /**
      * 构建缺陷详情列表
      */
     private List<DefectDensityResponseDto.DefectDetail> buildDefectDetails(
             List<Map<String, Object>> executionDetails, DefectDensityRequestDto requestDto) {
-        
+
         List<Map<String, Object>> defectData = queryDefectData(executionDetails);
         Map<String, List<Map<String, Object>>> defectGroups = new HashMap<>();
-        
+
         // 按缺陷ID分组
         for (Map<String, Object> defect : defectData) {
             String defectId = String.valueOf(defect.get("id"));
             defectGroups.computeIfAbsent(defectId, k -> new ArrayList<>()).add(defect);
         }
-        
+
         List<DefectDensityResponseDto.DefectDetail> defectDetails = new ArrayList<>();
-        
+
         for (Map.Entry<String, List<Map<String, Object>>> entry : defectGroups.entrySet()) {
             String defectId = entry.getKey();
             List<Map<String, Object>> defectInstances = entry.getValue();
-            
+
             // 取第一个实例作为缺陷基本信息
             Map<String, Object> primaryDefect = defectInstances.get(0);
-            
+
             DefectDensityResponseDto.DefectDetail defectDetail = new DefectDensityResponseDto.DefectDetail();
             defectDetail.setDefectId(defectId);
             defectDetail.setDefectTitle(String.valueOf(primaryDefect.get("title")));
@@ -247,25 +264,25 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             defectDetail.setTestDevice(String.valueOf(primaryDefect.get("test_device")));
             defectDetail.setCreateTime(formatDate(primaryDefect.get("create_time")));
             defectDetail.setIsEnvironmentSpecific(isEnvironmentSpecific(defectInstances));
-            
+
             // 构建关联的测试用例信息
             List<DefectDensityResponseDto.RelatedTestCase> relatedTestCases = defectInstances.stream()
                     .map(this::buildRelatedTestCase)
                     .collect(Collectors.toList());
             defectDetail.setRelatedTestCases(relatedTestCases);
-            
+
             defectDetails.add(defectDetail);
         }
-        
+
         return defectDetails;
     }
-    
+
     /**
      * 构建关联测试用例信息
      */
     private DefectDensityResponseDto.RelatedTestCase buildRelatedTestCase(Map<String, Object> data) {
         DefectDensityResponseDto.RelatedTestCase relatedTestCase = new DefectDensityResponseDto.RelatedTestCase();
-        
+
         relatedTestCase.setTestCaseId(String.valueOf(data.get("testCaseId")));
         relatedTestCase.setTestCaseTitle(String.valueOf(data.get("testCaseTitle")));
         relatedTestCase.setTestCaseVersion(String.valueOf(data.get("version")));
@@ -277,18 +294,18 @@ public class DefectDensityServiceImpl implements DefectDensityService {
         relatedTestCase.setExecutionTime(formatDate(data.get("executionTime")));
         relatedTestCase.setRunCount(getIntValue(data.get("runCount")));
         relatedTestCase.setRunCaseId(String.valueOf(data.get("runCaseId")));
-        
+
         return relatedTestCase;
     }
-    
+
     /**
      * 计算缺陷密度
      */
     private double calculateDensity(DefectDensityResponseDto.StatisticsData statistics, 
                                    String calculationType, Double environmentSpecificWeight) {
-        
+
         double density = 0.0;
-        
+
         switch (calculationType) {
             case "CASE_BASED":
                 // 基于独立用例计算
@@ -296,14 +313,14 @@ public class DefectDensityServiceImpl implements DefectDensityService {
                     density = (double) statistics.getTotalDefectInstances() / statistics.getUniqueTestCases() * 100;
                 }
                 break;
-                
+
             case "EXECUTION_BASED":
                 // 基于执行次数计算
                 if (statistics.getTotalExecutions() > 0) {
                     density = (double) statistics.getTotalDefectInstances() / statistics.getTotalExecutions() * 100;
                 }
                 break;
-                
+
             case "WEIGHTED":
                 // 加权计算
                 if (statistics.getUniqueTestCases() > 0) {
@@ -312,17 +329,17 @@ public class DefectDensityServiceImpl implements DefectDensityService {
                     density = weightedDefects / statistics.getUniqueTestCases() * 100;
                 }
                 break;
-                
+
             default:
                 // 默认使用基于用例的计算
                 if (statistics.getUniqueTestCases() > 0) {
                     density = (double) statistics.getTotalDefectInstances() / statistics.getUniqueTestCases() * 100;
                 }
         }
-        
+
         return density;
     }
-    
+
     /**
      * 确定质量等级
      */
@@ -337,7 +354,7 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             return "需改进";
         }
     }
-    
+
     /**
      * 构建计算配置
      */
@@ -346,17 +363,17 @@ public class DefectDensityServiceImpl implements DefectDensityService {
         config.setEnableDeduplication(requestDto.getEnableDeduplication());
         config.setSimilarityThreshold(requestDto.getSimilarityThreshold());
         config.setEnvironmentSpecificWeight(requestDto.getEnvironmentSpecificWeight());
-        
+
         Map<String, Object> queryConditions = new HashMap<>();
         queryConditions.put("projectId", requestDto.getProjectId());
         queryConditions.put("majorVersion", requestDto.getMajorVersion());
         queryConditions.put("includeVersions", requestDto.getIncludeVersions());
         queryConditions.put("testCycleIds", requestDto.getTestCycleIds());
         config.setQueryConditions(queryConditions);
-        
+
         return config;
     }
-    
+
     /**
      * 工具方法：格式化日期
      */
@@ -372,7 +389,7 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             return String.valueOf(dateObj);
         }
     }
-    
+
     /**
      * 工具方法：获取整数值
      */
@@ -384,13 +401,13 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             return 0;
         }
     }
-    
+
     /**
      * 工具方法：获取缺陷状态文本
      */
     private String getDefectStatusText(Object status) {
         if (status == null) return "未知";
-        
+
         int statusCode = getIntValue(status);
         switch (statusCode) {
             case 1: return "打开";
@@ -400,13 +417,13 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             default: return "未知";
         }
     }
-    
+
     /**
      * 工具方法：获取执行状态文本
      */
     private String getExecutionStatusText(Object status) {
         if (status == null) return "未知";
-        
+
         String statusStr = String.valueOf(status);
         switch (statusStr) {
             case "1": return "通过";
