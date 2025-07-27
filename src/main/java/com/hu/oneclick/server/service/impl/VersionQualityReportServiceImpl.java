@@ -155,26 +155,26 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
             if (!useCases.isEmpty()) {
                 // 有Use Cases的Feature
                 Map<String, Object> useCasesInfo = new HashMap<>();
-                
+
                 for (UserCaseDto useCase : useCases) {
                     Map<String, Object> useCaseInfo = new HashMap<>();
                     useCaseInfo.put("useCaseId", useCase.getId());
                     useCaseInfo.put("useCaseTitle", useCase.getTitle());
                     useCaseInfo.put("useCaseVersion", useCase.getVersion()); // 添加Use Case版本
-                    
+
                     // 获取Use Case关联的测试用例
                     List<Map<String, Object>> useCaseTestCases = getUseCaseTestCases(useCase.getId());
                     useCaseInfo.put("testCases", useCaseTestCases);
                     useCaseInfo.put("testCaseCount", useCaseTestCases.size());
                     useCaseInfo.put("hasCoverage", !useCaseTestCases.isEmpty());
-                    
+
                     useCasesInfo.put(String.valueOf(useCase.getId()), useCaseInfo);
                 }
-                
+
                 featureInfo.put("type", "WITH_USE_CASES");
                 featureInfo.put("useCases", useCasesInfo);
                 featureInfo.put("useCaseCount", useCases.size());
-                
+
                 // 如果Feature既有Use Cases又有直接关联的测试用例
                 if (!featureTestCases.isEmpty()) {
                     featureInfo.put("directTestCases", featureTestCases);
@@ -191,7 +191,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
                 featureInfo.put("directTestCaseCount", featureTestCases.size());
                 featureInfo.put("hasCoverage", !featureTestCases.isEmpty());
             }
-            
+
             featuresDetails.put(String.valueOf(feature.getId()), featureInfo);
         }
 
@@ -349,6 +349,37 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         result.put("details", details);
 
         return result;
+    }
+
+    @Override
+    public Resp<Map<String, Object>> getStoryCoverageWithVersions(Long projectId, String majorVersion, List<String> includeVersions) {
+        try {
+            log.info("获取故事覆盖率 - 项目ID: {}, 主版本: {}, 包含版本: {}", projectId, majorVersion, includeVersions);
+
+            // 1. 获取主版本的所有features
+            LambdaQueryWrapper<Feature> featureQuery = new LambdaQueryWrapper<>();
+            featureQuery.eq(Feature::getProjectId, projectId)
+                       .eq(Feature::getVersion, majorVersion);
+            List<Feature> features = featureDao.selectList(featureQuery);
+
+            if (features.isEmpty()) {
+                log.warn("未找到指定版本的功能故事 - 项目ID: {}, 版本: {}", projectId, majorVersion);
+                return new Resp.Builder<Map<String, Object>>().setData(buildEmptyStoryCoverageResult()).ok();
+            }
+
+            List<Long> featureIds = features.stream().map(Feature::getId).collect(Collectors.toList());
+
+            // 2. 获取符合条件的use cases
+            List<UserCaseDto> useCases = useCaseDao.selectByFeatureIdsWithVersionFilter(featureIds, majorVersion, includeVersions);
+
+            // 3. 构建结果
+            Map<String, Object> result = buildStoryCoverageResult(features, useCases, majorVersion, includeVersions);
+
+            return new Resp.Builder<Map<String, Object>>().setData(result).ok();
+        } catch (Exception e) {
+            log.error("获取故事覆盖率失败 - 项目ID: {}, 主版本: {}, 包含版本: {}", projectId, majorVersion, includeVersions, e);
+            return new Resp.Builder<Map<String, Object>>().buildResult("获取故事覆盖率失败");
+        }
     }
 
     @Override
@@ -689,65 +720,7 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
     public Resp<Map<String, Object>> getExecutionRate(String projectId, String releaseVersion) {
         try {
             Map<String, Object> result = new HashMap<>();
-
-            // 测试执行率数据
-            int plannedCases = 135;
-            int executedCases = 120;
-            int passedCases = 105;
-            int failedCases = 15;
-
-            double executionRate = (double) executedCases / plannedCases * 100;
-            double passRate = (double) passedCases / executedCases * 100;
-
-            result.put("plannedCases", plannedCases);
-            result.put("executedCases", executedCases);
-            result.put("passedCases", passedCases);
-            result.put("failedCases", failedCases);
-            result.put("executionRate", Math.round(executionRate * 100.0) / 100.0);
-            result.put("passRate", Math.round(passRate * 100.0) / 100.0);
-
-            // 执行率等级
-            String executionLevel;
-            if (executionRate >= 95) {
-                executionLevel = "优秀";
-            } else if (executionRate >= 85) {
-                executionLevel = "良好";
-            } else if (executionRate >= 75) {
-                executionLevel = "一般";
-            } else {
-                executionLevel = "需改进";
-            }
-            result.put("executionLevel", executionLevel);
-
-            // 通过率等级
-            String passLevel;
-            if (passRate >= 95) {
-                passLevel = "优秀";
-            } else if (passRate >= 90) {
-                passLevel = "良好";
-            } else if (passRate >= 85) {
-                passLevel = "一般";
-            } else {
-                passLevel = "需改进";
-            }
-            result.put("passLevel", passLevel);
-
-            // 测试执行趋势
-            List<Map<String, Object>> executionTrend = new ArrayList<>();
-            executionTrend.add(createTrendData("2024-01-15", 75.5, 85.2));
-            executionTrend.add(createTrendData("2024-01-16", 82.3, 87.5));
-            executionTrend.add(createTrendData("2024-01-17", 88.9, 89.1));
-            executionTrend.add(createTrendData("2024-01-18", 91.2, 88.8));
-            executionTrend.add(createTrendData("2024-01-19", 88.9, 87.5));
-            result.put("executionTrend", executionTrend);
-
-            // 测试周期执行详情
-            List<Map<String, Object>> cycleExecutionDetails = new ArrayList<>();
-            cycleExecutionDetails.add(createCycleExecution("系统测试周期1", 45, 42, 38, 4, 93.3, 90.5));
-            cycleExecutionDetails.add(createCycleExecution("集成测试周期", 30, 28, 25, 3, 93.3, 89.3));
-            cycleExecutionDetails.add(createCycleExecution("回归测试周期", 60, 50, 42, 8, 83.3, 84.0));
-            result.put("cycleExecutionDetails", cycleExecutionDetails);
-
+            // TODO: 实现执行率计算逻辑
             return new Resp.Builder<Map<String, Object>>().setData(result).ok();
         } catch (Exception e) {
             return new Resp.Builder<Map<String, Object>>().buildResult("获取执行率失败");
@@ -937,5 +910,71 @@ public class VersionQualityReportServiceImpl implements VersionQualityReportServ
         data.put("totalTestCases", totalTestCases);
         data.put("qualityLevel", qualityLevel);
         return data;
+    }
+
+    private Map<String, Object> buildStoryCoverageResult(List<Feature> features, List<UserCaseDto> useCases, String majorVersion, List<String> includeVersions) {
+        Map<String, Object> result = new HashMap<>();
+
+        // 计算总故事数和已覆盖故事数
+        int totalStories = 0;
+        int coveredStories = 0;
+        int featureCount = 0;
+        int useCaseCount = 0;
+        int coveredFeatures = 0;
+        int coveredUseCases = 0;
+
+        // 将features和useCases分组
+        Map<Long, Feature> featureMap = features.stream().collect(Collectors.toMap(Feature::getId, f -> f));
+        Map<Long, List<UserCaseDto>> useCaseMap = useCases.stream().collect(Collectors.groupingBy(UserCaseDto::getFeatureId));
+
+        for (Feature feature : features) {
+            List<UserCaseDto> featureUseCases = useCaseMap.get(feature.getId());
+
+            if (featureUseCases != null && !featureUseCases.isEmpty()) {
+                // 有use_case，计算use_case的覆盖情况
+                useCaseCount += featureUseCases.size();
+                totalStories += featureUseCases.size();
+
+                // 检查use_case的覆盖情况
+                Set<Long> useCaseIds = featureUseCases.stream().map(UserCaseDto::getId).collect(Collectors.toSet());
+                Set<Long> coveredUseCaseIds = getCoveredUseCases(useCaseIds);
+                coveredUseCases += coveredUseCaseIds.size();
+                coveredStories += coveredUseCaseIds.size();
+            } else {
+                // 没有use_case，计算feature本身
+                featureCount++;
+                totalStories++;
+
+                // 检查feature的覆盖情况
+                if (isFeatureCovered(feature.getId())) {
+                    coveredFeatures++;
+                    coveredStories++;
+                }
+            }
+        }
+
+        // 计算覆盖率
+        double coverageRate = totalStories > 0 ? (double) coveredStories / totalStories * 100 : 0.0;
+
+        // 构建返回结果
+        result.put("totalStories", totalStories);
+        result.put("coveredStories", coveredStories);
+        result.put("coverageRate", Math.round(coverageRate * 10) / 10.0); // 保留1位小数
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("featureCount", featureCount);
+        details.put("useCaseCount", useCaseCount);
+        details.put("coveredFeatures", coveredFeatures);
+        details.put("coveredUseCases", coveredUseCases);
+        result.put("details", details);
+
+        // 添加详细的Feature结构信息
+        Map<String, Object> featuresDetails = buildFeaturesDetails(features);
+        result.put("featuresDetails", featuresDetails);
+
+        log.info("故事覆盖率计算完成 - 总故事数: {}, 已覆盖: {}, 覆盖率: {}%",
+                totalStories, coveredStories, coverageRate);
+
+        return result;
     }
 }

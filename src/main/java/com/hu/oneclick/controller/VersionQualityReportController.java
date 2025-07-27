@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +30,19 @@ public class VersionQualityReportController {
             @Parameter(description = "项目ID") @RequestParam Long projectId,
             @Parameter(description = "版本号") @RequestParam String version) {
         return versionQualityReportService.getStoryCoverage(projectId, version);
+    }
+
+    @PostMapping("/storyCoverage")
+    @Operation(summary = "获取故事覆盖率 (POST)", description = "通过POST方法获取指定项目和版本的故事覆盖率统计")
+    public Resp<Map<String, Object>> getStoryCoveragePost(@RequestBody Map<String, Object> request) {
+        String projectIdStr = String.valueOf(request.get("projectId"));
+        Long projectId = Long.valueOf(projectIdStr);
+        String majorVersion = (String) request.get("majorVersion");
+        @SuppressWarnings("unchecked")
+        List<String> includeVersions = (List<String>) request.get("includeVersions");
+        
+        // 调用新的service方法来处理复杂的查询逻辑
+        return versionQualityReportService.getStoryCoverageWithVersions(projectId, majorVersion, includeVersions);
     }
 
     @GetMapping("/getQualityOverview/{projectId}")

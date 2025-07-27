@@ -49,7 +49,7 @@
                 where test_case_id = #{testCaseId}
                 and test_cycle_id = #{testCycleId}
                 and project_id = #{projectId}
-            );
+            )
     </select>
 
     <update id="upExecuteStatusCode">
@@ -84,7 +84,7 @@
         where test_case_id = #{testCaseId}
         and test_cycle_id = #{testCycleId}
         and project_id = #{projectId})
-        order by step_update_time desc limit 1;
+        order by step_update_time desc
     </select>
     <select id="getIsFlag" resultType="java.lang.Integer">
         select EXISTS (select *
@@ -94,5 +94,108 @@
                          and project_id = #{param1.projectId}
                          and run_flag = #{param1.runFlag}
                          and run_count = #{param2});
+    </select>
+
+    <select id="getExecutionDetailsByVersionsAndCycles" resultType="java.util.Map">
+        SELECT 
+            tc.id AS testCycleId,
+            tc.title AS testCycleTitle, 
+            tc.env AS testCycleEnv,
+            COALESCE(tc.version, '') as testCycleVersion,
+            tc.current_release AS currentRelease,
+            tc.released AS released,
+            COUNT(DISTINCT tce.test_case_id) AS executedCaseCount,
+            tcase.id AS testCaseId,
+            COALESCE(tce.id, '') AS runCaseId,
+            tce.run_status AS executionStatus,
+            tcase.version AS version,
+            tcase.title AS testCaseTitle,
+            tce.update_time AS lastExecutionTime
+        FROM test_cycle tc
+        INNER JOIN test_cases_execution tce ON tc.id = tce.test_cycle_id
+        INNER JOIN test_case tcase ON tce.test_case_id = tcase.id
+        WHERE tc.project_id = #{projectId}
+        <if test="includeVersions != null and includeVersions.size() > 0">
+            AND tc.version IN
+            <foreach collection="includeVersions" item="version" open="(" separator="," close=")">
+                #{version}
+            </foreach>
+        </if>
+        <if test="majorVersion != null and majorVersion.size() > 0">
+            AND tcase.version IN
+            <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
+                #{version}
+            </foreach>
+        </if>
+        <if test="testCycleIds != null and testCycleIds.size() > 0">
+            AND tc.id IN
+            <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">
+                #{cycleId}
+            </foreach>
+        </if>
+        GROUP BY tc.id, tcase.id, tce.id
+        ORDER BY tc.id, tcase.id
+    </select>
+    <!-- 统计实际执行数（主版本下测试用例在包含版本测试周期中的执行数，去重） -->
+    <select id="countExecutedTestCasesByVersionsAndCycles" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT tc.id)
+        FROM test_case tc
+        JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
+        JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
+        WHERE tc.project_id = #{projectId}
+          AND tc.version IN
+          <foreach collection="majorVersion" item="version" open="(" close=")" separator=",">
+              #{version}
+          </foreach>
+          AND tcjtc.run_status IN (1, 2, 3, 4, 4.1, 4.2, 4.3, 4.4, 4.5)
+          <if test="testCycleIds != null and testCycleIds.size() > 0">
+              AND tcjtc.test_cycle_id IN
+              <foreach collection="testCycleIds" item="testCycleId" open="(" close=")" separator=",">
+                  #{testCycleId}
+              </foreach>
+          </if>
+          <if test="testCycleIds == null or testCycleIds.size() == 0">
+              <!-- 当testCycleIds为空时，根据包含版本过滤测试周期 -->
+              AND tcycle.project_id = #{projectId}
+          </if>
+    </select>
+    <!-- 查询详细执行信息 -->
+    <select id="queryExecutionDetails" resultType="java.util.Map">
+        SELECT 
+            tc.id as testCaseId,
+            tc.title as testCaseTitle,
+            tc.version as version,
+            CASE WHEN tcjtc.test_case_id IS NOT NULL THEN true ELSE false END as executed,
+            COUNT(tcjtc.id) as executionCount,
+            MAX(tcjtc.update_time) as lastExecutionTime,
+            tcycle.id as testCycleId,
+            tcycle.title as testCycleTitle,
+            tcycle.env as testCycleEnv,
+            tcycle.version as testCycleVersion,
+            tcjtc.update_time as executionTime,
+            tcjtc.run_status as executionStatus
+        FROM test_case tc
+        LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
+        LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
+        WHERE tc.project_id = #{projectId}
+          AND tc.version IN
+          <foreach collection="majorVersion" item="version" open="(" close=")" separator=",">
+              #{version}
+          </foreach>
+          <if test="testCycleIds != null and testCycleIds.size() > 0">
+              AND tcjtc.test_cycle_id IN
+              <foreach collection="testCycleIds" item="testCycleId" open="(" close=")" separator=",">
+                  #{testCycleId}
+              </foreach>
+          </if>
+          <if test="testCycleIds == null or testCycleIds.size() == 0">
+              <!-- 当testCycleIds为空时，根据包含版本过滤测试周期 -->
+              AND (tcycle.id IS NULL OR tcycle.version IN
+              <foreach collection="includeVersions" item="includeVersion" open="(" close=")" separator=",">
+                  #{includeVersion}
+              </foreach>)
+          </if>
+        GROUP BY tc.id, tc.title, tc.version, tcycle.id, tcycle.title, tcycle.env, tcycle.version, tcjtc.update_time, tcjtc.run_status
+        ORDER BY tc.id, tcjtc.update_time DESC
     </select>
 </mapper>
