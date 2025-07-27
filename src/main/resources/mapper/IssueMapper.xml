@@ -5,9 +5,9 @@
     <resultMap type="com.hu.oneclick.model.entity.Issue" id="IssueMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
-        <!--        <result property="userId" column="user_id" jdbcType="INTEGER"/>-->
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <!--        <result property="author" column="author" jdbcType="VARCHAR"/>-->
+        <result property="author" column="author" jdbcType="VARCHAR"/>
         <result property="issueStatus" column="issue_status" jdbcType="INTEGER"/>
         <!--        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>-->
         
@@ -37,7 +37,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="IssueMap">
         select
-        id, project_id, user_id, title, status, planned_release_date,
+        id, project_id, user_id, title, issue_status, planned_release_date,
         priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, 
         issue_version, introduced_version, is_legacy, fix_version, severity, test_device, create_time, update_time, description, duration
         from oneclick.issue
@@ -144,8 +144,8 @@
                 title = #{title},
             </if>
 
-            <if test="status != null">
-                status = #{status},
+            <if test="issueStatus != null">
+                issue_status = #{issueStatus},
             </if>
 
             
