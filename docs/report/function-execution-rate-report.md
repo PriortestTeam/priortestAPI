@@ -1,4 +1,3 @@
-
 # 功能执行率报表分析
 
 ## 概述
@@ -187,21 +186,21 @@ ORDER BY tc.id, tcjtc.update_time DESC
 ```java
 private ExecutionSummaryDto buildExecutionSummary(List<Map<String, Object>> executionDetailMaps) {
     ExecutionSummaryDto summary = new ExecutionSummaryDto();
-    
+
     // 按状态分组统计
     Map<StatusCategory, Long> statusCounts = executionDetailMaps.stream()
         .collect(Collectors.groupingBy(
             map -> getStatusCategory(map.get("executionStatus")),
             Collectors.counting()
         ));
-    
+
     // 设置各状态数量
     summary.setPassCount(statusCounts.getOrDefault(StatusCategory.PASS, 0L).intValue());
     summary.setFailCount(statusCounts.getOrDefault(StatusCategory.FAIL, 0L).intValue());
     summary.setBlockedCount(statusCounts.getOrDefault(StatusCategory.BLOCKED, 0L).intValue());
     summary.setSkippedCount(statusCounts.getOrDefault(StatusCategory.SKIP, 0L).intValue());
     summary.setNotExecutedCount(statusCounts.getOrDefault(StatusCategory.NOT_EXECUTED, 0L).intValue());
-    
+
     return summary;
 }
 ```
@@ -212,7 +211,7 @@ private StatusCategory getStatusCategory(Object statusObj) {
     if (statusObj == null) {
         return StatusCategory.NOT_EXECUTED;
     }
-    
+
     Integer status;
     if (statusObj instanceof BigInteger) {
         status = ((BigInteger) statusObj).intValue();
@@ -221,7 +220,7 @@ private StatusCategory getStatusCategory(Object statusObj) {
     } else {
         return StatusCategory.NOT_EXECUTED;
     }
-    
+
     switch (status) {
         case 1: return StatusCategory.PASS;
         case 2: return StatusCategory.FAIL;
@@ -248,24 +247,24 @@ private List<CycleExecutionDetailDto> buildCycleExecutionDetails(List<Map<String
 
 private CycleExecutionDetailDto mapToCycleExecutionDetail(Map<String, Object> map) {
     CycleExecutionDetailDto detail = new CycleExecutionDetailDto();
-    
+
     // 基本信息映射
     detail.setTestCaseId(getLongValue(map.get("testCaseId")));
     detail.setTestCaseTitle(getStringValue(map.get("testCaseTitle")));
     detail.setVersion(getStringValue(map.get("version")));
-    
+
     // 测试周期信息
     detail.setTestCycleId(getLongValue(map.get("testCycleId")));
     detail.setTestCycleTitle(getStringValue(map.get("testCycleTitle")));
     detail.setTestCycleEnv(getStringValue(map.get("testCycleEnv")));
     detail.setTestCycleVersion(getStringValue(map.get("testCycleVersion")));
-    
+
     // 执行信息
     detail.setExecutionTime(getStringValue(map.get("executionTime")));
     detail.setExecutionStatus(getIntegerValue(map.get("executionStatus")));
     detail.setRunCount(getIntegerValue(map.get("runCount")));
     detail.setRunCaseId(getLongValue(map.get("runCaseId")));
-    
+
     return detail;
 }
 ```
