@@ -262,7 +262,7 @@
         FROM test_case
         WHERE project_id = #{projectId}
           AND version IN
-          <foreach collection="versions" item="version" open="(" close=")" separator=",">
+          <foreach collection="majorVersion" item="version" open="(" close=")" separator=",">
               #{version}
           </foreach>
     </select>
@@ -273,7 +273,7 @@
         JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
         WHERE tc.project_id = #{projectId}
         AND tc.version IN
-        <foreach collection="versions" item="version" open="(" separator="," close=")">
+        <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
             #{version}
         </foreach>
         <if test="testCycleIds != null and testCycleIds.size() > 0">
@@ -309,7 +309,7 @@
         LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
         WHERE tc.project_id = #{projectId}
         AND tc.version IN
-        <foreach collection="versions" item="version" open="(" separator="," close=")">
+        <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
             #{version}
         </foreach>
         GROUP BY tc.id, tc.title, tc.version, tcycle.id, tcycle.title, tcycle.env, tcjtc.update_time, tcjtc.run_status
