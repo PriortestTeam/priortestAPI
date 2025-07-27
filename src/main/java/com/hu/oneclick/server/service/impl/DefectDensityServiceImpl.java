@@ -52,21 +52,22 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             List<DefectDensityResponseDto.DefectDetail> defectDetails = buildDefectDetails(executionDetails, requestDto);
 
             // 4. 计算缺陷密度
-            double defectDensity = calculateDensity(statistics, requestDto.getCalculationType(), requestDto.getEnvironmentSpecificWeight());
+            double density = calculateDensity(statistics, requestDto.getCalculationType(), 
+                    requestDto.getEnvironmentSpecificWeight());
 
-            // 5. 确定质量等级
-            String qualityLevel = determineQualityLevel(defectDensity);
+            // 5. 判断质量等级
+            String qualityLevel = getQualityLevel(density, statistics.isHasValidData());
 
             // 6. 构建响应结果
             DefectDensityResponseDto responseDto = new DefectDensityResponseDto();
-            responseDto.setDefectDensity(Math.round(defectDensity * 100.0) / 100.0);
+            responseDto.setDefectDensity(Math.round(density * 100.0) / 100.0);
             responseDto.setQualityLevel(qualityLevel);
             responseDto.setCalculationType(requestDto.getCalculationType());
             responseDto.setStatistics(statistics);
             responseDto.setDefectDetails(defectDetails);
             responseDto.setConfig(buildCalculationConfig(requestDto));
 
-            log.info("缺陷密度计算完成，密度：{}%，缺陷数：{}个", defectDensity, defectDetails.size());
+            log.info("缺陷密度计算完成，密度：{}%，缺陷数：{}个", density, defectDetails.size());
             return responseDto;
 
         } catch (Exception e) {
@@ -341,14 +342,20 @@ public class DefectDensityServiceImpl implements DefectDensityService {
     }
 
     /**
-     * 确定质量等级
+     * 根据缺陷密度判断质量等级
      */
-    private String determineQualityLevel(double defectDensity) {
-        if (defectDensity < 5) {
+    private String getQualityLevel(double density, boolean hasValidData) {
+        // 如果没有有效数据，返回待分析
+        if (!hasValidData) {
+            return "待分析";
+        }
+
+        // 有有效数据时，根据缺陷密度判断等级
+        if (density < 5) {
             return "优秀";
-        } else if (defectDensity < 10) {
+        } else if (density < 10) {
             return "良好";
-        } else if (defectDensity < 15) {
+        } else if (density < 15) {
             return "一般";
         } else {
             return "需改进";
