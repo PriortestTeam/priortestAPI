@@ -130,11 +130,46 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         summary.setSkippedCount(statusCounts.getOrDefault("SKIP", 0L).intValue());
         summary.setNotExecutedCount(statusCounts.getOrDefault("NOT_EXECUTED", 0L).intValue());
 
-        logger.info("执行摘要统计 - 通过：{}，失败：{}，阻塞：{}，跳过：{}，未执行：{}", 
-                   summary.getPassCount(), summary.getFailCount(), summary.getBlockedCount(),
-                   summary.getSkippedCount(), summary.getNotExecutedCount());
+        // 计算总执行数量
+        int totalExecuted = summary.getPassCount() + summary.getFailCount() + 
+                           summary.getBlockedCount() + summary.getSkippedCount() + summary.getNotExecutedCount();
+
+        // 计算各种比率（保留2位小数）
+        if (totalExecuted > 0) {
+            summary.setPassRate(calculateRate(summary.getPassCount(), totalExecuted));
+            summary.setFailRate(calculateRate(summary.getFailCount(), totalExecuted));
+            summary.setBlockedRate(calculateRate(summary.getBlockedCount(), totalExecuted));
+            summary.setSkippedRate(calculateRate(summary.getSkippedCount(), totalExecuted));
+            summary.setNotExecutedRate(calculateRate(summary.getNotExecutedCount(), totalExecuted));
+        } else {
+            summary.setPassRate(BigDecimal.ZERO);
+            summary.setFailRate(BigDecimal.ZERO);
+            summary.setBlockedRate(BigDecimal.ZERO);
+            summary.setSkippedRate(BigDecimal.ZERO);
+            summary.setNotExecutedRate(BigDecimal.ZERO);
+        }
+
+        logger.info("执行摘要统计 - 通过：{}({}%)，失败：{}({}%)，阻塞：{}({}%)，跳过：{}({}%)，未执行：{}({}%)", 
+                   summary.getPassCount(), summary.getPassRate(),
+                   summary.getFailCount(), summary.getFailRate(),
+                   summary.getBlockedCount(), summary.getBlockedRate(),
+                   summary.getSkippedCount(), summary.getSkippedRate(),
+                   summary.getNotExecutedCount(), summary.getNotExecutedRate());
 
         return summary;
+    }
+
+    /**
+     * 计算比率（百分比，保留2位小数）
+     */
+    private BigDecimal calculateRate(int count, int total) {
+        if (total == 0) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimal.valueOf(count)
+                .divide(BigDecimal.valueOf(total), 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     /**
