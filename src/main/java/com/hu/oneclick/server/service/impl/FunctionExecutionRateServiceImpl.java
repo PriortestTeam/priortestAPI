@@ -72,7 +72,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
 
             // 7. 构建查询条件记录
             QueryConditionsDto queryConditions = new QueryConditionsDto();
-            queryConditions.setProjectId(projectId.toString());
+            queryConditions.setProjectId(projectId);
             queryConditions.setMajorVersion(majorVersionStr);
             queryConditions.setIncludeVersions(includeVersions);
             queryConditions.setTestCycleIds(testCycleIds);
