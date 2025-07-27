@@ -256,14 +256,15 @@
     </select>
 
     <!-- 功能执行率报表相关查询 -->
+    <!-- 根据项目ID和版本列表查询计划测试用例总数 -->
     <select id="countPlannedTestCasesByVersions" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM test_case
         WHERE project_id = #{projectId}
-        AND version IN
-        <foreach collection="versions" item="version" open="(" separator="," close=")">
-            #{version}
-        </foreach>
+          AND version IN
+          <foreach collection="versions" item="version" open="(" close=")" separator=",">
+              #{version}
+          </foreach>
     </select>
 
     <select id="countExecutedTestCasesByVersionsAndCycles" resultType="java.lang.Integer">

@@ -42,8 +42,10 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersion);
             logger.info("计划测试用例总数：{}", totalPlannedCount);
 
-        // 2. 统计实际执行数（测试用例在包含版本测试周期中的执行数，去重）
-        Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(projectId, majorVersion, includeVersions, testCycleIds);
+        logger.info("开始统计实际执行测试用例数...");
+            // 2. 统计实际执行数（测试用例在包含版本测试周期中的执行数，去重）
+            Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(projectId, majorVersion, includeVersions, testCycleIds);
+            logger.info("实际执行测试用例数：{}", actualExecutedCount);
 
         // 3. 计算执行率
         BigDecimal executionRate = BigDecimal.ZERO;
