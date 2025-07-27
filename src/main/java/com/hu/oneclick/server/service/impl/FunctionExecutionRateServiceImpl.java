@@ -1,3 +1,4 @@
+
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.dao.TestCaseDao;
@@ -9,10 +10,8 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Arrays;
 
 /**
  * 功能执行率报表服务实现
@@ -30,60 +29,56 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         try {
             Long projectId = request.getProjectId();
             String majorVersionStr = request.getMajorVersion();
-            List<String> majorVersion = Arrays.asList(majorVersionStr); // 转换为列表以适配DAO方法
+            List<String> majorVersion = Arrays.asList(majorVersionStr);
             List<String> includeVersions = request.getIncludeVersions();
             List<Long> testCycleIds = request.getTestCycleIds();
 
-            logger.info("获取功能执行率报表，项目ID：{}，主版本：{}，包含版本：{}，测试周期：{}",
+            logger.info("获取功能执行率报表，项目ID：{}，主版本：{}，包含版本：{}，测试周期：{}", 
                        projectId, majorVersionStr, includeVersions, testCycleIds);
 
             // 1. 统计计划数（主版本下所有测试用例总数）
-            logger.info("开始统计计划测试用例总数...");
             Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersion);
             logger.info("计划测试用例总数：{}", totalPlannedCount);
 
-        logger.info("开始统计实际执行测试用例数...");
-            // 2. 统计实际执行数（测试用例在包含版本测试周期中的执行数，去重）
-            Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(projectId, majorVersion, includeVersions, testCycleIds);
+            // 2. 统计实际执行数
+            Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(
+                    projectId, majorVersion, includeVersions, testCycleIds);
             logger.info("实际执行测试用例数：{}", actualExecutedCount);
 
-        // 3. 计算执行率
-        BigDecimal executionRate = BigDecimal.ZERO;
-        if (totalPlannedCount != null && totalPlannedCount > 0) {
-            executionRate = BigDecimal.valueOf(actualExecutedCount == null ? 0 : actualExecutedCount)
-                .multiply(BigDecimal.valueOf(100))
-                .divide(BigDecimal.valueOf(totalPlannedCount), 2, RoundingMode.HALF_UP);
-        }
+            // 3. 计算执行率
+            BigDecimal executionRate = BigDecimal.ZERO;
+            if (totalPlannedCount != null && totalPlannedCount > 0) {
+                executionRate = BigDecimal.valueOf(actualExecutedCount != null ? actualExecutedCount : 0)
+                        .divide(BigDecimal.valueOf(totalPlannedCount), 2, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100));
+            }
 
-        // 4. 查询详细执行信息
-        List<Map<String, Object>> executionDetailMaps = testCaseDao.queryExecutionDetails(projectId, majorVersion, includeVersions, testCycleIds);
+            // 4. 获取执行摘要
+            ExecutionSummaryDto executionSummary = getExecutionSummary(projectId, majorVersion, includeVersions, testCycleIds);
 
-        // 5. 组装执行摘要
-        ExecutionSummaryDto executionSummary = buildExecutionSummary(executionDetailMaps);
+            // 5. 获取测试周期执行详情
+            List<CycleExecutionDetailDto> cycleExecutionDetails = getCycleExecutionDetails(
+                    projectId, majorVersion, includeVersions, testCycleIds);
 
-        // 6. 组装测试周期执行详情
-        List<CycleExecutionDetailDto> cycleExecutionDetails = buildCycleExecutionDetails(executionDetailMaps);
+            // 6. 构建查询条件
+            QueryConditionsDto queryConditions = new QueryConditionsDto();
+            queryConditions.setProjectId(projectId);
+            queryConditions.setMajorVersion(majorVersionStr);
+            queryConditions.setIncludeVersions(includeVersions);
+            queryConditions.setTestCycleIds(testCycleIds);
 
-        // 7. 设置查询条件记录
-        QueryConditionsDto queryConditions = new QueryConditionsDto();
-        queryConditions.setProjectId(projectId);
-        queryConditions.setMajorVersion(majorVersionStr);
-        queryConditions.setIncludeVersions(includeVersions);
-        queryConditions.setTestCycleIds(testCycleIds);
+            // 7. 构建响应
+            FunctionExecutionRateResponseDto responseDto = new FunctionExecutionRateResponseDto();
+            responseDto.setVersions(Arrays.asList(majorVersionStr));
+            responseDto.setTotalPlannedCount(totalPlannedCount != null ? totalPlannedCount : 0);
+            responseDto.setActualExecutedCount(actualExecutedCount != null ? actualExecutedCount : 0);
+            responseDto.setExecutionRate(executionRate);
+            responseDto.setQueryConditions(queryConditions);
+            responseDto.setExecutionSummary(executionSummary);
+            responseDto.setCycleExecutionDetails(cycleExecutionDetails);
 
-        // 8. 设置响应数据
-        FunctionExecutionRateResponseDto responseDto = new FunctionExecutionRateResponseDto();
-        responseDto.setVersions(Arrays.asList(majorVersionStr));
-        responseDto.setTotalPlannedCount(totalPlannedCount == null ? 0 : totalPlannedCount);
-        responseDto.setActualExecutedCount(actualExecutedCount == null ? 0 : actualExecutedCount);
-        responseDto.setExecutionRate(executionRate);
-        responseDto.setQueryConditions(queryConditions);
-        // 设置执行摘要
-        responseDto.setExecutionSummary(executionSummary);
-        // 设置测试周期执行详情
-        responseDto.setCycleExecutionDetails(cycleExecutionDetails);
+            return responseDto;
 
-        return responseDto;
         } catch (Exception e) {
             logger.error("获取功能执行率报表失败", e);
             throw new RuntimeException("获取功能执行率报表失败：" + e.getMessage(), e);
@@ -91,89 +86,125 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
     }
 
     /**
-     * 构建测试周期执行详情列表
+     * 获取执行摘要
      */
-    private List<CycleExecutionDetailDto> buildCycleExecutionDetails(List<Map<String, Object>> executionDetailMaps) {
-        List<CycleExecutionDetailDto> cycleDetails = new ArrayList<>();
+    private ExecutionSummaryDto getExecutionSummary(Long projectId, List<String> majorVersion, 
+                                                   List<String> includeVersions, List<Long> testCycleIds) {
+        try {
+            // 获取执行详情数据
+            List<Map<String, Object>> executionDetails = testCaseDao.getExecutionDetailsByVersionsAndCycles(
+                    projectId, majorVersion, includeVersions, testCycleIds);
 
-        if (executionDetailMaps == null || executionDetailMaps.isEmpty()) {
-            return cycleDetails;
-        }
+            int passCount = 0;
+            int failCount = 0;
+            int blockedCount = 0;
+            int skippedCount = 0;
+            int notExecutedCount = 0;
 
-        // 按测试周期ID分组
-        Map<Long, List<Map<String, Object>>> groupedByTestCycle = executionDetailMaps.stream()
-                .collect(Collectors.groupingBy(map -> {
-                    Object testCycleId = map.get("testCycleId");
-                    return testCycleId != null ? Long.valueOf(testCycleId.toString()) : 0L;
-                }));
-
-        for (Map.Entry<Long, List<Map<String, Object>>> entry : groupedByTestCycle.entrySet()) {
-            Long testCycleId = entry.getKey();
-            List<Map<String, Object>> executions = entry.getValue();
-
-            if (executions.isEmpty()) {
-                continue;
+            for (Map<String, Object> detail : executionDetails) {
+                String status = (String) detail.get("executionStatus");
+                if (status == null) {
+                    notExecutedCount++;
+                } else {
+                    switch (status.toLowerCase()) {
+                        case "pass":
+                        case "passed":
+                            passCount++;
+                            break;
+                        case "fail":
+                        case "failed":
+                            failCount++;
+                            break;
+                        case "blocked":
+                            blockedCount++;
+                            break;
+                        case "skip":
+                        case "skipped":
+                            skippedCount++;
+                            break;
+                        default:
+                            notExecutedCount++;
+                            break;
+                    }
+                }
             }
 
-            Map<String, Object> firstExecution = executions.get(0);
+            ExecutionSummaryDto summary = new ExecutionSummaryDto();
+            summary.setPassCount(passCount);
+            summary.setFailCount(failCount);
+            summary.setBlockedCount(blockedCount);
+            summary.setSkippedCount(skippedCount);
+            summary.setNotExecutedCount(notExecutedCount);
 
-            CycleExecutionDetailDto cycleDto = new CycleExecutionDetailDto();
-            cycleDto.setTestCycleId(testCycleId);
-            cycleDto.setTestCycleTitle((String) firstExecution.get("testCycleTitle"));
-            cycleDto.setTestCycleEnv((String) firstExecution.get("testCycleEnv"));
-
-            // 计算该周期的总测试用例数和已执行数
-            int totalTestCases = executions.size();
-            int executedTestCases = (int) executions.stream()
-                    .filter(map -> map.get("executionStatus") != null)
-                    .count();
-
-            cycleDto.setTotalTestCases(totalTestCases);
-            cycleDto.setExecutedTestCases(executedTestCases);
-
-            // 计算执行率
-            BigDecimal executionRate = BigDecimal.ZERO;
-            if (totalTestCases > 0) {
-                executionRate = BigDecimal.valueOf(executedTestCases)
-                        .divide(BigDecimal.valueOf(totalTestCases), 2, RoundingMode.HALF_UP)
-                        .multiply(BigDecimal.valueOf(100));
-            }
-            cycleDto.setExecutionRate(executionRate);
-
-            cycleDetails.add(cycleDto);
+            return summary;
+        } catch (Exception e) {
+            logger.error("获取执行摘要失败", e);
+            return new ExecutionSummaryDto();
         }
-
-        return cycleDetails;
     }
 
     /**
-     * 构建执行摘要
+     * 获取测试周期执行详情
      */
-    private ExecutionSummaryDto buildExecutionSummary(List<Map<String, Object>> executionDetailMaps) {
-        ExecutionSummaryDto summary = new ExecutionSummaryDto();
+    private List<CycleExecutionDetailDto> getCycleExecutionDetails(Long projectId, List<String> majorVersion, 
+                                                                  List<String> includeVersions, List<Long> testCycleIds) {
+        try {
+            List<Map<String, Object>> executionDetailMaps = testCaseDao.getExecutionDetailsByVersionsAndCycles(
+                    projectId, majorVersion, includeVersions, testCycleIds);
 
-        if (executionDetailMaps == null || executionDetailMaps.isEmpty()) {
-            return summary;
+            if (executionDetailMaps == null || executionDetailMaps.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            // 按测试周期ID分组
+            Map<Long, List<Map<String, Object>>> groupedByTestCycle = executionDetailMaps.stream()
+                    .collect(Collectors.groupingBy(map -> {
+                        Object testCycleId = map.get("testCycleId");
+                        return testCycleId != null ? Long.valueOf(testCycleId.toString()) : 0L;
+                    }));
+
+            List<CycleExecutionDetailDto> cycleDetails = new ArrayList<>();
+
+            for (Map.Entry<Long, List<Map<String, Object>>> entry : groupedByTestCycle.entrySet()) {
+                Long testCycleId = entry.getKey();
+                List<Map<String, Object>> executions = entry.getValue();
+
+                if (executions.isEmpty()) {
+                    continue;
+                }
+
+                Map<String, Object> firstExecution = executions.get(0);
+
+                CycleExecutionDetailDto cycleDto = new CycleExecutionDetailDto();
+                cycleDto.setTestCycleId(testCycleId);
+                cycleDto.setTestCycleTitle((String) firstExecution.get("testCycleTitle"));
+                cycleDto.setTestCycleEnv((String) firstExecution.get("testCycleEnv"));
+
+                // 计算该周期的总测试用例数和已执行数
+                int totalTestCases = executions.size();
+                int executedTestCases = (int) executions.stream()
+                        .filter(map -> map.get("executionStatus") != null)
+                        .count();
+
+                cycleDto.setTotalTestCases(totalTestCases);
+                cycleDto.setExecutedTestCases(executedTestCases);
+
+                // 计算执行率
+                BigDecimal executionRate = BigDecimal.ZERO;
+                if (totalTestCases > 0) {
+                    executionRate = BigDecimal.valueOf(executedTestCases)
+                            .divide(BigDecimal.valueOf(totalTestCases), 2, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.valueOf(100));
+                }
+                cycleDto.setExecutionRate(executionRate);
+
+                cycleDetails.add(cycleDto);
+            }
+
+            return cycleDetails;
+        } catch (Exception e) {
+            logger.error("获取测试周期执行详情失败", e);
+            return new ArrayList<>();
         }
-
-        // 统计各种状态的数量
-        Map<String, Long> statusCounts = executionDetailMaps.stream()
-                .filter(map -> map.get("executionStatus") != null)
-                .collect(Collectors.groupingBy(
-                        map -> map.get("executionStatus").toString(),
-                        Collectors.counting()
-                ));
-
-        summary.setPassCount(statusCounts.getOrDefault("1", 0L).intValue());
-        summary.setFailCount(statusCounts.getOrDefault("2", 0L).intValue());
-        summary.setBlockedCount(statusCounts.getOrDefault("3", 0L).intValue());
-        summary.setSkippedCount(statusCounts.getOrDefault("4", 0L).intValue());
-
-        // 计算未执行数量
-        long totalExecuted = statusCounts.values().stream().mapToLong(Long::longValue).sum();
-        long totalCases = executionDetailMaps.size();
-        summary.setNotExecutedCount((int)(totalCases - totalExecuted));
-
-        return summary;
     }
 }
