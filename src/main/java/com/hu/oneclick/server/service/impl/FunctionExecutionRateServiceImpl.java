@@ -136,8 +136,62 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         }
 
         return cycleDetails;
+    }
+
+    /**
+     * 构建测试周期执行详情
+     */
+    private List<CycleExecutionDetailDto> buildCycleExecutionDetails(List<Map<String, Object>> executionDetailMaps) {
+        List<CycleExecutionDetailDto> cycleDetails = new ArrayList<>();
+        
+        if (executionDetailMaps == null || executionDetailMaps.isEmpty()) {
+            return cycleDetails;
+        }
+
+        // 按测试周期ID分组
+        Map<Long, List<Map<String, Object>>> groupedByTestCycle = executionDetailMaps.stream()
+                .collect(Collectors.groupingBy(map -> {
+                    Object testCycleId = map.get("testCycleId");
+                    return testCycleId != null ? Long.valueOf(testCycleId.toString()) : 0L;
+                }));
+
+        for (Map.Entry<Long, List<Map<String, Object>>> entry : groupedByTestCycle.entrySet()) {
+            Long testCycleId = entry.getKey();
+            List<Map<String, Object>> executions = entry.getValue();
+            
+            if (executions.isEmpty()) {
+                continue;
+            }
+
+            Map<String, Object> firstExecution = executions.get(0);
+            
+            CycleExecutionDetailDto cycleDto = new CycleExecutionDetailDto();
+            cycleDto.setTestCycleId(testCycleId);
             cycleDto.setTestCycleTitle((String) firstExecution.get("testCycleTitle"));
             cycleDto.setTestCycleEnv((String) firstExecution.get("testCycleEnv"));
+
+            // 计算该周期的总测试用例数和已执行数
+            int totalTestCases = executions.size();
+            int executedTestCases = (int) executions.stream()
+                    .filter(map -> map.get("executionStatus") != null)
+                    .count();
+
+            cycleDto.setTotalTestCases(totalTestCases);
+            cycleDto.setExecutedTestCases(executedTestCases);
+
+            // 计算执行率
+            BigDecimal executionRate = BigDecimal.ZERO;
+            if (totalTestCases > 0) {
+                executionRate = BigDecimal.valueOf(executedTestCases)
+                        .divide(BigDecimal.valueOf(totalTestCases), 2, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100));
+            }
+            cycleDto.setExecutionRate(executionRate);
+
+            cycleDetails.add(cycleDto);
+        }
+
+        return cycleDetails;
 
             Object currentRelease = firstExecution.get("currentRelease");
             cycleDto.setCurrentRelease(currentRelease != null ? Integer.valueOf(currentRelease.toString()) : 0);
