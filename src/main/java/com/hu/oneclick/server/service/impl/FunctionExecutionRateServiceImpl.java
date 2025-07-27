@@ -3,6 +3,8 @@ package com.hu.oneclick.server.service.impl;
 import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.server.service.FunctionExecutionRateService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import java.math.BigDecimal;
@@ -17,25 +19,26 @@ import java.util.stream.Collectors;
 @Service
 public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FunctionExecutionRateServiceImpl.class);
+
     @Resource
     private TestCaseDao testCaseDao;
 
     @Override
-    public FunctionExecutionRateResponseDto getFunctionExecutionRate(FunctionExecutionRateRequestDto requestDto) {
-        FunctionExecutionRateResponseDto responseDto = new FunctionExecutionRateResponseDto();
+    public FunctionExecutionRateResponseDto getFunctionExecutionRate(FunctionExecutionRateRequestDto request) {
+        Long projectId = request.getProjectId();
+        List<String> majorVersion = request.getMajorVersion();
+        List<String> includeVersions = request.getIncludeVersions();
+        List<Long> testCycleIds = request.getTestCycleIds();
 
-        // 1. 查询计划测试用例总数
-        Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(
-            requestDto.getProjectId(), 
-            requestDto.getVersions()
-        );
+        logger.info("获取功能执行率报表，项目ID：{}，主版本：{}，包含版本：{}，测试周期：{}",
+                   projectId, majorVersion, includeVersions, testCycleIds);
 
-        // 2. 查询实际执行数量
-        Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(
-            requestDto.getProjectId(),
-            requestDto.getVersions(), 
-            requestDto.getTestCycleIds()
-        );
+        // 1. 统计计划数（主版本下所有测试用例总数）
+        Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersion);
+
+        // 2. 统计实际执行数（主版本测试用例在包含版本测试周期中的执行数，去重）
+        Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(projectId, majorVersion, testCycleIds);
 
         // 3. 计算执行率
         BigDecimal executionRate = BigDecimal.ZERO;
@@ -46,11 +49,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         }
 
         // 4. 查询详细执行信息
-        List<Map<String, Object>> executionDetailMaps = testCaseDao.queryExecutionDetails(
-            requestDto.getProjectId(),
-            requestDto.getVersions(),
-            requestDto.getTestCycleIds()
-        );
+        List<Map<String, Object>> executionDetailMaps = testCaseDao.queryExecutionDetails(projectId, majorVersion, testCycleIds);
 
         // 5. 组装执行摘要
         ExecutionSummaryDto executionSummary = buildExecutionSummary(executionDetailMaps);
@@ -59,7 +58,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         List<CycleExecutionDetailDto> cycleExecutionDetails = buildCycleExecutionDetails(executionDetailMaps);
 
         // 7. 设置响应数据
-        responseDto.setVersions(requestDto.getVersions());
+        responseDto.setVersions(majorVersion);
         responseDto.setTotalPlannedCount(totalPlannedCount == null ? 0 : totalPlannedCount);
         responseDto.setActualExecutedCount(actualExecutedCount == null ? 0 : actualExecutedCount);
         responseDto.setExecutionRate(executionRate);

@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.model.domain.dto;
 
 import lombok.Data;
@@ -11,21 +10,28 @@ import java.util.List;
  */
 @Data
 public class FunctionExecutionRateRequestDto {
-    
+
     /**
      * 项目ID（必填）
      */
     @NotNull(message = "项目ID不能为空")
     private Long projectId;
-    
+
     /**
-     * 功能版本号数组（必填，支持多版本）
+     * 主版本号列表 - 用于过滤测试用例版本
      */
-    @NotEmpty(message = "版本号不能为空")
-    private List<String> versions;
-    
+    @NotEmpty(message = "主版本号不能为空")
+    private List<String> majorVersion;
+
+    /**
+     * 包含版本号列表 - 用于过滤测试周期版本
+     */
+    @NotEmpty(message = "包含版本号不能为空")
+    private List<String> includeVersions;
+
     /**
      * 测试周期ID数组（可选）
      */
     private List<Long> testCycleIds;
 }
+```
