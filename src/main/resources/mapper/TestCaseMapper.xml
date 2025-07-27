@@ -290,29 +290,26 @@
             tc.id as testCaseId,
             tc.title as testCaseTitle,
             tc.version as version,
-            CASE WHEN tcjtc.test_case_id IS NOT NULL THEN true ELSE false END as executed,
-            COUNT(tcjtc.id) as executionCount,
-            MAX(tcjtc.update_time) as lastExecutionTime,
             tcycle.id as testCycleId,
             tcycle.title as testCycleTitle,
             tcycle.env as testCycleEnv,
             tcjtc.update_time as executionTime,
-            tcjtc.run_status as executionStatus
+            tcjtc.run_status as executionStatus,
+            tcjtc.run_count as runCount
         FROM test_case tc
         LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
-        <if test="testCycleIds != null and testCycleIds.size() > 0">
-        AND tcjtc.test_cycle_id IN
-        <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">
-            #{cycleId}
-        </foreach>
-        </if>
         LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
         WHERE tc.project_id = #{projectId}
         AND tc.version IN
         <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
             #{version}
         </foreach>
-        GROUP BY tc.id, tc.title, tc.version, tcycle.id, tcycle.title, tcycle.env, tcjtc.update_time, tcjtc.run_status
+        <if test="testCycleIds != null and testCycleIds.size() > 0">
+        AND tcjtc.test_cycle_id IN
+        <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">
+            #{cycleId}
+        </foreach>
+        </if>
         ORDER BY tc.id, tcjtc.update_time DESC
     </select>
 </mapper>
