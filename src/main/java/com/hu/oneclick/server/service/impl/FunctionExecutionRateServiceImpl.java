@@ -195,8 +195,15 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
 
             // 从第一个执行记录中获取测试周期信息
             Map<String, Object> firstExecution = executions.get(0);
-            Long testCycleId = firstExecution.get("testCycleId") != null ? 
-                ((BigInteger) firstExecution.get("testCycleId")).longValue() : null;
+            Long testCycleId = null;
+            Object testCycleIdObj = firstExecution.get("testCycleId");
+            if (testCycleIdObj != null) {
+                if (testCycleIdObj instanceof BigInteger) {
+                    testCycleId = ((BigInteger) testCycleIdObj).longValue();
+                } else if (testCycleIdObj instanceof Long) {
+                    testCycleId = (Long) testCycleIdObj;
+                }
+            }
 
             if (testCycleId == null) {
                 continue;
@@ -214,10 +221,23 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
                 TestCaseExecutionDetailDto caseDetail = new TestCaseExecutionDetailDto();
 
                 // 设置测试用例基本信息
-                caseDetail.setTestCaseId(execution.get("testCaseId") != null ? 
-                    ((BigInteger) execution.get("testCaseId")).longValue() : null);
-                caseDetail.setRunCaseId(execution.get("runCaseId") != null ? 
-                    ((BigInteger) execution.get("runCaseId")).longValue() : null);
+                Object testCaseIdObj = execution.get("testCaseId");
+                if (testCaseIdObj != null) {
+                    if (testCaseIdObj instanceof BigInteger) {
+                        caseDetail.setTestCaseId(((BigInteger) testCaseIdObj).longValue());
+                    } else if (testCaseIdObj instanceof Long) {
+                        caseDetail.setTestCaseId((Long) testCaseIdObj);
+                    }
+                }
+
+                Object runCaseIdObj = execution.get("runCaseId");
+                if (runCaseIdObj != null) {
+                    if (runCaseIdObj instanceof BigInteger) {
+                        caseDetail.setRunCaseId(((BigInteger) runCaseIdObj).longValue());
+                    } else if (runCaseIdObj instanceof Long) {
+                        caseDetail.setRunCaseId((Long) runCaseIdObj);
+                    }
+                }
                 caseDetail.setTestCaseTitle((String) execution.get("testCaseTitle"));
                 caseDetail.setTestCaseVersion((String) execution.get("version"));
 
