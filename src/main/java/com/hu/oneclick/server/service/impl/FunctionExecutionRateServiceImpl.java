@@ -206,6 +206,60 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             cycleDto.setTestCycleId(testCycleId);
             cycleDto.setTestCycleTitle((String) firstExecution.get("testCycleTitle"));
             cycleDto.setTestCycleEnv((String) firstExecution.get("testCycleEnv"));
+            cycleDto.setTestCycleVersion((String) firstExecution.get("testCycleVersion"));
+
+            // 构建测试用例详情列表
+            List<TestCaseExecutionDetailDto> testCaseDetails = new ArrayList<>();
+            for (Map<String, Object> execution : executions) {
+                TestCaseExecutionDetailDto caseDetail = new TestCaseExecutionDetailDto();
+
+                // 设置测试用例基本信息
+                caseDetail.setTestCaseId(execution.get("testCaseId") != null ? 
+                    ((BigInteger) execution.get("testCaseId")).longValue() : null);
+                caseDetail.setRunCaseId(execution.get("runCaseId") != null ? 
+                    ((BigInteger) execution.get("runCaseId")).longValue() : null);
+                caseDetail.setTestCaseTitle((String) execution.get("testCaseTitle"));
+                caseDetail.setTestCaseVersion((String) execution.get("version"));
+
+                // 设置执行状态信息
+                Object runStatusObj = execution.get("executionStatus");
+                Integer runStatus = null;
+                String runStatusText = "未执行";
+
+                if (runStatusObj != null) {
+                    if (runStatusObj instanceof BigDecimal) {
+                        runStatus = ((BigDecimal) runStatusObj).intValue();
+                    } else if (runStatusObj instanceof Integer) {
+                        runStatus = (Integer) runStatusObj;
+                    }
+
+                    // 转换状态文本
+                    if (runStatus != null) {
+                        switch (runStatus) {
+                            case 1: runStatusText = "通过"; break;
+                            case 2: runStatusText = "失败"; break;
+                            case 3: runStatusText = "阻塞"; break;
+                            case 4: runStatusText = "跳过"; break;
+                            default: runStatusText = "其他"; break;
+                        }
+                    }
+                }
+
+                caseDetail.setRunStatus(runStatus);
+                caseDetail.setRunStatusText(runStatusText);
+
+                // 设置运行次数
+                Object runCountObj = execution.get("runCount");
+                if (runCountObj instanceof BigInteger) {
+                    caseDetail.setRunCount(((BigInteger) runCountObj).intValue());
+                } else if (runCountObj instanceof Integer) {
+                    caseDetail.setRunCount((Integer) runCountObj);
+                }
+
+                testCaseDetails.add(caseDetail);
+            }
+
+            cycleDto.setTestCaseDetails(testCaseDetails);
 
             // 计算该周期的总测试用例数和已执行数
             int totalTestCases = executions.size();
@@ -217,18 +271,16 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             cycleDto.setExecutedTestCases(executedTestCases);
 
             // 计算执行率
-            BigDecimal executionRate = BigDecimal.ZERO;
-            if (totalTestCases > 0) {
-                executionRate = BigDecimal.valueOf(executedTestCases)
-                        .divide(BigDecimal.valueOf(totalTestCases), 2, RoundingMode.HALF_UP)
-                        .multiply(BigDecimal.valueOf(100));
-            }
-            cycleDto.setExecutionRate(executionRate);
+            BigDecimal cycleExecutionRate = totalTestCases > 0 ? 
+                    BigDecimal.valueOf(executedTestCases)
+                            .divide(BigDecimal.valueOf(totalTestCases), 4, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.valueOf(100)) : BigDecimal.ZERO;
+            cycleDto.setExecutionRate(cycleExecutionRate);
 
             cycleDetails.add(cycleDto);
 
             logger.info("测试周期详情 - ID：{}，标题：{}，总用例：{}，已执行：{}，执行率：{}%", 
-                       testCycleId, cycleDto.getTestCycleTitle(), totalTestCases, executedTestCases, executionRate);
+                       testCycleId, cycleDto.getTestCycleTitle(), totalTestCases, executedTestCases, cycleExecutionRate);
         }
 
         return cycleDetails;
