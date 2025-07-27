@@ -1,3 +1,4 @@
+
 # 功能执行率报表分析
 
 ## 概述
@@ -12,19 +13,23 @@
 - 实际执行测试用例数统计（去重）
 - 执行率计算
 - 详细的执行历史信息
+- 执行状态分类统计
+- 测试周期执行详情
 
 ### 2. 请求参数
 ```json
 {
-    "projectId": 1874424342973054977,
-    "versions": ["2.0.0.0", "2.1.0.0"],
-    "testCycleIds": [1001, 1002, 1003]  // 可选，测试周期ID数组
+    "projectId": 885958494765715456,
+    "majorVersion": "1.0.0.0",
+    "includeVersions": ["1.0.0.0"],
+    "testCycleIds": [1001, 1002, 1003]
 }
 ```
 
 #### 参数说明
 - **projectId**: 项目ID（必填）
-- **versions**: 功能版本号数组（必填，可以是1个或多个版本）
+- **majorVersion**: 主版本号，用于过滤测试用例版本（必填）
+- **includeVersions**: 包含的版本列表，用于过滤测试周期版本（必填）
 - **testCycleIds**: 测试周期ID数组（可选）
   - 为空或null：统计所有测试周期中的执行记录
   - 有值：只统计指定测试周期中的执行记录，支持多个周期
@@ -32,387 +37,569 @@
 ### 3. 返回结果设计
 ```json
 {
-    "versions": ["2.0.0.0", "2.1.0.0"],
+    "versions": ["1.0.0.0"],
     "totalPlannedCount": 150,
     "actualExecutedCount": 120,
     "executionRate": 80.0,
-    "executionDetails": [
+    "queryConditions": {
+        "projectId": 885958494765715456,
+        "majorVersion": "1.0.0.0",
+        "includeVersions": ["1.0.0.0"],
+        "testCycleIds": [1001, 1002, 1003]
+    },
+    "executionSummary": {
+        "passCount": 45,
+        "failCount": 25,
+        "blockedCount": 30,
+        "skippedCount": 10,
+        "notExecutedCount": 40
+    },
+    "cycleExecutionDetails": [
         {
             "testCaseId": 123,
             "testCaseTitle": "登录功能测试",
-            "version": "2.0.0.0",
-            "isExecuted": true,
-            "lastExecutionTime": "2025-01-15 10:30:00",
-            "executionCount": 3,
-            "executionCycles": [
-                {
-                    "testCycleId": 1001,
-                    "testCycleTitle": "开发测试周期",
-                    "testCycleEnv": "dev",
-                    "executionTime": "2025-01-13 09:00:00",
-                    "executionStatus": 1,
-                    "executionStatusText": "PASS"
-                },
-                {
-                    "testCycleId": 1002,
-                    "testCycleTitle": "集成测试周期", 
-                    "testCycleEnv": "test",
-                    "executionTime": "2025-01-14 14:30:00",
-                    "executionStatus": 2,
-                    "executionStatusText": "FAIL"
-                },
-                {
-                    "testCycleId": 1003,
-                    "testCycleTitle": "回归测试周期",
-                    "testCycleEnv": "prod", 
-                    "executionTime": "2025-01-15 10:30:00",
-                    "executionStatus": 0.1,
-                    "executionStatusText": "CASE_NEED_MODIFY"
-                }
-            ]
+            "version": "1.0.0.0",
+            "testCycleId": 1001,
+            "testCycleTitle": "测试周期-Win",
+            "testCycleEnv": "dev",
+            "testCycleVersion": "1.0.0.0",
+            "executionTime": "2025-01-15 10:30:00",
+            "executionStatus": 1,
+            "runCount": 3,
+            "runCaseId": 5001
         }
     ]
 }
 ```
 
-### 4. 字段说明
-- **testCycleId**: 测试周期ID
-- **testCycleTitle**: 测试周期标题名称
-- **testCycleEnv**: 测试周期环境（dev/test/prod等）
-- **executionTime**: 在该周期中的执行时间
-- **executionStatus**: 执行状态，详见下方状态码定义
-
-### 5. 执行状态码定义 (run_status)
+### 4. 执行状态码定义 (run_status)
 系统中的测试执行状态使用数字编码，具体定义如下：
 
-| 状态码 | 状态名称 | 英文标识 | 说明 |
-|--------|----------|----------|------|
-| 0 | 无效/N/A | INVALID | 测试数据无效或不适用（通用） |
-| 0.1 | 用例需修改 | CASE_NEED_MODIFY | 测试中发现用例逻辑有问题，需要修改 |
-| 0.2 | 环境不支持 | ENV_NOT_SUPPORT | 当前测试环境不支持此用例执行 |
-| 0.3 | 条件未就绪 | CONDITION_NOT_READY | 测试用例可测试，但相关条件尚未完全就绪 |
-| 1 | 通过 | PASS | 测试执行成功，结果符合预期 |
-| 2 | 失败 | FAIL | 测试执行失败，发现缺陷或问题 |
-| 3 | 跳过 | SKIP | 测试被主动跳过，未执行 |
-| 4 | 阻塞 | BLOCKED | 测试被阻塞，无法继续执行（通用） |
-| 4.1 | 环境阻塞 | ENV_BLOCKED | 测试环境问题导致无法执行 |
-| 4.2 | 数据阻塞 | DATA_BLOCKED | 测试数据未准备好导致无法执行 |
-| 4.3 | 依赖阻塞 | DEPENDENCY_BLOCKED | 依赖功能或服务问题导致无法执行 |
-| 4.4 | 缺陷阻塞 | BUG_BLOCKED | 发现的缺陷阻塞了测试继续进行 |
-| 4.5 | 第三方阻塞 | THIRD_PARTY_BLOCKED | 第三方系统或服务问题导致无法执行 |
-| 5 | 未执行 | NO_RUN | 测试尚未开始执行 |
-| 6 | 未完成 | NOT_COMPLETED | 测试开始但未完成执行 |
+| 状态码 | 状态名称 | 英文标识 | 分类 | 说明 |
+|--------|----------|----------|------|------|
+| 1 | 通过 | PASS | EXECUTED | 测试执行成功，结果符合预期 |
+| 2 | 失败 | FAIL | EXECUTED | 测试执行失败，发现缺陷或问题 |
+| 3 | 跳过 | SKIP | EXECUTED | 测试被主动跳过，未执行 |
+| 4 | 阻塞 | BLOCKED | EXECUTED | 测试被阻塞，无法继续执行 |
+| 5 | 未执行 | NO_RUN | NOT_EXECUTED | 测试尚未开始执行 |
+| 6 | 未完成 | NOT_COMPLETED | NOT_EXECUTED | 测试开始但未完成执行 |
 
-#### 状态码 0 系列详细说明（测试用例本身的问题）
-- **0.1 用例需修改**: 在测试过程中发现测试用例本身存在问题，如步骤不合理、预期结果错误等，需要修改用例后再执行
-- **0.2 环境不支持**: 当前测试环境架构上不支持该用例执行（如移动端用例在PC环境）
-- **0.3 条件未就绪**: 测试用例设计时的前提条件在当前版本中尚未实现
+#### 执行状态分类逻辑
+- **已执行状态**: 状态码为 1(PASS)、2(FAIL)、3(SKIP)、4(BLOCKED) 的测试用例被认为是"已执行"
+- **未执行状态**: 状态码为 5(NO_RUN)、6(NOT_COMPLETED) 或 null 的测试用例被认为是"未执行"
 
-#### 状态码 4 系列详细说明（外部因素导致的阻塞）
-- **4.1 环境阻塞**: 测试环境故障、配置错误、服务不可用等环境问题
-- **4.2 数据阻塞**: 测试数据缺失、数据库连接问题、数据权限问题等
-- **4.3 依赖阻塞**: 上游功能未完成、依赖服务异常、API不可用等
-- **4.4 缺陷阻塞**: 发现严重缺陷，阻止后续测试步骤继续执行
-- **4.5 第三方阻塞**: 第三方系统维护、网络问题、外部API限制等
+## 核心实现逻辑
 
-### 6. 执行状态说明
-- **计算执行率时的处理**: 只有状态码为 1(PASS)、2(FAIL)、3(SKIP)、4及其子状态(4, 4.1, 4.2, 4.3, 4.4, 4.5) 的测试用例才被认为是"已执行"
-- **未执行状态**: 状态码为 0及其子状态(0, 0.1, 0.2, 0.3)、5(NO_RUN)、6(NOT_COMPLETED) 的测试用例被认为是"未执行"
-- **去重原则**: 同一个测试用例在多个测试周期中执行时，以最新的执行状态为准
+### 1. 计划数统计逻辑
+**目标**: 统计指定项目和主版本下的测试用例总数
 
-#### 状态码分界线说明
-**无效状态(0系列) vs 阻塞状态(4系列)的区分原则**:
-- **无效状态**: 问题根源在测试用例本身或测试设计层面
-- **阻塞状态**: 问题根源在外部环境、系统或流程层面
-
-#### 责任归属和解决方案
-
-**无效状态(0系列) - 测试团队内部需要解决**:
-- **0.1 用例需修改**: 测试用例设计问题，需要测试团队重新设计用例逻辑
-- **0.2 环境不支持**: 测试策略问题，需要测试团队调整测试范围或选择合适环境
-- **0.3 条件未就绪**: 测试范围定义问题，需要测试团队重新评估测试时机
-
-**阻塞状态(4系列) - 需要外部团队配合解决**:
-- **4.1 环境阻塞**: 需要运维团队修复环境、配置服务
-- **4.2 数据阻塞**: 需要运维团队或开发团队准备测试数据
-- **4.3 依赖阻塞**: 需要开发团队完善上游功能或依赖服务
-- **4.4 缺陷阻塞**: 需要开发团队修复阻塞性缺陷
-- **4.5 第三方阻塞**: 需要产品团队协调第三方支持或调整优先级
-
-**细分状态码的价值**: 
-- **清晰责任归属**: 明确问题是测试团队内部还是外部因素
-- **精准问题定位**: 快速识别需要哪个团队或角色来解决
-- **避免重复工作**: 标记清楚后避免重复检查
-- **高效沟通**: 向管理层汇报时提供精确的数据分析和责任分工
-- **针对性解决**: 根据问题类型采取相应的解决策略和跨团队协作
-
-## 计算公式
-
-**功能执行率 = (实际执行数 ÷ 计划数) × 100%**
-
-### 术语说明
-- **计划数(totalPlannedCount)**: 该功能版本下所有测试用例总数
-- **实际执行数(actualExecutedCount)**: 该功能版本下已执行的测试用例数（去重）
-- **去重**: 一个测试用例在多个测试周期中执行，只计算一次
-
-## 核心计算逻辑
-
-### 1. 计划数统计
+**SQL实现**:
 ```sql
-SELECT COUNT(DISTINCT tc.id) as planned_count
+SELECT COUNT(*)
+FROM test_case
+WHERE project_id = #{projectId}
+  AND version = #{majorVersion}
+```
+
+**Java实现**:
+```java
+Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersionStr);
+```
+
+### 2. 已执行数统计逻辑（去重）
+**目标**: 统计已执行的测试用例数，同一用例在多个周期中执行只计算一次
+
+**SQL实现**:
+```sql
+SELECT COUNT(DISTINCT tc.id)
 FROM test_case tc
-WHERE tc.version IN (#{versions})
-  AND tc.project_id = #{projectId}
+JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
+JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
+WHERE tc.project_id = #{projectId}
+AND tc.version = #{majorVersion}
+AND tcycle.version IN ('1.0.0.0', '1.1.0.0', ...)
+AND tcjtc.run_status IN (1, 2, 3, 4)  -- 只统计已执行状态
+[AND tcjtc.test_cycle_id IN (1001, 1002, ...)] -- 可选的周期过滤
 ```
 
-### 2. 实际执行数统计（去重）
-```sql
-SELECT COUNT(DISTINCT tcjtc.test_case_id) as executed_count
-FROM test_cycle_join_test_case tcjtc
-JOIN test_case tc ON tcjtc.test_case_id = tc.id
-WHERE tc.version IN (#{versions})
-  AND tc.project_id = #{projectId}
-  AND (tcjtc.run_status IN (1, 2, 3, 4) 
-       OR tcjtc.run_status BETWEEN 4.1 AND 4.5)  -- 统计已执行状态：PASS, FAIL, SKIP, BLOCKED及其子状态
-  AND tcjtc.run_status NOT IN (0, 0.1, 0.2, 0.3, 5, 6)  -- 排除未执行状态
-  <if test="testCycleIds != null and testCycleIds.size() > 0">
-    AND tcjtc.test_cycle_id IN 
-    <foreach collection="testCycleIds" item="testCycleId" open="(" close=")" separator=",">
-      #{testCycleId}
-    </foreach>
-  </if>
+**关键点**:
+- 使用 `DISTINCT tc.id` 确保同一用例只计算一次
+- 必须 JOIN `test_cycle` 表进行版本过滤
+- 使用 `INNER JOIN` 而不是 `LEFT JOIN` 避免空值问题
+- 只统计 `run_status IN (1, 2, 3, 4)` 的已执行记录
+
+### 3. 执行率计算逻辑
+
+**计算公式**:
+```java
+BigDecimal executionRate = BigDecimal.ZERO;
+if (totalPlannedCount != null && totalPlannedCount > 0) {
+    executionRate = new BigDecimal(actualExecutedCount)
+        .divide(new BigDecimal(totalPlannedCount), 2, RoundingMode.HALF_UP)
+        .multiply(new BigDecimal(100));
+}
 ```
 
-### 3. 详细执行历史查询（支持可选测试周期过滤）
+**关键点**:
+- 避免除零错误
+- 使用 `BigDecimal` 确保精度
+- `HALF_UP` 舍入模式
+- 保留2位小数
+
+### 4. 详细执行历史查询逻辑
+
+**目标**: 获取所有测试用例的执行详情，包括未执行的用例
+
+**SQL实现**:
 ```sql
 SELECT 
     tc.id as testCaseId,
     tc.title as testCaseTitle,
-    tc.version,
-    COUNT(tcjtc.id) as executionCount,
-    MAX(tcjtc.execution_time) as lastExecutionTime
+    tc.version as version,
+    tcycle.id as testCycleId,
+    tcycle.title as testCycleTitle,
+    tcycle.env as testCycleEnv,
+    tcycle.version as testCycleVersion,
+    tcjtc.update_time as executionTime,
+    tcjtc.run_status as executionStatus,
+    tcjtc.run_count as runCount,
+    tcjtc.id as runCaseId
 FROM test_case tc
 LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
-    <if test="testCycleIds != null and testCycleIds.size() > 0">
-      AND tcjtc.test_cycle_id IN 
-      <foreach collection="testCycleIds" item="testCycleId" open="(" close=")" separator=",">
-        #{testCycleId}
+INNER JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id 
+WHERE tc.project_id = #{projectId}
+  AND tc.version = #{majorVersion}
+  AND tcycle.version IN ('1.0.0.0', '1.1.0.0', ...)
+  [AND tcjtc.test_cycle_id IN (1001, 1002, ...)] -- 可选
+ORDER BY tc.id, tcjtc.update_time DESC
+```
+
+**关键修复**:
+- 使用 `INNER JOIN test_cycle` 而不是 `LEFT JOIN`
+- 将版本条件放在 `WHERE` 子句中，不在 `ON` 子句中
+- 这样避免了返回不匹配版本的NULL记录
+
+### 5. 执行状态分类统计逻辑
+
+**目标**: 统计各种执行状态的数量
+
+**Java实现**:
+```java
+private ExecutionSummaryDto buildExecutionSummary(List<Map<String, Object>> executionDetailMaps) {
+    ExecutionSummaryDto summary = new ExecutionSummaryDto();
+    
+    // 按状态分组统计
+    Map<StatusCategory, Long> statusCounts = executionDetailMaps.stream()
+        .collect(Collectors.groupingBy(
+            map -> getStatusCategory(map.get("executionStatus")),
+            Collectors.counting()
+        ));
+    
+    // 设置各状态数量
+    summary.setPassCount(statusCounts.getOrDefault(StatusCategory.PASS, 0L).intValue());
+    summary.setFailCount(statusCounts.getOrDefault(StatusCategory.FAIL, 0L).intValue());
+    summary.setBlockedCount(statusCounts.getOrDefault(StatusCategory.BLOCKED, 0L).intValue());
+    summary.setSkippedCount(statusCounts.getOrDefault(StatusCategory.SKIP, 0L).intValue());
+    summary.setNotExecutedCount(statusCounts.getOrDefault(StatusCategory.NOT_EXECUTED, 0L).intValue());
+    
+    return summary;
+}
+```
+
+**状态分类映射**:
+```java
+private StatusCategory getStatusCategory(Object statusObj) {
+    if (statusObj == null) {
+        return StatusCategory.NOT_EXECUTED;
+    }
+    
+    Integer status;
+    if (statusObj instanceof BigInteger) {
+        status = ((BigInteger) statusObj).intValue();
+    } else if (statusObj instanceof Integer) {
+        status = (Integer) statusObj;
+    } else {
+        return StatusCategory.NOT_EXECUTED;
+    }
+    
+    switch (status) {
+        case 1: return StatusCategory.PASS;
+        case 2: return StatusCategory.FAIL;
+        case 3: return StatusCategory.SKIP;
+        case 4: return StatusCategory.BLOCKED;
+        case 5:
+        case 6:
+        default: return StatusCategory.NOT_EXECUTED;
+    }
+}
+```
+
+### 6. 测试周期执行详情构建逻辑
+
+**目标**: 构建按测试用例分组的执行详情列表
+
+**Java实现**:
+```java
+private List<CycleExecutionDetailDto> buildCycleExecutionDetails(List<Map<String, Object>> executionDetailMaps) {
+    return executionDetailMaps.stream()
+        .map(this::mapToCycleExecutionDetail)
+        .collect(Collectors.toList());
+}
+
+private CycleExecutionDetailDto mapToCycleExecutionDetail(Map<String, Object> map) {
+    CycleExecutionDetailDto detail = new CycleExecutionDetailDto();
+    
+    // 基本信息映射
+    detail.setTestCaseId(getLongValue(map.get("testCaseId")));
+    detail.setTestCaseTitle(getStringValue(map.get("testCaseTitle")));
+    detail.setVersion(getStringValue(map.get("version")));
+    
+    // 测试周期信息
+    detail.setTestCycleId(getLongValue(map.get("testCycleId")));
+    detail.setTestCycleTitle(getStringValue(map.get("testCycleTitle")));
+    detail.setTestCycleEnv(getStringValue(map.get("testCycleEnv")));
+    detail.setTestCycleVersion(getStringValue(map.get("testCycleVersion")));
+    
+    // 执行信息
+    detail.setExecutionTime(getStringValue(map.get("executionTime")));
+    detail.setExecutionStatus(getIntegerValue(map.get("executionStatus")));
+    detail.setRunCount(getIntegerValue(map.get("runCount")));
+    detail.setRunCaseId(getLongValue(map.get("runCaseId")));
+    
+    return detail;
+}
+```
+
+### 7. 数据类型转换处理
+
+**问题**: MyBatis查询结果中的数值可能是 `BigInteger` 类型
+
+**解决方案**:
+```java
+private Long getLongValue(Object obj) {
+    if (obj == null) return null;
+    if (obj instanceof BigInteger) {
+        return ((BigInteger) obj).longValue();
+    } else if (obj instanceof Long) {
+        return (Long) obj;
+    } else if (obj instanceof Integer) {
+        return ((Integer) obj).longValue();
+    }
+    return null;
+}
+
+private Integer getIntegerValue(Object obj) {
+    if (obj == null) return null;
+    if (obj instanceof BigInteger) {
+        return ((BigInteger) obj).intValue();
+    } else if (obj instanceof Integer) {
+        return (Integer) obj;
+    } else if (obj instanceof Long) {
+        return ((Long) obj).intValue();
+    }
+    return null;
+}
+
+private String getStringValue(Object obj) {
+    return obj != null ? obj.toString() : null;
+}
+```
+
+## 核心SQL查询分析
+
+### 1. 修复前的问题SQL
+```sql
+-- 问题SQL：LEFT JOIN + 条件在ON子句中
+LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id 
+    AND tcycle.version IN ('1.0.0.0')
+```
+
+**问题**:
+- `LEFT JOIN` 会返回左表所有记录，即使右表不匹配
+- 条件在 `ON` 子句中只影响JOIN结果，不过滤最终结果
+- 导致返回版本不匹配的NULL记录
+
+### 2. 修复后的正确SQL
+```sql
+-- 正确SQL：INNER JOIN + 条件在WHERE子句中
+INNER JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id 
+WHERE tc.project_id = #{projectId}
+  AND tc.version = #{majorVersion}
+  AND tcycle.version IN ('1.0.0.0')
+```
+
+**优势**:
+- `INNER JOIN` 只返回两表都匹配的记录
+- 条件在 `WHERE` 子句中进行最终过滤
+- 避免NULL值和错误统计
+
+### 3. 完整的查询执行详情SQL
+```xml
+<select id="queryExecutionDetails" resultType="java.util.Map">
+    SELECT 
+        tc.id as testCaseId,
+        tc.title as testCaseTitle,
+        tc.version as version,
+        tcycle.id as testCycleId,
+        tcycle.title as testCycleTitle,
+        tcycle.env as testCycleEnv,
+        tcycle.version as testCycleVersion,
+        tcjtc.update_time as executionTime,
+        tcjtc.run_status as executionStatus,
+        tcjtc.run_count as runCount,
+        tcjtc.id as runCaseId
+    FROM test_case tc
+    LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
+    INNER JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id 
+    WHERE tc.project_id = #{projectId}
+      AND tc.version = #{majorVersion}
+      AND tcycle.version IN 
+      <foreach collection="includeVersions" item="version" open="(" close=")" separator=",">
+          #{version}
       </foreach>
-    </if>
-WHERE tc.version IN (#{versions})
-  AND tc.project_id = #{projectId}
-GROUP BY tc.id, tc.title, tc.version
+      <if test="testCycleIds != null and testCycleIds.size() > 0">
+        AND tcjtc.test_cycle_id IN 
+        <foreach collection="testCycleIds" item="testCycleId" open="(" close=")" separator=",">
+            #{testCycleId}
+        </foreach>
+      </if>
+    ORDER BY tc.id, tcjtc.update_time DESC
+</select>
 ```
 
-## 数据结构分析
+## 业务场景与数据流
 
-### 核心表结构
-1. **test_case表** - 存储测试用例，有version字段和project_id字段
-2. **test_cycle表** - 存储测试周期信息
-3. **test_cycle_join_test_case表** - 存储测试执行记录
+### 1. 典型查询场景
 
-### 关系说明
-- Test Case → Execution: 一对多关系（一个用例可在多个周期执行）
-
-## API设计
-
-### 接口路径
-- `POST /api/versionQualityReport/functionExecutionRate`
-
-### 请求参数
+**场景1: 查询项目整体执行情况**
 ```json
 {
-    "projectId": 1874424342973054977,
-    "versions": ["2.0.0.0", "2.1.0.0"],
-    "startDate": "2025-01-01",  // 可选参数
-    "endDate": "2025-01-31"     // 可选参数
+    "projectId": 885958494765715456,
+    "majorVersion": "1.0.0.0",
+    "includeVersions": ["1.0.0.0"]
 }
 ```
 
-#### 可选参数示例
-**不带测试周期限制的查询**:
+**场景2: 查询特定测试周期执行情况**
 ```json
 {
-    "projectId": 1874424342973054977,
-    "versions": ["2.0.0.0"]
+    "projectId": 885958494765715456,
+    "majorVersion": "1.0.0.0",
+    "includeVersions": ["1.0.0.0"],
+    "testCycleIds": [1001, 1002]
 }
 ```
 
-**指定单个测试周期的查询**:
-```json
-{
-    "projectId": 1874424342973054977,
-    "versions": ["2.0.0.0"],
-    "testCycleIds": [1001]
+### 2. 数据流处理过程
+
+1. **参数验证** → 检查必填字段
+2. **计划数查询** → 统计测试用例总数
+3. **已执行数查询** → 统计去重后的执行数
+4. **执行率计算** → 计算百分比
+5. **详情查询** → 获取执行历史
+6. **状态统计** → 分类统计各状态数量
+7. **详情构建** → 构建响应对象
+8. **结果返回** → 返回完整报表
+
+### 3. 去重逻辑说明
+
+**问题**: 同一测试用例可能在多个测试周期中执行
+**解决**: 使用 `COUNT(DISTINCT tc.id)` 确保同一用例只计算一次
+**场景**:
+- 用例A在"开发测试"周期执行 → 状态为PASS
+- 用例A在"集成测试"周期执行 → 状态为FAIL
+- 最终统计: 用例A算作1个已执行用例
+
+## 性能优化建议
+
+### 1. 数据库索引
+```sql
+-- 建议创建的索引
+CREATE INDEX idx_test_case_project_version ON test_case(project_id, version);
+CREATE INDEX idx_tcjtc_case_cycle ON test_cycle_join_test_case(test_case_id, test_cycle_id);
+CREATE INDEX idx_tcjtc_status ON test_cycle_join_test_case(run_status);
+CREATE INDEX idx_test_cycle_version ON test_cycle(version);
+```
+
+### 2. 查询优化
+- 使用合适的JOIN类型
+- 避免不必要的LEFT JOIN
+- 合理使用WHERE条件过滤
+- 分页查询大数据量
+
+### 3. 缓存策略
+- 对于不经常变化的版本数据可以使用缓存
+- 缓存计划数统计结果
+- 定期刷新缓存
+
+## 错误处理与边界情况
+
+### 1. 空数据处理
+```java
+// 处理空的计划数
+Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersionStr);
+if (totalPlannedCount == null) {
+    totalPlannedCount = 0;
+}
+
+// 处理空的执行数
+Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(...);
+if (actualExecutedCount == null) {
+    actualExecutedCount = 0;
 }
 ```
 
-**指定多个测试周期的查询**:
-```json
-{
-    "projectId": 1874424342973054977,
-    "versions": ["2.0.0.0"],
-    "testCycleIds": [1001, 1002, 1003]
+### 2. 除零错误处理
+```java
+BigDecimal executionRate = BigDecimal.ZERO;
+if (totalPlannedCount != null && totalPlannedCount > 0) {
+    executionRate = new BigDecimal(actualExecutedCount)
+        .divide(new BigDecimal(totalPlannedCount), 2, RoundingMode.HALF_UP)
+        .multiply(new BigDecimal(100));
 }
 ```
 
-### 响应格式
-
-#### 成功响应格式
-```json
-{
-  "success": true,
-  "data": {
-    "versions": ["2.0.0.0", "2.1.0.0"],
-    "totalPlannedCount": 150,
-    "actualExecutedCount": 120,
-    "executionRate": 80.0,
-    "queryConditions": {
-      "projectId": 1874424342973054977,
-      "versions": ["2.0.0.0", "2.1.0.0"],
-      "testCycleIds": [1001, 1002, 1003]
-    },
-    "executionSummary": {
-      "totalTestCases": 150,
-      "executedTestCases": 120,
-      "notExecutedTestCases": 30,
-      "executionCycles": 5
-    },
-    "executionDetails": [
-      {
-        "testCaseId": 123,
-        "testCaseTitle": "登录功能测试",
-        "version": "2.0.0.0",
-        "isExecuted": true,
-        "lastExecutionTime": "2025-01-15 10:30:00",
-        "executionCount": 3,
-        "executionStatus": 1,
-        "executionCycles": [
-          {
-            "testCycleId": 1001,
-            "testCycleTitle": "开发测试周期",
-            "testCycleEnv": "dev",
-            "executionTime": "2025-01-13 09:00:00",
-            "executionStatus": 1
-          },
-          {
-            "testCycleId": 1002,
-            "testCycleTitle": "集成测试周期", 
-            "testCycleEnv": "test",
-            "executionTime": "2025-01-14 14:30:00",
-            "executionStatus": 2
-          }
-        ]
-      },
-      {
-        "testCaseId": 124,
-        "testCaseTitle": "密码重置功能",
-        "version": "2.0.0.0",
-        "isExecuted": false,
-        "lastExecutionTime": null,
-        "executionCount": 0,
-        "executionStatus": 0,
-        "executionCycles": []
-      }
-    ]
-  }
+### 3. 数据类型转换异常处理
+```java
+private Integer getIntegerValue(Object obj) {
+    if (obj == null) return null;
+    try {
+        if (obj instanceof BigInteger) {
+            return ((BigInteger) obj).intValue();
+        } else if (obj instanceof Integer) {
+            return (Integer) obj;
+        } else if (obj instanceof Long) {
+            return ((Long) obj).intValue();
+        }
+    } catch (Exception e) {
+        logger.warn("转换整数值失败: {}", obj, e);
+    }
+    return null;
 }
 ```
 
-#### 错误响应格式
+## API接口规范
+
+### 1. 接口路径
+```
+POST /versionQualityReport/functionExecutionRate
+```
+
+### 2. 请求头
+```
+Content-Type: application/json
+Authorization: Bearer <token>
+```
+
+### 3. 成功响应格式
 ```json
 {
-  "success": false,
-  "code": "INVALID_PARAMETER",
-  "message": "项目ID不能为空",
-  "data": null
+    "success": true,
+    "code": 200,
+    "message": "查询成功",
+    "data": {
+        "versions": ["1.0.0.0"],
+        "totalPlannedCount": 150,
+        "actualExecutedCount": 120,
+        "executionRate": 80.00,
+        "queryConditions": {...},
+        "executionSummary": {...},
+        "cycleExecutionDetails": [...]
+    }
 }
 ```
 
-#### 无数据响应格式
+### 4. 错误响应格式
 ```json
 {
-  "success": true,
-  "data": {
-    "versions": ["3.0.0.0"],
-    "totalPlannedCount": 0,
-    "actualExecutedCount": 0,
-    "executionRate": 0.0,
-    "queryConditions": {
-      "projectId": 1874424342973054977,
-      "versions": ["3.0.0.0"],
-      "testCycleIds": null
-    },
-    "message": "未找到指定版本的测试用例"
-  }
+    "success": false,
+    "code": 400,
+    "message": "项目ID不能为空",
+    "data": null
 }
 ```
 
-## 测试周期参数使用场景
+## 日志记录规范
 
-### 1. 不传测试周期参数（testCycleIds为空）
-**使用场景**: 查看功能版本的整体测试执行情况
-- 统计所有测试周期中的执行记录
-- 适用于整体质量评估和完整的测试覆盖分析
+### 1. 关键节点日志
+```java
+logger.info("查询参数 - 项目ID：{}，主版本：{}，包含版本：{}，测试周期：{}", 
+           projectId, majorVersionStr, includeVersions, testCycleIds);
 
-### 2. 传入单个测试周期ID
-**使用场景**: 查看特定测试周期的执行情况
-- 统计指定测试周期中的执行记录
-- 适用于单个周期的质量分析和问题定位
+logger.info("SQL查询计划数 - 使用版本：{}，结果：{}", majorVersionStr, totalPlannedCount);
 
-### 3. 传入多个测试周期ID
-**使用场景**: 查看跨多个测试周期的执行情况
-- 统计指定多个周期中的执行记录（去重）
-- 适用于阶段性质量报告和周期对比分析
+logger.info("SQL查询执行数 - 参数：版本={}，周期={}，结果：{}", 
+           majorVersionStr, testCycleIds, actualExecutedCount);
 
-## 业务价值
+logger.info("最终响应数据 - 计划：{}，执行：{}，执行率：{}%，周期详情数量：{}", 
+           totalPlannedCount, actualExecutedCount, executionRate, cycleDetailsSize);
+```
 
-### 核心问题解答
-- **"2.0.0.0新功能测试执行得怎么样？"**
-- **"跨版本的功能测试完成度如何？"**
-- **"哪些测试用例还没有执行？"**
-- **"测试用例在不同环境的执行情况如何？"**
+### 2. 异常日志
+```java
+try {
+    // 业务逻辑
+} catch (Exception e) {
+    logger.error("获取功能执行率报表失败，项目ID：{}，版本：{}，原因：{}", 
+                projectId, majorVersionStr, e.getMessage(), e);
+    throw new RuntimeException("查询功能执行率失败", e);
+}
+```
 
-### 质量评级标准
-- **优秀 (95%+)**: 测试执行非常充分，质量风险极低
-- **良好 (85-94%)**: 测试执行较为充分，质量风险较低
+## 测试验证方案
+
+### 1. 单元测试用例
+- 测试计划数统计正确性
+- 测试执行数去重逻辑
+- 测试执行率计算精度
+- 测试状态分类统计
+- 测试边界条件处理
+
+### 2. 集成测试用例
+- 测试完整查询流程
+- 测试不同参数组合
+- 测试大数据量性能
+- 测试并发访问
+
+### 3. 数据验证
+- 手工验证统计数据准确性
+- 对比数据库直接查询结果
+- 验证去重逻辑有效性
+
+## 质量评级标准
+
+### 1. 执行率评级
+- **优秀 (≥95%)**: 测试执行非常充分，质量风险极低
+- **良好 (85-94%)**: 测试执行较为充分，质量风险较低  
 - **一般 (70-84%)**: 测试执行基本达标，存在一定质量风险
 - **较差 (<70%)**: 测试执行不足，存在较高质量风险
 
-### 执行状态分布分析
-除了整体执行率，还应关注执行状态的分布：
+### 2. 状态分布分析
 - **PASS比例**: 反映功能质量稳定性
 - **FAIL比例**: 反映当前存在的问题数量
 - **BLOCKED比例**: 反映测试环境或依赖问题
 - **SKIP比例**: 反映测试策略的合理性
-- **无效状态细分统计**:
-  - **用例需修改(0.1)比例**: 反映测试用例设计质量问题
-  - **环境不支持(0.2)比例**: 反映测试环境架构匹配问题
-  - **条件未就绪(0.3)比例**: 反映功能开发进度问题
-- **阻塞状态细分统计**:
-  - **环境阻塞(4.1)比例**: 反映测试环境稳定性问题
-  - **数据阻塞(4.2)比例**: 反映测试数据管理问题
-  - **依赖阻塞(4.3)比例**: 反映系统集成和依赖管理问题
-  - **缺陷阻塞(4.4)比例**: 反映产品质量对测试进度的影响
-  - **第三方阻塞(4.5)比例**: 反映外部依赖的稳定性问题
+- **未执行比例**: 反映测试覆盖完整性
 
-## 实现要点
+## 实现要点总结
 
-### 1. 去重策略
-- 使用Set集合自动去重
-- SQL层面使用DISTINCT
-- 记录详细的执行历史
+### 1. 核心技术点
+- MyBatis动态SQL构建
+- 数据类型安全转换
+- BigDecimal精确计算
+- 流式数据处理
+- 异常安全处理
 
-### 2. 性能优化
-- 合理使用索引
-- 分步查询避免复杂JOIN
-- 缓存常用查询结果
+### 2. 关键业务逻辑
+- 测试用例去重统计
+- 执行状态分类映射
+- 版本过滤条件处理
+- 测试周期可选过滤
 
-### 3. 数据完整性
-- 处理空数据情况
-- 提供详细的执行轨迹信息
+### 3. 数据完整性保证
+- NULL值安全处理
+- 除零错误避免
+- 类型转换异常处理
+- 边界条件验证
 
-### 4. 详细执行信息
-- 提供每个测试用例的执行历史
-- 记录测试周期环境信息
-- 支持多周期执行状态追踪
+通过以上完整的实现逻辑和技术细节，确保功能执行率报表的准确性、性能和可维护性。
