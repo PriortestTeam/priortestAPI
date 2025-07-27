@@ -4,6 +4,7 @@ import lombok.Data;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * 功能执行率报表请求参数DTO
@@ -24,9 +25,9 @@ public class FunctionExecutionRateRequestDto {
     private List<String> majorVersion;
 
     /**
-     * 包含版本号列表 - 用于过滤测试周期版本
+     * 包含的版本列表 - 用于过滤测试周期
      */
-    @NotEmpty(message = "包含版本号不能为空")
+    @Schema(description = "包含的版本列表，用于过滤测试周期")
     private List<String> includeVersions;
 
     /**
@@ -34,4 +35,3 @@ public class FunctionExecutionRateRequestDto {
      */
     private List<Long> testCycleIds;
 }
-```

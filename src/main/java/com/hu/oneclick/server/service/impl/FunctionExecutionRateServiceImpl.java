@@ -58,6 +58,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         List<CycleExecutionDetailDto> cycleExecutionDetails = buildCycleExecutionDetails(executionDetailMaps);
 
         // 7. 设置响应数据
+        FunctionExecutionRateResponseDto responseDto = new FunctionExecutionRateResponseDto();
         responseDto.setVersions(majorVersion);
         responseDto.setTotalPlannedCount(totalPlannedCount == null ? 0 : totalPlannedCount);
         responseDto.setActualExecutedCount(actualExecutedCount == null ? 0 : actualExecutedCount);
