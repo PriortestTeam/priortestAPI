@@ -63,12 +63,8 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         responseDto.setTotalPlannedCount(totalPlannedCount == null ? 0 : totalPlannedCount);
         responseDto.setActualExecutedCount(actualExecutedCount == null ? 0 : actualExecutedCount);
         responseDto.setExecutionRate(executionRate);
-        responseDto.setPassCount(executionSummary.getPassCount());
-        responseDto.setFailCount(executionSummary.getFailCount());
-        responseDto.setBlockedCount(executionSummary.getBlockedCount());
-        responseDto.setSkippedCount(executionSummary.getSkippedCount());
-        responseDto.setNotExecutedCount(executionSummary.getNotExecutedCount());
-        responseDto.setCycleExecutionDetails(cycleExecutionDetails);
+        // 设置执行摘要
+        responseDto.setExecutionSummary(executionSummary);
 
         return responseDto;
     }

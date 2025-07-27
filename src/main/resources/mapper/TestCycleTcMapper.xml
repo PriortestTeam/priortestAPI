@@ -95,4 +95,38 @@
                          and run_flag = #{param1.runFlag}
                          and run_count = #{param2});
     </select>
+
+    <select id="getExecutionDetailsByVersionsAndCycles" resultType="java.util.Map">
+        SELECT 
+            tc.id AS testCycleId,
+            tc.title AS testCycleTitle,
+            tc.env AS testCycleEnv,
+            tc.current_release AS currentRelease,
+            tc.released AS released,
+            COUNT(DISTINCT tce.test_case_id) AS executedCaseCount,
+            tcase.id AS testCaseId,
+            tce.id AS runCaseId,
+            tce.run_status AS executionStatus,
+            tcase.version AS version,
+            tcase.title AS testCaseTitle,
+            tce.update_time AS lastExecutionTime
+        FROM test_cycle tc
+        LEFT JOIN test_cases_execution tce ON tc.id = tce.test_cycle_id
+        LEFT JOIN test_case tcase ON tce.test_case_id = tcase.id
+        WHERE tc.project_id = #{projectId}
+        <if test="versions != null and versions.size() > 0">
+            AND tcase.version IN
+            <foreach collection="versions" item="version" open="(" separator="," close=")">
+                #{version}
+            </foreach>
+        </if>
+        <if test="testCycleIds != null and testCycleIds.size() > 0">
+            AND tc.id IN
+            <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">
+                #{cycleId}
+            </foreach>
+        </if>
+        GROUP BY tc.id, tcase.id, tce.id
+        ORDER BY tc.id, tcase.id
+    </select>
 </mapper>
