@@ -96,10 +96,10 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             cycleDto.setTestCycleEnv((String) firstExecution.get("testCycleEnv"));
 
             Object currentRelease = firstExecution.get("currentRelease");
-            cycleDto.setCurrentRelease(currentRelease != null ? Integer.valueOf(currentRelease.toString()) : null);
+            cycleDto.setCurrentRelease(currentRelease != null ? Integer.valueOf(currentRelease.toString()) : 0);
 
             Object released = firstExecution.get("released");
-            cycleDto.setReleased(released != null ? Integer.valueOf(released.toString()) : null);
+            cycleDto.setReleased(released != null ? Integer.valueOf(released.toString()) : 0);
 
             cycleDto.setExecutedCaseCount(executions.size());
 
