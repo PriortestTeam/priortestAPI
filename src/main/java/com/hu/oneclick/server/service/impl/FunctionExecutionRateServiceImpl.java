@@ -160,6 +160,8 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             case "4.4":
             case "4.5":
                 return "BLOCKED";
+            case "6":
+                return "NOT_COMPLETED";
             default:
                 return "NOT_EXECUTED";
         }
@@ -258,8 +260,10 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
                         switch (runStatus) {
                             case 1: runStatusText = "通过"; break;
                             case 2: runStatusText = "失败"; break;
-                            case 3: runStatusText = "阻塞"; break;
-                            case 4: runStatusText = "跳过"; break;
+                            case 3: runStatusText = "跳过"; break;
+                            case 4: runStatusText = "阻塞"; break;
+                            case 5: runStatusText = "未执行"; break;
+                            case 6: runStatusText = "未完成"; break;
                             default: runStatusText = "其他"; break;
                         }
                     }
