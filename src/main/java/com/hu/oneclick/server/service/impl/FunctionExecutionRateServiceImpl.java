@@ -64,12 +64,20 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         // 6. 组装测试周期执行详情
         List<CycleExecutionDetailDto> cycleExecutionDetails = buildCycleExecutionDetails(executionDetailMaps);
 
-        // 7. 设置响应数据
+        // 7. 设置查询条件记录
+        QueryConditionsDto queryConditions = new QueryConditionsDto();
+        queryConditions.setProjectId(projectId);
+        queryConditions.setMajorVersion(majorVersionStr);
+        queryConditions.setIncludeVersions(includeVersions);
+        queryConditions.setTestCycleIds(testCycleIds);
+
+        // 8. 设置响应数据
         FunctionExecutionRateResponseDto responseDto = new FunctionExecutionRateResponseDto();
         responseDto.setVersions(Arrays.asList(majorVersionStr));
         responseDto.setTotalPlannedCount(totalPlannedCount == null ? 0 : totalPlannedCount);
         responseDto.setActualExecutedCount(actualExecutedCount == null ? 0 : actualExecutedCount);
         responseDto.setExecutionRate(executionRate);
+        responseDto.setQueryConditions(queryConditions);
         // 设置执行摘要
         responseDto.setExecutionSummary(executionSummary);
         // 设置测试周期执行详情
@@ -100,6 +108,34 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             if (executions.isEmpty()) continue;
 
             Map<String, Object> firstExecution = executions.get(0);
+            
+            CycleExecutionDetailDto cycleDetail = new CycleExecutionDetailDto();
+            cycleDetail.setTestCycleId(testCycleId);
+            cycleDetail.setTestCycleTitle(String.valueOf(firstExecution.get("testCycleTitle")));
+            cycleDetail.setTestCycleEnv(String.valueOf(firstExecution.get("testCycleEnv")));
+            
+            // 统计该周期下的执行情况
+            int totalInCycle = executions.size();
+            long executedInCycle = executions.stream()
+                .filter(exec -> exec.get("executionStatus") != null)
+                .count();
+            
+            cycleDetail.setTotalTestCases(totalInCycle);
+            cycleDetail.setExecutedTestCases((int) executedInCycle);
+            
+            if (totalInCycle > 0) {
+                BigDecimal cycleRate = BigDecimal.valueOf(executedInCycle)
+                    .multiply(BigDecimal.valueOf(100))
+                    .divide(BigDecimal.valueOf(totalInCycle), 2, RoundingMode.HALF_UP);
+                cycleDetail.setExecutionRate(cycleRate);
+            } else {
+                cycleDetail.setExecutionRate(BigDecimal.ZERO);
+            }
+            
+            cycleDetails.add(cycleDetail);
+        }
+
+        return cycleDetails;
 
             CycleExecutionDetailDto cycleDto = new CycleExecutionDetailDto();
             cycleDto.setTestCycleId(testCycleId);
