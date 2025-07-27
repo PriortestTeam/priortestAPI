@@ -116,6 +116,10 @@
         INNER JOIN test_case tcase ON tce.test_case_id = tcase.id
         WHERE tc.project_id = #{projectId}
         <if test="versions != null and versions.size() > 0">
+            AND tc.version IN
+            <foreach collection="versions" item="version" open="(" separator="," close=")">
+                #{version}
+            </foreach>
             AND tcase.version IN
             <foreach collection="versions" item="version" open="(" separator="," close=")">
                 #{version}
