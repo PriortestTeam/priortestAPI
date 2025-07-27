@@ -271,8 +271,13 @@
         SELECT COUNT(DISTINCT tc.id)
         FROM test_case tc
         JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
+        JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
         WHERE tc.project_id = #{projectId}
         AND tc.version IN
+        <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
+            #{version}
+        </foreach>
+        AND tcycle.version IN
         <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
             #{version}
         </foreach>
@@ -293,12 +298,17 @@
             tcycle.id as testCycleId,
             tcycle.title as testCycleTitle,
             tcycle.env as testCycleEnv,
+            tcycle.version as testCycleVersion,
             tcjtc.update_time as executionTime,
             tcjtc.run_status as executionStatus,
             tcjtc.run_count as runCount
         FROM test_case tc
         LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
-        LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
+        LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id 
+            AND tcycle.version IN
+            <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
+                #{version}
+            </foreach>
         WHERE tc.project_id = #{projectId}
         AND tc.version IN
         <foreach collection="majorVersion" item="version" open="(" separator="," close=")">
