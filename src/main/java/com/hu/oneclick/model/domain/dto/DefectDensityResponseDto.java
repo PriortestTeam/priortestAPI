@@ -60,11 +60,15 @@ public class DefectDensityResponseDto {
         @Schema(description = "环境覆盖率(%) - 发现缺陷的环境数/总环境数*100", example = "66.7")
         private Double environmentCoverage;
 
-        @Schema(description = "数据有效性 - 是否有足够的测试数据进行分析", example = "true")
-        private Boolean hasValidData;
+        @Schema(description = "是否有有效数据 - 判断是否有足够的数据进行分析", example = "true")
+        private boolean hasValidData;
 
-        @Schema(description = "数据说明 - 对当前数据状态的解释", example = "数据充足，分析结果可信")
+        @Schema(description = "数据说明 - 解释当前统计结果的含义", example = "数据充足，分析结果可信")
         private String dataExplanation;
+
+        public boolean isHasValidData() {
+            return hasValidData;
+        }
     }
 
     @Data
