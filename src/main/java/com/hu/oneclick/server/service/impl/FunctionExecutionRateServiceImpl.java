@@ -12,6 +12,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.Arrays;
 
 /**
  * 功能执行率报表服务实现
@@ -27,12 +28,13 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
     @Override
     public FunctionExecutionRateResponseDto getFunctionExecutionRate(FunctionExecutionRateRequestDto request) {
         Long projectId = request.getProjectId();
-        List<String> majorVersion = request.getMajorVersion();
+        String majorVersionStr = request.getMajorVersion();
+        List<String> majorVersion = Arrays.asList(majorVersionStr); // 转换为列表以适配DAO方法
         List<String> includeVersions = request.getIncludeVersions();
         List<Long> testCycleIds = request.getTestCycleIds();
 
         logger.info("获取功能执行率报表，项目ID：{}，主版本：{}，包含版本：{}，测试周期：{}",
-                   projectId, majorVersion, includeVersions, testCycleIds);
+                   projectId, majorVersionStr, includeVersions, testCycleIds);
 
         // 1. 统计计划数（主版本下所有测试用例总数）
         Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersion);
@@ -59,7 +61,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
 
         // 7. 设置响应数据
         FunctionExecutionRateResponseDto responseDto = new FunctionExecutionRateResponseDto();
-        responseDto.setVersions(majorVersion);
+        responseDto.setVersions(Arrays.asList(majorVersionStr));
         responseDto.setTotalPlannedCount(totalPlannedCount == null ? 0 : totalPlannedCount);
         responseDto.setActualExecutedCount(actualExecutedCount == null ? 0 : actualExecutedCount);
         responseDto.setExecutionRate(executionRate);
