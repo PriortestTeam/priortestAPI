@@ -293,6 +293,7 @@
             tcycle.title as testCycleTitle,
             tcycle.env as testCycleEnv,
             tcycle.version as testCycleVersion,
+            tcjtc.id as runCaseId,
             tcjtc.update_time as executionTime,
             tcjtc.run_status as executionStatus,
             tcjtc.run_count as runCount
