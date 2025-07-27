@@ -293,25 +293,25 @@
             tcycle.title as testCycleTitle,
             tcycle.env as testCycleEnv,
             tcycle.version as testCycleVersion,
-            tcjtc.id as runCaseId,
             tcjtc.update_time as executionTime,
             tcjtc.run_status as executionStatus,
-            tcjtc.run_count as runCount
+            tcjtc.run_count as runCount,
+            tcjtc.id as runCaseId
         FROM test_case tc
         LEFT JOIN test_cycle_join_test_case tcjtc ON tc.id = tcjtc.test_case_id
-        LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id 
-            AND tcycle.version IN
-            <foreach collection="includeVersions" item="version" open="(" separator="," close=")">
-                #{version}
-            </foreach>
+        INNER JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id 
         WHERE tc.project_id = #{projectId}
-        AND tc.version = #{majorVersion}
-        <if test="testCycleIds != null and testCycleIds.size() > 0">
-        AND tcjtc.test_cycle_id IN
-        <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">
-            #{cycleId}
-        </foreach>
-        </if>
+          AND tc.version = #{majorVersion}
+          AND tcycle.version IN 
+          <foreach collection="includeVersions" item="version" open="(" close=")" separator=",">
+              #{version}
+          </foreach>
+          <if test="testCycleIds != null and testCycleIds.size() > 0">
+            AND tcjtc.test_cycle_id IN 
+            <foreach collection="testCycleIds" item="testCycleId" open="(" close=")" separator=",">
+                #{testCycleId}
+            </foreach>
+          </if>
         ORDER BY tc.id, tcjtc.update_time DESC
     </select>
 </mapper>
