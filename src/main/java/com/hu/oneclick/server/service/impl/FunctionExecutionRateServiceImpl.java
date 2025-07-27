@@ -27,17 +27,20 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
 
     @Override
     public FunctionExecutionRateResponseDto getFunctionExecutionRate(FunctionExecutionRateRequestDto request) {
-        Long projectId = request.getProjectId();
-        String majorVersionStr = request.getMajorVersion();
-        List<String> majorVersion = Arrays.asList(majorVersionStr); // 转换为列表以适配DAO方法
-        List<String> includeVersions = request.getIncludeVersions();
-        List<Long> testCycleIds = request.getTestCycleIds();
+        try {
+            Long projectId = request.getProjectId();
+            String majorVersionStr = request.getMajorVersion();
+            List<String> majorVersion = Arrays.asList(majorVersionStr); // 转换为列表以适配DAO方法
+            List<String> includeVersions = request.getIncludeVersions();
+            List<Long> testCycleIds = request.getTestCycleIds();
 
-        logger.info("获取功能执行率报表，项目ID：{}，主版本：{}，包含版本：{}，测试周期：{}",
-                   projectId, majorVersionStr, includeVersions, testCycleIds);
+            logger.info("获取功能执行率报表，项目ID：{}，主版本：{}，包含版本：{}，测试周期：{}",
+                       projectId, majorVersionStr, includeVersions, testCycleIds);
 
-        // 1. 统计计划数（主版本下所有测试用例总数）
-        Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersion);
+            // 1. 统计计划数（主版本下所有测试用例总数）
+            logger.info("开始统计计划测试用例总数...");
+            Integer totalPlannedCount = testCaseDao.countPlannedTestCasesByVersions(projectId, majorVersion);
+            logger.info("计划测试用例总数：{}", totalPlannedCount);
 
         // 2. 统计实际执行数（测试用例在包含版本测试周期中的执行数，去重）
         Integer actualExecutedCount = testCaseDao.countExecutedTestCasesByVersionsAndCycles(projectId, majorVersion, includeVersions, testCycleIds);
@@ -71,6 +74,10 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         responseDto.setCycleExecutionDetails(cycleExecutionDetails);
 
         return responseDto;
+        } catch (Exception e) {
+            logger.error("获取功能执行率报表失败", e);
+            throw new RuntimeException("获取功能执行率报表失败：" + e.getMessage(), e);
+        }
     }
 
     /**

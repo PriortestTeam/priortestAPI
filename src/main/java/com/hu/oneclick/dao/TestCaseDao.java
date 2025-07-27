@@ -62,4 +62,12 @@ public interface TestCaseDao extends BaseMapper<TestCase> {
                                                      @Param("majorVersion") List<String> majorVersion,
                                                      @Param("includeVersions") List<String> includeVersions,
                                                      @Param("testCycleIds") List<Long> testCycleIds);
+
+    /**
+     * 获取按版本和周期的执行详情
+     */
+    List<Map<String, Object>> getExecutionDetailsByVersionsAndCycles(@Param("projectId") Long projectId,
+                                                                     @Param("majorVersion") List<String> majorVersion,
+                                                                     @Param("includeVersions") List<String> includeVersions,
+                                                                     @Param("testCycleIds") List<Long> testCycleIds);
 }
