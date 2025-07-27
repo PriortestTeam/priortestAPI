@@ -51,7 +51,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         }
 
         // 4. 查询详细执行信息
-        List<Map<String, Object>> executionDetailMaps = testCaseDao.queryExecutionDetails(projectId, majorVersion, testCycleIds);
+        List<Map<String, Object>> executionDetailMaps = testCaseDao.queryExecutionDetails(projectId, majorVersion, includeVersions, testCycleIds);
 
         // 5. 组装执行摘要
         ExecutionSummaryDto executionSummary = buildExecutionSummary(executionDetailMaps);

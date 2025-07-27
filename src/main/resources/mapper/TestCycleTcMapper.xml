@@ -179,7 +179,7 @@
         LEFT JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
         WHERE tc.project_id = #{projectId}
           AND tc.version IN
-          <foreach collection="versions" item="version" open="(" close=")" separator=",">
+          <foreach collection="majorVersion" item="version" open="(" close=")" separator=",">
               #{version}
           </foreach>
           <if test="testCycleIds != null and testCycleIds.size() > 0">

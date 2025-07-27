@@ -59,6 +59,7 @@ public interface TestCaseDao extends BaseMapper<TestCase> {
      * 查询功能执行率详细信息
      */
     List<Map<String, Object>> queryExecutionDetails(@Param("projectId") Long projectId,
-                                                     @Param("versions") List<String> versions,
+                                                     @Param("majorVersion") List<String> majorVersion,
+                                                     @Param("includeVersions") List<String> includeVersions,
                                                      @Param("testCycleIds") List<Long> testCycleIds);
 }
