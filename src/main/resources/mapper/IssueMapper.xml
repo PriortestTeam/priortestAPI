@@ -10,7 +10,7 @@
         <result property="author" column="author" jdbcType="VARCHAR"/>
         <result property="issueStatus" column="issue_status" jdbcType="INTEGER"/>
         <!--        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>-->
-        
+
         <!--        <result property="testCase" column="test_case" jdbcType="INTEGER"/>-->
         <!--        <result property="testCycle" column="test_cycle" jdbcType="INTEGER"/>-->
         <!--        <result property="feature" column="feature" jdbcType="INTEGER"/>-->
@@ -58,7 +58,7 @@
             <if test="status != null">
                 and status = #{status}
             </if>
-            
+
 
             <if test="priority != null and priority != ''">
                 and priority = #{priority}
@@ -148,7 +148,7 @@
                 issue_status = #{issueStatus},
             </if>
 
-            
+
 
 
             <if test="priority != null and priority != ''">
@@ -217,8 +217,8 @@
         select * from issue
     </select>
 
-    <!-- 根据RunCaseId查询关联的缺陷信息 -->
-    <select id="queryDefectsByRunCaseId" resultType="java.util.Map" parameterType="java.lang.String">
+    <!-- 根据runCaseId查询缺陷 -->
+    <select id="queryDefectsByRunCaseId" parameterType="string" resultType="map">
         SELECT 
             i.id,
             i.title,
@@ -237,14 +237,14 @@
             i.issue_version,
             i.introduced_version,
             i.is_legacy,
-            i.fix_version
+            i.fix_version,
+            i.runcase_id
         FROM issue i
         WHERE i.runcase_id = #{runCaseId}
-        ORDER BY i.create_time DESC
     </select>
 
-    <!-- 批量根据RunCaseId列表查询缺陷信息 -->
-    <select id="queryDefectsByRunCaseIds" resultType="java.util.Map" parameterType="java.util.List">
+    <!-- 批量根据runCaseId列表查询缺陷 -->
+    <select id="queryDefectsByRunCaseIds" parameterType="list" resultType="map">
         SELECT 
             i.id,
             i.title,
@@ -267,10 +267,9 @@
             i.runcase_id
         FROM issue i
         WHERE i.runcase_id IN
-        <foreach collection="list" item="runCaseId" open="(" separator="," close=")">
+        <foreach item="runCaseId" collection="list" open="(" separator="," close=")">
             #{runCaseId}
         </foreach>
-        ORDER BY i.create_time DESC
     </select>
 
     <!-- 查询缺陷与运行用例的详细对应关系 -->
@@ -286,26 +285,26 @@
             i.browser,
             i.test_device,
             i.create_time as defect_create_time,
-            
+
             tc.id as test_case_id,
             tc.title as test_case_title,
             tc.version as test_case_version,
-            
+
             tcycle.id as test_cycle_id,
             tcycle.title as test_cycle_title,
             tcycle.env as test_cycle_env,
             tcycle.version as test_cycle_version,
-            
+
             tcjtc.id as run_case_id,
             tcjtc.run_status as execution_status,
             tcjtc.run_count,
             tcjtc.update_time as execution_time
-            
+
         FROM issue i
         INNER JOIN test_cycle_join_test_case tcjtc ON i.runcase_id = tcjtc.id
         INNER JOIN test_case tc ON tcjtc.test_case_id = tc.id
         INNER JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
-        
+
         WHERE tc.project_id = #{projectId}
           AND tc.version = #{majorVersion}
           AND tcycle.version IN
@@ -318,7 +317,7 @@
                 #{cycleId}
             </foreach>
         </if>
-        
+
         ORDER BY i.id, tcjtc.id
     </select>
 

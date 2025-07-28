@@ -23,14 +23,12 @@ public interface IssueDao extends BaseMapper<Issue> {
     List<Issue> findAll();
 
     /**
-     * 根据RunCaseId查询关联的缺陷信息
-     * @param runCaseId RunCase ID
-     * @return 缺陷信息列表
+     * 根据runCaseId查询缺陷
      */
     List<Map<String, Object>> queryDefectsByRunCaseId(String runCaseId);
 
     /**
-     * 批量根据RunCaseId列表查询缺陷信息
+     * 批量根据runCaseId列表查询缺陷
      */
     List<Map<String, Object>> queryDefectsByRunCaseIds(List<String> runCaseIds);
 

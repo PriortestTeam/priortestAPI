@@ -167,23 +167,56 @@ public class DefectDensityServiceImpl implements DefectDensityService {
     }
 
     /**
-     * 查询缺陷数据 - 优化版本，使用2次SQL查询替代N+1查询
+     * 查询缺陷数据 - 使用2次SQL查询优化性能
      */
     private List<Map<String, Object>> queryDefectData(List<Map<String, Object>> executionDetails) {
-        // 第1步：提取所有非空的runCaseId
+        // 第1步：收集所有runCaseId
         List<String> runCaseIds = executionDetails.stream()
                 .map(execution -> String.valueOf(execution.get("runCaseId")))
                 .filter(runCaseId -> runCaseId != null && !runCaseId.equals("null"))
-                .distinct() // 去重，避免重复查询
+                .distinct()
                 .collect(Collectors.toList());
 
-        // 如果没有有效的runCaseId，直接返回空列表
         if (runCaseIds.isEmpty()) {
             return new ArrayList<>();
         }
 
         // 第2步：批量查询所有相关缺陷
-        return issueDao.queryDefectsByRunCaseIds(runCaseIds);
+        List<Map<String, Object>> defects = issueDao.queryDefectsByRunCaseIds(runCaseIds);
+
+        // 构建runCaseId到execution详情的映射，便于后续关联
+        Map<String, Map<String, Object>> executionMap = executionDetails.stream()
+                .collect(Collectors.toMap(
+                    execution -> String.valueOf(execution.get("runCaseId")),
+                    execution -> execution,
+                    (existing, replacement) -> existing // 如果有重复key，保留第一个
+                ));
+
+        // 第3步：为每个缺陷添加测试用例相关信息
+        List<Map<String, Object>> allDefects = new ArrayList<>();
+        for (Map<String, Object> defect : defects) {
+            String runCaseId = String.valueOf(defect.get("runcase_id"));
+            Map<String, Object> execution = executionMap.get(runCaseId);
+
+            if (execution != null) {
+                // 添加测试用例相关信息到缺陷数据中
+                defect.put("testCaseId", execution.get("testCaseId"));
+                defect.put("testCaseTitle", execution.get("testCaseTitle"));
+                defect.put("version", execution.get("version"));
+                defect.put("testCycleId", execution.get("testCycleId"));
+                defect.put("testCycleTitle", execution.get("testCycleTitle"));
+                defect.put("testCycleEnv", execution.get("testCycleEnv"));
+                defect.put("testCycleVersion", execution.get("testCycleVersion"));
+                defect.put("executionStatus", execution.get("executionStatus"));
+                defect.put("executionTime", execution.get("executionTime"));
+                defect.put("runCount", execution.get("runCount"));
+                defect.put("runCaseId", runCaseId);
+
+                allDefects.add(defect);
+            }
+        }
+
+        return allDefects;
     }
 
     /**
