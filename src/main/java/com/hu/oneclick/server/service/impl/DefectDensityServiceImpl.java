@@ -167,30 +167,23 @@ public class DefectDensityServiceImpl implements DefectDensityService {
     }
 
     /**
-     * 查询缺陷数据
+     * 查询缺陷数据 - 优化版本，使用2次SQL查询替代N+1查询
      */
     private List<Map<String, Object>> queryDefectData(List<Map<String, Object>> executionDetails) {
-        List<Map<String, Object>> defectData = new ArrayList<>();
+        // 第1步：提取所有非空的runCaseId
+        List<String> runCaseIds = executionDetails.stream()
+                .map(execution -> String.valueOf(execution.get("runCaseId")))
+                .filter(runCaseId -> runCaseId != null && !runCaseId.equals("null"))
+                .distinct() // 去重，避免重复查询
+                .collect(Collectors.toList());
 
-        for (Map<String, Object> execution : executionDetails) {
-            String runCaseId = String.valueOf(execution.get("runCaseId"));
-            if (runCaseId != null && !runCaseId.equals("null")) {
-                // 根据runCaseId查询关联的缺陷
-                try {
-                    List<Map<String, Object>> defects = issueDao.queryDefectsByRunCaseId(runCaseId);
-                    for (Map<String, Object> defect : defects) {
-                        // 将执行信息合并到缺陷数据中
-                        Map<String, Object> combinedData = new HashMap<>(defect);
-                        combinedData.putAll(execution);
-                        defectData.add(combinedData);
-                    }
-                } catch (Exception e) {
-                    log.warn("查询RunCaseId={}的缺陷信息时出错：{}", runCaseId, e.getMessage());
-                }
-            }
+        // 如果没有有效的runCaseId，直接返回空列表
+        if (runCaseIds.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        return defectData;
+        // 第2步：批量查询所有相关缺陷
+        return issueDao.queryDefectsByRunCaseIds(runCaseIds);
     }
 
     /**
@@ -490,30 +483,42 @@ public class DefectDensityServiceImpl implements DefectDensityService {
 
         for (Map.Entry<Long, List<Map<String, Object>>> entry : groupedByTestCase.entrySet()) {
             Long testCaseId = entry.getKey();
-            List<Map<String, Object>> executions = entry.getValue();
+            List<Map<String, Object>> testCaseExecutions = entry.getValue();
 
             DefectDensityResponseDto.TestCaseDetailDto testCaseDetail = new DefectDensityResponseDto.TestCaseDetailDto();
             testCaseDetail.setTestCaseId(testCaseId);
 
             // 从第一个执行记录获取基本信息
-            Map<String, Object> firstExecution = executions.get(0);
+            Map<String, Object> firstExecution = testCaseExecutions.get(0);
             testCaseDetail.setTestCaseTitle((String) firstExecution.get("testCaseTitle"));
             testCaseDetail.setVersion((String) firstExecution.get("version"));
-            testCaseDetail.setExecutionCount(executions.size());
+            testCaseDetail.setExecutionCount(testCaseExecutions.size());
 
-            // 获取最后执行状态
-            Map<String, Object> lastExecution = executions.stream()
-                    .max(Comparator.comparing(e -> (java.util.Date) e.get("executionTime")))
-                    .orElse(firstExecution);
+            // 获取最新执行时间
+            Date latestExecutionTime = testCaseExecutions.stream()
+                    .map(exec -> {
+                        Object timeObj = exec.get("executionTime");
+                        if (timeObj instanceof java.time.LocalDateTime) {
+                            // 将LocalDateTime转换为Date
+                            java.time.LocalDateTime ldt = (java.time.LocalDateTime) timeObj;
+                            return java.sql.Timestamp.valueOf(ldt);
+                        } else if (timeObj instanceof Date) {
+                            return (Date) timeObj;
+                        }
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .max(Date::compareTo)
+                    .orElse(null);
 
-            Object executionStatus = lastExecution.get("executionStatus");
+            Object executionStatus = firstExecution.get("executionStatus");
             testCaseDetail.setLastExecutionStatus(convertExecutionStatusToText(executionStatus));
 
             // 统计该测试用例的缺陷数量
             int defectCount = 0;
             Set<String> testCycles = new HashSet<>();
 
-            for (Map<String, Object> execution : executions) {
+            for (Map<String, Object> execution : testCaseExecutions) {
                 String runCaseId = execution.get("runCaseId").toString();
                 List<Map<String, Object>> defects = defectsByRunCaseId.get(runCaseId);
                 if (defects != null) {

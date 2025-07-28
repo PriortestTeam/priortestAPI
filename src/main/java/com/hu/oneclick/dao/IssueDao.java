@@ -30,6 +30,11 @@ public interface IssueDao extends BaseMapper<Issue> {
     List<Map<String, Object>> queryDefectsByRunCaseId(String runCaseId);
 
     /**
+     * 批量根据RunCaseId列表查询缺陷信息
+     */
+    List<Map<String, Object>> queryDefectsByRunCaseIds(List<String> runCaseIds);
+
+    /**
      * 查询缺陷详情（包含关联的测试用例信息）
      */
     List<Map<String, Object>> queryDefectDetailsWithTestCases(@Param("projectId") Long projectId,
