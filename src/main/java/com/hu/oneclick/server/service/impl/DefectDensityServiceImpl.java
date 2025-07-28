@@ -58,7 +58,21 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             // 5. 判断质量等级
             String qualityLevel = getQualityLevel(density, statistics.isHasValidData());
 
-            // 6. 构建响应结果
+            // 6. 查询缺陷数据并按runCaseId分组
+            Map<String, List<Map<String, Object>>> defectsByRunCaseId = new HashMap<>();
+            List<Map<String, Object>> defectData = queryDefectData(executionDetails);
+            for (Map<String, Object> defect : defectData) {
+                String runCaseId = String.valueOf(defect.get("runCaseId"));
+                defectsByRunCaseId.computeIfAbsent(runCaseId, k -> new ArrayList<>()).add(defect);
+            }
+
+            // 7. 构建测试用例和测试周期详细信息
+            List<DefectDensityResponseDto.TestCaseDetailDto> testCaseDetails = 
+                    buildTestCaseDetails(executionDetails, defectsByRunCaseId);
+            List<DefectDensityResponseDto.TestCycleDetailDto> testCycleDetails = 
+                    buildTestCycleDetails(executionDetails, defectsByRunCaseId);
+
+            // 8. 构建响应结果
             DefectDensityResponseDto responseDto = new DefectDensityResponseDto();
             responseDto.setDefectDensity(Math.round(density * 100.0) / 100.0);
             responseDto.setQualityLevel(qualityLevel);
@@ -66,6 +80,8 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             responseDto.setStatistics(statistics);
             responseDto.setDefectDetails(defectDetails);
             responseDto.setConfig(buildCalculationConfig(requestDto));
+            responseDto.setTestCaseDetails(testCaseDetails);
+            responseDto.setTestCycleDetails(testCycleDetails);
 
             log.info("缺陷密度计算完成，密度：{}%，缺陷数：{}个", density, defectDetails.size());
             return responseDto;

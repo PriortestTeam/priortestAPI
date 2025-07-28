@@ -163,4 +163,54 @@ public class DefectDensityResponseDto {
         @Schema(description = "查询条件")
         private Map<String, Object> queryConditions;
     }
+
+    @Data
+    @Schema(description = "测试用例详细信息")
+    public static class TestCaseDetailDto {
+        @Schema(description = "测试用例ID", example = "123456")
+        private Long testCaseId;
+
+        @Schema(description = "测试用例标题", example = "登录功能测试")
+        private String testCaseTitle;
+
+        @Schema(description = "版本", example = "1.0.0.0")
+        private String version;
+
+        @Schema(description = "执行次数", example = "3")
+        private Integer executionCount;
+
+        @Schema(description = "最后执行状态", example = "通过")
+        private String lastExecutionStatus;
+
+        @Schema(description = "发现的缺陷数量", example = "2")
+        private Integer defectCount;
+
+        @Schema(description = "参与的测试周期列表")
+        private List<String> testCycles;
+    }
+
+    @Data
+    @Schema(description = "测试周期详细信息")
+    public static class TestCycleDetailDto {
+        @Schema(description = "测试周期ID", example = "789012")
+        private Long testCycleId;
+
+        @Schema(description = "测试周期标题", example = "版本1.0测试周期")
+        private String testCycleTitle;
+
+        @Schema(description = "测试周期版本", example = "1.0.0.0")
+        private String testCycleVersion;
+
+        @Schema(description = "测试环境", example = "测试环境")
+        private String testCycleEnv;
+
+        @Schema(description = "总执行次数", example = "15")
+        private Integer totalExecutions;
+
+        @Schema(description = "包含的测试用例数量", example = "5")
+        private Integer testCaseCount;
+
+        @Schema(description = "发现的缺陷数量", example = "3")
+        private Integer defectCount;
+    }
 }
