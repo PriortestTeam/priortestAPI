@@ -233,7 +233,6 @@
             i.update_time,
             i.project_id,
             i.case_category,
-            i.release_phase,
             i.found_after_release,
             i.released_version,
             i.issue_version,
