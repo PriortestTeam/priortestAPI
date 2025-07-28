@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -405,10 +408,22 @@ public class DefectDensityServiceImpl implements DefectDensityService {
         try {
             if (dateObj instanceof Date) {
                 return dateFormat.format((Date) dateObj);
+            } else if (dateObj instanceof java.time.LocalDateTime) {
+                // 处理 LocalDateTime 类型
+                java.time.LocalDateTime localDateTime = (java.time.LocalDateTime) dateObj;
+                return localDateTime.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            } else if (dateObj instanceof java.time.LocalDate) {
+                // 处理 LocalDate 类型
+                java.time.LocalDate localDate = (java.time.LocalDate) dateObj;
+                return localDate.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            } else if (dateObj instanceof java.sql.Timestamp) {
+                // 处理 Timestamp 类型
+                return dateFormat.format((java.sql.Timestamp) dateObj);
             } else {
                 return String.valueOf(dateObj);
             }
         } catch (Exception e) {
+            log.warn("日期格式化失败: {}", e.getMessage());
             return String.valueOf(dateObj);
         }
     }
@@ -611,5 +626,129 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             case "6": return "未完成";
             default: return "其他";
         }
+    }
+
+    /**
+     * 构建测试用例详细信息
+     */
+    private List<DefectDensityResponseDto.TestCaseDetailDto> buildTestCaseDetails(
+            List<Map<String, Object>> executionDetails,
+            Map<String, List<Map<String, Object>>> defectsByRunCaseId) {
+        
+        // 按测试用例ID分组
+        Map<String, List<Map<String, Object>>> testCaseGroups = executionDetails.stream()
+                .collect(Collectors.groupingBy(
+                        detail -> String.valueOf(detail.get("testCaseId"))
+                ));
+
+        List<DefectDensityResponseDto.TestCaseDetailDto> testCaseDetails = new ArrayList<>();
+
+        for (Map.Entry<String, List<Map<String, Object>>> entry : testCaseGroups.entrySet()) {
+            String testCaseId = entry.getKey();
+            List<Map<String, Object>> executions = entry.getValue();
+            
+            DefectDensityResponseDto.TestCaseDetailDto testCaseDetail = 
+                    new DefectDensityResponseDto.TestCaseDetailDto();
+                    
+            // 取第一条记录的基本信息
+            Map<String, Object> firstExecution = executions.get(0);
+            testCaseDetail.setTestCaseId(Long.parseLong(testCaseId));
+            testCaseDetail.setTestCaseTitle(String.valueOf(firstExecution.get("testCaseTitle")));
+            testCaseDetail.setVersion(String.valueOf(firstExecution.get("version")));
+            testCaseDetail.setExecutionCount(executions.size());
+            
+            // 获取最后执行状态
+            Map<String, Object> lastExecution = executions.get(executions.size() - 1);
+            testCaseDetail.setLastExecutionStatus(getExecutionStatusText(lastExecution.get("executionStatus")));
+            
+            // 统计该测试用例相关的缺陷数量
+            int defectCount = 0;
+            Set<String> testCycles = new HashSet<>();
+            for (Map<String, Object> execution : executions) {
+                String runCaseId = String.valueOf(execution.get("runCaseId"));
+                if (defectsByRunCaseId.containsKey(runCaseId)) {
+                    defectCount += defectsByRunCaseId.get(runCaseId).size();
+                }
+                testCycles.add(String.valueOf(execution.get("testCycleTitle")));
+            }
+            
+            testCaseDetail.setDefectCount(defectCount);
+            testCaseDetail.setTestCycles(new ArrayList<>(testCycles));
+            
+            testCaseDetails.add(testCaseDetail);
+        }
+
+        return testCaseDetails;
+    }
+
+    /**
+     * 构建测试周期详细信息
+     */
+    private List<DefectDensityResponseDto.TestCycleDetailDto> buildTestCycleDetails(
+            List<Map<String, Object>> executionDetails,
+            Map<String, List<Map<String, Object>>> defectsByRunCaseId) {
+        
+        // 按测试周期ID分组
+        Map<String, List<Map<String, Object>>> testCycleGroups = executionDetails.stream()
+                .collect(Collectors.groupingBy(
+                        detail -> String.valueOf(detail.get("testCycleId"))
+                ));
+
+        List<DefectDensityResponseDto.TestCycleDetailDto> testCycleDetails = new ArrayList<>();
+
+        for (Map.Entry<String, List<Map<String, Object>>> entry : testCycleGroups.entrySet()) {
+            String testCycleId = entry.getKey();
+            List<Map<String, Object>> executions = entry.getValue();
+            
+            DefectDensityResponseDto.TestCycleDetailDto testCycleDetail = 
+                    new DefectDensityResponseDto.TestCycleDetailDto();
+                    
+            // 取第一条记录的基本信息
+            Map<String, Object> firstExecution = executions.get(0);
+            testCycleDetail.setTestCycleId(Long.parseLong(testCycleId));
+            testCycleDetail.setTestCycleTitle(String.valueOf(firstExecution.get("testCycleTitle")));
+            testCycleDetail.setTestCycleVersion(String.valueOf(firstExecution.get("testCycleVersion")));
+            testCycleDetail.setTestCycleEnv(String.valueOf(firstExecution.get("testCycleEnv")));
+            testCycleDetail.setTotalExecutions(executions.size());
+            
+            // 统计该测试周期包含的不重复测试用例数量
+            Set<String> uniqueTestCases = executions.stream()
+                    .map(execution -> String.valueOf(execution.get("testCaseId")))
+                    .collect(Collectors.toSet());
+            testCycleDetail.setTestCaseCount(uniqueTestCases.size());
+            
+            // 统计该测试周期相关的缺陷数量
+            int defectCount = 0;
+            for (Map<String, Object> execution : executions) {
+                String runCaseId = String.valueOf(execution.get("runCaseId"));
+                if (defectsByRunCaseId.containsKey(runCaseId)) {
+                    defectCount += defectsByRunCaseId.get(runCaseId).size();
+                }
+            }
+            testCycleDetail.setDefectCount(defectCount);
+            
+            testCycleDetails.add(testCycleDetail);
+        }
+
+        return testCycleDetails;
+    }
+
+    /**
+     * 查询缺陷数据
+     */
+    private List<Map<String, Object>> queryDefectData(List<Map<String, Object>> executionDetails) {
+        // 提取所有runCaseId
+        List<String> runCaseIds = executionDetails.stream()
+                .map(detail -> String.valueOf(detail.get("runCaseId")))
+                .filter(id -> !id.equals("null"))
+                .distinct()
+                .collect(Collectors.toList());
+        
+        if (runCaseIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        // 查询关联的缺陷数据
+        return issueDao.queryDefectsByRunCaseIds(runCaseIds);
     }
 }
