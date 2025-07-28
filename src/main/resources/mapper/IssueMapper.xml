@@ -269,13 +269,10 @@
             tcjtc.id as run_case_id,
             tcjtc.run_status as execution_status,
             tcjtc.run_count,
-            tcjtc.update_time as execution_time,
-            
-            irtc.create_time as issue_relation_create_time
+            tcjtc.update_time as execution_time
             
         FROM issue i
-        INNER JOIN run_case_to_issue irtc ON i.id = irtc.issue_id
-        INNER JOIN test_cycle_join_test_case tcjtc ON irtc.run_case_id = tcjtc.id
+        INNER JOIN test_cycle_join_test_case tcjtc ON i.runcase_id = tcjtc.id
         INNER JOIN test_case tc ON tcjtc.test_case_id = tc.id
         INNER JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
         
