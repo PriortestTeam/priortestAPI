@@ -18,7 +18,7 @@ import jakarta.validation.Valid;
 @Slf4j
 @RestController
 @RequestMapping("/versionQualityReport")
-@Tag(name = "缺陷密度报表", description = "缺陷密度计算相关接口")", description = "缺陷密度计算相关接口")
+@Tag(name = "缺陷密度报表", description = "缺陷密度计算相关接口")
 public class DefectDensityController {
 
     @Resource
