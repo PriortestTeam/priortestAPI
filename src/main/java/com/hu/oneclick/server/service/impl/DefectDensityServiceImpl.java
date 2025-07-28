@@ -445,4 +445,155 @@ public class DefectDensityServiceImpl implements DefectDensityService {
             default: return "未知";
         }
     }
+
+    private String determineQualityLevel(double defectDensity) {
+        if (defectDensity == 0.0) {
+            return "优秀";
+        } else if (defectDensity <= 2.0) {
+            return "良好";
+        } else if (defectDensity <= 5.0) {
+            return "一般";
+        } else {
+            return "较差";
+        }
+    }
+
+    /**
+     * 构建测试用例详细信息
+     */
+    private List<DefectDensityResponseDto.TestCaseDetailDto> buildTestCaseDetails(
+            List<Map<String, Object>> executionDetails, 
+            Map<String, List<Map<String, Object>>> defectsByRunCaseId) {
+
+        // 按测试用例ID分组
+        Map<Long, List<Map<String, Object>>> groupedByTestCase = executionDetails.stream()
+                .collect(Collectors.groupingBy(detail -> 
+                    Long.valueOf(detail.get("testCaseId").toString())));
+
+        List<DefectDensityResponseDto.TestCaseDetailDto> testCaseDetails = new ArrayList<>();
+
+        for (Map.Entry<Long, List<Map<String, Object>>> entry : groupedByTestCase.entrySet()) {
+            Long testCaseId = entry.getKey();
+            List<Map<String, Object>> executions = entry.getValue();
+
+            DefectDensityResponseDto.TestCaseDetailDto testCaseDetail = new DefectDensityResponseDto.TestCaseDetailDto();
+            testCaseDetail.setTestCaseId(testCaseId);
+
+            // 从第一个执行记录获取基本信息
+            Map<String, Object> firstExecution = executions.get(0);
+            testCaseDetail.setTestCaseTitle((String) firstExecution.get("testCaseTitle"));
+            testCaseDetail.setVersion((String) firstExecution.get("version"));
+            testCaseDetail.setExecutionCount(executions.size());
+
+            // 获取最后执行状态
+            Map<String, Object> lastExecution = executions.stream()
+                    .max(Comparator.comparing(e -> (java.util.Date) e.get("executionTime")))
+                    .orElse(firstExecution);
+
+            Object executionStatus = lastExecution.get("executionStatus");
+            testCaseDetail.setLastExecutionStatus(convertExecutionStatusToText(executionStatus));
+
+            // 统计该测试用例的缺陷数量
+            int defectCount = 0;
+            Set<String> testCycles = new HashSet<>();
+
+            for (Map<String, Object> execution : executions) {
+                String runCaseId = execution.get("runCaseId").toString();
+                List<Map<String, Object>> defects = defectsByRunCaseId.get(runCaseId);
+                if (defects != null) {
+                    defectCount += defects.size();
+                }
+
+                String testCycleTitle = (String) execution.get("testCycleTitle");
+                if (testCycleTitle != null) {
+                    testCycles.add(testCycleTitle);
+                }
+            }
+
+            testCaseDetail.setDefectCount(defectCount);
+            testCaseDetail.setTestCycles(new ArrayList<>(testCycles));
+
+            testCaseDetails.add(testCaseDetail);
+        }
+
+        log.info("构建了{}个测试用例的详细信息", testCaseDetails.size());
+        return testCaseDetails;
+    }
+
+    /**
+     * 构建测试周期详细信息
+     */
+    private List<DefectDensityResponseDto.TestCycleDetailDto> buildTestCycleDetails(
+            List<Map<String, Object>> executionDetails, 
+            Map<String, List<Map<String, Object>>> defectsByRunCaseId) {
+
+        // 按测试周期ID分组
+        Map<Long, List<Map<String, Object>>> groupedByTestCycle = executionDetails.stream()
+                .collect(Collectors.groupingBy(detail -> 
+                    Long.valueOf(detail.get("testCycleId").toString())));
+
+        List<DefectDensityResponseDto.TestCycleDetailDto> testCycleDetails = new ArrayList<>();
+
+        for (Map.Entry<Long, List<Map<String, Object>>> entry : groupedByTestCycle.entrySet()) {
+            Long testCycleId = entry.getKey();
+            List<Map<String, Object>> executions = entry.getValue();
+
+            DefectDensityResponseDto.TestCycleDetailDto testCycleDetail = new DefectDensityResponseDto.TestCycleDetailDto();
+            testCycleDetail.setTestCycleId(testCycleId);
+
+            // 从第一个执行记录获取基本信息
+            Map<String, Object> firstExecution = executions.get(0);
+            testCycleDetail.setTestCycleTitle((String) firstExecution.get("testCycleTitle"));
+            testCycleDetail.setTestCycleVersion((String) firstExecution.get("testCycleVersion"));
+            testCycleDetail.setTestCycleEnv((String) firstExecution.get("testCycleEnv"));
+            testCycleDetail.setTotalExecutions(executions.size());
+
+            // 统计独立测试用例数量
+            Set<Long> uniqueTestCases = executions.stream()
+                    .map(execution -> Long.valueOf(execution.get("testCaseId").toString()))
+                    .collect(Collectors.toSet());
+            testCycleDetail.setTestCaseCount(uniqueTestCases.size());
+
+            // 统计该测试周期的缺陷数量
+            int defectCount = 0;
+            for (Map<String, Object> execution : executions) {
+                String runCaseId = execution.get("runCaseId").toString();
+                List<Map<String, Object>> defects = defectsByRunCaseId.get(runCaseId);
+                if (defects != null) {
+                    defectCount += defects.size();
+                }
+            }
+
+            testCycleDetail.setDefectCount(defectCount);
+            testCycleDetails.add(testCycleDetail);
+        }
+
+        log.info("构建了{}个测试周期的详细信息", testCycleDetails.size());
+        return testCycleDetails;
+    }
+
+    /**
+     * 将执行状态转换为文本
+     */
+    private String convertExecutionStatusToText(Object statusObj) {
+        if (statusObj == null) {
+            return "未执行";
+        }
+
+        String status = statusObj.toString();
+        switch (status) {
+            case "1": return "通过";
+            case "2": return "失败"; 
+            case "3": return "跳过";
+            case "4": 
+            case "4.1":
+            case "4.2": 
+            case "4.3":
+            case "4.4":
+            case "4.5": return "阻塞";
+            case "5": return "未执行";
+            case "6": return "未完成";
+            default: return "其他";
+        }
+    }
 }
