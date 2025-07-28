@@ -30,6 +30,12 @@ public class DefectDensityResponseDto {
     @Schema(description = "计算配置")
     private CalculationConfig config;
 
+    @Schema(description = "测试用例详细信息列表")
+    private List<TestCaseDetailDto> testCaseDetails;
+
+    @Schema(description = "测试周期详细信息列表")
+    private List<TestCycleDetailDto> testCycleDetails;
+
     @Data
     @Schema(description = "统计数据")
     public static class StatisticsData {
