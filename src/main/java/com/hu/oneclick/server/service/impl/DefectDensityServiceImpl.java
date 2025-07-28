@@ -148,18 +148,27 @@ public class DefectDensityServiceImpl implements DefectDensityService {
         boolean hasValidData = statistics.getUniqueTestCases() > 0 && statistics.getTotalExecutions() > 0;
         statistics.setHasValidData(hasValidData);
 
-        // 设置数据说明
+        // 设置数据说明 - 测试用例执行中的缺陷发现率
         String dataExplanation;
-        if (!hasValidData) {
+        if (statistics.getTotalExecutions() == 0) {
             if (statistics.getUniqueTestCases() == 0) {
                 dataExplanation = "未找到符合条件的测试用例，请检查项目ID、版本号和测试周期ID是否正确";
             } else {
                 dataExplanation = "测试用例存在但未执行，无法进行缺陷密度分析";
             }
-        } else if (statistics.getTotalDefectInstances() == 0) {
-            dataExplanation = "已执行测试但未发现缺陷，质量状况良好";
         } else {
-            dataExplanation = "数据充足，分析结果可信";
+            // 构建详细的执行统计信息
+            String executionInfo = String.format("已执行%d个测试%d次在%d个周期", 
+                statistics.getUniqueTestCases(), 
+                statistics.getTotalExecutions(), 
+                statistics.getTotalCycles());
+
+            if (statistics.getTotalDefectInstances() == 0) {
+                dataExplanation = String.format("测试用例执行中的缺陷发现率：%s，但未发现缺陷，质量状况优秀", executionInfo);
+            } else {
+                dataExplanation = String.format("测试用例执行中的缺陷发现率：%s，发现%d个缺陷实例", 
+                    executionInfo, statistics.getTotalDefectInstances());
+            }
         }
         statistics.setDataExplanation(dataExplanation);
 
