@@ -234,7 +234,6 @@
             i.project_id,
             i.case_category,
             i.found_after_release,
-            i.released_version,
             i.issue_version,
             i.introduced_version,
             i.is_legacy,
