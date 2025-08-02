@@ -242,7 +242,9 @@
     </select>
 
     <select id="getSelectAll" resultType="com.hu.oneclick.model.domain.dto.TestCaseDataDto">
-        SELECT t1.run_count,
+        SELECT t1.id,
+               t1.test_case_id as testCaseId,
+               t1.run_count,
                t1.run_status,
                t1.update_time,
                t1.create_user_id,
