@@ -113,6 +113,8 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             summary.setBlockedCount(0);
             summary.setSkippedCount(0);
             summary.setNotExecutedCount(0);
+            summary.setNotAvailable(0);
+            summary.setNotCompleted(0);
             return summary;
         }
 
@@ -129,6 +131,8 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         summary.setBlockedCount(statusCounts.getOrDefault("BLOCKED", 0L).intValue());
         summary.setSkippedCount(statusCounts.getOrDefault("SKIP", 0L).intValue());
         summary.setNotExecutedCount(statusCounts.getOrDefault("NOT_EXECUTED", 0L).intValue());
+        summary.setNotAvailable(statusCounts.getOrDefault("NOT_AVAILABLE", 0L).intValue());
+        summary.setNotCompleted(statusCounts.getOrDefault("NOT_COMPLETED", 0L).intValue());
 
         // 计算总执行数量
         int totalExecuted = summary.getPassCount() + summary.getFailCount() + 
@@ -141,12 +145,16 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             summary.setBlockedRate(calculateRate(summary.getBlockedCount(), totalExecuted));
             summary.setSkippedRate(calculateRate(summary.getSkippedCount(), totalExecuted));
             summary.setNotExecutedRate(calculateRate(summary.getNotExecutedCount(), totalExecuted));
+            summary.setNotAvailableRate(calculateRate(summary.getNotAvailable(), totalExecuted));
+            summary.setNotCompletedRate(calculateRate(summary.getNotCompleted(), totalExecuted));
         } else {
             summary.setPassRate(BigDecimal.ZERO);
             summary.setFailRate(BigDecimal.ZERO);
             summary.setBlockedRate(BigDecimal.ZERO);
             summary.setSkippedRate(BigDecimal.ZERO);
             summary.setNotExecutedRate(BigDecimal.ZERO);
+            summary.setNotAvailableRate(BigDecimal.ZERO);
+            summary.setNotCompletedRate(BigDecimal.ZERO);
         }
 
         logger.info("执行摘要统计 - 通过：{}({}%)，失败：{}({}%)，阻塞：{}({}%)，跳过：{}({}%)，未执行：{}({}%)", 
@@ -154,7 +162,11 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
                    summary.getFailCount(), summary.getFailRate(),
                    summary.getBlockedCount(), summary.getBlockedRate(),
                    summary.getSkippedCount(), summary.getSkippedRate(),
-                   summary.getNotExecutedCount(), summary.getNotExecutedRate());
+                   summary.getNotExecutedCount(), summary.getNotExecutedRate(),
+                    summary.getNotAvailable(), summary.getNotAvailableRate(),
+                    summary.getNotCompleted(),
+                    summary.getNotCompletedRate()                 );
+        
 
         return summary;
     }
