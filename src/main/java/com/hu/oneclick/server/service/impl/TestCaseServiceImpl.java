@@ -1342,7 +1342,8 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
       return result;
     } catch (Exception e) {
-      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}, e);
+    
+      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
       return new ArrayList<>();
     }
   }
@@ -1440,7 +1441,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       // 使用与 BeanSearchController 相同的分页处理方式
       return PageUtil.manualPaging(testCaseList);
     } catch (Exception e) {
-      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}, e);
+      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
       return new PageInfo<>(new ArrayList<>());
     }
   }
