@@ -1199,50 +1199,34 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
   public List<TestCaseBisDto> getTestCaseAllByCycleId(Long testCycleId) {
     List<TestCaseDataDto> list = testCase.getSelectAll(testCycleId);
     List<TestCaseBisDto> arrList = new ArrayList<>();
-    for (Map<String, Object> row : list) {
+    for (TestCaseDataDto testCaseDataDto : list) {
       TestCaseBisDto testCaseBisDto = new TestCaseBisDto();
             // Convert String to BigInteger for numeric fields
-            BigInteger createUserId = row.get("createUserId") != null && row.get("createUserId").toString() != null ?
-                new BigInteger(row.get("createUserId").toString()) : BigInteger.ZERO;
-            BigInteger updateUserId = row.get("updateUserId") != null && row.get("updateUserId").toString() != null ?
-                new BigInteger(row.get("updateUserId").toString()) : BigInteger.ZERO;
-            BigInteger caseRunDuration = row.get("caseRunDuration") != null && row.get("caseRunDuration").toString() != null ?
-                new BigInteger(row.get("caseRunDuration").toString()) : BigInteger.ZERO;
-            BigInteger caseTotalPeriod = row.get("caseTotalPeriod") != null && row.get("caseTotalPeriod").toString() != null ?
-                new BigInteger(row.get("caseTotalPeriod").toString()) : BigInteger.ZERO;
+            BigInteger createUserId = testCaseDataDto.getCreateUserId() != null ? 
+                new BigInteger(testCaseDataDto.getCreateUserId()) : BigInteger.ZERO;
+            BigInteger updateUserId = testCaseDataDto.getUpdateUserId() != null ? 
+                new BigInteger(testCaseDataDto.getUpdateUserId()) : BigInteger.ZERO;
+            BigInteger caseRunDuration = testCaseDataDto.getCaseRunDuration() != null ? 
+                new BigInteger(testCaseDataDto.getCaseRunDuration()) : BigInteger.ZERO;
+            BigInteger caseTotalPeriod = testCaseDataDto.getCaseTotalPeriod() != null ? 
+                new BigInteger(testCaseDataDto.getCaseTotalPeriod()) : BigInteger.ZERO;
 
-            testCaseBisDto.setTestCaseRun((Long) row.get("id"), (Long) row.get("testCaseId"),
-                (Integer) row.get("runCount"), (Integer) row.get("runStatus"),
-                (Date) row.get("updateTime"), createUserId, updateUserId,
+            testCaseBisDto.setTestCaseRun(testCaseDataDto.getId(), testCaseDataDto.getTestCaseId(),
+                testCaseDataDto.getRunCount(), testCaseDataDto.getRunStatus(),
+                testCaseDataDto.getUpdateTime(), createUserId, updateUserId, 
                 caseRunDuration, caseTotalPeriod);
 
-            // 构建 TestCaseDataDto
-        TestCaseDataDto testCaseDataDto = new TestCaseDataDto();
-        testCaseDataDto.setId(Long.valueOf(row.get("id").toString()));
-        testCaseDataDto.setTestCaseId(Long.valueOf(row.get("testCaseId").toString()));
-        testCaseDataDto.setRunCount((Integer) row.get("runCount"));
-        testCaseDataDto.setRunStatus((Integer) row.get("runStatus"));
-        testCaseDataDto.setUpdateTime((Date) row.get("updateTime"));
-        testCaseDataDto.setCreateUserId(Long.valueOf(row.get("createUserId").toString()));
-        testCaseDataDto.setUpdateUserId(Long.valueOf(row.get("updateUserId").toString()));
-        testCaseDataDto.setCaseRunDuration(row.get("caseRunDuration") != null ? row.get("caseRunDuration").toString() : null);
-        testCaseDataDto.setCaseTotalPeriod(row.get("caseTotalPeriod") != null ? row.get("caseTotalPeriod").toString() : null);
-
-        // 构建 TestCase
-        TestCase testCase = new TestCase();
-        testCase.setId(Long.valueOf(row.get("testCaseId2").toString())); // 使用 testCaseId2，这是 test_case 表的真实ID
-
-            testCaseBisDto.setTestCase(testCase.getId(), (Long) row.get("projectId"),
-                (String) row.get("title"), (String) row.get("priority"), (String) row.get("feature"),
-                (String) row.get("description"), (Date) row.get("executeTime"),
-                (String) row.get("browser"), (String) row.get("platform"), (String) row.get("version"),
-                (String) row.get("caseCategory"), (String) row.get("testType"),
-                (String) row.get("testCondition"), (String) row.get("env"),
-                (String) row.get("externalLinkId"), (String) row.get("lastRunStatus"),
-                (String) row.get("module"), (String) row.get("testDevice"),
-                (String) row.get("testData"), (String) row.get("testMethod"),
-                (String) row.get("testStatus"), (String) row.get("reportTo"),
-                (String) row.get("testcaseExpand"), (String) row.get("remarks"));
+            testCaseBisDto.setTestCase(testCaseDataDto.getId(), testCaseDataDto.getProjectId(),
+                testCaseDataDto.getTitle(), testCaseDataDto.getPriority(), testCaseDataDto.getFeature(),
+                testCaseDataDto.getDescription(), testCaseDataDto.getExecuteTime(),
+                testCaseDataDto.getBrowser(), testCaseDataDto.getPlatform(), testCaseDataDto.getVersion(),
+                testCaseDataDto.getCaseCategory(), testCaseDataDto.getTestType(),
+                testCaseDataDto.getTestCondition(), testCaseDataDto.getEnv(),
+                testCaseDataDto.getExternalLinkId(), testCaseDataDto.getLastRunStatus(),
+                testCaseDataDto.getModule(), testCaseDataDto.getTestDevice(),
+                testCaseDataDto.getTestData(), testCaseDataDto.getTestMethod(),
+                testCaseDataDto.getTestStatus(), testCaseDataDto.getReportTo(),
+                testCaseDataDto.getTestcaseExpand(), testCaseDataDto.getRemarks());
       arrList.add(testCaseBisDto);
     }
     return arrList;
@@ -1358,7 +1342,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
       return result;
     } catch (Exception e) {
-
+    
       log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
       return new ArrayList<>();
     }
