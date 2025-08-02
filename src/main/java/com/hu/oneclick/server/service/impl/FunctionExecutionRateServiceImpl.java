@@ -3,15 +3,15 @@ package com.hu.oneclick.server.service.impl;
 import com.hu.oneclick.dao.TestCaseDao;
 import com.hu.oneclick.model.domain.dto.*;
 import com.hu.oneclick.server.service.FunctionExecutionRateService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * 功能执行率报表服务实现
@@ -293,6 +293,7 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
                     // 转换状态文本
                     if (runStatus != null) {
                         switch (runStatus) {
+                            case 0: runStatusText = "无效"; break;
                             case 1: runStatusText = "通过"; break;
                             case 2: runStatusText = "失败"; break;
                             case 3: runStatusText = "跳过"; break;
