@@ -36,6 +36,7 @@ public class IssueDurationCalculator {
         System.out.println("=== Issue对象: " + issue + " ===");
         System.out.println("=== 用户时区参数: " + userTimezone + " ===");
         System.out.println("=== Issue createTime原始值: " + issue.getCreateTime() + " ===");
+        System.out.println("=== Issue runcaseId: " + issue.getRuncaseId() + " (runcaseId为null是正常的) ===");
 
         if (issue.getCreateTime() == null) {
             System.out.println("=== ❌ createTime为null，无法计算duration，设置为0 ===");
@@ -206,6 +207,7 @@ public class IssueDurationCalculator {
         System.out.println("=== - 当前时间(毫秒): " + currentTime.getTime() + " ===");
         System.out.println("=== - 用户时区: " + userTimezone + " ===");
         System.out.println("=== - Issue创建时间: " + issue.getCreateTime() + " ===");
+        System.out.println("=== - Issue runcaseId: " + issue.getRuncaseId() + " (可能为null，这是正常的) ===");
 
         // 数据库中存储的时间已经是UTC时间，不需要再次转换
         Date adjustedCreateTime = issue.getCreateTime();
