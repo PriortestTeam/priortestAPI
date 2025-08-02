@@ -38,8 +38,8 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="IssueMap">
         select
-        id, project_id, user_id, title, issue_status, planned_release_date,
-        priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, 
+        id, project_id, user_id, title, issue_status,
+        priority, env, browser, case_category, release_phase, found_after_release, released_version, 
         issue_version, introduced_version, is_legacy, fix_version, severity, test_device, runcase_id, create_time, update_time, description, duration
         from oneclick.issue
         <where>
@@ -112,12 +112,10 @@
                project_id,
                user_id,
                title,
-               status,
+               issue_status,
                priority,
                env,
                browser,
-               platform,
-               version,
                case_category,
                release_phase,
                found_after_release,
