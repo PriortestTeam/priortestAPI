@@ -1,6 +1,5 @@
 package com.hu.oneclick.model.domain.dto;
 
-
 import lombok.Data;
 
 import java.math.BigInteger;
@@ -13,8 +12,10 @@ public class TestCaseBisDto {
 
     TestCaseDataCaseDto testCase;
 
-    public void setTestCaseRun(int run, int status, Date updateTime, BigInteger createUserId, BigInteger updateUserId, BigInteger caseRunDuration, BigInteger caseTotalPeriod) {
+    public void setTestCaseRun(Long id, Long testCaseId, int run, int status, Date updateTime, BigInteger createUserId, BigInteger updateUserId, BigInteger caseRunDuration, BigInteger caseTotalPeriod) {
         testCaseRun = new TestCaseDataRunDto();
+        testCaseRun.setId(id);
+        testCaseRun.setTestCaseId(testCaseId);
         testCaseRun.setRunCount(run);
         testCaseRun.setRunStatus(status);
         testCaseRun.setUpdateTime(updateTime);
@@ -50,5 +51,46 @@ public class TestCaseBisDto {
         testCase.setReportTo(reportTo);
         testCase.setTestcaseExpand(testcaseExpand);
         testCase.setRemarks(remarks);
+    }
+
+    @Data
+    public static class TestCaseDataRunDto {
+        private Long id;
+        private Long testCaseId;
+        private Integer runCount;
+        private Integer runStatus;
+        private Date updateTime;
+        private BigInteger createUserId;
+        private BigInteger updateUserId;
+        private BigInteger caseRunDuration;
+        private BigInteger caseTotalPeriod;
+    }
+
+    @Data
+    public static class TestCaseDataCaseDto {
+        private Long id;
+        private Long projectId;
+        private String title;
+        private String priority;
+        private String feature;
+        private String description;
+        private Date executeTime;
+        private String browser;
+        private String platform;
+        private String version;
+        private String caseCategory;
+        private String testType;
+        private String testCondition;
+        private String env;
+        private String externalLinkId;
+        private Integer lastRunStatus;
+        private String module;
+        private String testDevice;
+        private String testData;
+        private String testMethod;
+        private String testStatus;
+        private String reportTo;
+        private String testcaseExpand;
+        private String remarks;
     }
 }

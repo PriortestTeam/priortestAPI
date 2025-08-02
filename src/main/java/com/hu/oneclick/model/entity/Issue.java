@@ -175,4 +175,6 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @JsonProperty("duration")
     private Integer duration;
 
+    @Schema(description = "运行用例ID")
+    private String runCaseId;
 }

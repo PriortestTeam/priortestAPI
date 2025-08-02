@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -686,7 +687,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * @param colValue
    * @param testCase
    * @param errorTipsMap
-   * @param field
+   *      @param field
    * @param required
    */
   private void setValue(JSONObject colValue, TestCase testCase,
@@ -1043,7 +1044,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       // 获取视图过滤参数
       Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
           param.getViewId(), param.getProjectId().toString());
-      
+
       if (filterParams == null) {
         // 如果获取过滤参数失败，回退到简单查询
         log.warn("获取视图过滤参数失败，回退到简单查询");
@@ -1053,21 +1054,21 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       // 使用 BeanSearcher 进行复杂查询
       // 这里需要注入 BeanSearcher，但由于当前架构限制，我们使用另一种方式
       // 可以通过调用 BeanSearchController 的逻辑来实现
-      
+
       // 临时方案：使用现有的 queryList 方法
       TestCaseDto testCaseDto = new TestCaseDto();
       testCaseDto.setProjectId(param.getProjectId());
-      
+
       // 创建 ViewTreeDto 对象
       ViewTreeDto viewTreeDto = new ViewTreeDto();
       viewTreeDto.setId(Long.valueOf(param.getViewId()));
       testCaseDto.setViewTreeDto(viewTreeDto);
-      
+
       Resp<List<TestCase>> resp = queryList(testCaseDto);
       if (resp != null && resp.getData() != null) {
         return resp.getData();
       }
-      
+
       return new ArrayList<>();
     } catch (Exception e) {
       log.error("视图过滤查询失败，回退到简单查询", e);
@@ -1083,7 +1084,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       // 获取视图过滤参数
       Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(
           param.getViewId(), param.getProjectId().toString());
-      
+
       if (filterParams == null) {
         // 如果获取过滤参数失败，回退到简单查询
         log.warn("获取视图过滤参数失败，回退到简单查询");
@@ -1093,16 +1094,16 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       // 使用 BeanSearcher 进行复杂查询
       // 这里需要注入 BeanSearcher，但由于当前架构限制，我们使用另一种方式
       // 可以通过调用 BeanSearchController 的逻辑来实现
-      
+
       // 临时方案：使用现有的 queryList 方法
       TestCaseDto testCaseDto = new TestCaseDto();
       testCaseDto.setProjectId(param.getProjectId());
-      
+
       // 创建 ViewTreeDto 对象
       ViewTreeDto viewTreeDto = new ViewTreeDto();
       viewTreeDto.setId(Long.valueOf(param.getViewId()));
       testCaseDto.setViewTreeDto(viewTreeDto);
-      
+
       Resp<List<TestCase>> resp = queryList(testCaseDto);
       if (resp != null && resp.getData() != null) {
         // 手动分页处理
@@ -1110,12 +1111,12 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         int total = allData.size();
         int startIndex = (pageNum - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, total);
-        
+
         List<TestCase> pageData = new ArrayList<>();
         if (startIndex < total) {
           pageData = allData.subList(startIndex, endIndex);
         }
-        
+
         PageInfo<TestCase> pageInfo = new PageInfo<>(pageData);
         pageInfo.setPageNum(pageNum);
         pageInfo.setPageSize(pageSize);
@@ -1123,7 +1124,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         pageInfo.setPages((total + pageSize - 1) / pageSize);
         return pageInfo;
       }
-      
+
       return new PageInfo<>(new ArrayList<>());
     } catch (Exception e) {
       log.error("视图过滤查询失败，回退到简单查询", e);
@@ -1200,21 +1201,32 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     List<TestCaseBisDto> arrList = new ArrayList<>();
     for (TestCaseDataDto testCaseDataDto : list) {
       TestCaseBisDto testCaseBisDto = new TestCaseBisDto();
-      testCaseBisDto.setTestCaseRun(testCaseDataDto.getRunCount(), testCaseDataDto.getRunStatus(),
-          testCaseDataDto.getUpdateTime(), testCaseDataDto.getCreateUserId(),
-          testCaseDataDto.getUpdateUserId(), testCaseDataDto.getCaseRunDuration(),
-          testCaseDataDto.getCaseTotalPeriod());
-      testCaseBisDto.setTestCase(testCaseDataDto.getId(), testCaseDataDto.getProjectId(),
-          testCaseDataDto.getTitle(), testCaseDataDto.getPriority(), testCaseDataDto.getFeature(),
-          testCaseDataDto.getDescription(), testCaseDataDto.getExecuteTime(),
-          testCaseDataDto.getBrowser(), testCaseDataDto.getPlatform(), testCaseDataDto.getVersion(),
-          testCaseDataDto.getCaseCategory(), testCaseDataDto.getTestType(),
-          testCaseDataDto.getTestCondition(), testCaseDataDto.getEnv(),
-          testCaseDataDto.getExternalLinkId(), testCaseDataDto.getLastRunStatus(),
-          testCaseDataDto.getModule(), testCaseDataDto.getTestDevice(),
-          testCaseDataDto.getTestData(), testCaseDataDto.getTestMethod(),
-          testCaseDataDto.getTestStatus(), testCaseDataDto.getReportTo(),
-          testCaseDataDto.getTestcaseExpand(), testCaseDataDto.getRemarks());
+            // Convert String to BigInteger for numeric fields
+            BigInteger createUserId = testCaseDataDto.getCreateUserId() != null ? 
+                new BigInteger(testCaseDataDto.getCreateUserId()) : BigInteger.ZERO;
+            BigInteger updateUserId = testCaseDataDto.getUpdateUserId() != null ? 
+                new BigInteger(testCaseDataDto.getUpdateUserId()) : BigInteger.ZERO;
+            BigInteger caseRunDuration = testCaseDataDto.getCaseRunDuration() != null ? 
+                new BigInteger(testCaseDataDto.getCaseRunDuration()) : BigInteger.ZERO;
+            BigInteger caseTotalPeriod = testCaseDataDto.getCaseTotalPeriod() != null ? 
+                new BigInteger(testCaseDataDto.getCaseTotalPeriod()) : BigInteger.ZERO;
+
+            testCaseBisDto.setTestCaseRun(testCaseDataDto.getId(), testCaseDataDto.getTestCaseId(),
+                testCaseDataDto.getRunCount(), testCaseDataDto.getRunStatus(),
+                testCaseDataDto.getUpdateTime(), createUserId, updateUserId, 
+                caseRunDuration, caseTotalPeriod);
+
+           testCaseBisDto.setTestCase(testCaseDataDto.getTestCaseId(),                                                                   testCaseDataDto.getProjectId(),
+                testCaseDataDto.getTitle(), testCaseDataDto.getPriority(), testCaseDataDto.getFeature(),
+                testCaseDataDto.getDescription(), testCaseDataDto.getExecuteTime(),
+                testCaseDataDto.getBrowser(), testCaseDataDto.getPlatform(), testCaseDataDto.getVersion(),
+                testCaseDataDto.getCaseCategory(), testCaseDataDto.getTestType(),
+                testCaseDataDto.getTestCondition(), testCaseDataDto.getEnv(),
+                testCaseDataDto.getExternalLinkId(), testCaseDataDto.getLastRunStatus(),
+                testCaseDataDto.getModule(), testCaseDataDto.getTestDevice(),
+                testCaseDataDto.getTestData(), testCaseDataDto.getTestMethod(),
+                testCaseDataDto.getTestStatus(), testCaseDataDto.getReportTo(),
+                testCaseDataDto.getTestcaseExpand(), testCaseDataDto.getRemarks());
       arrList.add(testCaseBisDto);
     }
     return arrList;
@@ -1318,18 +1330,19 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     try {
       // 获取视图过滤参数
       Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
-      
+
       if (filterParams == null) {
         // 如果没有过滤条件，返回空列表
         return new ArrayList<>();
       }
-      
+
       // 使用BeanSearcher进行查询，使用testCase作为查询类
       Class<?> testCaseClass = Class.forName("com.hu.oneclick.model.entity.TestCase");
       List<Map<String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
-      
+
       return result;
     } catch (Exception e) {
+    
       log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
       return new ArrayList<>();
     }
@@ -1348,14 +1361,14 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     }
     // 2. 获取 projectId
     String projectId = jwtUserService.getUserLoginInfo().getSysUser().getUserUseOpenProject().getProjectId();
-    
+
     // 3. 计算偏移量
     int offset = (pageNum - 1) * pageSize;
-    
+
     // 添加调试日志
     log.info("queryByFieldAndValue - 分页参数: pageNum={}, pageSize={}, offset={}", pageNum, pageSize, offset);
     log.info("queryByFieldAndValue - 查询参数: tableName={}, fieldNameEn={}, value={}, projectId={}", tableName, fieldNameEn, value, projectId);
-    
+
     // 4. 使用 DAO 方法查询数据
     List<Map<String, Object>> result = viewDao.queryRecordsByScope(
         tableName,
@@ -1366,12 +1379,12 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         offset,
         pageSize
     );
-    
+
     log.info("queryByFieldAndValue - 查询结果数量: {}", result.size());
     if (!result.isEmpty()) {
       log.info("queryByFieldAndValue - 第一条记录: {}", result.get(0));
     }
-    
+
     // 5. 查询总数
     long total = viewDao.countRecordsByScope(
         tableName,
@@ -1380,12 +1393,12 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
         projectId,
         null
     );
-    
+
     log.info("queryByFieldAndValue - 总记录数: {}", total);
-    
+
     // 6. 转 bean
     List<TestCase> testCaseList = result.stream().map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class)).collect(Collectors.toList());
-    
+
     // 7. 构造 PageInfo
     PageInfo<TestCase> pageInfo = new PageInfo<>(testCaseList);
     pageInfo.setPageNum(pageNum);
@@ -1396,10 +1409,10 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     pageInfo.setIsLastPage(pageNum >= pageInfo.getPages());
     pageInfo.setHasPreviousPage(pageNum > 1);
     pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
-    
+
     log.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
              pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage());
-    
+
     return pageInfo;
   }
 
@@ -1408,23 +1421,23 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     try {
       // 获取视图过滤参数
       Map<String, Object> filterParams = viewFilterService.getFilterParamsByViewId(viewId, projectId);
-      
+
       if (filterParams == null) {
         // 如果没有过滤条件，返回空分页结果
         return new PageInfo<>(new ArrayList<>());
       }
-      
+
       // 使用BeanSearcher进行查询，使用testCase作为查询类
       Class<?> testCaseClass = Class.forName("com.hu.oneclick.model.entity.TestCase");
-      
+
       // 使用与 BeanSearchController 完全相同的逻辑：searchAll + manualPaging
       List<Map<String, Object>> result = mapSearcher.searchAll(testCaseClass, filterParams);
-      
+
       // 转换为 TestCase 对象
       List<TestCase> testCaseList = result.stream()
           .map(map -> BeanUtil.toBeanIgnoreError(map, TestCase.class))
           .collect(Collectors.toList());
-      
+
       // 使用与 BeanSearchController 相同的分页处理方式
       return PageUtil.manualPaging(testCaseList);
     } catch (Exception e) {

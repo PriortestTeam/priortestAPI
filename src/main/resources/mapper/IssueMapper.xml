@@ -5,12 +5,12 @@
     <resultMap type="com.hu.oneclick.model.entity.Issue" id="IssueMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
-        <!--        <result property="userId" column="user_id" jdbcType="INTEGER"/>-->
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <!--        <result property="author" column="author" jdbcType="VARCHAR"/>-->
+        <result property="author" column="author" jdbcType="VARCHAR"/>
         <result property="issueStatus" column="issue_status" jdbcType="INTEGER"/>
         <!--        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>-->
-        
+
         <!--        <result property="testCase" column="test_case" jdbcType="INTEGER"/>-->
         <!--        <result property="testCycle" column="test_cycle" jdbcType="INTEGER"/>-->
         <!--        <result property="feature" column="feature" jdbcType="INTEGER"/>-->
@@ -37,7 +37,7 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="IssueMap">
         select
-        id, project_id, user_id, title, status, planned_release_date,
+        id, project_id, user_id, title, issue_status, planned_release_date,
         priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, 
         issue_version, introduced_version, is_legacy, fix_version, severity, test_device, create_time, update_time, description, duration
         from oneclick.issue
@@ -58,7 +58,7 @@
             <if test="status != null">
                 and status = #{status}
             </if>
-            
+
 
             <if test="priority != null and priority != ''">
                 and priority = #{priority}
@@ -144,11 +144,11 @@
                 title = #{title},
             </if>
 
-            <if test="status != null">
-                status = #{status},
+            <if test="issueStatus != null">
+                issue_status = #{issueStatus},
             </if>
 
-            
+
 
 
             <if test="priority != null and priority != ''">
@@ -215,6 +215,110 @@
     </select>
     <select id="findAll" resultType="com.hu.oneclick.model.entity.Issue">
         select * from issue
+    </select>
+
+    <!-- 根据runCaseId查询缺陷 -->
+    <select id="queryDefectsByRunCaseId" parameterType="string" resultType="map">
+        SELECT 
+            i.id,
+            i.title,
+            i.description,
+            i.severity,
+            i.priority,
+            i.issue_status,
+            i.env,
+            i.browser,
+            i.test_device,
+            i.create_time,
+            i.update_time,
+            i.project_id,
+            i.case_category,
+            i.found_after_release,
+            i.issue_version,
+            i.introduced_version,
+            i.is_legacy,
+            i.fix_version,
+            i.runcase_id
+        FROM issue i
+        WHERE i.runcase_id = #{runCaseId}
+    </select>
+
+    <!-- 批量根据runCaseId列表查询缺陷 -->
+    <select id="queryDefectsByRunCaseIds" parameterType="list" resultType="map">
+        SELECT 
+            i.id,
+            i.title,
+            i.description,
+            i.severity,
+            i.priority,
+            i.issue_status,
+            i.env,
+            i.browser,
+            i.test_device,
+            i.create_time,
+            i.update_time,
+            i.project_id,
+            i.case_category,
+            i.found_after_release,
+            i.issue_version,
+            i.introduced_version,
+            i.is_legacy,
+            i.fix_version,
+            i.runcase_id
+        FROM issue i
+        WHERE i.runcase_id IN
+        <foreach item="runCaseId" collection="list" open="(" separator="," close=")">
+            #{runCaseId}
+        </foreach>
+    </select>
+
+    <!-- 查询缺陷与运行用例的详细对应关系 -->
+    <select id="queryDefectRunCaseMapping" resultType="map">
+        SELECT 
+            i.id as defect_id,
+            i.title as defect_title,
+            i.description as defect_description,
+            i.severity,
+            i.priority,
+            i.issue_status,
+            i.env,
+            i.browser,
+            i.test_device,
+            i.create_time as defect_create_time,
+
+            tc.id as test_case_id,
+            tc.title as test_case_title,
+            tc.version as test_case_version,
+
+            tcycle.id as test_cycle_id,
+            tcycle.title as test_cycle_title,
+            tcycle.env as test_cycle_env,
+            tcycle.version as test_cycle_version,
+
+            tcjtc.id as run_case_id,
+            tcjtc.run_status as execution_status,
+            tcjtc.run_count,
+            tcjtc.update_time as execution_time
+
+        FROM issue i
+        INNER JOIN test_cycle_join_test_case tcjtc ON i.runcase_id = tcjtc.id
+        INNER JOIN test_case tc ON tcjtc.test_case_id = tc.id
+        INNER JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
+
+        WHERE tc.project_id = #{projectId}
+          AND tc.version = #{majorVersion}
+          AND tcycle.version IN
+        <foreach collection="includeVersions" item="version" open="(" separator="," close=")">
+            #{version}
+        </foreach>
+        <if test="testCycleIds != null and testCycleIds.size() > 0">
+            AND tcjtc.test_cycle_id IN
+            <foreach collection="testCycleIds" item="cycleId" open="(" separator="," close=")">
+                #{cycleId}
+            </foreach>
+        </if>
+
+        ORDER BY i.id, tcjtc.id
     </select>
 
 </mapper>
