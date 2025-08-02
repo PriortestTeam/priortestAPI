@@ -5,9 +5,8 @@
     <resultMap type="com.hu.oneclick.model.entity.Issue" id="IssueMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="projectId" column="project_id" jdbcType="INTEGER"/>
-        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="createUserId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
-        <result property="author" column="author" jdbcType="VARCHAR"/>
         <result property="issueStatus" column="issue_status" jdbcType="INTEGER"/>
         <!--        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>-->
 
@@ -29,6 +28,7 @@
         <result property="fixVersion" column="fix_version" jdbcType="VARCHAR"/>
         <result property="severity" column="severity" jdbcType="VARCHAR"/>
         <result property="testDevice" column="test_device" jdbcType="VARCHAR"/>
+        <result property="runcaseId" column="runcase_id" jdbcType="BIGINT"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
@@ -37,9 +37,10 @@
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="IssueMap">
         select
-        id, project_id, user_id, title, issue_status, planned_release_date,
-        priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, 
-        issue_version, introduced_version, is_legacy, fix_version, severity, test_device, create_time, update_time, description, duration
+        id, project_id, create_user_id, title, issue_status,
+        priority, env, browser, case_category, found_after_release, 
+        issue_version, introduced_version, is_legacy, fix_version, severity, test_device, 
+        COALESCE(runcase_id, '') as runcase_id, create_time, update_time, description, duration
         from oneclick.issue
         <where>
             <if test="id != null">
@@ -48,8 +49,8 @@
             <if test="projectId != null">
                 and project_id = #{projectId}
             </if>
-            <if test="userId != null">
-                and user_id = #{userId}
+            <if test="createUserId != null">
+                and create_user_id = #{createUserId}
             </if>
             <if test="title != null and title != ''">
                 and title = #{title}
@@ -109,24 +110,21 @@
     <select id="queryById" resultMap="IssueMap">
         select id,
                project_id,
-               user_id,
+               create_user_id,
                title,
-               status,
+               issue_status,
                priority,
                env,
                browser,
-               platform,
-               version,
                case_category,
-               release_phase,
                found_after_release,
-               released_version,
                issue_version,
                introduced_version,
                is_legacy,
                fix_version,
                severity,
                test_device,
+               COALESCE(runcase_id, '') as runcase_id,
                create_time,
                update_time,
                description,

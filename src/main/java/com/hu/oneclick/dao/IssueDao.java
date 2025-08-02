@@ -11,7 +11,7 @@ import java.util.Map;
 public interface IssueDao extends BaseMapper<Issue> {
 
 
-    Issue queryById(@Param("id") String id,@Param("masterId") String masterId);
+    Issue queryById(@Param("id") Long id);
 
     int updateByPrimaryKeySelective(Issue issue);
 

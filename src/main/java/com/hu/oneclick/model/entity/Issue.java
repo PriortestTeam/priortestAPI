@@ -126,8 +126,6 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @Schema(description = "运行用例Id")
     private long runcaseId;
 
-
-
     /**
      * 修复分类，表示该问题属于哪种类别的修复措施
      */
@@ -174,7 +172,4 @@ public class Issue extends AssignBaseEntity implements Serializable {
     @Schema(description = "存活时长(小时)")
     @JsonProperty("duration")
     private Integer duration;
-
-    @Schema(description = "运行用例ID")
-    private String runCaseId;
 }
