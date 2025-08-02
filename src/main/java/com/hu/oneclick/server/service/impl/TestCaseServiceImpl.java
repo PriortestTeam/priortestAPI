@@ -1197,7 +1197,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
   @Override
   public List<TestCaseBisDto> getTestCaseAllByCycleId(Long testCycleId) {
-    List<Map<String, Object>> list = testCase.getSelectAll(testCycleId);
+    List<TestCaseDataDto> list = testCase.getSelectAll(testCycleId);
     List<TestCaseBisDto> arrList = new ArrayList<>();
     for (Map<String, Object> row : list) {
       TestCaseBisDto testCaseBisDto = new TestCaseBisDto();
@@ -1207,54 +1207,6 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
             BigInteger updateUserId = row.get("updateUserId") != null && row.get("updateUserId").toString() != null ?
                 new BigInteger(row.get("updateUserId").toString()) : BigInteger.ZERO;
             BigInteger caseRunDuration = row.get("caseRunDuration") != null && row.get("caseRunDuration").toString() != null ?
-                new BigInteger(row.get("caseRunDuration").toString()) : BigInteger.ZERO;
-            BigInteger caseTotalPeriod = row.get("caseTotalPeriod") != null && row.get("caseTotalPeriod").toString() != null ?
-                new BigInteger(row.get("caseTotalPeriod").toString()) : BigInteger.ZERO;
-
-            // Set testCaseRun data
-            testCaseBisDto.setTestCaseRun(
-                Long.valueOf(row.get("id").toString()),
-                Long.valueOf(row.get("testCaseId").toString()),
-                Integer.parseInt(row.get("runCount").toString()),
-                Integer.parseInt(row.get("runStatus").toString()),
-                (Date) row.get("updateTime"),
-                createUserId,
-                updateUserId,
-                caseRunDuration,
-                caseTotalPeriod
-            );
-
-            // Create testCase object using testCaseId2 for the correct test_case.id
-            TestCaseBisDto.TestCaseDataCaseDto testCaseDto = new TestCaseBisDto.TestCaseDataCaseDto();
-            testCaseDto.setId(Long.valueOf(row.get("testCaseId2").toString())); // 使用 testCaseId2，这是真正的 test_case.id
-            testCaseDto.setProjectId(row.get("projectId") != null ? Long.valueOf(row.get("projectId").toString()) : null);
-            testCaseDto.setTitle((String) row.get("title"));
-            testCaseDto.setPriority((String) row.get("priority"));
-            testCaseDto.setFeature((String) row.get("feature"));
-            testCaseDto.setDescription((String) row.get("description"));
-            testCaseDto.setExecuteTime((Date) row.get("executeTime"));
-            testCaseDto.setBrowser((String) row.get("browser"));
-            testCaseDto.setPlatform((String) row.get("platform"));
-            testCaseDto.setVersion((String) row.get("version"));
-            testCaseDto.setCaseCategory((String) row.get("caseCategory"));
-            testCaseDto.setTestType((String) row.get("testType"));
-            testCaseDto.setTestCondition((String) row.get("testCondition"));
-            testCaseDto.setEnv((String) row.get("env"));
-            testCaseDto.setExternalLinkId((String) row.get("externalLinkId"));
-            testCaseDto.setLastRunStatus(row.get("lastRunStatus") != null ? Integer.parseInt(row.get("lastRunStatus").toString()) : null);
-            testCaseDto.setModule((String) row.get("module"));
-            testCaseDto.setTestDevice((String) row.get("testDevice"));
-            testCaseDto.setTestData((String) row.get("testData"));
-            testCaseDto.setTestMethod((String) row.get("testMethod"));
-            testCaseDto.setTestStatus((String) row.get("testStatus"));
-            testCaseDto.setReportTo((String) row.get("reportTo"));
-            testCaseDto.setTestcaseExpand((String) row.get("testcaseExpand"));
-            testCaseDto.setRemarks((String) row.get("remarks"));
-
-            testCaseBisDto.setTestCase(testCaseDto);
-            arrList.add(testCaseBisDto);
-        }
-        return arrList;RunDuration").toString() != null ?
                 new BigInteger(row.get("caseRunDuration").toString()) : BigInteger.ZERO;
             BigInteger caseTotalPeriod = row.get("caseTotalPeriod") != null && row.get("caseTotalPeriod").toString() != null ?
                 new BigInteger(row.get("caseTotalPeriod").toString()) : BigInteger.ZERO;
