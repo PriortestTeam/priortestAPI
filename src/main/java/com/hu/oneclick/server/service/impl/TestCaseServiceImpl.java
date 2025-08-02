@@ -1342,7 +1342,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
       return result;
     } catch (Exception e) {
-    
+
       log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
       return new ArrayList<>();
     }
