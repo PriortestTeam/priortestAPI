@@ -2,56 +2,42 @@ package com.hu.oneclick.model.domain.dto;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
-/**
- * 测试用例数据DTO，包含测试用例和运行信息
- */
 @Data
 public class TestCaseDataDto {
-
-    /**
-     * test_cycle_join_test_case表的ID
-     */
     private Long id;
-
-    /**
-     * 测试用例ID
-     */
     private Long testCaseId;
-
-    /**
-     * 运行次数
-     */
     private Integer runCount;
-
-    /**
-     * 运行状态
-     */
     private Integer runStatus;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
-
-    /**
-     * 创建用户ID
-     */
+    private Date updateTime;
     private String createUserId;
-
-    /**
-     * 更新用户ID
-     */
     private String updateUserId;
-
-    /**
-     * 用例运行时长
-     */
     private String caseRunDuration;
-
-    /**
-     * 用例总时长
-     */
     private String caseTotalPeriod;
+
+    // Test case fields
+    private Long projectId;
+    private String title;
+    private String priority;
+    private String feature;
+    private String description;
+    private Date executeTime;
+    private String browser;
+    private String platform;
+    private String version;
+    private String caseCategory;
+    private String testType;
+    private String testCondition;
+    private String env;
+    private String externalLinkId;
+    private Integer lastRunStatus;
+    private String module;
+    private String testDevice;
+    private String testData;
+    private String testMethod;
+    private String testStatus;
+    private String reportTo;
+    private String testcaseExpand;
+    private String remarks;
 }

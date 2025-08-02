@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -1200,21 +1201,32 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
     List<TestCaseBisDto> arrList = new ArrayList<>();
     for (TestCaseDataDto testCaseDataDto : list) {
       TestCaseBisDto testCaseBisDto = new TestCaseBisDto();
-      testCaseBisDto.setTestCaseRun(testCaseDataDto.getRunCount(), testCaseDataDto.getRunStatus(),
-          testCaseDataDto.getUpdateTime(), testCaseDataDto.getCreateUserId(),
-          testCaseDataDto.getUpdateUserId(), testCaseDataDto.getCaseRunDuration(),
-          testCaseDataDto.getCaseTotalPeriod());
-      testCaseBisDto.setTestCase(testCaseDataDto.getId(), testCaseDataDto.getProjectId(),
-          testCaseDataDto.getTitle(), testCaseDataDto.getPriority(), testCaseDataDto.getFeature(),
-          testCaseDataDto.getDescription(), testCaseDataDto.getExecuteTime(),
-          testCaseDataDto.getBrowser(), testCaseDataDto.getPlatform(), testCaseDataDto.getVersion(),
-          testCaseDataDto.getCaseCategory(), testCaseDataDto.getTestType(),
-          testCaseDataDto.getTestCondition(), testCaseDataDto.getEnv(),
-          testCaseDataDto.getExternalLinkId(), testCaseDataDto.getLastRunStatus(),
-          testCaseDataDto.getModule(), testCaseDataDto.getTestDevice(),
-          testCaseDataDto.getTestData(), testCaseDataDto.getTestMethod(),
-          testCaseDataDto.getTestStatus(), testCaseDataDto.getReportTo(),
-          testCaseDataDto.getTestcaseExpand(), testCaseDataDto.getRemarks());
+            // Convert String to BigInteger for numeric fields
+            BigInteger createUserId = testCaseDataDto.getCreateUserId() != null ? 
+                new BigInteger(testCaseDataDto.getCreateUserId()) : BigInteger.ZERO;
+            BigInteger updateUserId = testCaseDataDto.getUpdateUserId() != null ? 
+                new BigInteger(testCaseDataDto.getUpdateUserId()) : BigInteger.ZERO;
+            BigInteger caseRunDuration = testCaseDataDto.getCaseRunDuration() != null ? 
+                new BigInteger(testCaseDataDto.getCaseRunDuration()) : BigInteger.ZERO;
+            BigInteger caseTotalPeriod = testCaseDataDto.getCaseTotalPeriod() != null ? 
+                new BigInteger(testCaseDataDto.getCaseTotalPeriod()) : BigInteger.ZERO;
+
+            testCaseBisDto.setTestCaseRun(testCaseDataDto.getId(), testCaseDataDto.getTestCaseId(),
+                testCaseDataDto.getRunCount(), testCaseDataDto.getRunStatus(),
+                testCaseDataDto.getUpdateTime(), createUserId, updateUserId, 
+                caseRunDuration, caseTotalPeriod);
+
+            testCaseBisDto.setTestCase(testCaseDataDto.getId(), testCaseDataDto.getProjectId(),
+                testCaseDataDto.getTitle(), testCaseDataDto.getPriority(), testCaseDataDto.getFeature(),
+                testCaseDataDto.getDescription(), testCaseDataDto.getExecuteTime(),
+                testCaseDataDto.getBrowser(), testCaseDataDto.getPlatform(), testCaseDataDto.getVersion(),
+                testCaseDataDto.getCaseCategory(), testCaseDataDto.getTestType(),
+                testCaseDataDto.getTestCondition(), testCaseDataDto.getEnv(),
+                testCaseDataDto.getExternalLinkId(), testCaseDataDto.getLastRunStatus(),
+                testCaseDataDto.getModule(), testCaseDataDto.getTestDevice(),
+                testCaseDataDto.getTestData(), testCaseDataDto.getTestMethod(),
+                testCaseDataDto.getTestStatus(), testCaseDataDto.getReportTo(),
+                testCaseDataDto.getTestcaseExpand(), testCaseDataDto.getRemarks());
       arrList.add(testCaseBisDto);
     }
     return arrList;
@@ -1330,7 +1342,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
 
       return result;
     } catch (Exception e) {
-      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
+      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}, e);
       return new ArrayList<>();
     }
   }
@@ -1428,7 +1440,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
       // 使用与 BeanSearchController 相同的分页处理方式
       return PageUtil.manualPaging(testCaseList);
     } catch (Exception e) {
-      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}", viewId, projectId, e);
+      log.error("使用BeanSearcher查询测试用例失败，viewId: {}, projectId: {}, e);
       return new PageInfo<>(new ArrayList<>());
     }
   }
