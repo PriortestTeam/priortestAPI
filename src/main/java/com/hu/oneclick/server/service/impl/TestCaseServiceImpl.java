@@ -687,7 +687,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
    * @param colValue
    * @param testCase
    * @param errorTipsMap
-   * @param field
+   *      @param field
    * @param required
    */
   private void setValue(JSONObject colValue, TestCase testCase,
