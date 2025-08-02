@@ -179,9 +179,10 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         if (statusObj == null) {
             return "NOT_EXECUTED";
         }
-
         String status = statusObj.toString();
         switch (status) {
+            case "0":
+                return "NOT_AVAILABLE";
             case "1":
                 return "PASS";
             case "2":
@@ -189,16 +190,18 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             case "3":
                 return "SKIP";
             case "4":
-            case "4.1":
-            case "4.2":
-            case "4.3":
-            case "4.4":
-            case "4.5":
+            case "401":
+            case "402":
+            case "403":
+            case "404":
+            case "405":
                 return "BLOCKED";
+            case "5":
+                return "NOT_EXECUTED";
             case "6":
                 return "NOT_COMPLETED";
             default:
-                return "NOT_EXECUTED";
+                return "Other";
         }
     }
 
