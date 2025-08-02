@@ -1216,7 +1216,7 @@ public class TestCaseServiceImpl extends ServiceImpl<TestCaseDao, TestCase> impl
                 testCaseDataDto.getUpdateTime(), createUserId, updateUserId, 
                 caseRunDuration, caseTotalPeriod);
 
-            testCaseBisDto.setTestCase(testCaseDataDto.getId(), testCaseDataDto.getProjectId(),
+           testCaseBisDto.setTestCase(testCaseDataDto.getTestCaseId(),                                                                   testCaseDataDto.getProjectId(),
                 testCaseDataDto.getTitle(), testCaseDataDto.getPriority(), testCaseDataDto.getFeature(),
                 testCaseDataDto.getDescription(), testCaseDataDto.getExecuteTime(),
                 testCaseDataDto.getBrowser(), testCaseDataDto.getPlatform(), testCaseDataDto.getVersion(),
