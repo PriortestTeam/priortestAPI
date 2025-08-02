@@ -29,6 +29,7 @@
         <result property="fixVersion" column="fix_version" jdbcType="VARCHAR"/>
         <result property="severity" column="severity" jdbcType="VARCHAR"/>
         <result property="testDevice" column="test_device" jdbcType="VARCHAR"/>
+        <result property="runcaseId" column="runcase_id" jdbcType="BIGINT"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
@@ -39,7 +40,7 @@
         select
         id, project_id, user_id, title, issue_status, planned_release_date,
         priority, env, browser, platform, version, case_category, release_phase, found_after_release, released_version, 
-        issue_version, introduced_version, is_legacy, fix_version, severity, test_device, create_time, update_time, description, duration
+        issue_version, introduced_version, is_legacy, fix_version, severity, test_device, runcase_id, create_time, update_time, description, duration
         from oneclick.issue
         <where>
             <if test="id != null">
@@ -127,6 +128,7 @@
                fix_version,
                severity,
                test_device,
+               runcase_id,
                create_time,
                update_time,
                description,
