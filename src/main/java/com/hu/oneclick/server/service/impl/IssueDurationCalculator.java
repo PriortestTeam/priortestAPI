@@ -55,8 +55,35 @@ public class IssueDurationCalculator {
         System.out.println("=== UTC当前时间(毫秒): " + utcCurrentTime.getTime() + " ===");
 
         // 将UTC当前时间转换为用户本地时间
-        TimeZone userTZ = TimeZone.getTimeZone(userTimezone);
-        Date endTime = convertUTCToUserLocalTime(utcCurrentTime, userTZ);
+        System.out.println("=== 🔍 步骤1: 准备进行时区转换 ===");
+        System.out.println("=== 🔍 userTimezone参数: " + userTimezone + " ===");
+        
+        TimeZone userTZ = null;
+        try {
+            System.out.println("=== 🔍 步骤2: 创建TimeZone对象 ===");
+            userTZ = TimeZone.getTimeZone(userTimezone);
+            System.out.println("=== 🔍 TimeZone创建成功: " + userTZ + " ===");
+            System.out.println("=== 🔍 TimeZone.getID(): " + userTZ.getID() + " ===");
+        } catch (Exception e) {
+            System.out.println("=== 🔍 ❌ TimeZone创建失败: " + e.getMessage() + " ===");
+            e.printStackTrace();
+        }
+        
+        System.out.println("=== 🔍 步骤3: 准备调用convertUTCToUserLocalTime ===");
+        System.out.println("=== 🔍 utcCurrentTime: " + utcCurrentTime + " ===");
+        System.out.println("=== 🔍 userTZ: " + userTZ + " ===");
+        
+        Date endTime = null;
+        try {
+            endTime = convertUTCToUserLocalTime(utcCurrentTime, userTZ);
+            System.out.println("=== 🔍 ✅ convertUTCToUserLocalTime调用成功 ===");
+        } catch (Exception e) {
+            System.out.println("=== 🔍 ❌ convertUTCToUserLocalTime调用失败: " + e.getMessage() + " ===");
+            System.out.println("=== 🔍 ❌ 错误堆栈: ===");
+            e.printStackTrace();
+            throw e; // 重新抛出异常以便看到完整堆栈
+        }
+        
         System.out.println("=== UTC时间转换为用户本地时间: " + utcCurrentTime + " -> " + endTime + " ===");
         System.out.println("=== 用户本地当前时间(毫秒): " + endTime.getTime() + " ===");
 
@@ -249,6 +276,22 @@ public class IssueDurationCalculator {
      * 将UTC时间转换为用户本地时间
      */
     private Date convertUTCToUserLocalTime(Date utcTime, TimeZone userTimeZone) {
+        System.out.println("=== 🔍🔍 convertUTCToUserLocalTime方法开始 ===");
+        System.out.println("=== 🔍🔍 输入参数检查: ===");
+        System.out.println("=== 🔍🔍 utcTime: " + utcTime + " ===");
+        System.out.println("=== 🔍🔍 userTimeZone: " + userTimeZone + " ===");
+        
+        if (utcTime == null) {
+            System.out.println("=== 🔍🔍 ❌ utcTime为null ===");
+            return null;
+        }
+        
+        if (userTimeZone == null) {
+            System.out.println("=== 🔍🔍 ❌ userTimeZone为null ===");
+            return utcTime; // 如果时区为null，直接返回原时间
+        }
+        
+        System.out.println("=== 🔍🔍 userTimeZone.getID(): " + userTimeZone.getID() + " ===");
         System.out.println("=== 开始UTC时间转换为用户本地时间 ===");
         System.out.println("=== 输入UTC时间: " + utcTime + " ===");
         System.out.println("=== 用户时区: " + userTimeZone.getID() + " ===");
