@@ -134,19 +134,21 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         summary.setInvalidCount(statusCounts.getOrDefault("NOT_AVAILABLE", 0L).intValue());
         summary.setUnfinishedCount(statusCounts.getOrDefault("NOT_COMPLETED", 0L).intValue());
 
-        // 计算总执行数量
-        int totalExecuted = summary.getPassCount() + summary.getFailCount() + 
-                           summary.getBlockedCount() + summary.getSkippedCount() + summary.getNotExecutedCount();
+        // 计算总记录数量（包含所有状态）
+        int totalRecords = summary.getPassCount() + summary.getFailCount() + 
+                          summary.getBlockedCount() + summary.getSkippedCount() + 
+                          summary.getNotExecutedCount() + summary.getInvalidCount() + 
+                          summary.getUnfinishedCount();
 
         // 计算各种比率（保留2位小数）
-        if (totalExecuted > 0) {
-            summary.setPassRate(calculateRate(summary.getPassCount(), totalExecuted));
-            summary.setFailRate(calculateRate(summary.getFailCount(), totalExecuted));
-            summary.setBlockedRate(calculateRate(summary.getBlockedCount(), totalExecuted));
-            summary.setSkippedRate(calculateRate(summary.getSkippedCount(), totalExecuted));
-            summary.setNotExecutedRate(calculateRate(summary.getNotExecutedCount(), totalExecuted));
-            summary.setInvalidRate(calculateRate(summary.getInvalidCount(), totalExecuted));
-            summary.setUnfinishedRate(calculateRate(summary.getUnfinishedCount(), totalExecuted));
+        if (totalRecords > 0) {
+            summary.setPassRate(calculateRate(summary.getPassCount(), totalRecords));
+            summary.setFailRate(calculateRate(summary.getFailCount(), totalRecords));
+            summary.setBlockedRate(calculateRate(summary.getBlockedCount(), totalRecords));
+            summary.setSkippedRate(calculateRate(summary.getSkippedCount(), totalRecords));
+            summary.setNotExecutedRate(calculateRate(summary.getNotExecutedCount(), totalRecords));
+            summary.setInvalidRate(calculateRate(summary.getInvalidCount(), totalRecords));
+            summary.setUnfinishedRate(calculateRate(summary.getUnfinishedCount(), totalRecords));
         } else {
             summary.setPassRate(BigDecimal.ZERO);
             summary.setFailRate(BigDecimal.ZERO);
