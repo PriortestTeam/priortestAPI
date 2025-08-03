@@ -113,6 +113,8 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             summary.setBlockedCount(0);
             summary.setSkippedCount(0);
             summary.setNotExecutedCount(0);
+            summary.setInvalidCount(0);
+            summary.setUnfinishedCount(0);
             return summary;
         }
 
@@ -129,32 +131,43 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         summary.setBlockedCount(statusCounts.getOrDefault("BLOCKED", 0L).intValue());
         summary.setSkippedCount(statusCounts.getOrDefault("SKIP", 0L).intValue());
         summary.setNotExecutedCount(statusCounts.getOrDefault("NOT_EXECUTED", 0L).intValue());
+        summary.setInvalidCount(statusCounts.getOrDefault("NOT_AVAILABLE", 0L).intValue());
+        summary.setUnfinishedCount(statusCounts.getOrDefault("NOT_COMPLETED", 0L).intValue());
 
-        // 计算总执行数量
-        int totalExecuted = summary.getPassCount() + summary.getFailCount() + 
-                           summary.getBlockedCount() + summary.getSkippedCount() + summary.getNotExecutedCount();
+        // 计算总记录数量（包含所有状态）
+        int totalRecords = summary.getPassCount() + summary.getFailCount() + 
+                          summary.getBlockedCount() + summary.getSkippedCount() + 
+                          summary.getNotExecutedCount() + summary.getInvalidCount() + 
+                          summary.getUnfinishedCount();
 
         // 计算各种比率（保留2位小数）
-        if (totalExecuted > 0) {
-            summary.setPassRate(calculateRate(summary.getPassCount(), totalExecuted));
-            summary.setFailRate(calculateRate(summary.getFailCount(), totalExecuted));
-            summary.setBlockedRate(calculateRate(summary.getBlockedCount(), totalExecuted));
-            summary.setSkippedRate(calculateRate(summary.getSkippedCount(), totalExecuted));
-            summary.setNotExecutedRate(calculateRate(summary.getNotExecutedCount(), totalExecuted));
+        if (totalRecords > 0) {
+            summary.setPassRate(calculateRate(summary.getPassCount(), totalRecords));
+            summary.setFailRate(calculateRate(summary.getFailCount(), totalRecords));
+            summary.setBlockedRate(calculateRate(summary.getBlockedCount(), totalRecords));
+            summary.setSkippedRate(calculateRate(summary.getSkippedCount(), totalRecords));
+            summary.setNotExecutedRate(calculateRate(summary.getNotExecutedCount(), totalRecords));
+            summary.setInvalidRate(calculateRate(summary.getInvalidCount(), totalRecords));
+            summary.setUnfinishedRate(calculateRate(summary.getUnfinishedCount(), totalRecords));
         } else {
             summary.setPassRate(BigDecimal.ZERO);
             summary.setFailRate(BigDecimal.ZERO);
             summary.setBlockedRate(BigDecimal.ZERO);
             summary.setSkippedRate(BigDecimal.ZERO);
             summary.setNotExecutedRate(BigDecimal.ZERO);
+            summary.setInvalidRate(BigDecimal.ZERO);
+            summary.setUnfinishedRate(BigDecimal.ZERO);
         }
 
-        logger.info("执行摘要统计 - 通过：{}({}%)，失败：{}({}%)，阻塞：{}({}%)，跳过：{}({}%)，未执行：{}({}%)", 
+        logger.info("执行摘要统计 - 通过：{}({}%)，失败：{}({}%)，阻塞：{}({}%)，跳过：{}({}%)，未执行：{}({}%)，无效：{}({}%)，未完成：{}({}%)", 
                    summary.getPassCount(), summary.getPassRate(),
                    summary.getFailCount(), summary.getFailRate(),
                    summary.getBlockedCount(), summary.getBlockedRate(),
                    summary.getSkippedCount(), summary.getSkippedRate(),
-                   summary.getNotExecutedCount(), summary.getNotExecutedRate());
+                   summary.getNotExecutedCount(), summary.getNotExecutedRate(),
+                   summary.getInvalidCount(), summary.getInvalidRate(),
+                   summary.getUnfinishedCount(), summary.getUnfinishedRate());
+        
 
         return summary;
     }
@@ -179,9 +192,10 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
         if (statusObj == null) {
             return "NOT_EXECUTED";
         }
-
         String status = statusObj.toString();
         switch (status) {
+            case "0":
+                return "NOT_AVAILABLE";
             case "1":
                 return "PASS";
             case "2":
@@ -189,16 +203,18 @@ public class FunctionExecutionRateServiceImpl implements FunctionExecutionRateSe
             case "3":
                 return "SKIP";
             case "4":
-            case "4.1":
-            case "4.2":
-            case "4.3":
-            case "4.4":
-            case "4.5":
+            case "401":
+            case "402":
+            case "403":
+            case "404":
+            case "405":
                 return "BLOCKED";
+            case "5":
+                return "NOT_EXECUTED";
             case "6":
                 return "NOT_COMPLETED";
             default:
-                return "NOT_EXECUTED";
+                return "Other";
         }
     }
 

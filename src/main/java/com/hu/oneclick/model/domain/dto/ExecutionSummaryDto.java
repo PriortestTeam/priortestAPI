@@ -36,6 +36,16 @@ public class ExecutionSummaryDto {
     private Integer notExecutedCount;
     
     /**
+     * 无效数量
+     */
+    private Integer invalidCount;
+    
+    /**
+     * 未完成数量
+     */
+    private Integer unfinishedCount;
+    
+    /**
      * 通过率 (%)
      */
     private BigDecimal passRate;
@@ -59,4 +69,14 @@ public class ExecutionSummaryDto {
      * 未执行率 (%)
      */
     private BigDecimal notExecutedRate;
+    
+    /**
+     * 无效率 (%)
+     */
+    private BigDecimal invalidRate;
+    
+    /**
+     * 未完成率 (%)
+     */
+    private BigDecimal unfinishedRate;
 }

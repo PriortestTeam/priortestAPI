@@ -51,21 +51,37 @@
         "failCount": 25,
         "blockedCount": 30,
         "skippedCount": 10,
-        "notExecutedCount": 40
+        "notExecutedCount": 40,
+        "invalidCount": 2,
+        "unfinishedCount": 1,
+        "passRate": 34.62,
+        "failRate": 19.23,
+        "blockedRate": 23.08,
+        "skippedRate": 7.69,
+        "notExecutedRate": 30.77,
+        "invalidRate": 1.54,
+        "unfinishedRate": 0.77
     },
     "cycleExecutionDetails": [
         {
-            "testCaseId": 123,
-            "testCaseTitle": "登录功能测试",
-            "version": "1.0.0.0",
             "testCycleId": 1001,
             "testCycleTitle": "测试周期-Win",
             "testCycleEnv": "dev",
             "testCycleVersion": "1.0.0.0",
-            "executionTime": "2025-01-15 10:30:00",
-            "executionStatus": 1,
-            "runCount": 3,
-            "runCaseId": 5001
+            "totalTestCases": 10,
+            "executedTestCases": 8,
+            "executionRate": 80.00,
+            "testCaseDetails": [
+                {
+                    "testCaseId": 123,
+                    "runCaseId": 5001,
+                    "testCaseTitle": "登录功能测试",
+                    "testCaseVersion": "1.0.0.0",
+                    "runStatus": 1,
+                    "runStatusText": "通过",
+                    "runCount": 3
+                }
+            ]
         }
     ]
 }
@@ -76,16 +92,19 @@
 
 | 状态码 | 状态名称 | 英文标识 | 分类 | 说明 |
 |--------|----------|----------|------|------|
+| 0 | 无效 | NOT_AVAILABLE | INVALID | 无效的测试状态 |
 | 1 | 通过 | PASS | EXECUTED | 测试执行成功，结果符合预期 |
 | 2 | 失败 | FAIL | EXECUTED | 测试执行失败，发现缺陷或问题 |
-| 3 | 跳过 | SKIP | EXECUTED | 测试被主动跳过，未执行 |
+| 3 | 跳过 | SKIP | EXECUTED | 测试被主动跳过，但仍算作已执行 |
 | 4 | 阻塞 | BLOCKED | EXECUTED | 测试被阻塞，无法继续执行 |
-| 5 | 未执行 | NO_RUN | NOT_EXECUTED | 测试尚未开始执行 |
+| 401-405 | 阻塞子状态 | BLOCKED | EXECUTED | 阻塞的具体子状态 |
+| 5 | 未执行 | NOT_EXECUTED | NOT_EXECUTED | 测试尚未开始执行 |
 | 6 | 未完成 | NOT_COMPLETED | NOT_EXECUTED | 测试开始但未完成执行 |
 
 #### 执行状态分类逻辑
-- **已执行状态**: 状态码为 1(PASS)、2(FAIL)、3(SKIP)、4(BLOCKED) 的测试用例被认为是"已执行"
-- **未执行状态**: 状态码为 5(NO_RUN)、6(NOT_COMPLETED) 或 null 的测试用例被认为是"未执行"
+- **已执行状态**: 状态码为 1(PASS)、2(FAIL)、3(SKIP)、4(BLOCKED)、401-405 的测试用例被认为是"已执行"
+- **未执行状态**: 状态码为 5(NOT_EXECUTED)、6(NOT_COMPLETED) 或 null 的测试用例被认为是"未执行"
+- **无效状态**: 状态码为 0(NOT_AVAILABLE) 的测试用例被单独分类为"无效"
 
 ## 核心实现逻辑
 
@@ -117,7 +136,7 @@ JOIN test_cycle tcycle ON tcjtc.test_cycle_id = tcycle.id
 WHERE tc.project_id = #{projectId}
 AND tc.version = #{majorVersion}
 AND tcycle.version IN ('1.0.0.0', '1.1.0.0', ...)
-AND tcjtc.run_status IN (1, 2, 3, 4)  -- 只统计已执行状态
+AND tcjtc.run_status IN (1, 2, 3, 4, 4.1, 4.2, 4.3, 4.4, 4.5)  -- 只统计已执行状态
 [AND tcjtc.test_cycle_id IN (1001, 1002, ...)] -- 可选的周期过滤
 ```
 
@@ -187,19 +206,58 @@ ORDER BY tc.id, tcjtc.update_time DESC
 private ExecutionSummaryDto buildExecutionSummary(List<Map<String, Object>> executionDetailMaps) {
     ExecutionSummaryDto summary = new ExecutionSummaryDto();
 
-    // 按状态分组统计
-    Map<StatusCategory, Long> statusCounts = executionDetailMaps.stream()
-        .collect(Collectors.groupingBy(
-            map -> getStatusCategory(map.get("executionStatus")),
-            Collectors.counting()
-        ));
+    if (executionDetailMaps == null || executionDetailMaps.isEmpty()) {
+        summary.setPassCount(0);
+        summary.setFailCount(0);
+        summary.setBlockedCount(0);
+        summary.setSkippedCount(0);
+        summary.setNotExecutedCount(0);
+        summary.setInvalidCount(0);
+        summary.setUnfinishedCount(0);
+        return summary;
+    }
 
-    // 设置各状态数量
-    summary.setPassCount(statusCounts.getOrDefault(StatusCategory.PASS, 0L).intValue());
-    summary.setFailCount(statusCounts.getOrDefault(StatusCategory.FAIL, 0L).intValue());
-    summary.setBlockedCount(statusCounts.getOrDefault(StatusCategory.BLOCKED, 0L).intValue());
-    summary.setSkippedCount(statusCounts.getOrDefault(StatusCategory.SKIP, 0L).intValue());
-    summary.setNotExecutedCount(statusCounts.getOrDefault(StatusCategory.NOT_EXECUTED, 0L).intValue());
+    // 按执行状态分组统计
+    Map<String, Long> statusCounts = executionDetailMaps.stream()
+            .filter(map -> map.get("executionStatus") != null)
+            .collect(Collectors.groupingBy(
+                map -> getStatusCategory(map.get("executionStatus")),
+                Collectors.counting()
+            ));
+
+    summary.setPassCount(statusCounts.getOrDefault("PASS", 0L).intValue());
+    summary.setFailCount(statusCounts.getOrDefault("FAIL", 0L).intValue());
+    summary.setBlockedCount(statusCounts.getOrDefault("BLOCKED", 0L).intValue());
+    summary.setSkippedCount(statusCounts.getOrDefault("SKIP", 0L).intValue());
+    summary.setNotExecutedCount(statusCounts.getOrDefault("NOT_EXECUTED", 0L).intValue());
+    summary.setInvalidCount(statusCounts.getOrDefault("NOT_AVAILABLE", 0L).intValue());
+    summary.setUnfinishedCount(statusCounts.getOrDefault("NOT_COMPLETED", 0L).intValue());
+
+    // 计算总记录数量（包含所有状态）
+    int totalRecords = summary.getPassCount() + summary.getFailCount() + 
+                      summary.getBlockedCount() + summary.getSkippedCount() + 
+                      summary.getNotExecutedCount() + summary.getInvalidCount() + 
+                      summary.getUnfinishedCount();
+
+    // 计算各种比率（保留2位小数）
+    if (totalRecords > 0) {
+        summary.setPassRate(calculateRate(summary.getPassCount(), totalRecords));
+        summary.setFailRate(calculateRate(summary.getFailCount(), totalRecords));
+        summary.setBlockedRate(calculateRate(summary.getBlockedCount(), totalRecords));
+        summary.setSkippedRate(calculateRate(summary.getSkippedCount(), totalRecords));
+        summary.setNotExecutedRate(calculateRate(summary.getNotExecutedCount(), totalRecords));
+        summary.setInvalidRate(calculateRate(summary.getInvalidCount(), totalRecords));
+        summary.setUnfinishedRate(calculateRate(summary.getUnfinishedCount(), totalRecords));
+    } else {
+        // 设置所有比率为0
+        summary.setPassRate(BigDecimal.ZERO);
+        summary.setFailRate(BigDecimal.ZERO);
+        summary.setBlockedRate(BigDecimal.ZERO);
+        summary.setSkippedRate(BigDecimal.ZERO);
+        summary.setNotExecutedRate(BigDecimal.ZERO);
+        summary.setInvalidRate(BigDecimal.ZERO);
+        summary.setUnfinishedRate(BigDecimal.ZERO);
+    }
 
     return summary;
 }
@@ -207,69 +265,169 @@ private ExecutionSummaryDto buildExecutionSummary(List<Map<String, Object>> exec
 
 **状态分类映射**:
 ```java
-private StatusCategory getStatusCategory(Object statusObj) {
+private String getStatusCategory(Object statusObj) {
     if (statusObj == null) {
-        return StatusCategory.NOT_EXECUTED;
+        return "NOT_EXECUTED";
     }
-
-    Integer status;
-    if (statusObj instanceof BigInteger) {
-        status = ((BigInteger) statusObj).intValue();
-    } else if (statusObj instanceof Integer) {
-        status = (Integer) statusObj;
-    } else {
-        return StatusCategory.NOT_EXECUTED;
-    }
-
+    String status = statusObj.toString();
     switch (status) {
-        case 1: return StatusCategory.PASS;
-        case 2: return StatusCategory.FAIL;
-        case 3: return StatusCategory.SKIP;
-        case 4: return StatusCategory.BLOCKED;
-        case 5:
-        case 6:
-        default: return StatusCategory.NOT_EXECUTED;
+        case "0":
+            return "NOT_AVAILABLE";
+        case "1":
+            return "PASS";
+        case "2":
+            return "FAIL";
+        case "3":
+            return "SKIP";
+        case "4":
+        case "401":
+        case "402":
+        case "403":
+        case "404":
+        case "405":
+            return "BLOCKED";
+        case "5":
+            return "NOT_EXECUTED";
+        case "6":
+            return "NOT_COMPLETED";
+        default:
+            return "Other";
     }
 }
 ```
 
 ### 6. 测试周期执行详情构建逻辑
 
-**目标**: 构建按测试用例分组的执行详情列表
+**目标**: 构建按测试周期分组的执行详情列表，每个周期包含其下所有测试用例的执行情况
 
 **Java实现**:
 ```java
 private List<CycleExecutionDetailDto> buildCycleExecutionDetails(List<Map<String, Object>> executionDetailMaps) {
-    return executionDetailMaps.stream()
-        .map(this::mapToCycleExecutionDetail)
-        .collect(Collectors.toList());
+    List<CycleExecutionDetailDto> cycleDetails = new ArrayList<>();
+
+    if (executionDetailMaps == null || executionDetailMaps.isEmpty()) {
+        return cycleDetails;
+    }
+
+    // 按测试周期ID分组
+    Map<Long, List<Map<String, Object>>> groupedByTestCycle = executionDetailMaps.stream()
+            .filter(map -> map.get("testCycleId") != null)
+            .collect(Collectors.groupingBy(map -> {
+                Object testCycleId = map.get("testCycleId");
+                return testCycleId != null ? Long.valueOf(testCycleId.toString()) : 0L;
+            }));
+
+    for (Map.Entry<Long, List<Map<String, Object>>> entry : groupedByTestCycle.entrySet()) {
+        List<Map<String, Object>> executions = entry.getValue();
+
+        if (executions.isEmpty()) {
+            continue;
+        }
+
+        // 从第一个执行记录中获取测试周期信息
+        Map<String, Object> firstExecution = executions.get(0);
+        Long testCycleId = getLongValue(firstExecution.get("testCycleId"));
+
+        if (testCycleId == null) {
+            continue;
+        }
+
+        CycleExecutionDetailDto cycleDto = new CycleExecutionDetailDto();
+        cycleDto.setTestCycleId(testCycleId);
+        cycleDto.setTestCycleTitle((String) firstExecution.get("testCycleTitle"));
+        cycleDto.setTestCycleEnv((String) firstExecution.get("testCycleEnv"));
+        cycleDto.setTestCycleVersion((String) firstExecution.get("testCycleVersion"));
+
+        // 构建测试用例详情列表
+        List<TestCaseExecutionDetailDto> testCaseDetails = new ArrayList<>();
+        for (Map<String, Object> execution : executions) {
+            TestCaseExecutionDetailDto caseDetail = new TestCaseExecutionDetailDto();
+            
+            caseDetail.setTestCaseId(getLongValue(execution.get("testCaseId")));
+            caseDetail.setRunCaseId(getLongValue(execution.get("runCaseId")));
+            caseDetail.setTestCaseTitle((String) execution.get("testCaseTitle"));
+            caseDetail.setTestCaseVersion((String) execution.get("version"));
+            
+            // 设置执行状态信息
+            Integer runStatus = getIntegerValue(execution.get("executionStatus"));
+            String runStatusText = convertStatusToText(runStatus);
+            
+            caseDetail.setRunStatus(runStatus);
+            caseDetail.setRunStatusText(runStatusText);
+            caseDetail.setRunCount(getIntegerValue(execution.get("runCount")));
+
+            testCaseDetails.add(caseDetail);
+        }
+
+        cycleDto.setTestCaseDetails(testCaseDetails);
+
+        // 计算该周期的总测试用例数和已执行数
+        int totalTestCases = executions.size();
+        int executedTestCases = (int) executions.stream()
+                .filter(map -> map.get("executionStatus") != null)
+                .count();
+
+        cycleDto.setTotalTestCases(totalTestCases);
+        cycleDto.setExecutedTestCases(executedTestCases);
+
+        // 计算执行率
+        BigDecimal cycleExecutionRate = totalTestCases > 0 ? 
+                BigDecimal.valueOf(executedTestCases)
+                        .divide(BigDecimal.valueOf(totalTestCases), 4, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100)) : BigDecimal.ZERO;
+        cycleDto.setExecutionRate(cycleExecutionRate);
+
+        cycleDetails.add(cycleDto);
+    }
+
+    return cycleDetails;
 }
 
-private CycleExecutionDetailDto mapToCycleExecutionDetail(Map<String, Object> map) {
-    CycleExecutionDetailDto detail = new CycleExecutionDetailDto();
-
-    // 基本信息映射
-    detail.setTestCaseId(getLongValue(map.get("testCaseId")));
-    detail.setTestCaseTitle(getStringValue(map.get("testCaseTitle")));
-    detail.setVersion(getStringValue(map.get("version")));
-
-    // 测试周期信息
-    detail.setTestCycleId(getLongValue(map.get("testCycleId")));
-    detail.setTestCycleTitle(getStringValue(map.get("testCycleTitle")));
-    detail.setTestCycleEnv(getStringValue(map.get("testCycleEnv")));
-    detail.setTestCycleVersion(getStringValue(map.get("testCycleVersion")));
-
-    // 执行信息
-    detail.setExecutionTime(getStringValue(map.get("executionTime")));
-    detail.setExecutionStatus(getIntegerValue(map.get("executionStatus")));
-    detail.setRunCount(getIntegerValue(map.get("runCount")));
-    detail.setRunCaseId(getLongValue(map.get("runCaseId")));
-
-    return detail;
+private String convertStatusToText(Integer runStatus) {
+    if (runStatus == null) {
+        return "未执行";
+    }
+    
+    switch (runStatus) {
+        case 0: return "无效";
+        case 1: return "通过";
+        case 2: return "失败";
+        case 3: return "跳过";
+        case 4: return "阻塞";
+        case 5: return "未执行";
+        case 6: return "未完成";
+        default: return "其他";
+    }
 }
 ```
 
-### 7. 数据类型转换处理
+### 7. 比率计算逻辑
+
+**目标**: 计算各状态的百分比，确保所有比率总和为100%
+
+**Java实现**:
+```java
+/**
+ * 计算比率（百分比，保留2位小数）
+ */
+private BigDecimal calculateRate(int count, int total) {
+    if (total == 0) {
+        return BigDecimal.ZERO;
+    }
+    return BigDecimal.valueOf(count)
+            .divide(BigDecimal.valueOf(total), 4, RoundingMode.HALF_UP)
+            .multiply(BigDecimal.valueOf(100))
+            .setScale(2, RoundingMode.HALF_UP);
+}
+```
+
+**关键点**:
+- 基于所有状态的总记录数计算比率，而不是部分状态
+- 使用 `BigDecimal` 确保精度计算
+- 保留2位小数，使用 `HALF_UP` 舍入模式
+- 避免除零错误
+
+### 8. 数据类型转换处理
 
 **问题**: MyBatis查询结果中的数值可能是 `BigInteger` 类型
 

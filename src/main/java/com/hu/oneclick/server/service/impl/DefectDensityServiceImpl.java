@@ -157,11 +157,12 @@ public class DefectDensityServiceImpl implements DefectDensityService {
                 dataExplanation = "测试用例存在但未执行，无法进行缺陷密度分析";
             }
         } else {
-            // 构建详细的执行统计信息
-            String executionInfo = String.format("已执行%d个测试%d次在%d个周期", 
+            // 构建详细的执行统计信息（添加环境数量）
+            String executionInfo = String.format("%d个独立运行用例 共计执行%d次在%d个周期 %d个环境中", 
                 statistics.getUniqueTestCases(), 
                 statistics.getTotalExecutions(), 
-                statistics.getTotalCycles());
+                statistics.getTotalCycles(),
+                statistics.getTotalEnvironments());
 
             if (statistics.getTotalDefectInstances() == 0) {
                 dataExplanation = String.format("测试用例执行中的缺陷发现率：%s，但未发现缺陷，质量状况优秀", executionInfo);
