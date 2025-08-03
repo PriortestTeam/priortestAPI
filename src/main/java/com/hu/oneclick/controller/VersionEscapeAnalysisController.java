@@ -51,7 +51,7 @@ public class VersionEscapeAnalysisController {
         } catch (Exception e) {
             log.error("分析版本缺陷逃逸率失败", e);
             return new Resp.Builder<VersionEscapeAnalysisResponseDto>()
-                    .buildResult(500,"分析版本缺陷逃逸率失败：" + e.getMessage());
+                    .buildResult("500","分析版本缺陷逃逸率失败：" + e.getMessage());
         }
     }
 
@@ -79,7 +79,7 @@ public class VersionEscapeAnalysisController {
         } catch (Exception e) {
             log.error("快速分析版本缺陷逃逸率失败", e);
             return new Resp.Builder<VersionEscapeAnalysisResponseDto>()
-                    .buildResult(500,"快速分析失败：" + e.getMessage());
+                    .buildResult("500","快速分析失败：" + e.getMessage());
         }
     }
 
@@ -102,7 +102,7 @@ public class VersionEscapeAnalysisController {
         } catch (Exception e) {
             log.error("获取逃逸率趋势失败", e);
             return new Resp.Builder<Object>()
-                    .buildResult(500,"获取趋势数据失败：" + e.getMessage());
+                    .buildResult("500","获取趋势数据失败：" + e.getMessage());
         }
     }
 
@@ -124,7 +124,7 @@ public class VersionEscapeAnalysisController {
         } catch (Exception e) {
             log.error("导出逃逸率分析报告失败", e);
             return new Resp.Builder<String>()
-                    .buildResult(500,"导出报告失败：" + e.getMessage());
+                    .buildResult("500","导出报告失败：" + e.getMessage());
         }
     }
 }
