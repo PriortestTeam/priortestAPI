@@ -1,4 +1,6 @@
+` tags.
 
+```java
 package com.hu.oneclick.controller;
 
 import com.hu.oneclick.model.base.Resp;
@@ -36,24 +38,23 @@ public class VersionEscapeAnalysisController {
         try {
             log.info("开始分析版本缺陷逃逸率，项目：{}，版本：{}", 
                     requestDto.getProjectId(), requestDto.getAnalysisVersion());
-            
+
             VersionEscapeAnalysisResponseDto responseDto = 
                     versionEscapeAnalysisService.analyzeVersionEscapeRate(requestDto);
-            
+
             log.info("版本缺陷逃逸率分析完成，版本：{}，逃逸率：{}%，质量等级：{}", 
                     requestDto.getAnalysisVersion(), 
                     responseDto.getEscapeRateStats().getEscapeRate(),
                     responseDto.getEscapeRateStats().getQualityLevel());
-            
+
             return new Resp.Builder<VersionEscapeAnalysisResponseDto>()
                     .setData(responseDto)
                     .ok();
-                    
+
         } catch (Exception e) {
             log.error("分析版本缺陷逃逸率失败", e);
             return new Resp.Builder<VersionEscapeAnalysisResponseDto>()
-                    .setMsg("分析版本缺陷逃逸率失败：" + e.getMessage())
-                    .fail();
+                    .buildResult(500,"分析版本缺陷逃逸率失败：" + e.getMessage());
         }
     }
 
@@ -67,7 +68,7 @@ public class VersionEscapeAnalysisController {
             @Parameter(description = "要分析的版本号") @PathVariable String analysisVersion,
             @Parameter(description = "是否包含遗留缺陷分析") @RequestParam(defaultValue = "true") Boolean includeLegacy,
             @Parameter(description = "是否按严重程度分组") @RequestParam(defaultValue = "true") Boolean groupBySeverity) {
-        
+
         try {
             VersionEscapeAnalysisRequestDto requestDto = new VersionEscapeAnalysisRequestDto();
             requestDto.setProjectId(projectId);
@@ -75,14 +76,13 @@ public class VersionEscapeAnalysisController {
             requestDto.setIncludeLegacyAnalysis(includeLegacy);
             requestDto.setGroupBySeverity(groupBySeverity);
             requestDto.setGroupByFoundVersion(true);
-            
+
             return analyzeVersionEscapeRate(requestDto);
-            
+
         } catch (Exception e) {
             log.error("快速分析版本缺陷逃逸率失败", e);
             return new Resp.Builder<VersionEscapeAnalysisResponseDto>()
-                    .setMsg("快速分析失败：" + e.getMessage())
-                    .fail();
+                    .buildResult(500,"快速分析失败：" + e.getMessage());
         }
     }
 
@@ -94,19 +94,18 @@ public class VersionEscapeAnalysisController {
     public Resp<Object> getEscapeRateTrend(
             @Parameter(description = "项目ID") @PathVariable String projectId,
             @Parameter(description = "版本列表") @RequestParam List<String> versions) {
-        
+
         try {
             Object trendData = versionEscapeAnalysisService.getEscapeRateTrend(projectId, versions);
-            
+
             return new Resp.Builder<Object>()
                     .setData(trendData)
                     .ok();
-                    
+
         } catch (Exception e) {
             log.error("获取逃逸率趋势失败", e);
             return new Resp.Builder<Object>()
-                    .setMsg("获取趋势数据失败：" + e.getMessage())
-                    .fail();
+                    .buildResult(500,"获取趋势数据失败：" + e.getMessage());
         }
     }
 
@@ -117,20 +116,20 @@ public class VersionEscapeAnalysisController {
     @PostMapping("/export")
     public Resp<String> exportAnalysisReport(
             @Valid @RequestBody VersionEscapeAnalysisRequestDto requestDto) {
-        
+
         try {
             String reportPath = versionEscapeAnalysisService.exportEscapeAnalysisReport(requestDto);
-            
+
             return new Resp.Builder<String>()
                     .setData(reportPath)
-                    .setMsg("报告导出成功")
                     .ok();
-                    
+
         } catch (Exception e) {
             log.error("导出逃逸率分析报告失败", e);
             return new Resp.Builder<String>()
-                    .setMsg("导出报告失败：" + e.getMessage())
-                    .fail();
+                    .buildResult(500,"导出报告失败：" + e.getMessage());
         }
     }
 }
+```Okay, continuing to apply the replacements from the changes:
+```java
