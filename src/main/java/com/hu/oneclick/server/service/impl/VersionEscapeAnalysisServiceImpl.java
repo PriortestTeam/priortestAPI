@@ -77,12 +77,13 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
 
                 Map<String, Object> versionTrend = new HashMap<>();
                 versionTrend.put("version", version);
-                versionTrend.put("totalDefects", stats.get("totalDefectsIntroduced"));
-                versionTrend.put("escapedDefects", stats.get("escapedDefects"));
-                versionTrend.put("escapeRate", stats.get("escapeRate"));
+                versionTrend.put("totalDefects", getIntValue(stats, "totalDefectsIntroduced"));
+                versionTrend.put("escapedDefects", getIntValue(stats, "escapedDefects"));
+                
+                BigDecimal escapeRateBigDecimal = getBigDecimalValue(stats, "escapeRate");
+                versionTrend.put("escapeRate", escapeRateBigDecimal.doubleValue());
 
                 // 计算质量等级
-                BigDecimal escapeRateBigDecimal = getBigDecimalValue(stats, "escapeRate");
                 double escapeRateDouble = escapeRateBigDecimal.doubleValue();
                 String qualityLevel;
                 if (escapeRateDouble <= 5.0) {
