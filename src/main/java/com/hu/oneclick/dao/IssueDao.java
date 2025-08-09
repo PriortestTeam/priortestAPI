@@ -48,6 +48,14 @@ public interface IssueDao extends BaseMapper<Issue> {
                                                          @Param("includeVersions") List<String> includeVersions);
 
     /**
+     * 查询版本详细缺陷信息
+     */
+    List<Map<String, Object>> queryVersionDefectDetails(@Param("projectId") String projectId,
+                                                        @Param("analysisVersion") String analysisVersion,
+                                                        @Param("startDate") String startDate,
+                                                        @Param("endDate") String endDate);
+
+    /**
      * 查询版本缺陷逃逸率统计数据
      */
     Map<String, Object> queryVersionEscapeStatistics(@Param("projectId") String projectId,

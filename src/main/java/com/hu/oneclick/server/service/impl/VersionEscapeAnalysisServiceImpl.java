@@ -50,12 +50,16 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 buildQualityAssessment(escapeRateStats);
         responseDto.setQualityAssessment(qualityAssessment);
 
+        // 查询详细缺陷信息
+        List<VersionEscapeAnalysisResponseDto.EscapeDefectDetail> defectDetails = 
+                queryDefectDetails(queryParams);
+        responseDto.setDefectDetails(defectDetails);
+
         // 所有其他字段设为null或空，简化响应
         responseDto.setDiscoveryTiming(null);
         responseDto.setLegacyDefectAnalysis(null);
         responseDto.setVersionGroups(new ArrayList<>());
         responseDto.setSeverityGroups(new ArrayList<>());
-        responseDto.setDefectDetails(new ArrayList<>());
 
         log.info("版本缺陷逃逸率分析完成，版本：{}，逃逸率：{}%",
                 requestDto.getAnalysisVersion(),
@@ -262,6 +266,92 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         return assessment;
     }
 
+    /**
+     * 查询详细缺陷信息
+     */
+    private List<VersionEscapeAnalysisResponseDto.EscapeDefectDetail> queryDefectDetails(Map<String, Object> params) {
+        try {
+            List<Map<String, Object>> defectList = issueDao.queryVersionDefectDetails(
+                (String) params.get("projectId"),
+                (String) params.get("analysisVersion"),
+                (String) params.get("startDate"),
+                (String) params.get("endDate")
+            );
+
+            List<VersionEscapeAnalysisResponseDto.EscapeDefectDetail> detailList = new ArrayList<>();
+            
+            for (Map<String, Object> defect : defectList) {
+                VersionEscapeAnalysisResponseDto.EscapeDefectDetail detail = 
+                        new VersionEscapeAnalysisResponseDto.EscapeDefectDetail();
+                
+                // 基本信息
+                detail.setDefectId(getStringValue(defect, "id"));
+                detail.setTitle(getStringValue(defect, "title"));
+                detail.setDescription(getStringValue(defect, "description"));
+                detail.setSeverity(getStringValue(defect, "severity"));
+                detail.setStatus(getStringValue(defect, "status"));
+                detail.setPriority(getStringValue(defect, "priority"));
+                
+                // 版本信息
+                detail.setIntroducedVersion(getStringValue(defect, "introduced_version"));
+                detail.setFoundVersion(getStringValue(defect, "issue_version"));
+                
+                // 判断是否为逃逸缺陷
+                String introducedVersion = getStringValue(defect, "introduced_version");
+                String foundVersion = getStringValue(defect, "issue_version");
+                boolean isEscaped = !introducedVersion.equals(foundVersion);
+                detail.setIsEscaped(isEscaped);
+                
+                // 时间信息
+                detail.setCreatedTime(getStringValue(defect, "create_time"));
+                detail.setFoundTime(getStringValue(defect, "create_time"));
+                
+                // 责任人信息
+                detail.setAssignee(getStringValue(defect, "assignee"));
+                detail.setReporter(getStringValue(defect, "reporter"));
+                
+                // 计算逃逸天数（如果是逃逸缺陷）
+                if (isEscaped) {
+                    // 这里可以根据版本发布时间计算逃逸天数
+                    // 暂时设置为0，后续可以完善
+                    detail.setEscapeDays(0);
+                } else {
+                    detail.setEscapeDays(0);
+                }
+                
+                // 影响描述
+                if (isEscaped) {
+                    detail.setImpactDescription(
+                        String.format("该缺陷在版本 %s 中引入，但直到版本 %s 才被发现，存在逃逸风险", 
+                                introducedVersion, foundVersion));
+                } else {
+                    detail.setImpactDescription("该缺陷在引入版本内被及时发现，未发生逃逸");
+                }
+                
+                // 修复状态评估
+                String fixStatus;
+                String status = getStringValue(defect, "status");
+                if ("RESOLVED".equalsIgnoreCase(status) || "CLOSED".equalsIgnoreCase(status)) {
+                    fixStatus = "已修复";
+                } else if ("IN_PROGRESS".equalsIgnoreCase(status)) {
+                    fixStatus = "修复中";
+                } else {
+                    fixStatus = "待修复";
+                }
+                detail.setFixStatus(fixStatus);
+                
+                detailList.add(detail);
+            }
+            
+            log.info("查询到 {} 条详细缺陷信息", detailList.size());
+            return detailList;
+            
+        } catch (Exception e) {
+            log.error("查询详细缺陷信息失败", e);
+            return new ArrayList<>();
+        }
+    }
+
     // 所有复杂的分析方法已移除，只保留核心的逃逸率统计功能
 
     /**
@@ -311,6 +401,14 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         } catch (NumberFormatException e) {
             return BigDecimal.ZERO;
         }
+    }
+
+    /**
+     * 安全获取字符串值
+     */
+    private String getStringValue(Map<String, Object> map, String key) {
+        Object value = map.get(key);
+        return value != null ? value.toString() : "";
     }
 
 
