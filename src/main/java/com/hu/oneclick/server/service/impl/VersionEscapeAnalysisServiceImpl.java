@@ -319,11 +319,12 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 }
                 
                 // 修复状态评估
-                String status = getStringValue(defect, "status");
+                String issueStatus = getStringValue(defect, "issue_status");
                 String fixStatus;
-                if ("RESOLVED".equalsIgnoreCase(status) || "CLOSED".equalsIgnoreCase(status)) {
+                // issue_status 是数字类型，需要根据实际值判断
+                if ("2".equals(issueStatus) || "3".equals(issueStatus)) {
                     fixStatus = "已修复";
-                } else if ("IN_PROGRESS".equalsIgnoreCase(status)) {
+                } else if ("1".equals(issueStatus)) {
                     fixStatus = "修复中";
                 } else {
                     fixStatus = "待修复";
