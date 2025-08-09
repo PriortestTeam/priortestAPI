@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.model.domain.dto.VersionEscapeAnalysisRequestDto;
@@ -29,12 +28,12 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         // 1. 查询所有 introduced_version = analysisVersion 的缺陷
         // 2. 按发现版本分组统计
         // 3. 计算逃逸率
-        
+
         // 临时返回模拟数据
         VersionEscapeAnalysisResponseDto responseDto = new VersionEscapeAnalysisResponseDto();
         responseDto.setAnalysisVersion(requestDto.getAnalysisVersion());
         responseDto.setProjectId(requestDto.getProjectId());
-        responseDto.setAnalysisTimeRange("2024-01-01 ~ 2024-12-31");
+        responseDto.setAnalysisTimeRange(buildAnalysisTimeRange(requestDto));
 
         // 构建逃逸率统计
         VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats = 
@@ -76,13 +75,13 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         qualityAssessment.setOverallQualityLevel("需改进");
         qualityAssessment.setRiskLevel("高风险");
         qualityAssessment.setRecommendations(List.of("加强测试覆盖", "完善回归测试"));
-        
+
         Map<String, BigDecimal> keyMetrics = new HashMap<>();
         keyMetrics.put("escapeRate", BigDecimal.valueOf(40.00));
         keyMetrics.put("highSeverityEscapeRate", BigDecimal.valueOf(40.00));
         keyMetrics.put("legacyDefectRate", BigDecimal.valueOf(40.00));
         qualityAssessment.setKeyMetrics(keyMetrics);
-        
+
         responseDto.setQualityAssessment(qualityAssessment);
 
         log.info("版本缺陷逃逸率分析完成，版本：{}，逃逸率：{}%", 
@@ -94,13 +93,13 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
     @Override
     public Object getEscapeRateTrend(String projectId, List<String> versions) {
         log.info("获取逃逸率趋势，项目：{}，版本列表：{}", projectId, versions);
-        
+
         // TODO: 实现趋势分析逻辑
         Map<String, Object> trendData = new HashMap<>();
         trendData.put("projectId", projectId);
         trendData.put("versions", versions);
         trendData.put("trendData", new ArrayList<>());
-        
+
         return trendData;
     }
 
@@ -108,10 +107,37 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
     public String exportEscapeAnalysisReport(VersionEscapeAnalysisRequestDto requestDto) {
         log.info("导出逃逸率分析报告，项目：{}，版本：{}", 
                 requestDto.getProjectId(), requestDto.getAnalysisVersion());
-        
+
         // TODO: 实现报告导出逻辑
-        String reportPath = "/tmp/escape_analysis_report_" + requestDto.getAnalysisVersion() + ".xlsx";
-        
-        return reportPath;
+        return "/reports/escape-analysis-" + requestDto.getAnalysisVersion() + ".xlsx";
+    }
+
+    /**
+     * 构建分析时间范围字符串
+     * @param requestDto 请求参数
+     * @return 时间范围字符串，如果没有提供时间参数则返回null
+     */
+    private String buildAnalysisTimeRange(VersionEscapeAnalysisRequestDto requestDto) {
+        String startDate = requestDto.getStartDate();
+        String endDate = requestDto.getEndDate();
+
+        // 如果用户没有提供任何时间参数，返回null表示无时间限制
+        if (startDate == null && endDate == null) {
+            log.info("用户未提供时间范围，分析将不受时间限制");
+            return null;
+        }
+
+        // 如果只提供了开始时间
+        if (startDate != null && endDate == null) {
+            return startDate + " ~ 至今";
+        }
+
+        // 如果只提供了结束时间  
+        if (startDate == null && endDate != null) {
+            return "起始 ~ " + endDate;
+        }
+
+        // 如果提供了完整的时间范围
+        return startDate + " ~ " + endDate;
     }
 }
