@@ -135,7 +135,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
 
         // 计算检测有效性
         double detectionEffectivenessValue = 100.0 - escapeRate.doubleValue();
-        stats.setDetectionEffectiveness(BigDecimal.valueOf(detectionEffectivenessValue));
+        stats.setDetectionEffectiveness(detectionEffectivenessValue);
 
         // 计算质量等级
         double escapeRateValue = escapeRate.doubleValue();
