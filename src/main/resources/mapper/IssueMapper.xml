@@ -318,7 +318,7 @@
         WHERE project_id = #{projectId} 
           AND introduced_version = #{analysisVersion}
           <if test="startDate != null and startDate != ''">
-              AND create_time &gt;= #{startDate}
+              AND create_time >= #{startDate}
           </if>
           <if test="endDate != null and endDate != ''">
               AND create_time &lt;= #{endDate}
