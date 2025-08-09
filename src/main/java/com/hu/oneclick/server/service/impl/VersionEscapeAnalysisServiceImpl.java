@@ -237,11 +237,11 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
             double inVersionPercentage = currentVersionFound * 100.0 / totalDefects;
             double escapedPercentage = escapedDefects * 100.0 / totalDefects;
             
-            discoveryTiming.setInVersionPercentage(BigDecimal.valueOf(inVersionPercentage));
-            discoveryTiming.setEscapedPercentage(BigDecimal.valueOf(escapedPercentage));
+            discoveryTiming.setInVersionPercentage(inVersionPercentage);
+            discoveryTiming.setEscapedPercentage(escapedPercentage);
         } else {
-            discoveryTiming.setInVersionPercentage(BigDecimal.ZERO);
-            discoveryTiming.setEscapedPercentage(BigDecimal.ZERO);
+            discoveryTiming.setInVersionPercentage(0.0);
+            discoveryTiming.setEscapedPercentage(0.0);
         }
 
         discoveryTiming.setDescription(String.format("版本内发现%d个缺陷，逃逸%d个缺陷", 
@@ -264,7 +264,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         double legacyDefectRate = escapeRateStats.getEscapeRate();
 
         legacyAnalysis.setTotalLegacyDefects(totalLegacyDefects);
-        legacyAnalysis.setLegacyDefectRate(BigDecimal.valueOf(legacyDefectRate));
+        legacyAnalysis.setLegacyDefectRate(legacyDefectRate);
         legacyAnalysis.setAverageEscapeDays(30); // 默认值
         legacyAnalysis.setDescription("遗留缺陷平均逃逸30天");
 
