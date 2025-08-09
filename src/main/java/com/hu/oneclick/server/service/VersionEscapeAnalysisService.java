@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.server.service;
 
 import com.hu.oneclick.model.domain.dto.VersionEscapeAnalysisRequestDto;
@@ -8,7 +7,7 @@ import com.hu.oneclick.model.domain.dto.VersionEscapeAnalysisResponseDto;
  * 版本缺陷逃逸率分析服务接口
  */
 public interface VersionEscapeAnalysisService {
-    
+
     /**
      * 分析指定版本的缺陷逃逸率
      * 
@@ -23,16 +22,7 @@ public interface VersionEscapeAnalysisService {
      * @return 缺陷逃逸率分析结果
      */
     VersionEscapeAnalysisResponseDto analyzeVersionEscapeRate(VersionEscapeAnalysisRequestDto requestDto);
-    
-    /**
-     * 获取版本逃逸率趋势（多个版本对比）
-     * 
-     * @param projectId 项目ID
-     * @param versions 要对比的版本列表
-     * @return 逃逸率趋势数据
-     */
-    Object getEscapeRateTrend(String projectId, java.util.List<String> versions);
-    
+
     /**
      * 导出版本逃逸率分析报告
      * 

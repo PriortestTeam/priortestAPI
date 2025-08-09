@@ -60,61 +60,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         return responseDto;
     }
 
-    @Override
-    public Object getEscapeRateTrend(String projectId, List<String> versions) {
-        log.info("开始获取逃逸率趋势，项目：{}，版本数量：{}", projectId, versions.size());
-
-        try {
-            Map<String, Object> trendData = new HashMap<>();
-            List<Map<String, Object>> versionTrends = new ArrayList<>();
-
-            for (String version : versions) {
-                Map<String, Object> params = new HashMap<>();
-                params.put("projectId", projectId);
-                params.put("analysisVersion", version);
-
-                Map<String, Object> stats = queryEscapeStatistics(params);
-
-                Map<String, Object> versionTrend = new HashMap<>();
-                versionTrend.put("version", version);
-                versionTrend.put("totalDefects", getIntValue(stats, "totalDefectsIntroduced"));
-                versionTrend.put("escapedDefects", getIntValue(stats, "escapedDefects"));
-                
-                BigDecimal escapeRateBigDecimal = getBigDecimalValue(stats, "escapeRate");
-                versionTrend.put("escapeRate", escapeRateBigDecimal.doubleValue());
-
-                // 计算质量等级
-                double escapeRateDouble = escapeRateBigDecimal.doubleValue();
-                String qualityLevel;
-                if (escapeRateDouble <= 5.0) {
-                    qualityLevel = "优秀";
-                } else if (escapeRateDouble <= 15.0) {
-                    qualityLevel = "良好";
-                } else if (escapeRateDouble <= 30.0) {
-                    qualityLevel = "一般";
-                } else {
-                    qualityLevel = "需改进";
-                }
-                versionTrend.put("qualityLevel", qualityLevel);
-
-                versionTrends.add(versionTrend);
-            }
-
-            trendData.put("versions", versions);
-            trendData.put("trendData", versionTrends);
-
-            return trendData;
-
-        } catch (Exception e) {
-            log.error("获取逃逸率趋势失败", e);
-
-            Map<String, Object> errorData = new HashMap<>();
-            errorData.put("versions", versions);
-            errorData.put("trendData", new ArrayList<>());
-
-            return errorData;
-        }
-    }
+    
 
     @Override
     public String exportEscapeAnalysisReport(VersionEscapeAnalysisRequestDto requestDto) {

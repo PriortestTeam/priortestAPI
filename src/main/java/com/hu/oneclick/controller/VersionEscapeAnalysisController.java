@@ -55,56 +55,9 @@ public class VersionEscapeAnalysisController {
         }
     }
 
-    @Operation(
-        summary = "快速分析版本逃逸率",
-        description = "通过URL参数快速分析指定版本的缺陷逃逸率"
-    )
-    @GetMapping("/escapeAnalysis/quick/{projectId}/{analysisVersion}")
-    public Resp<VersionEscapeAnalysisResponseDto> quickAnalyze(
-            @Parameter(description = "项目ID") @PathVariable String projectId,
-            @Parameter(description = "要分析的版本号") @PathVariable String analysisVersion,
-            @Parameter(description = "是否包含遗留缺陷分析") @RequestParam(defaultValue = "true") Boolean includeLegacy,
-            @Parameter(description = "是否按严重程度分组") @RequestParam(defaultValue = "true") Boolean groupBySeverity) {
+    
 
-        try {
-            VersionEscapeAnalysisRequestDto requestDto = new VersionEscapeAnalysisRequestDto();
-            requestDto.setProjectId(projectId);
-            requestDto.setAnalysisVersion(analysisVersion);
-            requestDto.setIncludeLegacyAnalysis(includeLegacy);
-            requestDto.setGroupBySeverity(groupBySeverity);
-            requestDto.setGroupByFoundVersion(true);
-
-            return analyzeVersionEscapeRate(requestDto);
-
-        } catch (Exception e) {
-            log.error("快速分析版本缺陷逃逸率失败", e);
-            return new Resp.Builder<VersionEscapeAnalysisResponseDto>()
-                    .buildResult("500","快速分析失败：" + e.getMessage());
-        }
-    }
-
-    @Operation(
-        summary = "获取逃逸率趋势",
-        description = "获取多个版本的逃逸率趋势对比数据"
-    )
-    @GetMapping("/escapeAnalysis/trend/{projectId}")
-    public Resp<Object> getEscapeRateTrend(
-            @Parameter(description = "项目ID") @PathVariable String projectId,
-            @Parameter(description = "版本列表") @RequestParam List<String> versions) {
-
-        try {
-            Object trendData = versionEscapeAnalysisService.getEscapeRateTrend(projectId, versions);
-
-            return new Resp.Builder<Object>()
-                    .setData(trendData)
-                    .ok();
-
-        } catch (Exception e) {
-            log.error("获取逃逸率趋势失败", e);
-            return new Resp.Builder<Object>()
-                    .buildResult("500","获取趋势数据失败：" + e.getMessage());
-        }
-    }
+    
 
     @Operation(
         summary = "导出逃逸率分析报告",
