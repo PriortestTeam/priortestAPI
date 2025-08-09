@@ -1,3 +1,4 @@
+
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.dao.IssueDao;
@@ -231,13 +232,11 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         discoveryTiming.setEscapedCount(escapedDefects);
 
         if (totalDefects > 0) {
-            BigDecimal inVersionPercentage = BigDecimal.valueOf(currentVersionFound * 100.0 / totalDefects)
-                    .setScale(2, RoundingMode.HALF_UP);
-            BigDecimal escapedPercentage = BigDecimal.valueOf(escapedDefects * 100.0 / totalDefects)
-                    .setScale(2, RoundingMode.HALF_UP);
-
-            discoveryTiming.setInVersionPercentage(inVersionPercentage.doubleValue());
-            discoveryTiming.setEscapedPercentage(escapedPercentage.doubleValue());
+            double inVersionPercentage = currentVersionFound * 100.0 / totalDefects;
+            double escapedPercentage = escapedDefects * 100.0 / totalDefects;
+            
+            discoveryTiming.setInVersionPercentage(inVersionPercentage);
+            discoveryTiming.setEscapedPercentage(escapedPercentage);
         } else {
             discoveryTiming.setInVersionPercentage(0.0);
             discoveryTiming.setEscapedPercentage(0.0);
@@ -311,8 +310,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         assessment.setRecommendations(recommendations);
 
         // 关键指标
-        VersionEscapeAnalysisResponseDto.QualityAssessment.KeyMetrics keyMetrics = 
-                new VersionEscapeAnalysisResponseDto.QualityAssessment.KeyMetrics();
+        KeyMetrics keyMetrics = new KeyMetrics();
         keyMetrics.setLegacyDefectRate(escapeRate);
         keyMetrics.setHighSeverityEscapeRate(escapeRate);
         keyMetrics.setEscapeRate(escapeRate);
@@ -368,6 +366,39 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
             return new BigDecimal(value.toString());
         } catch (NumberFormatException e) {
             return BigDecimal.ZERO;
+        }
+    }
+
+    /**
+     * 关键指标内部类
+     */
+    public static class KeyMetrics {
+        private double legacyDefectRate;
+        private double highSeverityEscapeRate;
+        private double escapeRate;
+
+        public double getLegacyDefectRate() {
+            return legacyDefectRate;
+        }
+
+        public void setLegacyDefectRate(double legacyDefectRate) {
+            this.legacyDefectRate = legacyDefectRate;
+        }
+
+        public double getHighSeverityEscapeRate() {
+            return highSeverityEscapeRate;
+        }
+
+        public void setHighSeverityEscapeRate(double highSeverityEscapeRate) {
+            this.highSeverityEscapeRate = highSeverityEscapeRate;
+        }
+
+        public double getEscapeRate() {
+            return escapeRate;
+        }
+
+        public void setEscapeRate(double escapeRate) {
+            this.escapeRate = escapeRate;
         }
     }
 }
