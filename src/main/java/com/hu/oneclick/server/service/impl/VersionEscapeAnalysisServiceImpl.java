@@ -237,11 +237,11 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
             double inVersionPercentage = currentVersionFound * 100.0 / totalDefects;
             double escapedPercentage = escapedDefects * 100.0 / totalDefects;
             
-            discoveryTiming.setInVersionPercentage(inVersionPercentage);
-            discoveryTiming.setEscapedPercentage(escapedPercentage);
+            discoveryTiming.setInVersionPercentage(BigDecimal.valueOf(inVersionPercentage));
+            discoveryTiming.setEscapedPercentage(BigDecimal.valueOf(escapedPercentage));
         } else {
-            discoveryTiming.setInVersionPercentage(0.0);
-            discoveryTiming.setEscapedPercentage(0.0);
+            discoveryTiming.setInVersionPercentage(BigDecimal.ZERO);
+            discoveryTiming.setEscapedPercentage(BigDecimal.ZERO);
         }
 
         discoveryTiming.setDescription(String.format("版本内发现%d个缺陷，逃逸%d个缺陷", 
