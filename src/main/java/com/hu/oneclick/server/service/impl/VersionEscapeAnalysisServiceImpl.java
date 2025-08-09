@@ -56,14 +56,15 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 buildLegacyDefectAnalysis(escapeRateStats);
         responseDto.setLegacyDefectAnalysis(legacyDefectAnalysis);
 
-        // 初始化其他字段
-        responseDto.setVersionGroups(new ArrayList<>());
-        responseDto.setSeverityGroups(new ArrayList<>());
-        responseDto.setDefectDetails(new ArrayList<>());
-
+        // 构建质量评估
         VersionEscapeAnalysisResponseDto.QualityAssessment qualityAssessment = 
                 buildQualityAssessment(escapeRateStats);
         responseDto.setQualityAssessment(qualityAssessment);
+
+        // 初始化其他字段为空列表
+        responseDto.setVersionGroups(new ArrayList<>());
+        responseDto.setSeverityGroups(new ArrayList<>());
+        responseDto.setDefectDetails(new ArrayList<>());
 
         log.info("版本缺陷逃逸率分析完成，版本：{}，逃逸率：{}%", 
                 requestDto.getAnalysisVersion(), 
@@ -284,42 +285,28 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
 
         double escapeRate = escapeRateStats.getEscapeRate();
 
-        // 整体质量等级
-        String overallQualityLevel;
-        String riskLevel;
-        List<String> recommendations = new ArrayList<>();
-
+        // 简化质量等级判断
         if (escapeRate <= 5) {
-            overallQualityLevel = "优秀";
-            riskLevel = "低风险";
-            recommendations.add("保持当前测试质量");
+            assessment.setOverallQualityLevel("优秀");
+            assessment.setRiskLevel("低风险");
         } else if (escapeRate <= 15) {
-            overallQualityLevel = "良好";
-            riskLevel = "中低风险";
-            recommendations.add("继续优化测试用例");
+            assessment.setOverallQualityLevel("良好");
+            assessment.setRiskLevel("中低风险");
         } else if (escapeRate <= 30) {
-            overallQualityLevel = "一般";
-            riskLevel = "中风险";
-            recommendations.add("加强测试覆盖");
-            recommendations.add("优化测试策略");
+            assessment.setOverallQualityLevel("一般");
+            assessment.setRiskLevel("中风险");
         } else {
-            overallQualityLevel = "需改进";
-            riskLevel = "高风险";
-            recommendations.add("加强测试覆盖");
-            recommendations.add("完善回归测试");
+            assessment.setOverallQualityLevel("需改进");
+            assessment.setRiskLevel("高风险");
         }
 
-        assessment.setOverallQualityLevel(overallQualityLevel);
-        assessment.setRiskLevel(riskLevel);
+        // 设置建议
+        List<String> recommendations = new ArrayList<>();
+        recommendations.add("持续优化测试策略");
         assessment.setRecommendations(recommendations);
 
-        // 关键指标
-        Map<String, Double> keyMetrics = new HashMap<>();
-        keyMetrics.put("legacyDefectRate", escapeRate);
-        keyMetrics.put("highSeverityEscapeRate", escapeRate);
-        keyMetrics.put("escapeRate", escapeRate);
-
-        assessment.setKeyMetrics(keyMetrics);
+        // 移除keyMetrics避免类型问题
+        assessment.setKeyMetrics(new HashMap<>());
 
         return assessment;
     }
