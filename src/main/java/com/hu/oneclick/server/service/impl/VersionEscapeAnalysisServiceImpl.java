@@ -60,7 +60,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         return responseDto;
     }
 
-    
+
 
     @Override
     public String exportEscapeAnalysisReport(VersionEscapeAnalysisRequestDto requestDto) {
@@ -134,8 +134,8 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         stats.setEscapeRate(escapeRate.doubleValue());
 
         // 计算检测有效性
-        double detectionEffectiveness = 100.0 - escapeRate.doubleValue();
-        stats.setDetectionEffectiveness(detectionEffectiveness);
+        double detectionEffectivenessValue = 100.0 - escapeRate.doubleValue();
+        stats.setDetectionEffectiveness(BigDecimal.valueOf(detectionEffectivenessValue));
 
         // 计算质量等级
         double escapeRateValue = escapeRate.doubleValue();
