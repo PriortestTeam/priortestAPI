@@ -79,10 +79,56 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
     public Object getEscapeRateTrend(String projectId, List<String> versions) {
         log.info("获取逃逸率趋势，项目：{}，版本列表：{}", projectId, versions);
 
-        // TODO: 实现趋势分析逻辑
-        Map<String, Object> trendData = new HashMap<>();
-        trendData.put("projectId", projectId);
-        trendData.put("versions", versions);
+        try {
+            List<Map<String, Object>> trendList = new ArrayList<>();
+            
+            for (String version : versions) {
+                Map<String, Object> stats = issueDao.queryVersionEscapeStatistics(
+                    projectId, version, null, null);
+                
+                Map<String, Object> versionTrend = new HashMap<>();
+                versionTrend.put("version", version);
+                versionTrend.put("totalDefectsIntroduced", stats.get("totalDefectsIntroduced"));
+                versionTrend.put("currentVersionFound", stats.get("currentVersionFound"));
+                versionTrend.put("escapedDefects", stats.get("escapedDefects"));
+                versionTrend.put("escapeRate", stats.get("escapeRate"));
+                
+                // 计算质量等级
+                BigDecimal escapeRate = new BigDecimal(stats.get("escapeRate").toString());
+                String qualityLevel;
+                if (escapeRate.compareTo(BigDecimal.valueOf(5)) <= 0) {
+                    qualityLevel = "优秀";
+                } else if (escapeRate.compareTo(BigDecimal.valueOf(15)) <= 0) {
+                    qualityLevel = "良好";
+                } else if (escapeRate.compareTo(BigDecimal.valueOf(30)) <= 0) {
+                    qualityLevel = "一般";
+                } else {
+                    qualityLevel = "需改进";
+                }
+                versionTrend.put("qualityLevel", qualityLevel);
+                
+                trendList.add(versionTrend);
+            }
+            
+            Map<String, Object> trendData = new HashMap<>();
+            trendData.put("projectId", projectId);
+            trendData.put("versions", versions);
+            trendData.put("trendList", trendList);
+            trendData.put("analysisTime", new Date());
+            
+            return trendData;
+            
+        } catch (Exception e) {
+            log.error("获取逃逸率趋势失败", e);
+            Map<String, Object> errorData = new HashMap<>();
+            errorData.put("projectId", projectId);
+            errorData.put("versions", versions);
+            errorData.put("error", e.getMessage());
+            errorData.put("trendList", new ArrayList<>());
+            
+            return errorData;
+        }
+    }ns", versions);
         trendData.put("trendData", new ArrayList<>());
 
         return trendData;
