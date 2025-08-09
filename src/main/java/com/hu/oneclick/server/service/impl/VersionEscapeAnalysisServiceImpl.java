@@ -137,18 +137,22 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         BigDecimal escapeRate = getBigDecimalValue(escapeStats, "escapeRate");
         stats.setEscapeRate(escapeRate);
 
-        // 计算检测有效性
-        BigDecimal detectionEffectiveness = BigDecimal.valueOf(100.0).subtract(escapeRate);
+        // 计算检测有效性 - 使用BigDecimal运算
+        BigDecimal hundred = BigDecimal.valueOf(100.0);
+        BigDecimal detectionEffectiveness = hundred.subtract(escapeRate);
         stats.setDetectionEffectiveness(detectionEffectiveness);
 
-        // 计算质量等级
-        double escapeRateValue = escapeRate.doubleValue();
+        // 计算质量等级 - 使用BigDecimal比较避免精度误差
+        BigDecimal threshold5 = BigDecimal.valueOf(5.0);
+        BigDecimal threshold15 = BigDecimal.valueOf(15.0);
+        BigDecimal threshold30 = BigDecimal.valueOf(30.0);
+        
         String qualityLevel;
-        if (escapeRateValue <= 5.0) {
+        if (escapeRate.compareTo(threshold5) <= 0) {
             qualityLevel = "优秀";
-        } else if (escapeRateValue <= 15.0) {
+        } else if (escapeRate.compareTo(threshold15) <= 0) {
             qualityLevel = "良好";
-        } else if (escapeRateValue <= 30.0) {
+        } else if (escapeRate.compareTo(threshold30) <= 0) {
             qualityLevel = "一般";
         } else {
             qualityLevel = "需改进";
@@ -167,19 +171,27 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         VersionEscapeAnalysisResponseDto.QualityAssessment assessment = 
                 new VersionEscapeAnalysisResponseDto.QualityAssessment();
 
-        double escapeRate = stats.getEscapeRate().doubleValue();
-        double detectionEffectiveness = stats.getDetectionEffectiveness().doubleValue();
+        BigDecimal escapeRate = stats.getEscapeRate();
+        BigDecimal detectionEffectiveness = stats.getDetectionEffectiveness();
+        
+        // 预定义的比较阈值
+        BigDecimal threshold5 = BigDecimal.valueOf(5.0);
+        BigDecimal threshold15 = BigDecimal.valueOf(15.0);
+        BigDecimal threshold30 = BigDecimal.valueOf(30.0);
+        BigDecimal threshold70 = BigDecimal.valueOf(70.0);
+        BigDecimal threshold85 = BigDecimal.valueOf(85.0);
+        BigDecimal threshold95 = BigDecimal.valueOf(95.0);
         
         // 整体质量等级
         assessment.setOverallQualityLevel(stats.getQualityLevel());
         
         // 风险等级评估
         String riskLevel;
-        if (escapeRate <= 5.0) {
+        if (escapeRate.compareTo(threshold5) <= 0) {
             riskLevel = "低风险";
-        } else if (escapeRate <= 15.0) {
+        } else if (escapeRate.compareTo(threshold15) <= 0) {
             riskLevel = "中等风险";
-        } else if (escapeRate <= 30.0) {
+        } else if (escapeRate.compareTo(threshold30) <= 0) {
             riskLevel = "高风险";
         } else {
             riskLevel = "极高风险";
@@ -188,15 +200,15 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         
         // 改进建议
         List<String> recommendations = new ArrayList<>();
-        if (escapeRate > 30.0) {
+        if (escapeRate.compareTo(threshold30) > 0) {
             recommendations.add("紧急加强测试覆盖，重点关注回归测试");
             recommendations.add("建立缺陷预防机制，加强代码审查");
             recommendations.add("完善测试用例设计，增加边界条件测试");
-        } else if (escapeRate > 15.0) {
+        } else if (escapeRate.compareTo(threshold15) > 0) {
             recommendations.add("优化测试策略，加强集成测试");
             recommendations.add("建立缺陷分析机制，识别常见缺陷模式");
             recommendations.add("加强自动化测试覆盖");
-        } else if (escapeRate > 5.0) {
+        } else if (escapeRate.compareTo(threshold5) > 0) {
             recommendations.add("持续优化测试用例质量");
             recommendations.add("加强探索性测试");
         } else {
@@ -205,7 +217,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         }
         assessment.setRecommendations(recommendations);
         
-        // 关键指标
+        // 关键指标 - 保持BigDecimal类型
         Map<String, Object> keyMetrics = new HashMap<>();
         keyMetrics.put("escapeRate", escapeRate);
         keyMetrics.put("detectionEffectiveness", detectionEffectiveness);
@@ -216,11 +228,11 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         
         // 测试覆盖评估
         String testCoverageAssessment;
-        if (detectionEffectiveness >= 95.0) {
+        if (detectionEffectiveness.compareTo(threshold95) >= 0) {
             testCoverageAssessment = "测试覆盖优秀，能够有效发现版本内缺陷";
-        } else if (detectionEffectiveness >= 85.0) {
+        } else if (detectionEffectiveness.compareTo(threshold85) >= 0) {
             testCoverageAssessment = "测试覆盖良好，但仍有提升空间";
-        } else if (detectionEffectiveness >= 70.0) {
+        } else if (detectionEffectiveness.compareTo(threshold70) >= 0) {
             testCoverageAssessment = "测试覆盖一般，需要加强测试深度";
         } else {
             testCoverageAssessment = "测试覆盖不足，存在明显测试盲区";
@@ -239,9 +251,10 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
             if (stats.getEscapedDefects() == 0) {
                 keyFindings.add("所有缺陷均在版本内被发现，测试效果优秀");
             } else {
+                // 格式化显示时才转换为double
                 keyFindings.add(String.format("检测有效性为 %.1f%%，%s", 
-                        detectionEffectiveness, 
-                        detectionEffectiveness >= 85.0 ? "测试效果良好" : "测试效果有待提升"));
+                        detectionEffectiveness.doubleValue(), 
+                        detectionEffectiveness.compareTo(threshold85) >= 0 ? "测试效果良好" : "测试效果有待提升"));
             }
         }
         assessment.setKeyFindings(keyFindings);
