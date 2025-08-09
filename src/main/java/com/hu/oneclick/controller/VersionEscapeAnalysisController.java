@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/versionEscapeAnalysis")
+@RequestMapping("/api/versionQualityReport")
 @Tag(name = "版本缺陷逃逸率分析", description = "分析指定版本的缺陷逃逸情况和质量指标")
 public class VersionEscapeAnalysisController {
 
@@ -29,7 +29,7 @@ public class VersionEscapeAnalysisController {
         summary = "分析版本缺陷逃逸率", 
         description = "分析指定版本引入的缺陷在该版本和后续版本中的发现情况，计算缺陷逃逸率和测试有效性"
     )
-    @PostMapping("/analyze")
+    @PostMapping("/escapeAnalysis")
     public Resp<VersionEscapeAnalysisResponseDto> analyzeVersionEscapeRate(
             @Valid @RequestBody VersionEscapeAnalysisRequestDto requestDto) {
         try {
@@ -59,7 +59,7 @@ public class VersionEscapeAnalysisController {
         summary = "快速分析版本逃逸率",
         description = "通过URL参数快速分析指定版本的缺陷逃逸率"
     )
-    @GetMapping("/quick/{projectId}/{analysisVersion}")
+    @GetMapping("/escapeAnalysis/quick/{projectId}/{analysisVersion}")
     public Resp<VersionEscapeAnalysisResponseDto> quickAnalyze(
             @Parameter(description = "项目ID") @PathVariable String projectId,
             @Parameter(description = "要分析的版本号") @PathVariable String analysisVersion,
@@ -87,7 +87,7 @@ public class VersionEscapeAnalysisController {
         summary = "获取逃逸率趋势",
         description = "获取多个版本的逃逸率趋势对比数据"
     )
-    @GetMapping("/trend/{projectId}")
+    @GetMapping("/escapeAnalysis/trend/{projectId}")
     public Resp<Object> getEscapeRateTrend(
             @Parameter(description = "项目ID") @PathVariable String projectId,
             @Parameter(description = "版本列表") @RequestParam List<String> versions) {
@@ -110,7 +110,7 @@ public class VersionEscapeAnalysisController {
         summary = "导出逃逸率分析报告",
         description = "导出详细的版本缺陷逃逸率分析报告"
     )
-    @PostMapping("/export")
+    @PostMapping("/escapeAnalysis/export")
     public Resp<String> exportAnalysisReport(
             @Valid @RequestBody VersionEscapeAnalysisRequestDto requestDto) {
 
