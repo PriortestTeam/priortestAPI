@@ -130,15 +130,15 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         stats.setCurrentVersionFound(getIntValue(escapeStats, "currentVersionFound"));
         stats.setEscapedDefects(getIntValue(escapeStats, "escapedDefects"));
 
-        double escapeRate = getBigDecimalValue(escapeStats, "escapeRate").doubleValue();
+        BigDecimal escapeRate = getBigDecimalValue(escapeStats, "escapeRate");
         stats.setEscapeRate(escapeRate);
 
         // 计算检测有效性
-        double detectionEffectiveness = 100.0 - escapeRate;
+        BigDecimal detectionEffectiveness = BigDecimal.valueOf(100.0).subtract(escapeRate);
         stats.setDetectionEffectiveness(detectionEffectiveness);
 
         // 计算质量等级
-        double escapeRateValue = escapeRate;
+        double escapeRateValue = escapeRate.doubleValue();
         String qualityLevel;
         if (escapeRateValue <= 5.0) {
             qualityLevel = "优秀";
