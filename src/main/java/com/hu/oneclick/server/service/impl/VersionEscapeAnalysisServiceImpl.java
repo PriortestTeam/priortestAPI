@@ -40,27 +40,15 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         responseDto.setProjectId(requestDto.getProjectId());
         responseDto.setAnalysisTimeRange(buildAnalysisTimeRange(requestDto));
 
-        // 构建逃逸率统计
+        // 构建逃逸率统计 - 只保留核心功能
         VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats =
                 buildEscapeRateStats(escapeStats);
         responseDto.setEscapeRateStats(escapeRateStats);
 
-        // 移除发现时机分析功能
-        // VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming =
-        //         buildDiscoveryTimingAnalysis(escapeRateStats);
-        // responseDto.setDiscoveryTiming(discoveryTiming);
-
-        // 构建遗留缺陷分析
-        VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis legacyDefectAnalysis =
-                buildLegacyDefectAnalysis(escapeRateStats);
-        responseDto.setLegacyDefectAnalysis(legacyDefectAnalysis);
-
-        // 构建质量评估
-        VersionEscapeAnalysisResponseDto.QualityAssessment qualityAssessment =
-                buildQualityAssessment(escapeRateStats);
-        responseDto.setQualityAssessment(qualityAssessment);
-
-        // 初始化其他字段为空列表
+        // 所有其他字段设为null或空，简化响应
+        responseDto.setDiscoveryTiming(null);
+        responseDto.setLegacyDefectAnalysis(null);
+        responseDto.setQualityAssessment(null);
         responseDto.setVersionGroups(new ArrayList<>());
         responseDto.setSeverityGroups(new ArrayList<>());
         responseDto.setDefectDetails(new ArrayList<>());
@@ -254,68 +242,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
     }
     */
 
-    /**
-     * 构建遗留缺陷分析
-     */
-    private VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis buildLegacyDefectAnalysis(
-            VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
-
-        VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis legacyAnalysis =
-                new VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis();
-
-        // 使用逃逸缺陷作为遗留缺陷
-        double totalDefects = getBigDecimalValue(escapeStats, "totalDefects").doubleValue();
-        double foundInVersion = getBigDecimalValue(escapeStats, "foundInVersion").doubleValue();
-        double escapedDefects = getBigDecimalValue(escapeStats, "escapedDefects").doubleValue();
-
-        legacyAnalysis.setTotalLegacyDefects(BigDecimal.valueOf(totalDefects));
-        legacyAnalysis.setFoundInVersionDefects(BigDecimal.valueOf(foundInVersion));
-        double legacyDefectRate = escapeRateStats.getEscapeRate();
-
-        legacyAnalysis.setTotalLegacyDefects(BigDecimal.valueOf(escapedDefects));
-        legacyAnalysis.setLegacyDefectRate(BigDecimal.valueOf(legacyDefectRate));
-        legacyAnalysis.setAverageEscapeDays(30); // 默认值
-        legacyAnalysis.setDescription("遗留缺陷平均逃逸30天");
-
-        return legacyAnalysis;
-    }
-
-    /**
-     * 构建质量评估
-     */
-    private VersionEscapeAnalysisResponseDto.QualityAssessment buildQualityAssessment(
-            VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
-
-        VersionEscapeAnalysisResponseDto.QualityAssessment assessment =
-                new VersionEscapeAnalysisResponseDto.QualityAssessment();
-
-        double escapeRate = escapeRateStats.getEscapeRate();
-
-        // 简化质量等级判断
-        if (escapeRate <= 5) {
-            assessment.setOverallQualityLevel("优秀");
-            assessment.setRiskLevel("低风险");
-        } else if (escapeRate <= 15) {
-            assessment.setOverallQualityLevel("良好");
-            assessment.setRiskLevel("中低风险");
-        } else if (escapeRate <= 30) {
-            assessment.setOverallQualityLevel("一般");
-            assessment.setRiskLevel("中风险");
-        } else {
-            assessment.setOverallQualityLevel("需改进");
-            assessment.setRiskLevel("高风险");
-        }
-
-        // 设置建议
-        List<String> recommendations = new ArrayList<>();
-        recommendations.add("持续优化测试策略");
-        assessment.setRecommendations(recommendations);
-
-        // 移除keyMetrics避免类型问题
-        assessment.setKeyMetrics(new HashMap<>());
-
-        return assessment;
-    }
+    // 已移除buildLegacyDefectAnalysis和buildQualityAssessment方法，简化API响应
 
     /**
      * 构建分析时间范围
