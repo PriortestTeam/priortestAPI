@@ -287,9 +287,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 // 基本信息
                 detail.setDefectId(getStringValue(defect, "id"));
                 detail.setTitle(getStringValue(defect, "title"));
-                detail.setDescription(getStringValue(defect, "description"));
                 detail.setSeverity(getStringValue(defect, "severity"));
-                detail.setStatus(getStringValue(defect, "status"));
                 detail.setPriority(getStringValue(defect, "priority"));
                 
                 // 版本信息
@@ -301,14 +299,6 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 String foundVersion = getStringValue(defect, "issue_version");
                 boolean isEscaped = !introducedVersion.equals(foundVersion);
                 detail.setIsEscaped(isEscaped);
-                
-                // 时间信息
-                detail.setCreatedTime(getStringValue(defect, "create_time"));
-                detail.setFoundTime(getStringValue(defect, "create_time"));
-                
-                // 责任人信息
-                detail.setAssignee(getStringValue(defect, "assignee"));
-                detail.setReporter(getStringValue(defect, "reporter"));
                 
                 // 计算逃逸天数（如果是逃逸缺陷）
                 if (isEscaped) {
@@ -329,8 +319,8 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 }
                 
                 // 修复状态评估
-                String fixStatus;
                 String status = getStringValue(defect, "status");
+                String fixStatus;
                 if ("RESOLVED".equalsIgnoreCase(status) || "CLOSED".equalsIgnoreCase(status)) {
                     fixStatus = "已修复";
                 } else if ("IN_PROGRESS".equalsIgnoreCase(status)) {

@@ -230,29 +230,17 @@ public class VersionEscapeAnalysisResponseDto {
         @Schema(description = "发现版本")
         private String foundVersion;
 
-        @Schema(description = "是否为遗留缺陷")
-        private Boolean isLegacy;
-
-        @Schema(description = "是否发布后发现")
-        private Boolean foundAfterRelease;
-
         @Schema(description = "逃逸天数")
         private Integer escapeDays;
 
-        @Schema(description = "发现日期")
-        private String foundDate;
+        @Schema(description = "是否为逃逸缺陷")
+        private Boolean isEscaped;
 
-        @Schema(description = "当前状态")
-        private String currentStatus;
+        @Schema(description = "修复状态")
+        private String fixStatus;
 
-        @Schema(description = "缺陷来源")
-        private String defectSource;
-
-        @Schema(description = "影响范围")
-        private String impactScope;
-
-        @Schema(description = "根本原因分析")
-        private String rootCause;
+        @Schema(description = "影响描述")
+        private String impactDescription;
     }
 
     /**
