@@ -10,6 +10,8 @@ import jakarta.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.util.StringUtils; // Added for StringUtils
+import java.math.RoundingMode; // Added for RoundingMode
 
 /**
  * 版本缺陷逃逸率分析服务实现类
@@ -119,7 +121,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
     private Map<String, Object> buildQueryParams(VersionEscapeAnalysisRequestDto requestDto) {
         Map<String, Object> params = new HashMap<>();
         params.put("projectId", requestDto.getProjectId());
-        params.put("introducedVersion", requestDto.getAnalysisVersion());
+        params.put("analysisVersion", requestDto.getAnalysisVersion());
 
         // 如果有时间范围限制，添加时间条件
         if (StringUtils.hasText(requestDto.getStartDate())) {
@@ -149,7 +151,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
             sql.append("AND introduced_version = ? ");
 
             List<Object> sqlParams = new ArrayList<>();
-            String introducedVersion = (String) params.get("introducedVersion");
+            String introducedVersion = (String) params.get("analysisVersion");
             sqlParams.add(introducedVersion);
             sqlParams.add(introducedVersion);
             sqlParams.add(introducedVersion);
