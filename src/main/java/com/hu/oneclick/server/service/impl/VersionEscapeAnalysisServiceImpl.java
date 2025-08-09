@@ -168,8 +168,13 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 sqlParams.add(params.get("endDate"));
             }
 
-            // 使用MyBatis的queryForMap方法执行查询
-            Map<String, Object> result = issueDao.queryForMap(sql.toString(), sqlParams.toArray());
+            // 使用IssueDao的查询方法获取真实数据
+            Map<String, Object> result = issueDao.queryVersionEscapeStatistics(
+                (String) params.get("projectId"),
+                (String) params.get("analysisVersion"),
+                (String) params.get("startDate"),
+                (String) params.get("endDate")
+            );
 
             log.info("查询结果: {}", result);
             return result;

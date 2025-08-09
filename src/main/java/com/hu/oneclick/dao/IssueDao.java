@@ -45,6 +45,14 @@ public interface IssueDao extends BaseMapper<Issue> {
      */
     List<Map<String, Object>> queryDefectRunCaseMapping(@Param("projectId") Long projectId,
                                                          @Param("majorVersion") String majorVersion,
-                                                         @Param("includeVersions") List<String> includeVersions,
+                                                         @Param("includeVersions") List<String> includeVersions);
+
+    /**
+     * 查询版本缺陷逃逸率统计数据
+     */
+    Map<String, Object> queryVersionEscapeStatistics(@Param("projectId") String projectId,
+                                                     @Param("analysisVersion") String analysisVersion,
+                                                     @Param("startDate") String startDate,
+                                                     @Param("endDate") String endDate);udeVersions,
                                                          @Param("testCycleIds") List<Long> testCycleIds);
 }

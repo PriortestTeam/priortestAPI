@@ -320,3 +320,27 @@
     </select>
 
 </mapper>
+
+
+    <!-- 版本缺陷逃逸率统计查询 -->
+    <select id="queryVersionEscapeStatistics" resultType="java.util.Map">
+        SELECT 
+            COUNT(*) as totalDefectsIntroduced,
+            COUNT(CASE WHEN issue_version = #{analysisVersion} THEN 1 END) as currentVersionFound,
+            COUNT(CASE WHEN issue_version != #{analysisVersion} THEN 1 END) as escapedDefects,
+            ROUND(
+                CASE 
+                    WHEN COUNT(*) = 0 THEN 0 
+                    ELSE COUNT(CASE WHEN issue_version != #{analysisVersion} THEN 1 END) * 100.0 / COUNT(*) 
+                END, 2
+            ) as escapeRate
+        FROM issue 
+        WHERE project_id = #{projectId} 
+          AND introduced_version = #{analysisVersion}
+          <if test="startDate != null and startDate != ''">
+              AND create_time >= #{startDate}
+          </if>
+          <if test="endDate != null and endDate != ''">
+              AND create_time <= #{endDate}
+          </if>
+    </select>
