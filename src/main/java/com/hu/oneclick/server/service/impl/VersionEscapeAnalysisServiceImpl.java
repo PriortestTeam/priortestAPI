@@ -96,11 +96,11 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 // 计算质量等级
                 BigDecimal escapeRate = getBigDecimalValue(stats, "escapeRate");
                 String qualityLevel;
-                if (escapeRate.compareTo(BigDecimal.valueOf(5)) <= 0) {
+                if (escapeRate.compareTo(BigDecimal.valueOf(5.0)) <= 0) {
                     qualityLevel = "优秀";
-                } else if (escapeRate.compareTo(BigDecimal.valueOf(15)) <= 0) {
+                } else if (escapeRate.compareTo(BigDecimal.valueOf(15.0)) <= 0) {
                     qualityLevel = "良好";
-                } else if (escapeRate.compareTo(BigDecimal.valueOf(30)) <= 0) {
+                } else if (escapeRate.compareTo(BigDecimal.valueOf(30.0)) <= 0) {
                     qualityLevel = "一般";
                 } else {
                     qualityLevel = "需改进";
@@ -237,11 +237,11 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
             double inVersionPercentage = currentVersionFound * 100.0 / totalDefects;
             double escapedPercentage = escapedDefects * 100.0 / totalDefects;
             
-            discoveryTiming.setInVersionPercentage(inVersionPercentage);
-            discoveryTiming.setEscapedPercentage(escapedPercentage);
+            discoveryTiming.setInVersionPercentage(BigDecimal.valueOf(inVersionPercentage));
+            discoveryTiming.setEscapedPercentage(BigDecimal.valueOf(escapedPercentage));
         } else {
-            discoveryTiming.setInVersionPercentage(0.0);
-            discoveryTiming.setEscapedPercentage(0.0);
+            discoveryTiming.setInVersionPercentage(BigDecimal.valueOf(0.0));
+            discoveryTiming.setEscapedPercentage(BigDecimal.valueOf(0.0));
         }
 
         discoveryTiming.setDescription(String.format("版本内发现%d个缺陷，逃逸%d个缺陷", 
