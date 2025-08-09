@@ -45,10 +45,14 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 buildEscapeRateStats(escapeStats);
         responseDto.setEscapeRateStats(escapeRateStats);
 
+        // 构建质量评估
+        VersionEscapeAnalysisResponseDto.QualityAssessment qualityAssessment = 
+                buildQualityAssessment(escapeRateStats);
+        responseDto.setQualityAssessment(qualityAssessment);
+
         // 所有其他字段设为null或空，简化响应
         responseDto.setDiscoveryTiming(null);
         responseDto.setLegacyDefectAnalysis(null);
-        responseDto.setQualityAssessment(null);
         responseDto.setVersionGroups(new ArrayList<>());
         responseDto.setSeverityGroups(new ArrayList<>());
         responseDto.setDefectDetails(new ArrayList<>());
@@ -152,6 +156,97 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         stats.setQualityLevel(qualityLevel);
 
         return stats;
+    }
+
+    /**
+     * 构建质量评估
+     */
+    private VersionEscapeAnalysisResponseDto.QualityAssessment buildQualityAssessment(
+            VersionEscapeAnalysisResponseDto.EscapeRateStats stats) {
+        
+        VersionEscapeAnalysisResponseDto.QualityAssessment assessment = 
+                new VersionEscapeAnalysisResponseDto.QualityAssessment();
+
+        double escapeRate = stats.getEscapeRate().doubleValue();
+        double detectionEffectiveness = stats.getDetectionEffectiveness().doubleValue();
+        
+        // 整体质量等级
+        assessment.setOverallQualityLevel(stats.getQualityLevel());
+        
+        // 风险等级评估
+        String riskLevel;
+        if (escapeRate <= 5.0) {
+            riskLevel = "低风险";
+        } else if (escapeRate <= 15.0) {
+            riskLevel = "中等风险";
+        } else if (escapeRate <= 30.0) {
+            riskLevel = "高风险";
+        } else {
+            riskLevel = "极高风险";
+        }
+        assessment.setRiskLevel(riskLevel);
+        
+        // 改进建议
+        List<String> recommendations = new ArrayList<>();
+        if (escapeRate > 30.0) {
+            recommendations.add("紧急加强测试覆盖，重点关注回归测试");
+            recommendations.add("建立缺陷预防机制，加强代码审查");
+            recommendations.add("完善测试用例设计，增加边界条件测试");
+        } else if (escapeRate > 15.0) {
+            recommendations.add("优化测试策略，加强集成测试");
+            recommendations.add("建立缺陷分析机制，识别常见缺陷模式");
+            recommendations.add("加强自动化测试覆盖");
+        } else if (escapeRate > 5.0) {
+            recommendations.add("持续优化测试用例质量");
+            recommendations.add("加强探索性测试");
+        } else {
+            recommendations.add("保持当前测试质量水平");
+            recommendations.add("可考虑分享最佳实践给其他团队");
+        }
+        assessment.setRecommendations(recommendations);
+        
+        // 关键指标
+        Map<String, Object> keyMetrics = new HashMap<>();
+        keyMetrics.put("escapeRate", escapeRate);
+        keyMetrics.put("detectionEffectiveness", detectionEffectiveness);
+        keyMetrics.put("totalDefects", stats.getTotalDefectsIntroduced());
+        keyMetrics.put("foundInVersion", stats.getCurrentVersionFound());
+        keyMetrics.put("escapedDefects", stats.getEscapedDefects());
+        assessment.setKeyMetrics(keyMetrics);
+        
+        // 测试覆盖评估
+        String testCoverageAssessment;
+        if (detectionEffectiveness >= 95.0) {
+            testCoverageAssessment = "测试覆盖优秀，能够有效发现版本内缺陷";
+        } else if (detectionEffectiveness >= 85.0) {
+            testCoverageAssessment = "测试覆盖良好，但仍有提升空间";
+        } else if (detectionEffectiveness >= 70.0) {
+            testCoverageAssessment = "测试覆盖一般，需要加强测试深度";
+        } else {
+            testCoverageAssessment = "测试覆盖不足，存在明显测试盲区";
+        }
+        assessment.setTestCoverageAssessment(testCoverageAssessment);
+        
+        // 关键发现
+        List<String> keyFindings = new ArrayList<>();
+        if (stats.getTotalDefectsIntroduced() == 0) {
+            keyFindings.add("该版本未发现引入任何缺陷");
+        } else {
+            keyFindings.add(String.format("该版本共引入 %d 个缺陷", stats.getTotalDefectsIntroduced()));
+            keyFindings.add(String.format("版本内发现 %d 个缺陷，逃逸 %d 个缺陷", 
+                    stats.getCurrentVersionFound(), stats.getEscapedDefects()));
+            
+            if (stats.getEscapedDefects() == 0) {
+                keyFindings.add("所有缺陷均在版本内被发现，测试效果优秀");
+            } else {
+                keyFindings.add(String.format("检测有效性为 %.1f%%，%s", 
+                        detectionEffectiveness, 
+                        detectionEffectiveness >= 85.0 ? "测试效果良好" : "测试效果有待提升"));
+            }
+        }
+        assessment.setKeyFindings(keyFindings);
+        
+        return assessment;
     }
 
     // 所有复杂的分析方法已移除，只保留核心的逃逸率统计功能
