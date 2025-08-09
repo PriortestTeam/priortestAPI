@@ -217,13 +217,13 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         }
         assessment.setRecommendations(recommendations);
         
-        // 关键指标 - 使用Object类型避免类型冲突
-        Map<String, Object> keyMetrics = new HashMap<>();
-        keyMetrics.put("escapeRate", escapeRate.toString());
-        keyMetrics.put("detectionEffectiveness", detectionEffectiveness.toString());
-        keyMetrics.put("totalDefects", stats.getTotalDefectsIntroduced());
-        keyMetrics.put("foundInVersion", stats.getCurrentVersionFound());
-        keyMetrics.put("escapedDefects", stats.getEscapedDefects());
+        // 关键指标 - 使用BigDecimal类型匹配setter要求
+        Map<String, BigDecimal> keyMetrics = new HashMap<>();
+        keyMetrics.put("escapeRate", escapeRate);
+        keyMetrics.put("detectionEffectiveness", detectionEffectiveness);
+        keyMetrics.put("totalDefects", BigDecimal.valueOf(stats.getTotalDefectsIntroduced()));
+        keyMetrics.put("foundInVersion", BigDecimal.valueOf(stats.getCurrentVersionFound()));
+        keyMetrics.put("escapedDefects", BigDecimal.valueOf(stats.getEscapedDefects()));
         assessment.setKeyMetrics(keyMetrics);
         
         // 测试覆盖评估
