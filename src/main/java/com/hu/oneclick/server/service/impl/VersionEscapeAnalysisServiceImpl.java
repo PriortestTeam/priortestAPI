@@ -49,23 +49,14 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 buildEscapeRateStats(escapeStats);
         responseDto.setEscapeRateStats(escapeRateStats);
 
-        // 构建发现时机分析
+        // 构建发现时机分析 - 使用真实数据
         VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming =
-                new VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis();
-        discoveryTiming.setInVersionCount(12);
-        discoveryTiming.setInVersionPercentage(BigDecimal.valueOf(60.00));
-        discoveryTiming.setEscapedCount(8);
-        discoveryTiming.setEscapedPercentage(BigDecimal.valueOf(40.00));
-        discoveryTiming.setDescription("版本内发现12个缺陷，逃逸8个缺陷");
+                buildDiscoveryTimingAnalysis(escapeRateStats);
         responseDto.setDiscoveryTiming(discoveryTiming);
 
-        // 构建遗留缺陷分析
+        // 构建遗留缺陷分析 - 使用真实数据
         VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis legacyDefectAnalysis =
-                new VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis();
-        legacyDefectAnalysis.setTotalLegacyDefects(8);
-        legacyDefectAnalysis.setLegacyDefectRate(BigDecimal.valueOf(40.00));
-        legacyDefectAnalysis.setAverageEscapeDays(30);
-        legacyDefectAnalysis.setDescription("遗留缺陷平均逃逸30天");
+                buildLegacyDefectAnalysis(escapeRateStats);
         responseDto.setLegacyDefectAnalysis(legacyDefectAnalysis);
 
         // 初始化其他字段
@@ -74,16 +65,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         responseDto.setDefectDetails(new ArrayList<>());
 
         VersionEscapeAnalysisResponseDto.QualityAssessment qualityAssessment =
-                new VersionEscapeAnalysisResponseDto.QualityAssessment();
-        qualityAssessment.setOverallQualityLevel("需改进");
-        qualityAssessment.setRiskLevel("高风险");
-        qualityAssessment.setRecommendations(List.of("加强测试覆盖", "完善回归测试"));
-
-        Map<String, BigDecimal> keyMetrics = new HashMap<>();
-        keyMetrics.put("escapeRate", BigDecimal.valueOf(40.00));
-        keyMetrics.put("highSeverityEscapeRate", BigDecimal.valueOf(40.00));
-        keyMetrics.put("legacyDefectRate", BigDecimal.valueOf(40.00));
-        qualityAssessment.setKeyMetrics(keyMetrics);
+                buildQualityAssessment(escapeRateStats);
 
         responseDto.setQualityAssessment(qualityAssessment);
 
@@ -189,6 +171,110 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
             defaultResult.put("escapeRate", BigDecimal.ZERO);
             return defaultResult;
         }
+    }
+
+    /**
+     * 构建发现时机分析
+     */
+    private VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis buildDiscoveryTimingAnalysis(
+            VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
+        
+        VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming =
+                new VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis();
+        
+        int totalDefects = escapeRateStats.getTotalDefectsIntroduced();
+        int currentVersionFound = escapeRateStats.getCurrentVersionFound();
+        int escapedDefects = escapeRateStats.getEscapedDefects();
+        
+        discoveryTiming.setInVersionCount(currentVersionFound);
+        discoveryTiming.setEscapedCount(escapedDefects);
+        
+        if (totalDefects > 0) {
+            BigDecimal inVersionPercentage = BigDecimal.valueOf(currentVersionFound * 100.0 / totalDefects)
+                    .setScale(2, RoundingMode.HALF_UP);
+            BigDecimal escapedPercentage = BigDecimal.valueOf(escapedDefects * 100.0 / totalDefects)
+                    .setScale(2, RoundingMode.HALF_UP);
+            
+            discoveryTiming.setInVersionPercentage(inVersionPercentage);
+            discoveryTiming.setEscapedPercentage(escapedPercentage);
+        } else {
+            discoveryTiming.setInVersionPercentage(BigDecimal.ZERO);
+            discoveryTiming.setEscapedPercentage(BigDecimal.ZERO);
+        }
+        
+        discoveryTiming.setDescription(String.format("版本内发现%d个缺陷，逃逸%d个缺陷", 
+                currentVersionFound, escapedDefects));
+        
+        return discoveryTiming;
+    }
+
+    /**
+     * 构建遗留缺陷分析
+     */
+    private VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis buildLegacyDefectAnalysis(
+            VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
+        
+        VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis legacyDefectAnalysis =
+                new VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis();
+        
+        int escapedDefects = escapeRateStats.getEscapedDefects();
+        int totalDefects = escapeRateStats.getTotalDefectsIntroduced();
+        
+        legacyDefectAnalysis.setTotalLegacyDefects(escapedDefects);
+        
+        if (totalDefects > 0) {
+            BigDecimal legacyDefectRate = BigDecimal.valueOf(escapedDefects * 100.0 / totalDefects)
+                    .setScale(2, RoundingMode.HALF_UP);
+            legacyDefectAnalysis.setLegacyDefectRate(legacyDefectRate);
+        } else {
+            legacyDefectAnalysis.setLegacyDefectRate(BigDecimal.ZERO);
+        }
+        
+        // 暂时使用平均值，后续可以从数据库查询实际逃逸天数
+        legacyDefectAnalysis.setAverageEscapeDays(escapedDefects > 0 ? 30 : 0);
+        
+        if (escapedDefects > 0) {
+            legacyDefectAnalysis.setDescription(String.format("遗留缺陷%d个，平均逃逸30天", escapedDefects));
+        } else {
+            legacyDefectAnalysis.setDescription("无遗留缺陷");
+        }
+        
+        return legacyDefectAnalysis;
+    }
+
+    /**
+     * 构建质量评估
+     */
+    private VersionEscapeAnalysisResponseDto.QualityAssessment buildQualityAssessment(
+            VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
+        
+        VersionEscapeAnalysisResponseDto.QualityAssessment qualityAssessment =
+                new VersionEscapeAnalysisResponseDto.QualityAssessment();
+        
+        BigDecimal escapeRate = escapeRateStats.getEscapeRate();
+        
+        // 根据逃逸率确定质量等级和风险级别
+        if (escapeRate.compareTo(BigDecimal.valueOf(10)) <= 0) {
+            qualityAssessment.setOverallQualityLevel("优秀");
+            qualityAssessment.setRiskLevel("低风险");
+            qualityAssessment.setRecommendations(List.of("保持当前测试质量", "继续优化测试流程"));
+        } else if (escapeRate.compareTo(BigDecimal.valueOf(20)) <= 0) {
+            qualityAssessment.setOverallQualityLevel("良好");
+            qualityAssessment.setRiskLevel("中等风险");
+            qualityAssessment.setRecommendations(List.of("加强边界测试", "增加回归测试覆盖"));
+        } else {
+            qualityAssessment.setOverallQualityLevel("需改进");
+            qualityAssessment.setRiskLevel("高风险");
+            qualityAssessment.setRecommendations(List.of("加强测试覆盖", "完善回归测试", "改进测试用例设计"));
+        }
+
+        Map<String, BigDecimal> keyMetrics = new HashMap<>();
+        keyMetrics.put("escapeRate", escapeRate);
+        keyMetrics.put("detectionEffectiveness", escapeRateStats.getDetectionEffectiveness());
+        keyMetrics.put("legacyDefectRate", escapeRate); // 逃逸率等于遗留缺陷率
+        qualityAssessment.setKeyMetrics(keyMetrics);
+
+        return qualityAssessment;
     }
 
     /**
