@@ -46,10 +46,10 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 buildEscapeRateStats(escapeStats);
         responseDto.setEscapeRateStats(escapeRateStats);
 
-        // 构建发现时机分析
-        VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming = 
-                buildDiscoveryTimingAnalysis(escapeRateStats);
-        responseDto.setDiscoveryTiming(discoveryTiming);
+        // 移除发现时机分析功能
+        // VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming = 
+        //         buildDiscoveryTimingAnalysis(escapeRateStats);
+        // responseDto.setDiscoveryTiming(discoveryTiming);
 
         // 构建遗留缺陷分析
         VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis legacyDefectAnalysis = 
@@ -218,8 +218,9 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
     }
 
     /**
-     * 构建发现时机分析
+     * 构建发现时机分析 - 已移除此功能
      */
+    /*
     private VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis buildDiscoveryTimingAnalysis(
             VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
 
@@ -249,6 +250,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
 
         return discoveryTiming;
     }
+    */
 
     /**
      * 构建遗留缺陷分析
