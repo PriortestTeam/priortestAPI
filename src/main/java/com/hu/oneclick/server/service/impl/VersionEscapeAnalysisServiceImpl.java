@@ -130,11 +130,10 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         stats.setCurrentVersionFound(getIntValue(escapeStats, "currentVersionFound"));
         stats.setEscapedDefects(getIntValue(escapeStats, "escapedDefects"));
 
-        BigDecimal escapeRateBD = getBigDecimalValue(escapeStats, "escapeRate");
-        double escapeRate = escapeRateBD.doubleValue();
+        double escapeRate = getBigDecimalValue(escapeStats, "escapeRate").doubleValue();
         stats.setEscapeRate(escapeRate);
 
-        // 计算检测有效性 - 统一使用double类型
+        // 计算检测有效性
         double detectionEffectiveness = 100.0 - escapeRate;
         stats.setDetectionEffectiveness(detectionEffectiveness);
 
