@@ -1,4 +1,3 @@
-
 # 版本缺陷逃逸率分析API文档
 
 ## 概述
@@ -28,7 +27,7 @@
 
 ### 1. 分析版本缺陷逃逸率
 
-**接口地址**: `POST /api/versionEscapeAnalysis/analyze`
+**接口地址**: `POST /api/versionQualityReport/escapeAnalysis`
 
 **接口描述**: 分析指定版本引入的缺陷在该版本和后续版本中的发现情况，计算缺陷逃逸率和测试有效性
 
@@ -36,8 +35,8 @@
 
 | 参数名 | 类型 | 必填 | 描述 | 示例值 |
 |--------|------|------|------|--------|
-| projectId | String | 是 | 项目ID | "1874424342973054977" |
-| analysisVersion | String | 是 | 要分析的版本号（引入版本） | "0.9.0.0" |
+| projectId | String | 是 | 项目ID | "885958494765715456" |
+| analysisVersion | String | 是 | 要分析的版本号（引入版本） | "1.0.0.0" |
 | startDate | String | 否 | 分析时间范围开始日期 | "2024-01-01" |
 | endDate | String | 否 | 分析时间范围结束日期 | "2024-12-31" |
 | includeLegacyAnalysis | Boolean | 否 | 是否包含遗留缺陷分析 | true |
@@ -51,105 +50,56 @@
 
 ```json
 {
-  "code": 200,
-  "msg": "success",
+  "code": "200",
+  "msg": "调用成功。",
+  "total": "",
+  "httpCode": 200,
   "data": {
-    "analysisVersion": "0.9.0.0",
-    "projectId": "1874424342973054977",
-    "analysisTimeRange": "2024-01-01 ~ 2024-12-31",
+    "analysisVersion": "1.0.0.0",
+    "projectId": "885958494765715456",
+    "analysisTimeRange": "",
     "escapeRateStats": {
-      "totalDefectsIntroduced": 20,
-      "currentVersionFound": 12,
-      "escapedDefects": 8,
-      "escapeRate": 40.00,
-      "detectionEffectiveness": 60.00,
-      "qualityLevel": "需改进"
+      "totalDefectsIntroduced": 3,
+      "currentVersionFound": 3,
+      "escapedDefects": 0,
+      "escapeRate": 0.00,
+      "detectionEffectiveness": 100.00,
+      "qualityLevel": "优秀"
     },
     "discoveryTiming": {
       "inVersionCount": 12,
-      "inVersionPercentage": 60.00,
+      "inVersionPercentage": 60.0,
       "escapedCount": 8,
-      "escapedPercentage": 40.00,
+      "escapedPercentage": 40.0,
       "description": "版本内发现12个缺陷，逃逸8个缺陷"
     },
     "legacyDefectAnalysis": {
       "totalLegacyDefects": 8,
-      "legacyDefectRate": 40.00,
-      "preReleaseLegacyFound": 3,
-      "postReleaseLegacyFound": 5,
-      "legacyEscapeRate": 62.50,
-      "sourceVersions": [
-        {
-          "sourceVersion": "0.8.0.0",
-          "count": 5,
-          "impactDescription": "0.8.0.0版本遗留5个缺陷到当前版本"
-        }
-      ]
+      "legacyDefectRate": 40.0,
+      "averageEscapeDays": 30,
+      "description": "遗留缺陷平均逃逸30天",
+      "preReleaseLegacyFound": "",
+      "postReleaseLegacyFound": "",
+      "legacyEscapeRate": "",
+      "sourceVersions": ""
     },
-    "versionGroups": [
-      {
-        "foundVersion": "0.9.0.0",
-        "count": 12,
-        "escapeDays": 0,
-        "severityDistribution": {
-          "HIGH": 3,
-          "MEDIUM": 6,
-          "LOW": 3
-        },
-        "isEscaped": false,
-        "impactDescription": "版本内发现，测试有效"
-      },
-      {
-        "foundVersion": "1.0.0.0",
-        "count": 5,
-        "escapeDays": 30,
-        "severityDistribution": {
-          "HIGH": 2,
-          "MEDIUM": 2,
-          "LOW": 1
-        },
-        "isEscaped": true,
-        "impactDescription": "逃逸到1.0.0.0版本才发现，质量风险"
-      }
-    ],
-    "severityGroups": [
-      {
-        "severity": "HIGH",
-        "totalCount": 5,
-        "inVersionCount": 3,
-        "escapedCount": 2,
-        "escapeRate": 40.00,
-        "riskLevel": "高风险"
-      }
-    ],
-    "defectDetails": [
-      {
-        "defectId": "BUG001",
-        "title": "登录页面响应缓慢",
-        "severity": "HIGH",
-        "priority": "HIGH",
-        "introducedVersion": "0.9.0.0",
-        "foundVersion": "1.0.0.0",
-        "foundAfterRelease": true,
-        "isLegacy": true,
-        "escapeDays": 30,
-        "status": "OPEN",
-        "description": "逃逸缺陷，发布后30天才发现"
-      }
-    ],
+    "versionGroups": [],
+    "severityGroups": [],
+    "defectDetails": [],
     "qualityAssessment": {
       "overallQualityLevel": "需改进",
       "riskLevel": "高风险",
       "recommendations": [
-        "加强高严重程度缺陷的测试覆盖",
-        "完善发布前的回归测试",
-        "建立缺陷预防机制"
+        "加强测试覆盖",
+        "完善回归测试"
       ],
       "keyMetrics": {
-        "escapeRate": 40.00,
-        "highSeverityEscapeRate": 40.00,
-        "legacyDefectRate": 40.00
-      }
+        "legacyDefectRate": 40.0,
+        "highSeverityEscapeRate": 40.0,
+        "escapeRate": 40.0
+      },
+      "testCoverageAssessment": "",
+      "keyFindings": ""
     }
   }
 }
@@ -157,7 +107,7 @@
 
 ### 2. 快速分析版本逃逸率
 
-**接口地址**: `GET /api/versionEscapeAnalysis/quick/{projectId}/{analysisVersion}`
+**接口地址**: `GET /api/versionQualityReport/escapeAnalysis/quick/{projectId}/{analysisVersion}`
 
 **接口描述**: 通过URL参数快速分析指定版本的缺陷逃逸率
 
@@ -171,11 +121,11 @@
 | groupBySeverity | Boolean | Query | 否 | 是否按严重程度分组，默认true |
 
 #### 响应参数
-同 `POST /api/versionEscapeAnalysis/analyze` 接口
+同 `POST /api/versionQualityReport/escapeAnalysis` 接口
 
 ### 3. 获取逃逸率趋势
 
-**接口地址**: `GET /api/versionEscapeAnalysis/trend/{projectId}`
+**接口地址**: `GET /api/versionQualityReport/escapeAnalysis/trend/{projectId}`
 
 **接口描述**: 获取多个版本的逃逸率趋势对比数据
 
@@ -190,8 +140,8 @@
 
 ```json
 {
-  "code": 200,
-  "msg": "success",
+  "code": "200",
+  "msg": "调用成功。",
   "data": {
     "trendData": [
       {
@@ -228,19 +178,19 @@
 
 ### 4. 导出逃逸率分析报告
 
-**接口地址**: `POST /api/versionEscapeAnalysis/export`
+**接口地址**: `POST /api/versionQualityReport/escapeAnalysis/export`
 
 **接口描述**: 导出详细的版本缺陷逃逸率分析报告
 
 #### 请求参数
-同 `POST /api/versionEscapeAnalysis/analyze` 接口
+同 `POST /api/versionQualityReport/escapeAnalysis` 接口
 
 #### 响应参数
 
 ```json
 {
-  "code": 200,
-  "msg": "success",
+  "code": "200",
+  "msg": "调用成功。",
   "data": "report_download_url_or_file_path"
 }
 ```
@@ -257,7 +207,7 @@
 ## 业务场景示例
 
 ### 场景1：版本质量评估
-- **目标**: 评估0.9.0.0版本的测试质量
+- **目标**: 评估1.0.0.0版本的测试质量
 - **操作**: 调用分析接口，查看逃逸率和质量等级
 - **决策**: 根据逃逸率决定是否需要加强测试
 
