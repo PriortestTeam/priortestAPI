@@ -1,12 +1,16 @@
 package com.hu.oneclick.server.service.impl;
 
+import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.model.domain.dto.VersionEscapeAnalysisRequestDto;
 import com.hu.oneclick.model.domain.dto.VersionEscapeAnalysisResponseDto;
 import com.hu.oneclick.server.service.VersionEscapeAnalysisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import jakarta.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,17 +23,25 @@ import java.util.Map;
 @Service
 public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisService {
 
+    @Resource
+    private IssueDao issueDao;
+
     @Override
     public VersionEscapeAnalysisResponseDto analyzeVersionEscapeRate(VersionEscapeAnalysisRequestDto requestDto) {
         log.info("开始分析版本缺陷逃逸率，项目：{}，版本：{}", 
                 requestDto.getProjectId(), requestDto.getAnalysisVersion());
 
-        // TODO: 实现具体的分析逻辑
+        // 实现具体的分析逻辑
         // 1. 查询所有 introduced_version = analysisVersion 的缺陷
         // 2. 按发现版本分组统计
         // 3. 计算逃逸率
 
-        // 临时返回模拟数据
+        // 构建查询条件
+        Map<String, Object> queryParams = buildQueryParams(requestDto);
+        
+        // 查询缺陷统计数据
+        Map<String, Object> escapeStats = queryEscapeStatistics(queryParams);
+        
         VersionEscapeAnalysisResponseDto responseDto = new VersionEscapeAnalysisResponseDto();
         responseDto.setAnalysisVersion(requestDto.getAnalysisVersion());
         responseDto.setProjectId(requestDto.getProjectId());
@@ -37,13 +49,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
 
         // 构建逃逸率统计
         VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats = 
-                new VersionEscapeAnalysisResponseDto.EscapeRateStats();
-        escapeRateStats.setTotalDefectsIntroduced(20);
-        escapeRateStats.setCurrentVersionFound(12);
-        escapeRateStats.setEscapedDefects(8);
-        escapeRateStats.setEscapeRate(BigDecimal.valueOf(40.00));
-        escapeRateStats.setDetectionEffectiveness(BigDecimal.valueOf(60.00));
-        escapeRateStats.setQualityLevel("需改进");
+                buildEscapeRateStats(escapeStats);
         responseDto.setEscapeRateStats(escapeRateStats);
 
         // 构建发现时机分析
@@ -110,6 +116,147 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
 
         // TODO: 实现报告导出逻辑
         return "/reports/escape-analysis-" + requestDto.getAnalysisVersion() + ".xlsx";
+    }
+
+    /**
+     * 构建查询参数
+     */
+    private Map<String, Object> buildQueryParams(VersionEscapeAnalysisRequestDto requestDto) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("projectId", requestDto.getProjectId());
+        params.put("introducedVersion", requestDto.getAnalysisVersion());
+        
+        // 如果有时间范围限制，添加时间条件
+        if (StringUtils.hasText(requestDto.getStartDate())) {
+            params.put("startDate", requestDto.getStartDate());
+        }
+        if (StringUtils.hasText(requestDto.getEndDate())) {
+            params.put("endDate", requestDto.getEndDate());
+        }
+        
+        return params;
+    }
+
+    /**
+     * 查询缺陷逃逸统计数据
+     */
+    private Map<String, Object> queryEscapeStatistics(Map<String, Object> params) {
+        try {
+            // 构建SQL查询
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT ");
+            sql.append("COUNT(*) as totalDefectsIntroduced, ");
+            sql.append("COUNT(CASE WHEN issue_version = ? THEN 1 END) as currentVersionFound, ");
+            sql.append("COUNT(CASE WHEN issue_version != ? THEN 1 END) as escapedDefects, ");
+            sql.append("ROUND(COUNT(CASE WHEN issue_version != ? THEN 1 END) * 100.0 / COUNT(*), 2) as escapeRate ");
+            sql.append("FROM issue ");
+            sql.append("WHERE project_id = ? ");
+            sql.append("AND introduced_version = ? ");
+            
+            List<Object> sqlParams = new ArrayList<>();
+            String introducedVersion = (String) params.get("introducedVersion");
+            sqlParams.add(introducedVersion);
+            sqlParams.add(introducedVersion);
+            sqlParams.add(introducedVersion);
+            sqlParams.add(params.get("projectId"));
+            sqlParams.add(introducedVersion);
+            
+            // 添加时间范围条件
+            if (params.containsKey("startDate")) {
+                sql.append("AND found_after_release >= ? ");
+                sqlParams.add(params.get("startDate"));
+            }
+            if (params.containsKey("endDate")) {
+                sql.append("AND found_after_release <= ? ");
+                sqlParams.add(params.get("endDate"));
+            }
+            
+            Map<String, Object> result = issueDao.queryForMap(sql.toString(), sqlParams.toArray());
+            
+            log.info("查询结果: {}", result);
+            return result;
+            
+        } catch (Exception e) {
+            log.error("查询缺陷逃逸统计失败", e);
+            // 返回默认值
+            Map<String, Object> defaultResult = new HashMap<>();
+            defaultResult.put("totalDefectsIntroduced", 0);
+            defaultResult.put("currentVersionFound", 0);
+            defaultResult.put("escapedDefects", 0);
+            defaultResult.put("escapeRate", BigDecimal.ZERO);
+            return defaultResult;
+        }
+    }
+
+    /**
+     * 构建逃逸率统计对象
+     */
+    private VersionEscapeAnalysisResponseDto.EscapeRateStats buildEscapeRateStats(Map<String, Object> stats) {
+        VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats = 
+                new VersionEscapeAnalysisResponseDto.EscapeRateStats();
+        
+        // 从查询结果获取数据
+        Integer totalDefects = getIntegerValue(stats, "totalDefectsIntroduced");
+        Integer currentFound = getIntegerValue(stats, "currentVersionFound");
+        Integer escaped = getIntegerValue(stats, "escapedDefects");
+        BigDecimal escapeRate = getBigDecimalValue(stats, "escapeRate");
+        
+        escapeRateStats.setTotalDefectsIntroduced(totalDefects);
+        escapeRateStats.setCurrentVersionFound(currentFound);
+        escapeRateStats.setEscapedDefects(escaped);
+        escapeRateStats.setEscapeRate(escapeRate);
+        
+        // 计算检测有效性
+        BigDecimal detectionEffectiveness = BigDecimal.valueOf(100).subtract(escapeRate);
+        escapeRateStats.setDetectionEffectiveness(detectionEffectiveness);
+        
+        // 根据逃逸率确定质量等级
+        String qualityLevel = determineQualityLevel(escapeRate);
+        escapeRateStats.setQualityLevel(qualityLevel);
+        
+        return escapeRateStats;
+    }
+
+    /**
+     * 安全获取Integer值
+     */
+    private Integer getIntegerValue(Map<String, Object> map, String key) {
+        Object value = map.get(key);
+        if (value == null) return 0;
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+        return 0;
+    }
+
+    /**
+     * 安全获取BigDecimal值
+     */
+    private BigDecimal getBigDecimalValue(Map<String, Object> map, String key) {
+        Object value = map.get(key);
+        if (value == null) return BigDecimal.ZERO;
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        }
+        if (value instanceof Number) {
+            return new BigDecimal(value.toString()).setScale(2, RoundingMode.HALF_UP);
+        }
+        return BigDecimal.ZERO;
+    }
+
+    /**
+     * 根据逃逸率确定质量等级
+     */
+    private String determineQualityLevel(BigDecimal escapeRate) {
+        if (escapeRate.compareTo(BigDecimal.valueOf(10)) <= 0) {
+            return "优秀";
+        } else if (escapeRate.compareTo(BigDecimal.valueOf(20)) <= 0) {
+            return "良好";
+        } else if (escapeRate.compareTo(BigDecimal.valueOf(30)) <= 0) {
+            return "一般";
+        } else {
+            return "需改进";
+        }
     }
 
     /**
