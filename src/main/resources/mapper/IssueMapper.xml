@@ -319,9 +319,6 @@
         ORDER BY i.id, tcjtc.id
     </select>
 
-</mapper>
-
-
     <!-- 版本缺陷逃逸率统计查询 -->
     <select id="queryVersionEscapeStatistics" resultType="java.util.Map">
         SELECT 
@@ -344,3 +341,5 @@
               AND create_time <= #{endDate}
           </if>
     </select>
+
+</mapper>
