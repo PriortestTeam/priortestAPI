@@ -95,13 +95,14 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
                 versionTrend.put("escapeRate", stats.get("escapeRate"));
 
                 // 计算质量等级
-                BigDecimal escapeRate = getBigDecimalValue(stats, "escapeRate");
+                BigDecimal escapeRateBigDecimal = getBigDecimalValue(stats, "escapeRate");
+                double escapeRateDouble = escapeRateBigDecimal.doubleValue();
                 String qualityLevel;
-                if (escapeRate.compareTo(BigDecimal.valueOf(5.0)) <= 0) {
+                if (escapeRateDouble <= 5.0) {
                     qualityLevel = "优秀";
-                } else if (escapeRate.compareTo(BigDecimal.valueOf(15.0)) <= 0) {
+                } else if (escapeRateDouble <= 15.0) {
                     qualityLevel = "良好";
-                } else if (escapeRate.compareTo(BigDecimal.valueOf(30.0)) <= 0) {
+                } else if (escapeRateDouble <= 30.0) {
                     qualityLevel = "一般";
                 } else {
                     qualityLevel = "需改进";
@@ -203,12 +204,13 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         stats.setDetectionEffectiveness(detectionEffectiveness);
 
         // 计算质量等级
+        double escapeRateValue = escapeRate.doubleValue();
         String qualityLevel;
-        if (escapeRate.compareTo(BigDecimal.valueOf(5)) <= 0) {
+        if (escapeRateValue <= 5.0) {
             qualityLevel = "优秀";
-        } else if (escapeRate.compareTo(BigDecimal.valueOf(15)) <= 0) {
+        } else if (escapeRateValue <= 15.0) {
             qualityLevel = "良好";
-        } else if (escapeRate.compareTo(BigDecimal.valueOf(30)) <= 0) {
+        } else if (escapeRateValue <= 30.0) {
             qualityLevel = "一般";
         } else {
             qualityLevel = "需改进";
@@ -267,7 +269,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         double legacyDefectRate = escapeRateStats.getEscapeRate();
 
         legacyAnalysis.setTotalLegacyDefects(totalLegacyDefects);
-        legacyAnalysis.setLegacyDefectRate(legacyDefectRate);
+        legacyAnalysis.setLegacyDefectRate(BigDecimal.valueOf(legacyDefectRate));
         legacyAnalysis.setAverageEscapeDays(30); // 默认值
         legacyAnalysis.setDescription("遗留缺陷平均逃逸30天");
 
