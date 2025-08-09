@@ -12,6 +12,8 @@ import jakarta.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 版本缺陷逃逸率分析服务实现类
@@ -262,7 +264,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         double legacyDefectRate = escapeRateStats.getEscapeRate();
 
         legacyAnalysis.setTotalLegacyDefects(totalLegacyDefects);
-        legacyAnalysis.setLegacyDefectRate(legacyDefectRate);
+        legacyAnalysis.setLegacyDefectRate(BigDecimal.valueOf(legacyDefectRate));
         legacyAnalysis.setAverageEscapeDays(30); // 默认值
         legacyAnalysis.setDescription("遗留缺陷平均逃逸30天");
 
@@ -310,10 +312,10 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         assessment.setRecommendations(recommendations);
 
         // 关键指标
-        KeyMetrics keyMetrics = new KeyMetrics();
-        keyMetrics.setLegacyDefectRate(escapeRate);
-        keyMetrics.setHighSeverityEscapeRate(escapeRate);
-        keyMetrics.setEscapeRate(escapeRate);
+        Map<String, BigDecimal> keyMetrics = new HashMap<>();
+        keyMetrics.put("legacyDefectRate", BigDecimal.valueOf(escapeRate));
+        keyMetrics.put("highSeverityEscapeRate", BigDecimal.valueOf(escapeRate));
+        keyMetrics.put("escapeRate", BigDecimal.valueOf(escapeRate));
 
         assessment.setKeyMetrics(keyMetrics);
 
@@ -369,36 +371,5 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         }
     }
 
-    /**
-     * 关键指标内部类
-     */
-    public static class KeyMetrics {
-        private double legacyDefectRate;
-        private double highSeverityEscapeRate;
-        private double escapeRate;
-
-        public double getLegacyDefectRate() {
-            return legacyDefectRate;
-        }
-
-        public void setLegacyDefectRate(double legacyDefectRate) {
-            this.legacyDefectRate = legacyDefectRate;
-        }
-
-        public double getHighSeverityEscapeRate() {
-            return highSeverityEscapeRate;
-        }
-
-        public void setHighSeverityEscapeRate(double highSeverityEscapeRate) {
-            this.highSeverityEscapeRate = highSeverityEscapeRate;
-        }
-
-        public double getEscapeRate() {
-            return escapeRate;
-        }
-
-        public void setEscapeRate(double escapeRate) {
-            this.escapeRate = escapeRate;
-        }
-    }
+    
 }
