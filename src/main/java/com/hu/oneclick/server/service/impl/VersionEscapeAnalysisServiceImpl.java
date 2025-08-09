@@ -133,9 +133,9 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         BigDecimal escapeRate = getBigDecimalValue(escapeStats, "escapeRate");
         stats.setEscapeRate(escapeRate.doubleValue());
 
-        // 计算检测有效性
-        double detectionEffectivenessValue = 100.0 - escapeRate.doubleValue();
-        stats.setDetectionEffectiveness(detectionEffectivenessValue);
+        // 计算检测有效性 - 统一使用BigDecimal类型
+        BigDecimal detectionEffectiveness = BigDecimal.valueOf(100.0).subtract(escapeRate);
+        stats.setDetectionEffectiveness(detectionEffectiveness);
 
         // 计算质量等级
         double escapeRateValue = escapeRate.doubleValue();
