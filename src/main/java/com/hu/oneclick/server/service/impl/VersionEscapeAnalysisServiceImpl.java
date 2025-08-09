@@ -1,4 +1,3 @@
-
 package com.hu.oneclick.server.service.impl;
 
 import com.hu.oneclick.dao.IssueDao;
@@ -27,7 +26,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
 
     @Override
     public VersionEscapeAnalysisResponseDto analyzeVersionEscapeRate(VersionEscapeAnalysisRequestDto requestDto) {
-        log.info("开始分析版本缺陷逃逸率，项目：{}，版本：{}", 
+        log.info("开始分析版本缺陷逃逸率，项目：{}，版本：{}",
                 requestDto.getProjectId(), requestDto.getAnalysisVersion());
 
         // 构建查询条件
@@ -42,22 +41,22 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         responseDto.setAnalysisTimeRange(buildAnalysisTimeRange(requestDto));
 
         // 构建逃逸率统计
-        VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats = 
+        VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats =
                 buildEscapeRateStats(escapeStats);
         responseDto.setEscapeRateStats(escapeRateStats);
 
         // 移除发现时机分析功能
-        // VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming = 
+        // VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming =
         //         buildDiscoveryTimingAnalysis(escapeRateStats);
         // responseDto.setDiscoveryTiming(discoveryTiming);
 
         // 构建遗留缺陷分析
-        VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis legacyDefectAnalysis = 
+        VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis legacyDefectAnalysis =
                 buildLegacyDefectAnalysis(escapeRateStats);
         responseDto.setLegacyDefectAnalysis(legacyDefectAnalysis);
 
         // 构建质量评估
-        VersionEscapeAnalysisResponseDto.QualityAssessment qualityAssessment = 
+        VersionEscapeAnalysisResponseDto.QualityAssessment qualityAssessment =
                 buildQualityAssessment(escapeRateStats);
         responseDto.setQualityAssessment(qualityAssessment);
 
@@ -66,8 +65,8 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         responseDto.setSeverityGroups(new ArrayList<>());
         responseDto.setDefectDetails(new ArrayList<>());
 
-        log.info("版本缺陷逃逸率分析完成，版本：{}，逃逸率：{}%", 
-                requestDto.getAnalysisVersion(), 
+        log.info("版本缺陷逃逸率分析完成，版本：{}，逃逸率：{}%",
+                requestDto.getAnalysisVersion(),
                 escapeRateStats.getEscapeRate());
 
         return responseDto;
@@ -130,7 +129,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
 
     @Override
     public String exportEscapeAnalysisReport(VersionEscapeAnalysisRequestDto requestDto) {
-        log.info("开始导出逃逸率分析报告，项目：{}，版本：{}", 
+        log.info("开始导出逃逸率分析报告，项目：{}，版本：{}",
                 requestDto.getProjectId(), requestDto.getAnalysisVersion());
 
         // TODO: 实现报告导出逻辑
@@ -189,7 +188,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
      * 构建逃逸率统计
      */
     private VersionEscapeAnalysisResponseDto.EscapeRateStats buildEscapeRateStats(Map<String, Object> escapeStats) {
-        VersionEscapeAnalysisResponseDto.EscapeRateStats stats = 
+        VersionEscapeAnalysisResponseDto.EscapeRateStats stats =
                 new VersionEscapeAnalysisResponseDto.EscapeRateStats();
 
         stats.setTotalDefectsIntroduced(getIntValue(escapeStats, "totalDefectsIntroduced"));
@@ -227,7 +226,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
     private VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis buildDiscoveryTimingAnalysis(
             VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
 
-        VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming = 
+        VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming =
                 new VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis();
 
         int totalDefects = escapeRateStats.getTotalDefectsIntroduced();
@@ -240,7 +239,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         if (totalDefects > 0) {
             double inVersionPercentage = currentVersionFound * 100.0 / totalDefects;
             double escapedPercentage = escapedDefects * 100.0 / totalDefects;
-            
+
             discoveryTiming.setInVersionPercentage(inVersionPercentage);
             discoveryTiming.setEscapedPercentage(escapedPercentage);
         } else {
@@ -248,7 +247,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
             discoveryTiming.setEscapedPercentage(0.0);
         }
 
-        discoveryTiming.setDescription(String.format("版本内发现%d个缺陷，逃逸%d个缺陷", 
+        discoveryTiming.setDescription(String.format("版本内发现%d个缺陷，逃逸%d个缺陷",
                 currentVersionFound, escapedDefects));
 
         return discoveryTiming;
@@ -261,14 +260,19 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
     private VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis buildLegacyDefectAnalysis(
             VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
 
-        VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis legacyAnalysis = 
+        VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis legacyAnalysis =
                 new VersionEscapeAnalysisResponseDto.LegacyDefectAnalysis();
 
         // 使用逃逸缺陷作为遗留缺陷
-        int totalLegacyDefects = escapeRateStats.getEscapedDefects();
+        double totalDefects = getBigDecimalValue(escapeStats, "totalDefects").doubleValue();
+        double foundInVersion = getBigDecimalValue(escapeStats, "foundInVersion").doubleValue();
+        double escapedDefects = getBigDecimalValue(escapeStats, "escapedDefects").doubleValue();
+
+        legacyAnalysis.setTotalLegacyDefects(BigDecimal.valueOf(totalDefects));
+        legacyAnalysis.setFoundInVersionDefects(BigDecimal.valueOf(foundInVersion));
         double legacyDefectRate = escapeRateStats.getEscapeRate();
 
-        legacyAnalysis.setTotalLegacyDefects(totalLegacyDefects);
+        legacyAnalysis.setTotalLegacyDefects(BigDecimal.valueOf(escapedDefects));
         legacyAnalysis.setLegacyDefectRate(BigDecimal.valueOf(legacyDefectRate));
         legacyAnalysis.setAverageEscapeDays(30); // 默认值
         legacyAnalysis.setDescription("遗留缺陷平均逃逸30天");
@@ -282,7 +286,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
     private VersionEscapeAnalysisResponseDto.QualityAssessment buildQualityAssessment(
             VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
 
-        VersionEscapeAnalysisResponseDto.QualityAssessment assessment = 
+        VersionEscapeAnalysisResponseDto.QualityAssessment assessment =
                 new VersionEscapeAnalysisResponseDto.QualityAssessment();
 
         double escapeRate = escapeRateStats.getEscapeRate();
@@ -362,5 +366,5 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         }
     }
 
-    
+
 }
