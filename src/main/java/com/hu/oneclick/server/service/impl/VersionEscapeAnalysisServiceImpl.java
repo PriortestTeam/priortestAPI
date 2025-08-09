@@ -207,42 +207,7 @@ public class VersionEscapeAnalysisServiceImpl implements VersionEscapeAnalysisSe
         return stats;
     }
 
-    /**
-     * 构建发现时机分析 - 已移除此功能
-     */
-    /*
-    private VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis buildDiscoveryTimingAnalysis(
-            VersionEscapeAnalysisResponseDto.EscapeRateStats escapeRateStats) {
-
-        VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis discoveryTiming =
-                new VersionEscapeAnalysisResponseDto.DiscoveryTimingAnalysis();
-
-        int totalDefects = escapeRateStats.getTotalDefectsIntroduced();
-        int currentVersionFound = escapeRateStats.getCurrentVersionFound();
-        int escapedDefects = escapeRateStats.getEscapedDefects();
-
-        discoveryTiming.setInVersionCount(currentVersionFound);
-        discoveryTiming.setEscapedCount(escapedDefects);
-
-        if (totalDefects > 0) {
-            double inVersionPercentage = currentVersionFound * 100.0 / totalDefects;
-            double escapedPercentage = escapedDefects * 100.0 / totalDefects;
-
-            discoveryTiming.setInVersionPercentage(inVersionPercentage);
-            discoveryTiming.setEscapedPercentage(escapedPercentage);
-        } else {
-            discoveryTiming.setInVersionPercentage(0.0);
-            discoveryTiming.setEscapedPercentage(0.0);
-        }
-
-        discoveryTiming.setDescription(String.format("版本内发现%d个缺陷，逃逸%d个缺陷",
-                currentVersionFound, escapedDefects));
-
-        return discoveryTiming;
-    }
-    */
-
-    // 已移除buildLegacyDefectAnalysis和buildQualityAssessment方法，简化API响应
+    // 所有复杂的分析方法已移除，只保留核心的逃逸率统计功能
 
     /**
      * 构建分析时间范围
