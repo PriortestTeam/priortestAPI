@@ -53,6 +53,5 @@ public interface IssueDao extends BaseMapper<Issue> {
     Map<String, Object> queryVersionEscapeStatistics(@Param("projectId") String projectId,
                                                      @Param("analysisVersion") String analysisVersion,
                                                      @Param("startDate") String startDate,
-                                                     @Param("endDate") String endDate);udeVersions,
-                                                         @Param("testCycleIds") List<Long> testCycleIds);
+                                                     @Param("endDate") String endDate);
 }
