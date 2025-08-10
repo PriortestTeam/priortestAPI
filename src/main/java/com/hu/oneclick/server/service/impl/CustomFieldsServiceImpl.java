@@ -439,11 +439,13 @@ public class CustomFieldsServiceImpl implements CustomFieldsService {
             } else {
                 UpdateWrapper<CustomFields> update = Wrappers.update();
                 update.set("possible_value", customFieldsDto.getPossibleValue())
-                    .set("modify_user", user_id)
-                    .eq("linked_custom_field_id", customFieldsDto.getCustomFieldId())
-                    .eq("type", customFieldsDto.getType())
-                    .eq("field_type", customFieldsDto.getFieldType());
-                row = customFieldsDao.update(new CustomFields(), update);
+                      .set("update_time", customFieldsDto.getUpdateTime())
+                      .set("modify_user", customFieldsDto.getModifyUserId())
+                      .eq("project_id", customFieldsDto.getProjectId())
+                      .eq("linked_custom_field_id", customFieldsDto.getCustomFieldId())
+                      .eq("type", customFieldsDto.getType())
+                      .eq("field_type", customFieldsDto.getFieldType());
+                row = customFieldsDao.update(null, update);
             }
         } else {
             row = customFieldsDao.updateValueDropDownBox(customFieldsDto);
