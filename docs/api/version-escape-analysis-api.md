@@ -1,3 +1,4 @@
+
 # 版本缺陷逃逸率分析API文档
 
 ## 概述
@@ -14,14 +15,15 @@
 ### 字段说明
 - `introduced_version`: 缺陷引入版本 - 缺陷是在哪个版本中被引入的
 - `issue_version`: 缺陷发现版本 - 缺陷是在哪个版本测试中被发现的
+- `issue_status`: 缺陷状态 - 0:待修复, 1:修复中, 2:已修复, 3:已关闭
 - `is_legacy`: 是否为遗留缺陷 - 引入版本 ≠ 发现版本
-- `found_after_release`: 是否发布后发现
 
 ### 分析逻辑
-对于要分析的版本（如0.9.0.0）：
-1. 查找所有 `introduced_version = "0.9.0.0"` 的缺陷
+对于要分析的版本（如1.0.0.0）：
+1. 查找所有 `introduced_version = "1.0.0.0"` 的缺陷
 2. 按 `issue_version` 分组统计
 3. 计算逃逸率和测试有效性
+4. 提供详细缺陷列表和质量评估
 
 ## API接口
 
@@ -39,12 +41,17 @@
 | analysisVersion | String | 是 | 要分析的版本号（引入版本） | "1.0.0.0" |
 | startDate | String | 否 | 分析时间范围开始日期 | "2024-01-01" |
 | endDate | String | 否 | 分析时间范围结束日期 | "2024-12-31" |
-| includeLegacyAnalysis | Boolean | 否 | 是否包含遗留缺陷分析 | true |
-| groupBySeverity | Boolean | 否 | 是否按严重程度分组 | true |
-| groupByFoundVersion | Boolean | 否 | 是否按发现版本分组 | true |
-| statusFilter | List<String> | 否 | 缺陷状态过滤列表 | ["OPEN", "RESOLVED"] |
-| severityFilter | List<String> | 否 | 严重程度过滤列表 | ["HIGH", "MEDIUM"] |
-| includeDetailedDefects | Boolean | 否 | 是否包含详细缺陷列表 | true |
+
+#### 请求示例
+
+```json
+{
+  "projectId": "885958494765715456",
+  "analysisVersion": "1.0.0.0",
+  "startDate": "2024-01-01",
+  "endDate": "2024-12-31"
+}
+```
 
 #### 响应参数 (VersionEscapeAnalysisResponseDto)
 
@@ -52,131 +59,76 @@
 {
   "code": "200",
   "msg": "调用成功。",
-  "total": "",
   "httpCode": 200,
   "data": {
     "analysisVersion": "1.0.0.0",
     "projectId": "885958494765715456",
-    "analysisTimeRange": "",
+    "analysisTimeRange": "2024-01-01 至 2024-12-31",
     "escapeRateStats": {
-      "totalDefectsIntroduced": 3,
-      "currentVersionFound": 3,
-      "escapedDefects": 0,
-      "escapeRate": 0.00,
-      "detectionEffectiveness": 100.00,
-      "qualityLevel": "优秀"
+      "totalDefectsIntroduced": 10,
+      "currentVersionFound": 7,
+      "escapedDefects": 3,
+      "escapeRate": 30.00,
+      "detectionEffectiveness": 70.00,
+      "qualityLevel": "需改进"
     },
-    "discoveryTiming": {
-      "inVersionCount": 12,
-      "inVersionPercentage": 60.0,
-      "escapedCount": 8,
-      "escapedPercentage": 40.0,
-      "description": "版本内发现12个缺陷，逃逸8个缺陷"
-    },
-    "legacyDefectAnalysis": {
-      "totalLegacyDefects": 8,
-      "legacyDefectRate": 40.0,
-      "averageEscapeDays": 30,
-      "description": "遗留缺陷平均逃逸30天",
-      "preReleaseLegacyFound": "",
-      "postReleaseLegacyFound": "",
-      "legacyEscapeRate": "",
-      "sourceVersions": ""
-    },
-    "versionGroups": [],
-    "severityGroups": [],
-    "defectDetails": [],
+    "defectDetails": [
+      {
+        "defectId": "12345",
+        "title": "登录功能异常",
+        "severity": "严重",
+        "priority": "高",
+        "introducedVersion": "1.0.0.0",
+        "foundVersion": "1.1.0.0",
+        "isEscaped": true,
+        "escapeDays": 15,
+        "fixStatus": "修复中",
+        "impactDescription": "该缺陷在版本 1.0.0.0 中引入，但直到版本 1.1.0.0 才被发现，存在逃逸风险"
+      },
+      {
+        "defectId": "12346",
+        "title": "数据保存失败",
+        "severity": "一般",
+        "priority": "中",
+        "introducedVersion": "1.0.0.0",
+        "foundVersion": "1.0.0.0",
+        "isEscaped": false,
+        "escapeDays": 0,
+        "fixStatus": "已修复",
+        "impactDescription": "该缺陷在引入版本内被及时发现，未发生逃逸"
+      }
+    ],
     "qualityAssessment": {
       "overallQualityLevel": "需改进",
       "riskLevel": "高风险",
       "recommendations": [
-        "加强测试覆盖",
-        "完善回归测试"
+        "紧急加强测试覆盖，重点关注回归测试",
+        "建立缺陷预防机制，加强代码审查",
+        "完善测试用例设计，增加边界条件测试"
       ],
       "keyMetrics": {
-        "legacyDefectRate": 40.0,
-        "highSeverityEscapeRate": 40.0,
-        "escapeRate": 40.0
+        "escapeRate": 30.00,
+        "detectionEffectiveness": 70.00,
+        "totalDefects": 10.00,
+        "foundInVersion": 7.00,
+        "escapedDefects": 3.00
       },
-      "testCoverageAssessment": "",
-      "keyFindings": ""
-    }
+      "testCoverageAssessment": "测试覆盖一般，需要加强测试深度",
+      "keyFindings": [
+        "该版本共引入 10 个缺陷",
+        "版本内发现 7 个缺陷，逃逸 3 个缺陷",
+        "检测有效性为 70.0%，测试效果有待提升"
+      ]
+    },
+    "discoveryTiming": null,
+    "legacyDefectAnalysis": null,
+    "versionGroups": [],
+    "severityGroups": []
   }
 }
 ```
 
-### 2. 快速分析版本逃逸率
-
-**接口地址**: `GET /api/versionQualityReport/escapeAnalysis/quick/{projectId}/{analysisVersion}`
-
-**接口描述**: 通过URL参数快速分析指定版本的缺陷逃逸率
-
-#### 请求参数
-
-| 参数名 | 类型 | 位置 | 必填 | 描述 |
-|--------|------|------|------|------|
-| projectId | String | Path | 是 | 项目ID |
-| analysisVersion | String | Path | 是 | 要分析的版本号 |
-| includeLegacy | Boolean | Query | 否 | 是否包含遗留缺陷分析，默认true |
-| groupBySeverity | Boolean | Query | 否 | 是否按严重程度分组，默认true |
-
-#### 响应参数
-同 `POST /api/versionQualityReport/escapeAnalysis` 接口
-
-### 3. 获取逃逸率趋势
-
-**接口地址**: `GET /api/versionQualityReport/escapeAnalysis/trend/{projectId}`
-
-**接口描述**: 获取多个版本的逃逸率趋势对比数据
-
-#### 请求参数
-
-| 参数名 | 类型 | 位置 | 必填 | 描述 |
-|--------|------|------|------|------|
-| projectId | String | Path | 是 | 项目ID |
-| versions | List<String> | Query | 是 | 版本列表，用逗号分隔 |
-
-#### 响应示例
-
-```json
-{
-  "code": "200",
-  "msg": "调用成功。",
-  "data": {
-    "trendData": [
-      {
-        "version": "0.8.0.0",
-        "escapeRate": 35.5,
-        "qualityLevel": "需改进",
-        "totalDefects": 18,
-        "escapedDefects": 6
-      },
-      {
-        "version": "0.9.0.0",
-        "escapeRate": 40.0,
-        "qualityLevel": "需改进",
-        "totalDefects": 20,
-        "escapedDefects": 8
-      },
-      {
-        "version": "1.0.0.0",
-        "escapeRate": 25.0,
-        "qualityLevel": "一般",
-        "totalDefects": 16,
-        "escapedDefects": 4
-      }
-    ],
-    "summary": {
-      "averageEscapeRate": 33.5,
-      "trend": "波动",
-      "bestVersion": "1.0.0.0",
-      "worstVersion": "0.9.0.0"
-    }
-  }
-}
-```
-
-### 4. 导出逃逸率分析报告
+### 2. 导出逃逸率分析报告
 
 **接口地址**: `POST /api/versionQualityReport/escapeAnalysis/export`
 
@@ -191,18 +143,66 @@
 {
   "code": "200",
   "msg": "调用成功。",
-  "data": "report_download_url_or_file_path"
+  "data": "/tmp/escape_analysis_report_1641234567890.xlsx"
 }
 ```
 
+## 数据模型详解
+
+### 逃逸率统计 (EscapeRateStats)
+
+| 字段名 | 类型 | 描述 | 示例值 |
+|--------|------|------|--------|
+| totalDefectsIntroduced | Integer | 该版本引入的缺陷总数 | 10 |
+| currentVersionFound | Integer | 在当前版本内发现的缺陷数 | 7 |
+| escapedDefects | Integer | 逃逸到后续版本的缺陷数 | 3 |
+| escapeRate | BigDecimal | 缺陷逃逸率（%） | 30.00 |
+| detectionEffectiveness | BigDecimal | 检测有效性（%） | 70.00 |
+| qualityLevel | String | 质量等级 | "需改进" |
+
+### 缺陷详情 (EscapeDefectDetail)
+
+| 字段名 | 类型 | 描述 | 示例值 |
+|--------|------|------|--------|
+| defectId | String | 缺陷ID | "12345" |
+| title | String | 缺陷标题 | "登录功能异常" |
+| severity | String | 严重程度 | "严重" |
+| priority | String | 优先级 | "高" |
+| introducedVersion | String | 引入版本 | "1.0.0.0" |
+| foundVersion | String | 发现版本 | "1.1.0.0" |
+| isEscaped | Boolean | 是否逃逸 | true |
+| escapeDays | Integer | 逃逸天数 | 15 |
+| fixStatus | String | 修复状态 | "修复中" |
+| impactDescription | String | 影响描述 | "该缺陷在版本 1.0.0.0 中引入..." |
+
+### 质量评估 (QualityAssessment)
+
+| 字段名 | 类型 | 描述 | 示例值 |
+|--------|------|------|--------|
+| overallQualityLevel | String | 整体质量等级 | "需改进" |
+| riskLevel | String | 风险等级 | "高风险" |
+| recommendations | List<String> | 改进建议 | ["加强测试覆盖", "完善回归测试"] |
+| keyMetrics | Map<String, BigDecimal> | 关键指标 | 各项指标数值 |
+| testCoverageAssessment | String | 测试覆盖评估 | "测试覆盖一般，需要加强测试深度" |
+| keyFindings | List<String> | 关键发现 | 分析结论列表 |
+
 ## 质量等级标准
 
-| 逃逸率范围 | 质量等级 | 描述 |
-|------------|----------|------|
-| < 10% | 优秀 | 测试覆盖充分，质量风险极低 |
-| 10% - 20% | 良好 | 测试质量较好，风险可控 |
-| 20% - 30% | 一般 | 测试质量达标，需要关注 |
-| > 30% | 需改进 | 测试覆盖不足，存在质量风险 |
+| 逃逸率范围 | 质量等级 | 风险等级 | 描述 |
+|------------|----------|----------|------|
+| ≤ 5% | 优秀 | 低风险 | 测试覆盖充分，质量风险极低 |
+| 5% - 15% | 良好 | 中等风险 | 测试质量较好，风险可控 |
+| 15% - 30% | 一般 | 高风险 | 测试质量达标，需要关注 |
+| > 30% | 需改进 | 极高风险 | 测试覆盖不足，存在质量风险 |
+
+## 修复状态映射
+
+| issue_status | 状态描述 | 说明 |
+|--------------|----------|------|
+| 0 | 待修复 | 缺陷已发现，等待修复 |
+| 1 | 修复中 | 缺陷正在修复过程中 |
+| 2 | 已修复 | 缺陷已修复完成 |
+| 3 | 已关闭 | 缺陷已关闭（已修复或不是缺陷） |
 
 ## 业务场景示例
 
@@ -211,15 +211,44 @@
 - **操作**: 调用分析接口，查看逃逸率和质量等级
 - **决策**: 根据逃逸率决定是否需要加强测试
 
-### 场景2：版本对比分析
-- **目标**: 对比最近几个版本的质量趋势
-- **操作**: 调用趋势接口，获取多版本对比数据
-- **决策**: 识别质量改进或恶化趋势
-
-### 场景3：缺陷根因分析
+### 场景2：缺陷根因分析
 - **目标**: 分析高逃逸率的原因
 - **操作**: 查看详细缺陷列表和严重程度分布
 - **决策**: 针对性改进测试策略
+
+### 场景3：质量改进跟踪
+- **目标**: 跟踪版本间质量改进情况
+- **操作**: 对比不同版本的逃逸率趋势
+- **决策**: 评估质量改进措施效果
+
+## 数据库查询逻辑
+
+### 主要查询SQL
+```sql
+-- 查询版本逃逸统计
+SELECT 
+    COUNT(*) as totalDefectsIntroduced,
+    SUM(CASE WHEN introduced_version = issue_version THEN 1 ELSE 0 END) as currentVersionFound,
+    SUM(CASE WHEN introduced_version != issue_version THEN 1 ELSE 0 END) as escapedDefects
+FROM issue 
+WHERE project_id = #{projectId} 
+AND introduced_version = #{analysisVersion}
+
+-- 查询版本详细缺陷信息
+SELECT 
+    id,
+    title,
+    description,
+    severity,
+    issue_status,
+    priority,
+    introduced_version,
+    issue_version,
+    create_time
+FROM issue 
+WHERE project_id = #{projectId} 
+AND introduced_version = #{analysisVersion}
+```
 
 ## 注意事项
 
@@ -227,6 +256,7 @@
 2. **时间范围**: 建议设置合理的分析时间范围，避免数据过多
 3. **权限控制**: 需要项目访问权限才能查看分析结果
 4. **数据完整性**: 缺陷数据的完整性直接影响分析准确性
+5. **状态映射**: issue_status字段为数字类型，需要正确映射到状态描述
 
 ## 错误码
 
@@ -235,4 +265,19 @@
 | 400 | 请求参数错误 | 检查必填参数和参数格式 |
 | 403 | 无项目访问权限 | 确认用户有项目查看权限 |
 | 404 | 项目或版本不存在 | 确认项目ID和版本号正确 |
-| 500 | 服务器内部错误 | 联系技术支持 |
+| 500 | 服务器内部错误 | 检查数据库连接和SQL语句 |
+
+## 性能优化建议
+
+1. **索引优化**: 在 `project_id`、`introduced_version`、`issue_version` 字段上建立索引
+2. **数据分页**: 对于大量缺陷数据，建议使用分页查询
+3. **缓存策略**: 对于相同参数的重复查询，可考虑缓存结果
+4. **异步处理**: 对于复杂的分析报告导出，建议使用异步处理
+
+## 版本历史
+
+| 版本 | 更新内容 | 更新时间 |
+|------|----------|----------|
+| v1.0 | 基础逃逸率分析功能 | 2024-01-15 |
+| v1.1 | 增加详细缺陷信息和质量评估 | 2024-02-10 |
+| v1.2 | 优化SQL查询性能，修复状态映射问题 | 2024-08-10 |
