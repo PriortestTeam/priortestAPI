@@ -8,16 +8,9 @@
         <result property="createUserId" column="create_user_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="issueStatus" column="issue_status" jdbcType="INTEGER"/>
-        <!--        <result property="plannedReleaseDate" column="planned_release_date" jdbcType="TIMESTAMP"/>-->
-
-        <!--        <result property="testCase" column="test_case" jdbcType="INTEGER"/>-->
-        <!--        <result property="testCycle" column="test_cycle" jdbcType="INTEGER"/>-->
-        <!--        <result property="feature" column="feature" jdbcType="INTEGER"/>-->
         <result property="priority" column="priority" jdbcType="VARCHAR"/>
         <result property="env" column="env" jdbcType="VARCHAR"/>
         <result property="browser" column="browser" jdbcType="VARCHAR"/>
-        <!--        <result property="platform" column="platform" jdbcType="VARCHAR"/>-->
-        <!--        <result property="version" column="version" jdbcType="VARCHAR"/>-->
         <result property="caseCategory" column="case_category" jdbcType="VARCHAR"/>
         <result property="releasePhase" column="release_phase" jdbcType="VARCHAR"/>
         <result property="foundAfterRelease" column="found_after_release" jdbcType="INTEGER"/>
@@ -34,6 +27,7 @@
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="duration" column="duration" jdbcType="INTEGER"/>
     </resultMap>
+
     <!--通过实体作为筛选条件查询-->
     <select id="queryList" resultMap="IssueMap">
         select
@@ -55,12 +49,9 @@
             <if test="title != null and title != ''">
                 and title = #{title}
             </if>
-
             <if test="status != null">
                 and status = #{status}
             </if>
-
-
             <if test="priority != null and priority != ''">
                 and priority = #{priority}
             </if>
@@ -97,15 +88,12 @@
             <if test="description != null and description != ''">
                 and description = #{description}
             </if>
-
-
             <if test="filter != null and filter != ''">
                 ${filter}
             </if>
-
-
         </where>
     </select>
+
     <!--查询单个-->
     <select id="queryById" resultMap="IssueMap">
         select id,
@@ -133,7 +121,6 @@
         where id = #{id}
     </select>
 
-
     <!--通过主键修改数据-->
     <update id="updateByPrimaryKeySelective">
         update issue
@@ -141,14 +128,9 @@
             <if test="title != null and title != ''">
                 title = #{title},
             </if>
-
             <if test="issueStatus != null">
                 issue_status = #{issueStatus},
             </if>
-
-
-
-
             <if test="priority != null and priority != ''">
                 priority = #{priority},
             </if>
@@ -209,8 +191,8 @@
         SELECT *
         FROM issue
         where runcase_id = #{param1}
-
     </select>
+
     <select id="findAll" resultType="com.hu.oneclick.model.entity.Issue">
         select * from issue
     </select>
@@ -317,6 +299,56 @@
         </if>
 
         ORDER BY i.id, tcjtc.id
+    </select>
+
+    <!-- 版本缺陷逃逸率统计查询 -->
+    <select id="queryVersionEscapeStatistics" resultType="java.util.Map">
+        SELECT 
+            COUNT(*) as totalDefectsIntroduced,
+            COUNT(CASE WHEN issue_version = #{analysisVersion} THEN 1 END) as currentVersionFound,
+            COUNT(CASE WHEN issue_version != #{analysisVersion} THEN 1 END) as escapedDefects,
+            ROUND(
+                CASE 
+                    WHEN COUNT(*) = 0 THEN 0 
+                    ELSE COUNT(CASE WHEN issue_version != #{analysisVersion} THEN 1 END) * 100.0 / COUNT(*) 
+                END, 2
+            ) as escapeRate
+        FROM issue 
+        WHERE project_id = #{projectId} 
+          AND introduced_version = #{analysisVersion}
+          <if test="startDate != null and startDate != ''">
+              AND create_time &gt;= #{startDate}
+          </if>
+          <if test="endDate != null and endDate != ''">
+              AND create_time &lt;= #{endDate}
+          </if>
+    </select>
+
+    <!-- 查询版本详细缺陷信息 -->
+    <select id="queryVersionDefectDetails" resultType="java.util.Map">
+        SELECT 
+            id,
+            title,
+            description,
+            severity,
+            issue_status,
+            priority,
+            introduced_version,
+            issue_version,
+            create_time
+        FROM issue 
+        WHERE project_id = #{projectId} 
+        AND introduced_version = #{analysisVersion}
+        <if test="startDate != null and startDate != ''">
+            AND create_time >= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND create_time &lt;= #{endDate}
+        </if>
+        ORDER BY 
+            CASE WHEN issue_version != introduced_version THEN 0 ELSE 1 END,  -- 逃逸缺陷优先显示
+            FIELD(severity, 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'),              -- 按严重程度排序
+            create_time DESC                                                    -- 按创建时间倒序
     </select>
 
 </mapper>
