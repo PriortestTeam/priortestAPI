@@ -2,45 +2,35 @@ package com.hu.oneclick.server.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
+import cn.zhxu.bs.MapSearcher;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageInfo;
 import com.hu.oneclick.common.exception.BaseException;
 import com.hu.oneclick.common.security.service.JwtUserServiceImpl;
 import com.hu.oneclick.common.security.service.SysPermissionService;
-import com.hu.oneclick.common.util.CloneFormatUtil;
 import com.hu.oneclick.common.util.PageUtil;
+import com.hu.oneclick.common.util.TimezoneContext;
 import com.hu.oneclick.dao.IssueDao;
 import com.hu.oneclick.dao.ViewDao;
-import com.hu.oneclick.model.entity.Issue;
 import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.domain.dto.IssueStatusDto;
+import com.hu.oneclick.model.entity.Issue;
 import com.hu.oneclick.model.param.IssueParam;
 import com.hu.oneclick.server.service.CustomFieldDataService;
 import com.hu.oneclick.server.service.IssueService;
 import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
 import com.hu.oneclick.server.service.ViewFilterService;
+import jakarta.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
-import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import cn.zhxu.bs.MapSearcher;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.BeanUtils;
-import com.hu.oneclick.common.util.TimezoneContext;
-import com.hu.oneclick.model.base.Resp;
 
 @Service
 public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements IssueService {
@@ -115,6 +105,8 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         return issueSaveService.saveNewIssue(dto);
     }
 
+
+    
     @Override
     @Transactional
     public Issue edit(IssueSaveDto dto) {
@@ -123,7 +115,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         if (null == entity) {
             throw new BaseException(StrUtil.format("缺陷查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
         }
-        System.out.println("=== 验证记录存在，不进行任何时区转换 ===");
+        System.out.println("=== 验证记录存在 ===");
+
+
+        // 判断 issueStatus 是否为 关闭 且 verifiedResult 是否为 验证成功
+        if ("关闭".equals(dto.getIssueStatus()) && "验证成功".equals(dto.getVerifiedResult())) 
+            System.out.println("=== 检测到缺陷状态为关闭且验证成功，需要计算并存储duration ===");
 
         // 2. 执行更新操作（本地时间 → UTC 转换并存储）
         Issue issue = issueSaveService.updateExistingIssue(dto);
@@ -175,10 +172,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== edit方法最后阶段 - 开始唯一的UTC到本地时间转换 ===");
         System.out.println("=== 用户时区: " + userTimezone + " ===");
-        // 转换UTC时间为用户本地时区（用于返回给前端显示） - 已注释
-        // System.out.println("=== 开始将UTC时间转换为用户本地时区 ===");
-        // issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-        // System.out.println("=== UTC到本地时区转换完成 ===");
+    
 
         return issue;
     }

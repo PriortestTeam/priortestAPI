@@ -1,0 +1,64 @@
+  @Override
+    @Transactional
+    public Issue edit(IssueSaveDto dto) {
+        // 1. 查找记录验证是否存在（不做任何时区转换，只确认记录存在）
+        Issue entity = this.getByIdAndProjectId(dto.getId(), dto.getProjectId());
+        if (null == entity) {
+            throw new BaseException(StrUtil.format("缺陷查询不到。ID：{} projectId：{}", dto.getId(), dto.getProjectId()));
+        }
+        System.out.println("=== 验证记录存在 ===");
+
+        // 2. 执行更新操作（本地时间 → UTC 转换并存储）
+        Issue issue = issueSaveService.updateExistingIssue(dto);
+        System.out.println("=== 更新操作完成，数据已存储为UTC时间 ===");
+
+        // 3. 重新查询完整的Issue对象（从数据库查询的都是UTC时间）
+        Issue completeIssue = this.getByIdAndProjectId(issue.getId(), issue.getProjectId());
+        if (completeIssue != null) {
+            System.out.println("=== 重新查询完整记录，获取最新的UTC时间数据 ===");
+
+            // 将更新后的非时间字段值复制到完整对象中
+            // 注意：时间字段（createTime, updateTime, planFixDate）使用数据库查询的UTC时间
+            completeIssue.setTitle(issue.getTitle());
+            completeIssue.setVerifiedResult(issue.getVerifiedResult());
+            completeIssue.setPriority(issue.getPriority());
+            completeIssue.setEnv(issue.getEnv());
+            completeIssue.setBrowser(issue.getBrowser());
+            completeIssue.setPlatform(issue.getPlatform());
+            completeIssue.setIssueVersion(issue.getIssueVersion());
+            completeIssue.setCaseCategory(issue.getCaseCategory());
+            completeIssue.setDescription(issue.getDescription());
+            completeIssue.setIssueStatus(issue.getIssueStatus());
+            completeIssue.setModule(issue.getModule());
+            completeIssue.setReportTo(issue.getReportTo());
+            completeIssue.setIssueExpand(issue.getIssueExpand());
+            completeIssue.setFixVersion(issue.getFixVersion());
+            completeIssue.setIntroducedVersion(issue.getIntroducedVersion());
+            completeIssue.setIsLegacy(issue.getIsLegacy());
+            completeIssue.setFoundAfterRelease(issue.getFoundAfterRelease());
+            completeIssue.setSeverity(issue.getSeverity());
+            completeIssue.setTestDevice(issue.getTestDevice());
+            completeIssue.setRuncaseId(issue.getRuncaseId());
+            completeIssue.setFixCategory(issue.getFixCategory());
+            completeIssue.setFrequency(issue.getFrequency());
+            completeIssue.setIssueSource(issue.getIssueSource());
+            completeIssue.setUserImpact(issue.getUserImpact());
+            completeIssue.setRootCause(issue.getRootCause());
+            completeIssue.setRootcauseCategory(issue.getRootcauseCategory());
+            completeIssue.setUpdateUserId(issue.getUpdateUserId());
+
+            issue = completeIssue;
+        }
+
+        // 4. 计算duration（基于UTC时间，不进行时区转换）
+        convertFieldsToStringForEdit(issue);
+        System.out.println("=== Duration计算完成，基于UTC时间 ===");
+
+        // 5. 最后一步：将UTC时间转换为用户本地时间（只转换一次）
+        String userTimezone = TimezoneContext.getUserTimezone();
+        System.out.println("=== edit方法最后阶段 - 开始唯一的UTC到本地时间转换 ===");
+        System.out.println("=== 用户时区: " + userTimezone + " ===");
+    
+
+        return issue;
+    }
