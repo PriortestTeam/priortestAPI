@@ -216,6 +216,17 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== 注意：时区转换将在上层方法中单独处理 ===");
     }
 
+    private void convertFieldsToStringForQuery(Issue issue) {
+        // 确保 isLegacy 和 foundAfterRelease 不为null
+        if (issue.getIsLegacy() == null) {
+            issue.setIsLegacy(0);
+        }
+        if (issue.getFoundAfterRelease() == null) {
+            issue.setFoundAfterRelease(0);
+        }
+    }
+   
+
     /**
      * 专门为 issue/list API 设计的字段转换方法
      * 直接进行时区转换，不做任何检查
@@ -257,31 +268,24 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     @Override
     public Issue info(Long id) {
         System.out.println("=== Issue.info方法开始，ID: " + id + " ===");
-
         Issue issue = this.baseMapper.queryIssueById(id);
         if (issue == null) {
             throw new BaseException("issue not found");
         }
-
-        System.out.println("=== 数据库查询的原始issue: " + issue.getId() + " ===");
-        System.out.println("=== 原始createTime: " + issue.getCreateTime() + " ===");
-
         // 获取用户时区
-        String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== 用户时区: " + userTimezone + " ===");
+        //String userTimezone = TimezoneContext.getUserTimezone();
+        //System.out.println("=== 用户时区: " + userTimezone + " ===");
 
         // 计算duration（基于当前时间策略）
-        issueDurationCalculator.calculateDuration(issue, userTimezone);
-        System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
+        // issueDurationCalculator.calculateDuration(issue, userTimezone);
+        // System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
 
         // 现在数据库存储的是用户本地时间，无需进行时区转换
         // 但如果需要显示格式转换，可以在这里处理
-        System.out.println("=== 跳过时区转换（数据库已存储用户本地时间） ===");
+        System.out.println("=== 处理 lengcy and foundIssueAfter） ===");
 
         // 转换字段格式
-        convertFieldsToStringForEdit(issue);
-        System.out.println("=== 字段格式转换完成 ===");
-
+        convertFieldsToStringForQuery(issue);    
         System.out.println("=== Issue.info方法结束 ===");
         return issue;
     }
