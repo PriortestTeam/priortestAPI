@@ -125,12 +125,18 @@ public class IssueSaveService {
         // 处理版本相关字段
         processVersionFields(issue, dto);
 
+        // 确保duration字段被正确复制
+        if (dto.getDuration() != null) {
+            issue.setDuration(dto.getDuration());
+            System.out.println("=== updateExistingIssue: duration字段已设置: " + issue.getDuration() + " ===");
+        }
+
         // 获取用户时区并转换日期型字段
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== updateExistingIssue - 开始转换日期型字段 ===");
         System.out.println("=== 用户时区: " + userTimezone + " ===");
 
-       
+
         if (issue.getIsLegacy() == null) {
             issue.setIsLegacy(0);
         }

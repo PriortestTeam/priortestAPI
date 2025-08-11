@@ -87,12 +87,16 @@ public class IssueDurationCalculator {
         System.out.println("=== UTC时间转换为用户本地时间: " + utcCurrentTime + " -> " + endTime + " ===");
         System.out.println("=== 用户本地当前时间(毫秒): " + endTime.getTime() + " ===");
 
-        // 数据库中存储的时间已经是用户本地时间，直接使用
+        // 数据库中存储的时间需要根据实际情况处理
+        // 根据你提供的信息，数据库实际存储的时间是用户本地时间
         Date adjustedCreateTime = issue.getCreateTime();
-        System.out.println("=== 数据库创建时间处理策略: 数据库存储的是用户本地时间，直接使用 ===");
-
-        System.out.println("=== 数据库中的createTime是用户本地时间，直接使用: " + adjustedCreateTime + " ===");
-        System.out.println("=== 不需要进行时区转换 ===");
+        System.out.println("=== 数据库创建时间处理策略: 分析数据库实际存储的时间格式 ===");
+        System.out.println("=== 数据库原始createTime: " + adjustedCreateTime + " ===");
+        System.out.println("=== 数据库原始createTime(毫秒): " + adjustedCreateTime.getTime() + " ===");
+        
+        // 如果数据库存储的是用户本地时间，需要将当前UTC时间也转换为相同时区进行比较
+        // 或者将数据库时间转换为UTC时间进行统一比较
+        System.out.println("=== 使用数据库原始时间进行计算 ===");
 
         System.out.println("=== ========== Duration计算公式详情 ========== ===");
         System.out.println("=== 计算公式: duration(小时) = (当前用户本地时间 - 创建用户本地时间) / (1000 * 60 * 60) ===");

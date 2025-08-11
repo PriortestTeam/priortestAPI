@@ -117,7 +117,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
         System.out.println("=== 验证记录存在 ===");
 
-      
+
 
         // 创建要更新的issue对象
         Issue issue = new Issue();
@@ -140,10 +140,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
             System.out.println("=== duration已计算并将在更新时存储到数据库：" + issue.getDuration() + " 小时 ===");
 
-    }
-        // 2. 执行更新操作（）
+            // 将计算的duration也设置到dto中，确保更新操作包含duration字段
+            dto.setDuration(entity.getDuration());
+            System.out.println("=== duration已设置到dto中：" + dto.getDuration() + " 小时 ===");
+        }
+
+        // 2. 执行更新操作
         issue = issueSaveService.updateExistingIssue(dto);
-        System.out.println("=== 更新操作完成，数据已存储为");
+        System.out.println("=== 更新操作完成，数据已存储 ==");
+        System.out.println("=== 更新后的issue.duration: " + issue.getDuration() + " ===");
 
         // 3. 重新查询完整的Issue对象（从数据库查询的都是UTC时间）
         Issue completeIssue = this.getByIdAndProjectId(issue.getId(), issue.getProjectId());
