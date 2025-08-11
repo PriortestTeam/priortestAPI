@@ -125,7 +125,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         BeanUtil.copyProperties(dto, issue);
         
         // 判断 issueStatus 是否为 关闭 且 verifiedResult 是否为 验证成功
-        if ("关闭".equals(dto.getIssueStatus()) || "验证成功".equals(dto.getIssueStatus())) {
+        if ("关闭".contentEqual(dto.getIssueStatus()) || "验证成功".contentEqual(dto.getIssueStatus())) {
             System.out.println("=== 检测到缺陷状态为关闭 或验证成功，需要计算并存储duration ===");
                     
             // 使用已查询到的entity（包含完整的createTime等信息）
