@@ -106,7 +106,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     }
 
 
-    
+
     @Override
     @Transactional
     public Issue edit(IssueSaveDto dto) {
@@ -123,18 +123,22 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         // 创建要更新的issue对象
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
-        
-        // 判断 issueStatus 是否为 关闭 且 verifiedResult 是否为 验证成功
-        if ("关闭".contentEqual(dto.getIssueStatus()) || "验证成功".contentEqual(dto.getIssueStatus())) {
+
+        // 添加调试日志
+        System.out.println("=== 检查duration计算条件 ===");
+        System.out.println("=== dto.getIssueStatus(): " + dto.getIssueStatus() + " ===");
+
+        // 判断 issueStatus 是否为 关闭 或 验证成功
+        if ("关闭".equals(dto.getIssueStatus()) || "验证成功".equals(dto.getIssueStatus())) {
             System.out.println("=== 检测到缺陷状态为关闭 或验证成功，需要计算并存储duration ===");
-                    
+
             // 使用已查询到的entity（包含完整的createTime等信息）
             // 计算duration并设置到要更新的issue对象中
             issueDurationCalculator.calculateDuration(entity, userTimezone);
             issue.setDuration(entity.getDuration());
 
             System.out.println("=== duration已计算并将在更新时存储到数据库：" + issue.getDuration() + " 小时 ===");
-            
+
     }
         // 2. 执行更新操作（）
         issue = issueSaveService.updateExistingIssue(dto);
@@ -236,7 +240,7 @@ if ("关闭".equals(issue.getIssueStatus()) || "验证成功".equals(issue.getIs
             issue.setFoundAfterRelease(0);
         }
     }
-   
+
 
     /**
      * 专门为 issue/list API 设计的字段转换方法
@@ -435,7 +439,7 @@ if ("关闭".equals(issue.getIssueStatus()) || "验证成功".equals(issue.getIs
         pageInfo.setHasPreviousPage(pageNum > 1);
         pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
 
-        logger.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
+        logger.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}",
                  pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage());
 
         return pageInfo;
