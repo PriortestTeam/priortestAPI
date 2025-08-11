@@ -127,8 +127,15 @@ public class IssueSaveService {
 
         // 确保duration字段被正确复制
         if (dto.getDuration() != null) {
-            issue.setDuration(dto.getDuration());
-            System.out.println("=== updateExistingIssue: duration字段已设置: " + issue.getDuration() + " ===");
+            // dto.getDuration()返回String，需要转换为Integer
+            try {
+                Integer durationValue = Integer.parseInt(dto.getDuration());
+                issue.setDuration(durationValue);
+                System.out.println("=== updateExistingIssue: duration字段已设置: " + issue.getDuration() + " ===");
+            } catch (NumberFormatException e) {
+                System.out.println("=== updateExistingIssue: duration字段解析失败，设置为0: " + dto.getDuration() + " ===");
+                issue.setDuration(0);
+            }
         }
 
         // 获取用户时区并转换日期型字段

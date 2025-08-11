@@ -141,7 +141,12 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             System.out.println("=== duration已计算并将在更新时存储到数据库：" + issue.getDuration() + " 小时 ===");
 
             // 将计算的duration也设置到dto中，确保更新操作包含duration字段
-            dto.setDuration(entity.getDuration());
+            // entity.getDuration()返回Integer，需要转换为String
+            if (entity.getDuration() != null) {
+                dto.setDuration(entity.getDuration().toString());
+            } else {
+                dto.setDuration("0");
+            }
             System.out.println("=== duration已设置到dto中：" + dto.getDuration() + " 小时 ===");
         }
 
