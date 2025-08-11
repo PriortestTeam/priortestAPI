@@ -117,8 +117,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
         System.out.println("=== 验证记录存在 ===");
 
-        // 获取用户时区
-        String userTimezone = TimezoneContext.getUserTimezone();
+      
 
         // 创建要更新的issue对象
         Issue issue = new Issue();
@@ -134,6 +133,8 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
             // 使用已查询到的entity（包含完整的createTime等信息）
             // 计算duration并设置到要更新的issue对象中
+            // 获取用户时区
+            String userTimezone = TimezoneContext.getUserTimezone();
             issueDurationCalculator.calculateDuration(entity, userTimezone);
             issue.setDuration(entity.getDuration());
 
