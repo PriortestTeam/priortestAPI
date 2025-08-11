@@ -117,19 +117,33 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
         System.out.println("=== 验证记录存在 ===");
 
+        // 获取用户时区
+        String userTimezone = TimezoneContext.getUserTimezone();
 
+        // 创建要更新的issue对象
+        Issue issue = new Issue();
+        BeanUtil.copyProperties(dto, issue);
+        
         // 判断 issueStatus 是否为 关闭 且 verifiedResult 是否为 验证成功
-        if ("关闭".equals(dto.getIssueStatus()) && "验证成功".equals(dto.getVerifiedResult())) 
-            System.out.println("=== 检测到缺陷状态为关闭且验证成功，需要计算并存储duration ===");
+        if ("关闭".equals(dto.getIssueStatus()) || "验证成功".equals(dto.getIssueStatus())) {
+            System.out.println("=== 检测到缺陷状态为关闭 或验证成功，需要计算并存储duration ===");
+                    
+            // 使用已查询到的entity（包含完整的createTime等信息）
+            // 计算duration并设置到要更新的issue对象中
+            issueDurationCalculator.calculateDuration(entity, userTimezone);
+            issue.setDuration(entity.getDuration());
 
-        // 2. 执行更新操作（本地时间 → UTC 转换并存储）
-        Issue issue = issueSaveService.updateExistingIssue(dto);
-        System.out.println("=== 更新操作完成，数据已存储为UTC时间 ===");
+            System.out.println("=== duration已计算并将在更新时存储到数据库：" + issue.getDuration() + " 小时 ===");
+            
+    }
+        // 2. 执行更新操作（）
+        issue = issueSaveService.updateExistingIssue(dto);
+        System.out.println("=== 更新操作完成，数据已存储为");
 
         // 3. 重新查询完整的Issue对象（从数据库查询的都是UTC时间）
         Issue completeIssue = this.getByIdAndProjectId(issue.getId(), issue.getProjectId());
         if (completeIssue != null) {
-            System.out.println("=== 重新查询完整记录，获取最新的UTC时间数据 ===");
+            System.out.println("=== 重新查询完整记录，===");
 
             // 将更新后的非时间字段值复制到完整对象中
             // 注意：时间字段（createTime, updateTime, planFixDate）使用数据库查询的UTC时间
@@ -158,22 +172,25 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             completeIssue.setIssueSource(issue.getIssueSource());
             completeIssue.setUserImpact(issue.getUserImpact());
             completeIssue.setRootCause(issue.getRootCause());
-            completeIssue.setRootcauseCategory(issue.getRootcauseCategory());
+completeIssue.setRootcauseCategory(issue.getRootcauseCategory());
             completeIssue.setUpdateUserId(issue.getUpdateUserId());
 
+            // ✅ 记得也覆盖 duration！
+            completeIssue.setDuration(issue.getDuration());
+
+            // 使用完整对象作为最终返回值
             issue = completeIssue;
         }
 
-        // 4. 计算duration（基于UTC时间，不进行时区转换）
-        convertFieldsToStringForEdit(issue);
-        System.out.println("=== Duration计算完成，基于UTC时间 ===");
-
-        // 5. 最后一步：将UTC时间转换为用户本地时间（只转换一次）
-        String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== edit方法最后阶段 - 开始唯一的UTC到本地时间转换 ===");
-        System.out.println("=== 用户时区: " + userTimezone + " ===");
-    
-
+// 4. 执行后续字段转换逻辑
+if ("关闭".equals(issue.getIssueStatus()) || "验证成功".equals(issue.getIssueStatus())) {
+    System.out.println("=== 状态为关闭或验证成功，执行字段转换（）===");
+    convertFieldsToStringForQuery(issue);
+} else {
+    convertFieldsToStringForEdit(issue);
+    System.out.println("=== Duration 计算完成，基于 UTC 时间 ===");
+}
+ // 5. 返回最终 issue 对象
         return issue;
     }
 
