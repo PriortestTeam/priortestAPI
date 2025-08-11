@@ -46,68 +46,29 @@ public class IssueDurationCalculator {
         }
 
         System.out.println("=== ✅ createTime不为null，开始计算duration ===");
-        System.out.println("=== 当前时间获取方式: 获取UTC时间并转换为用户本地时间 ===");
+        System.out.println("=== 当前时间获取方式: 直接使用当前时间，不进行时区转换 ===");
 
-        // 获取UTC当前时间
-        Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        Date utcCurrentTime = utcCalendar.getTime();
-        System.out.println("=== UTC当前时间获取完成: " + utcCurrentTime + " ===");
-        System.out.println("=== UTC当前时间(毫秒): " + utcCurrentTime.getTime() + " ===");
+        // 直接获取当前时间，不进行时区转换
+        Date currentTime = new Date();
+        System.out.println("=== 当前时间获取完成: " + currentTime + " ===");
+        System.out.println("=== 当前时间(毫秒): " + currentTime.getTime() + " ===");
 
-        // 将UTC当前时间转换为用户本地时间
-        System.out.println("=== 🔍 步骤1: 准备进行时区转换 ===");
-        System.out.println("=== 🔍 userTimezone参数: " + userTimezone + " ===");
-        
-        TimeZone userTZ = null;
-        try {
-            System.out.println("=== 🔍 步骤2: 创建TimeZone对象 ===");
-            userTZ = TimeZone.getTimeZone(userTimezone);
-            System.out.println("=== 🔍 TimeZone创建成功: " + userTZ + " ===");
-            System.out.println("=== 🔍 TimeZone.getID(): " + userTZ.getID() + " ===");
-        } catch (Exception e) {
-            System.out.println("=== 🔍 ❌ TimeZone创建失败: " + e.getMessage() + " ===");
-            e.printStackTrace();
-        }
-        
-        System.out.println("=== 🔍 步骤3: 准备调用convertUTCToUserLocalTime ===");
-        System.out.println("=== 🔍 utcCurrentTime: " + utcCurrentTime + " ===");
-        System.out.println("=== 🔍 userTZ: " + userTZ + " ===");
-        
-        Date endTime = null;
-        try {
-            endTime = convertUTCToUserLocalTime(utcCurrentTime, userTZ);
-            System.out.println("=== 🔍 ✅ convertUTCToUserLocalTime调用成功 ===");
-        } catch (Exception e) {
-            System.out.println("=== 🔍 ❌ convertUTCToUserLocalTime调用失败: " + e.getMessage() + " ===");
-            System.out.println("=== 🔍 ❌ 错误堆栈: ===");
-            e.printStackTrace();
-            throw e; // 重新抛出异常以便看到完整堆栈
-        }
-        
-        System.out.println("=== UTC时间转换为用户本地时间: " + utcCurrentTime + " -> " + endTime + " ===");
-        System.out.println("=== 用户本地当前时间(毫秒): " + endTime.getTime() + " ===");
-
-        // 数据库中存储的时间需要根据实际情况处理
-        // 根据你提供的信息，数据库实际存储的时间是用户本地时间
-        Date adjustedCreateTime = issue.getCreateTime();
-        System.out.println("=== 数据库创建时间处理策略: 分析数据库实际存储的时间格式 ===");
-        System.out.println("=== 数据库原始createTime: " + adjustedCreateTime + " ===");
-        System.out.println("=== 数据库原始createTime(毫秒): " + adjustedCreateTime.getTime() + " ===");
-        
-        // 如果数据库存储的是用户本地时间，需要将当前UTC时间也转换为相同时区进行比较
-        // 或者将数据库时间转换为UTC时间进行统一比较
-        System.out.println("=== 使用数据库原始时间进行计算 ===");
+        // 直接使用数据库中的创建时间，不进行任何时区转换
+        Date createTime = issue.getCreateTime();
+        System.out.println("=== 数据库创建时间处理策略: 直接使用原始时间，不进行时区转换 ===");
+        System.out.println("=== 数据库原始createTime: " + createTime + " ===");
+        System.out.println("=== 数据库原始createTime(毫秒): " + createTime.getTime() + " ===");
 
         System.out.println("=== ========== Duration计算公式详情 ========== ===");
-        System.out.println("=== 计算公式: duration(小时) = (当前用户本地时间 - 创建用户本地时间) / (1000 * 60 * 60) ===");
+        System.out.println("=== 计算公式: duration(小时) = (当前时间 - 创建时间) / (1000 * 60 * 60) ===");
         System.out.println("=== 公式说明: 除以1000转换毫秒->秒，除以60转换秒->分钟，除以60转换分钟->小时 ===");
-        System.out.println("=== 当前用户本地时间: " + endTime + " ===");
-        System.out.println("=== 当前用户本地时间(毫秒): " + endTime.getTime() + " ===");
-        System.out.println("=== 数据库用户本地创建时间: " + adjustedCreateTime + " ===");
-        System.out.println("=== 数据库用户本地创建时间(毫秒): " + adjustedCreateTime.getTime() + " ===");
+        System.out.println("=== 当前时间: " + currentTime + " ===");
+        System.out.println("=== 当前时间(毫秒): " + currentTime.getTime() + " ===");
+        System.out.println("=== 数据库创建时间: " + createTime + " ===");
+        System.out.println("=== 数据库创建时间(毫秒): " + createTime.getTime() + " ===");
 
-        long diffInMillis = endTime.getTime() - adjustedCreateTime.getTime();
-        System.out.println("=== 时间差计算: " + endTime.getTime() + " - " + adjustedCreateTime.getTime() + " = " + diffInMillis + " 毫秒 ===");
+        long diffInMillis = currentTime.getTime() - createTime.getTime();
+        System.out.println("=== 时间差计算: " + currentTime.getTime() + " - " + createTime.getTime() + " = " + diffInMillis + " 毫秒 ===");
 
         // 如果时间差为负数，说明可能存在时区问题或数据异常
         if (diffInMillis < 0) {
@@ -152,9 +113,8 @@ public class IssueDurationCalculator {
 
         System.out.println("=== ========== Duration时间信息汇总 ========== ===");
         System.out.println("=== Issue ID: " + issue.getId() + " ===");
-        System.out.println("=== 创建时间(原始): " + issue.getCreateTime() + " ===");
-        System.out.println("=== 创建时间(调整后): " + adjustedCreateTime + " ===");
-        System.out.println("=== 当前时间: " + endTime + " ===");
+        System.out.println("=== 创建时间: " + createTime + " ===");
+        System.out.println("=== 当前时间: " + currentTime + " ===");
         System.out.println("=== 存活时长: " + durationInHours + " 小时 ===");
         System.out.println("=== 存活时长: " + durationInMinutes + " 分钟 ===");
         System.out.println("=== 存活时长: " + durationInSeconds + " 秒 ===");
