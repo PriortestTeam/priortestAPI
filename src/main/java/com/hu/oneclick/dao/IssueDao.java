@@ -13,6 +13,8 @@ public interface IssueDao extends BaseMapper<Issue> {
 
     Issue queryById(@Param("id") Long id);
 
+    Issue queryIssueById(@Param("id") Long id);
+
     int updateByPrimaryKeySelective(Issue issue);
 
     @Page

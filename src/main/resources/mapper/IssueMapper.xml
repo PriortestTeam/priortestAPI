@@ -121,6 +121,33 @@
         where id = #{id}
     </select>
 
+    <!--新的查询单个Issue方法 - 专门为API使用-->
+    <select id="queryIssueById" resultMap="IssueMap">
+        select id,
+               project_id,
+               create_user_id,
+               title,
+               issue_status,
+               priority,
+               env,
+               browser,
+               case_category,
+               found_after_release,
+               issue_version,
+               introduced_version,
+               is_legacy,
+               fix_version,
+               severity,
+               test_device,
+               COALESCE(runcase_id, 0) as runcase_id,
+               create_time,
+               update_time,
+               description,
+               duration
+        from oneclick.issue
+        where id = #{id}
+    </select>
+
     <!--通过主键修改数据-->
     <update id="updateByPrimaryKeySelective">
         update issue

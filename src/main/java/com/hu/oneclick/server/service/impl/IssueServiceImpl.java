@@ -258,7 +258,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
     public Issue info(Long id) {
         System.out.println("=== Issue.info方法开始，ID: " + id + " ===");
 
-        Issue issue = this.baseMapper.selectById(id);
+        Issue issue = this.baseMapper.queryIssueById(id);
         if (issue == null) {
             throw new BaseException("issue not found");
         }
