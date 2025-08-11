@@ -121,7 +121,7 @@
         where id = #{id}
     </select>
 
-    <!--新的查询单个Issue方法 - 专门为API使用-->
+    <!--新的查询单个Issue方法 - 专门为API使用，SQL中计算duration-->
     <select id="queryIssueById" resultMap="IssueMap">
         select id,
                project_id,
@@ -143,7 +143,8 @@
                create_time,
                update_time,
                description,
-               duration
+               -- 在SQL中直接计算duration（小时）：当前时间减去创建时间，转换为小时
+               FLOOR(TIMESTAMPDIFF(SECOND, create_time, NOW()) / 3600) as duration
         from oneclick.issue
         where id = #{id}
     </select>
