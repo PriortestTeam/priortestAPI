@@ -20,7 +20,6 @@ import com.hu.oneclick.model.domain.dto.IssueSaveDto;
 import com.hu.oneclick.model.domain.dto.IssueStatusDto;
 import com.hu.oneclick.model.param.IssueParam;
 import com.hu.oneclick.server.service.CustomFieldDataService;
-import com.hu.oneclick.server.service.IssueSaveService;
 import com.hu.oneclick.server.service.IssueService;
 import com.hu.oneclick.server.service.ModifyRecordsService;
 import com.hu.oneclick.server.service.QueryFilterService;
@@ -186,7 +185,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
 
     /**
-     * 专门为issue编辑设计的字段转换方法，只处理业务逻辑，不进行时区转换
+     * 专门用于编辑操作的字段转换方法，只处理业务逻辑，不进行时区转换
      * 时区转换在上层方法中单独处理
      */
     private void convertFieldsToStringForEdit(Issue issue) {
@@ -216,26 +215,6 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== convertFieldsToStringForEdit结束 - Issue ID: " + issue.getId() + ", Duration最终: " + issue.getDuration() + " ===");
         System.out.println("=== 注意：时区转换将在上层方法中单独处理 ===");
     }
-
-    /**
-     * 专门为SQL已计算duration的情况设计的字段转换方法
-     * 不计算duration，只处理其他字段
-     */
-    private void convertFieldsToStringForEditWithoutDuration(Issue issue) {
-        System.out.println("=== convertFieldsToStringForEditWithoutDuration开始 - Issue ID: " + issue.getId() + " ===");
-        System.out.println("=== Duration (SQL已计算): " + issue.getDuration() + " ===");
-
-        // 确保 isLegacy 和 foundAfterRelease 不为null
-        if (issue.getIsLegacy() == null) {
-            issue.setIsLegacy(0);
-        }
-        if (issue.getFoundAfterRelease() == null) {
-            issue.setFoundAfterRelease(0);
-        }
-
-        System.out.println("=== convertFieldsToStringForEditWithoutDuration结束 - Issue ID: " + issue.getId() + " ===");
-    }
-
 
     /**
      * 专门为 issue/list API 设计的字段转换方法
@@ -286,20 +265,21 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
 
         System.out.println("=== 数据库查询的原始issue: " + issue.getId() + " ===");
         System.out.println("=== 原始createTime: " + issue.getCreateTime() + " ===");
-        System.out.println("=== SQL计算的duration: " + issue.getDuration() + " 小时 ===");
 
         // 获取用户时区
         String userTimezone = TimezoneContext.getUserTimezone();
         System.out.println("=== 用户时区: " + userTimezone + " ===");
 
-        // duration已在SQL中计算完成，无需Java计算
-        System.out.println("=== 跳过duration计算（SQL已计算） ===");
+        // 计算duration（基于当前时间策略）
+        issueDurationCalculator.calculateDuration(issue, userTimezone);
+        System.out.println("=== duration计算完成，值: " + issue.getDuration() + " ===");
 
-        // 注意：不进行UTC到本地时间的转换，数据库已存储用户本地时间
+        // 现在数据库存储的是用户本地时间，无需进行时区转换
+        // 但如果需要显示格式转换，可以在这里处理
         System.out.println("=== 跳过时区转换（数据库已存储用户本地时间） ===");
 
-        // 字段格式转换（确保字段不为null等）
-        convertFieldsToStringForEditWithoutDuration(issue);
+        // 转换字段格式
+        convertFieldsToStringForEdit(issue);
         System.out.println("=== 字段格式转换完成 ===");
 
         System.out.println("=== Issue.info方法结束 ===");
@@ -440,7 +420,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         pageInfo.setHasPreviousPage(pageNum > 1);
         pageInfo.setHasNextPage(pageNum < pageInfo.getPages());
 
-        logger.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}",
+        logger.info("queryByFieldAndValue - 分页信息: pageNum={}, pageSize={}, total={}, pages={}, hasNextPage={}", 
                  pageInfo.getPageNum(), pageInfo.getPageSize(), pageInfo.getTotal(), pageInfo.getPages(), pageInfo.isHasNextPage());
 
         return pageInfo;
