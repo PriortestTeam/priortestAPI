@@ -28,7 +28,7 @@ public class IssueDurationCalculator {
      * @param userTimezone 用户时区
      */
     public void calculateDuration(Issue issue, String userTimezone) {
-        System.out.println("=== ========================================== ===");
+       
         System.out.println("=== IssueDurationCalculator.calculateDuration(issue, timezone) 方法开始 ===");
         System.out.println("=== ========================================== ===");
         System.out.println("=== 输入参数信息: ===");
@@ -52,7 +52,8 @@ public class IssueDurationCalculator {
         Date currentTime = new Date();
         System.out.println("=== 当前时间获取完成: " + currentTime + " ===");
         System.out.println("=== 当前时间(毫秒): " + currentTime.getTime() + " ===");
-
+         System.out.println("=== ========================================== ===");
+        
         // 直接使用数据库中的创建时间，不进行任何时区转换
         Date createTime = issue.getCreateTime();
         System.out.println("=== 数据库创建时间处理策略: 直接使用原始时间，不进行时区转换 ===");
@@ -61,12 +62,10 @@ public class IssueDurationCalculator {
 
         System.out.println("=== ========== Duration计算公式详情 ========== ===");
         System.out.println("=== 计算公式: duration(小时) = (当前时间 - 创建时间) / (1000 * 60 * 60) ===");
-        System.out.println("=== 公式说明: 除以1000转换毫秒->秒，除以60转换秒->分钟，除以60转换分钟->小时 ===");
+      
         System.out.println("=== 当前时间: " + currentTime + " ===");
-        System.out.println("=== 当前时间(毫秒): " + currentTime.getTime() + " ===");
         System.out.println("=== 数据库创建时间: " + createTime + " ===");
-        System.out.println("=== 数据库创建时间(毫秒): " + createTime.getTime() + " ===");
-
+       
         long diffInMillis = currentTime.getTime() - createTime.getTime();
         System.out.println("=== 时间差计算: " + currentTime.getTime() + " - " + createTime.getTime() + " = " + diffInMillis + " 毫秒 ===");
 
@@ -84,28 +83,16 @@ public class IssueDurationCalculator {
         System.out.println("=== ========================================== ===");
 
         long durationInSeconds = diffInMillis / 1000;
-        System.out.println("=== 步骤1 - 毫秒转秒: " + diffInMillis + " ÷ 1000 = " + durationInSeconds + " 秒 ===");
-
         long durationInMinutes = durationInSeconds / 60;
-        System.out.println("=== 步骤2 - 秒转分钟: " + durationInSeconds + " ÷ 60 = " + durationInMinutes + " 分钟 ===");
-
         double durationInHoursDouble = durationInMinutes / 60.0;
-        System.out.println("=== 步骤3 - 分钟转小时(double): " + durationInMinutes + " ÷ 60 = " + durationInHoursDouble + " 小时 ===");
+        System.out.println("=== 步骤 - 分钟转小时(double): " + durationInMinutes + " ÷ 60 = " + durationInHoursDouble + " 小时 ===");
 
         int durationInHours = (int) durationInHoursDouble;
-        System.out.println("=== 步骤4 - 取整数部分(int): " + durationInHoursDouble + " -> " + durationInHours + " 小时 ===");
+        System.out.println("=== 步骤 - 取整数部分(int): " + durationInHoursDouble + " -> " + durationInHours + " 小时 ===");
 
         System.out.println("=== ========================================== ===");
-        System.out.println("=== Duration计算结果汇总: ===");
-        System.out.println("=== ========================================== ===");
-        System.out.println("=== 原始毫秒差值: " + diffInMillis + " 毫秒 ===");
-        System.out.println("=== 转换为秒: " + durationInSeconds + " 秒 ===");
-        System.out.println("=== 转换为分钟: " + durationInMinutes + " 分钟 ===");
-        System.out.println("=== 转换为小时(精确): " + durationInHoursDouble + " 小时 ===");
         System.out.println("=== 最终Duration结果(整数): " + durationInHours + " 小时 ===");
 
-        System.out.println("=== ========================================== ===");
-        System.out.println("=== 设置Issue的duration字段 ===");
         System.out.println("=== ========================================== ===");
         System.out.println("=== 设置前Issue.duration: " + issue.getDuration() + " ===");
         issue.setDuration(durationInHours);
@@ -116,9 +103,9 @@ public class IssueDurationCalculator {
         System.out.println("=== 创建时间: " + createTime + " ===");
         System.out.println("=== 当前时间: " + currentTime + " ===");
         System.out.println("=== 存活时长: " + durationInHours + " 小时 ===");
-        System.out.println("=== 存活时长: " + durationInMinutes + " 分钟 ===");
-        System.out.println("=== 存活时长: " + durationInSeconds + " 秒 ===");
+       
         System.out.println("=== IssueDurationCalculator - Duration计算完成 ===");
+        System.out.println("=== ========================================== ===");
     }
 
     /**
@@ -195,7 +182,7 @@ public class IssueDurationCalculator {
         System.out.println("=== 输入参数:");
         System.out.println("=== - Issue ID: " + issue.getId() + " ===");
         System.out.println("=== - 当前时间: " + currentTime + " ===");
-        System.out.println("=== - 当前时间(毫秒): " + currentTime.getTime() + " ===");
+      
         System.out.println("=== - 用户时区: " + userTimezone + " ===");
         System.out.println("=== - Issue创建时间: " + issue.getCreateTime() + " ===");
         System.out.println("=== - Issue runcaseId: " + issue.getRuncaseId() + " (可能为null，这是正常的) ===");
@@ -208,13 +195,12 @@ public class IssueDurationCalculator {
 
         System.out.println("=== 开始计算时间差:");
         long diffInMillis = currentTime.getTime() - adjustedCreateTime.getTime();
-        System.out.println("=== - 毫秒差值: " + currentTime.getTime() + " - " + adjustedCreateTime.getTime() + " = " + diffInMillis + " ===");
-
+    
         long durationInSeconds = diffInMillis / 1000;
-        System.out.println("=== - 转换为秒: " + diffInMillis + " / 1000 = " + durationInSeconds + " ===");
+     
 
         long durationInMinutes = durationInSeconds / 60;
-        System.out.println("=== - 转换为分钟: " + durationInSeconds + " / 60 = " + durationInMinutes + " ===");
+      
 
         double durationInHoursDouble = durationInMinutes / 60.0;
         System.out.println("=== - 转换为小时(double): " + durationInMinutes + " / 60 = " + durationInHoursDouble + " ===");
@@ -241,7 +227,7 @@ public class IssueDurationCalculator {
      */
     private Date convertUTCToUserLocalTime(Date utcTime, TimeZone userTimeZone) {
         System.out.println("=== 🔍🔍 convertUTCToUserLocalTime方法开始 ===");
-        System.out.println("=== 🔍🔍 输入参数检查: ===");
+       
         System.out.println("=== 🔍🔍 utcTime: " + utcTime + " ===");
         System.out.println("=== 🔍🔍 userTimeZone: " + userTimeZone + " ===");
         
@@ -267,8 +253,7 @@ public class IssueDurationCalculator {
         // 获取用户时区和服务器时区的偏移量
         long userOffsetMillis = userTimeZone.getOffset(utcTime.getTime());
         long serverOffsetMillis = serverTimeZone.getOffset(utcTime.getTime());
-        System.out.println("=== 用户时区偏移毫秒: " + userOffsetMillis + " ===");
-        System.out.println("=== 服务器时区偏移毫秒: " + serverOffsetMillis + " ===");
+      
         System.out.println("=== 用户时区偏移小时: " + (userOffsetMillis / (1000 * 60 * 60)) + " ===");
         System.out.println("=== 服务器时区偏移小时: " + (serverOffsetMillis / (1000 * 60 * 60)) + " ===");
         
@@ -286,8 +271,7 @@ public class IssueDurationCalculator {
             Date localTime = new Date(localTimeMillis);
             
             System.out.println("=== 时区差异毫秒: " + offsetDiff + " ===");
-            System.out.println("=== UTC时间毫秒: " + utcTime.getTime() + " ===");
-            System.out.println("=== 本地时间毫秒: " + localTimeMillis + " ===");
+         
             System.out.println("=== 转换后的用户本地时间: " + localTime + " ===");
             return localTime;
         }

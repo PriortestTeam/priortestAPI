@@ -117,8 +117,6 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         }
         System.out.println("=== 验证记录存在 ===");
 
-
-
         // 创建要更新的issue对象
         Issue issue = new Issue();
         BeanUtil.copyProperties(dto, issue);
@@ -128,17 +126,17 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
         System.out.println("=== dto.getIssueStatus(): " + dto.getIssueStatus() + " ===");
 
         // 判断 issueStatus 是否为 关闭 或 验证成功
-        if ("关闭".equals(dto.getIssueStatus()) || "验证成功".equals(dto.getIssueStatus())) {
-            System.out.println("=== 检测到缺陷状态为关闭 或验证成功，需要计算并存储duration ===");
+        if (("关闭".equals(dto.getIssueStatus()) || "验证成功".equals(dto.getIssueStatus())) && dto.getDuration() == null) {
+            System.out.println("=== 检测到缺陷状态为关闭 或验证成功，并且当前 Duration 是空， 需要计算并存储duration ===");
 
             // 使用已查询到的entity（包含完整的createTime等信息）
             // 计算duration并设置到要更新的issue对象中
             // 获取用户时区
+              System.out.println("=== Debug ----------------?????: " + entity.getCreateTime() + " ===");
             String userTimezone = TimezoneContext.getUserTimezone();
             issueDurationCalculator.calculateDuration(entity, userTimezone);
+            
             issue.setDuration(entity.getDuration());
-
-            System.out.println("=== duration已计算并将在更新时存储到数据库：" + issue.getDuration() + " 小时 ===");
 
             // 将计算的duration也设置到dto中，确保更新操作包含duration字段
             // entity.getDuration()返回Integer，需要转换为String
@@ -149,10 +147,13 @@ public class IssueServiceImpl extends ServiceImpl<IssueDao, Issue> implements Is
             }
             System.out.println("=== duration已设置到dto中：" + dto.getDuration() + " 小时 ===");
         }
+        else{
+              System.out.println("=== duration 重置空 null ：" + dto.getDuration() + " 小时 ===");
+             dto.setDuration(null);
+        }
 
         // 2. 执行更新操作
         issue = issueSaveService.updateExistingIssue(dto);
-        System.out.println("=== 更新操作完成，数据已存储 ==");
         System.out.println("=== 更新后的issue.duration: " + issue.getDuration() + " ===");
 
         // 3. 重新查询完整的Issue对象（从数据库查询的都是UTC时间）
@@ -199,11 +200,11 @@ completeIssue.setRootcauseCategory(issue.getRootcauseCategory());
 
 // 4. 执行后续字段转换逻辑
 if ("关闭".equals(issue.getIssueStatus()) || "验证成功".equals(issue.getIssueStatus())) {
-    System.out.println("=== 状态为关闭或验证成功，执行字段转换（）===");
+    System.out.println("=== 状态为关闭或验证成功， 执行字段转换， 不需要再计算 Duration, ===");
     convertFieldsToStringForQuery(issue);
 } else {
     convertFieldsToStringForEdit(issue);
-    System.out.println("=== Duration 计算完成，基于 UTC 时间 ===");
+     System.out.println("=== 完成 字段转换， 与 计算 Duration ===");
 }
  // 5. 返回最终 issue 对象
         return issue;

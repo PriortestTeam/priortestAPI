@@ -57,23 +57,7 @@ public class IssueSaveService {
 
         // 获取用户时区并转换日期型字段 - 已注释
         String userTimezone = TimezoneContext.getUserTimezone();
-        // System.out.println("=== insertNewIssue - 开始转换日期型字段 ===");
-        // System.out.println("=== 用户时区: " + userTimezone + " ===");
-
-        // // 转换主要日期字段到UTC - 已注释
-        // if (issue.getPlanFixDate() != null) {
-        //     Date originalPlanFixDate = issue.getPlanFixDate();
-        //     System.out.println("=== planFixDate 字段转换前: " + originalPlanFixDate + " ===");
-        //     issueTimeConverter.convertMainTimeFieldsToUTC(issue, userTimezone);
-        //     System.out.println("=== planFixDate 转换后: " + issue.getPlanFixDate() + " ===");
-        // }
-
-        // // 转换自定义字段中的日期到UTC（只处理attributes，不重复转换主要字段） - 已注释
-        // if (issue.getIssueExpand() != null && !issue.getIssueExpand().isEmpty()) {
-        //     System.out.println("=== 开始处理issueExpand中的日期字段 ===");
-        //     issueTimeConverter.convertCustomFieldsTimeToUTC(issue, userTimezone);
-        // }
-
+        
         // 确保字段不为null
         if (issue.getIsLegacy() == null) {
             issue.setIsLegacy(0);
@@ -90,21 +74,7 @@ public class IssueSaveService {
         System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
         System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
 
-        // 计算duration（基于UTC时间） - 已注释
-        // System.out.println("=== insertNewIssue - 准备计算duration ===");
-        // issueDurationCalculator.calculateDuration(issue, userTimezone);
-        // System.out.println("=== insertNewIssue - duration计算完成，值: " + issue.getDuration() + " ===");
-
-        // 转换UTC时间回用户本地时区（用于返回给前端显示） - 已注释
-        // System.out.println("=== 开始将UTC时间转换为用户本地时区 ===");
-        // issueTimeConverter.convertUTCToLocalTime(issue, userTimezone);
-        // System.out.println("=== UTC到本地时区转换完成 ===");
-        // System.out.println("=== 返回给用户的时间信息 ===");
-        // System.out.println("=== createTime: " + issue.getCreateTime() + " ===");
-        // System.out.println("=== updateTime: " + issue.getUpdateTime() + " ===");
-        // System.out.println("=== planFixDate: " + issue.getPlanFixDate() + " ===");
-
-        // System.out.println("=== insertNewIssue完成，数据已插入到数据库（UTC时间），返回用户本地时区时间 ===");
+     
         return issue;
     }
 
@@ -126,22 +96,22 @@ public class IssueSaveService {
         processVersionFields(issue, dto);
 
         // 确保duration字段被正确复制
-        if (dto.getDuration() != null) {
+        //if (dto.getDuration() != null) {
             // dto.getDuration()返回String，需要转换为Integer
-            try {
-                Integer durationValue = Integer.parseInt(dto.getDuration());
-                issue.setDuration(durationValue);
-                System.out.println("=== updateExistingIssue: duration字段已设置: " + issue.getDuration() + " ===");
-            } catch (NumberFormatException e) {
-                System.out.println("=== updateExistingIssue: duration字段解析失败，设置为0: " + dto.getDuration() + " ===");
-                issue.setDuration(0);
-            }
-        }
+          //  try {
+           //     Integer durationValue = Integer.parseInt(dto.getDuration());
+           //     issue.setDuration(durationValue);
+           //     System.out.println("=== updateExistingIssue: duration字段已设置: " + issue.getDuration() + " ===");
+           // } catch (NumberFormatException e) {
+           //     System.out.println("=== updateExistingIssue: duration字段解析失败，设置为0: " + dto.getDuration() + " ===");
+             //   issue.setDuration(0);
+          //  }
+        //}
 
         // 获取用户时区并转换日期型字段
-        String userTimezone = TimezoneContext.getUserTimezone();
-        System.out.println("=== updateExistingIssue - 开始转换日期型字段 ===");
-        System.out.println("=== 用户时区: " + userTimezone + " ===");
+       // String userTimezone = TimezoneContext.getUserTimezone();
+       // System.out.println("=== updateExistingIssue - 开始转换日期型字段 ===");
+        //System.out.println("=== 用户时区: " + userTimezone + " ===");
 
 
         if (issue.getIsLegacy() == null) {
