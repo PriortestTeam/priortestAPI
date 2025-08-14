@@ -7,8 +7,8 @@ server:
 spring:
     datasource:
         url: jdbc:mysql://43.139.159.146:3306/oneclick?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false&connectTimeout=30000&socketTimeout=30000
-        username: oneclick
-        password: Oneclick+123
+        username: dbUserF
+        password: dbUFA+789!
         driver-class-name: com.mysql.cj.jdbc.Driver
         type: com.alibaba.druid.pool.DruidDataSource
         druid:
